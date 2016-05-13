@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -40,5 +41,5 @@ func main() {
 	d := &Demo{
 		proxy: demo.NewServiceGoTSRPCProxy(&demo.Service{}, "/service"),
 	}
-	http.ListenAndServe(":8080", d)
+	fmt.Println(http.ListenAndServe(":8080", d))
 }

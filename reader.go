@@ -52,7 +52,7 @@ func jsonDump(v interface{}) {
 	fmt.Println(err, string(jsonBytes))
 }
 
-func extractJSON(tag string) *JSONInfo {
+func extractJSONInfo(tag string) *JSONInfo {
 	t := reflect.StructTag(tag)
 	jsonTagString := t.Get("json")
 	if len(jsonTagString) == 0 {
@@ -141,8 +141,8 @@ func Read(dir string, services []string) {
 								if field.Tag != nil {
 									jsonTagString := field.Tag.Value[1 : len(field.Tag.Value)-1]
 									fmt.Println("there is a tag too", jsonTagString)
-									jsonDump(extractJSON(jsonTagString))
-									currentField.JSONInfo = extractJSON(jsonTagString)
+									//jsonDump(extractJSONInfo(tag string)(jsonTagString))
+									currentField.JSONInfo = extractJSONInfo(jsonTagString)
 								}
 							}
 						}
