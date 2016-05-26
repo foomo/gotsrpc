@@ -16,13 +16,18 @@ type JSONInfo struct {
 	Ignore          bool
 }
 
+type StructType struct {
+	Name    string
+	Package string
+}
+
 type Value struct {
-	ScalarType ScalarType `json:",omitempty"`
-	StructType string     `json:",omitempty"`
-	Struct     *Struct    `json:",omitempty"`
-	Map        *Map       `json:",omitempty"`
-	Array      *Array     `json:",omitempty"`
-	IsPtr      bool       `json:",omitempty"`
+	ScalarType ScalarType  `json:",omitempty"`
+	StructType *StructType `json:",omitempty"`
+	Struct     *Struct     `json:",omitempty"`
+	Map        *Map        `json:",omitempty"`
+	Array      *Array      `json:",omitempty"`
+	IsPtr      bool        `json:",omitempty"`
 }
 
 type Array struct {
@@ -40,7 +45,12 @@ type Field struct {
 	JSONInfo *JSONInfo `json:",omitempty"`
 }
 
-type Func struct {
+type Service struct {
+	Name    string
+	Methods []*Method
+}
+
+type Method struct {
 	Name   string
 	Args   []*Field
 	Return []*Field

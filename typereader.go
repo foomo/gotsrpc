@@ -1,19 +1,18 @@
 package gotsrpc
 
 import (
-	"encoding/json"
 	"fmt"
 	"go/ast"
-	"go/parser"
-	"go/token"
-	"os"
 	"reflect"
 	"strings"
 )
 
-func jsonDump(v interface{}) {
-	jsonBytes, err := json.MarshalIndent(v, "", "	")
-	fmt.Println(err, string(jsonBytes))
+var ReaderTrace = false
+
+func trace(args ...interface{}) {
+	if ReaderTrace {
+		fmt.Println(args...)
+	}
 }
 
 func extractJSONInfo(tag string) *JSONInfo {
@@ -58,47 +57,13 @@ func extractJSONInfo(tag string) *JSONInfo {
 		Ignore:          ignore,
 	}
 }
-func filterFiles(info os.FileInfo) bool {
-	name := info.Name()
-	parseIt := !info.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".go")
-	return parseIt
-}
 
-func ReadFile(file string) {
-	fset := token.NewFileSet() // positions are relative to fset
-
-	// Parse the file containing this very example
-	// but stop after processing the imports.
-	f, err := parser.ParseFile(fset, file, nil, parser.Trace)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	readFile(file, f)
-}
-
-func Read(dir string, services []string) error {
-	fset := token.NewFileSet()
-	pkgs, err := parser.ParseDir(fset, dir, nil, parser.AllErrors)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	//fmt.Println(pkgs, err)
-
+func ReadStructs(pkg *ast.Package, services []string) error {
 	structs := map[string]*Struct{}
-
-	for pkgName, pkg := range pkgs {
-
-		fmt.Println("pkg", pkgName) //, "scope", pkg.Scope, "files", pkg.Files)
-		fmt.Println("-------------------------------------------------------------------------")
-
-		for filename, file := range pkg.Files {
-			//readFile(filename, file)
-			extractStructs(filename, file, structs)
-		}
+	for _, file := range pkg.Files {
+		//readFile(filename, file)
+		extractStructs(file, structs)
 	}
-	jsonDump(structs)
 	return nil
 }
 
@@ -113,7 +78,6 @@ func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 	default:
 		return ScalarTypeNone
 	}
-
 }
 
 func getTypesFromAstType(ident *ast.Ident) (structType string, scalarType ScalarType) {
@@ -128,50 +92,70 @@ func getTypesFromAstType(ident *ast.Ident) (structType string, scalarType Scalar
 func readAstType(v *Value, fieldIdent *ast.Ident) {
 	structType, scalarType := getTypesFromAstType(fieldIdent)
 	v.ScalarType = scalarType
-	v.StructType = structType
+	if len(structType) > 0 {
+		v.StructType = &StructType{
+			Name: structType,
+		}
+	}
 }
 
 func readAstStarExpr(v *Value, starExpr *ast.StarExpr) {
+	v.IsPtr = true
 	switch reflect.ValueOf(starExpr.X).Type().String() {
 	case "*ast.Ident":
 		ident := starExpr.X.(*ast.Ident)
-		v.StructType = ident.Name
-		v.IsPtr = true
+		v.StructType = &StructType{
+			Name: ident.Name,
+		}
 	case "*ast.StructType":
 		// nested anonymous
-		structType := starExpr.X.(*ast.StructType)
-		v.Struct = &Struct{}
-		v.Struct.Fields = readFieldList(structType.Fields.List)
+		readAstStructType(v, starExpr.X.(*ast.StructType))
+	case "*ast.SelectorExpr":
+		readAstSelectorExpr(v, starExpr.X.(*ast.SelectorExpr))
 	default:
-		fmt.Println("a pointer on what", reflect.ValueOf(starExpr.X).Type().String())
+		trace("a pointer on what", reflect.ValueOf(starExpr.X).Type().String())
 	}
 }
 
 func readAstArrayType(v *Value, arrayType *ast.ArrayType) {
-
 	switch reflect.ValueOf(arrayType.Elt).Type().String() {
 	case "*ast.StarExpr":
 		readAstStarExpr(v, arrayType.Elt.(*ast.StarExpr))
 	default:
 		fmt.Println("array type elt", reflect.ValueOf(arrayType.Elt).Type().String())
 	}
-
 }
 
 func readAstMapType(m *Map, mapType *ast.MapType) {
-
-	fmt.Println("		map key", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
-	fmt.Println("		map value", mapType.Value, reflect.ValueOf(mapType.Value).Type().String())
-
+	trace("		map key", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
+	trace("		map value", mapType.Value, reflect.ValueOf(mapType.Value).Type().String())
 	// key
 	switch reflect.ValueOf(mapType.Key).Type().String() {
 	case "*ast.Ident":
 		_, scalarType := getTypesFromAstType(mapType.Key.(*ast.Ident))
 		m.KeyType = string(scalarType)
 	}
-
 	// value
 	m.Value.loadExpr(mapType.Value)
+}
+
+func readAstSelectorExpr(v *Value, selectorExpr *ast.SelectorExpr) {
+	switch reflect.ValueOf(selectorExpr.X).Type().String() {
+	case "*ast.Ident":
+		// that could be the package name
+		selectorIdent := selectorExpr.X.(*ast.Ident)
+		v.StructType = &StructType{
+			Package: selectorIdent.Name,
+			Name:    selectorExpr.Sel.Name,
+		}
+	default:
+		fmt.Println("selectorExpr.Sel !?", selectorExpr.X, reflect.ValueOf(selectorExpr.X).Type().String())
+	}
+}
+
+func readAstStructType(v *Value, structType *ast.StructType) {
+	v.Struct = &Struct{}
+	v.Struct.Fields = readFieldList(structType.Fields.List)
 }
 
 func (v *Value) loadExpr(expr ast.Expr) {
@@ -198,7 +182,6 @@ func (v *Value) loadExpr(expr ast.Expr) {
 	case "*ast.Ident":
 		fieldIdent := expr.(*ast.Ident)
 		readAstType(v, fieldIdent)
-
 	case "*ast.StarExpr":
 		// a pointer on sth
 		readAstStarExpr(v, expr.(*ast.StarExpr))
@@ -207,33 +190,38 @@ func (v *Value) loadExpr(expr ast.Expr) {
 			Value: &Value{},
 		}
 		readAstMapType(v.Map, expr.(*ast.MapType))
+	case "*ast.SelectorExpr":
+		readAstSelectorExpr(v, expr.(*ast.SelectorExpr))
+	case "*ast.StructType":
+		readAstStructType(v, expr.(*ast.StructType))
 	default:
-		fmt.Println("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())
-
+		trace("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())
 	}
 }
 
 func readField(astField *ast.Field) (name string, v *Value, jsonInfo *JSONInfo) {
-
-	name = astField.Names[0].Name
-	if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
-		// not exported
-		return "", nil, nil
+	name = ""
+	if len(astField.Names) > 0 {
+		name = astField.Names[0].Name
 	}
-	fmt.Println("	", astField.Names[0].Name)
+	trace("	", name)
 	v = &Value{}
 	v.loadExpr(astField.Type)
-
 	if astField.Tag != nil {
 		jsonInfo = extractJSONInfo(astField.Tag.Value[1 : len(astField.Tag.Value)-1])
 	}
 	return
 }
+
 func readFieldList(fieldList []*ast.Field) (fields map[string]*Field) {
 	fields = map[string]*Field{}
 	for _, field := range fieldList {
-
 		name, value, jsonInfo := readField(field)
+
+		if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
+			continue
+		}
+
 		if value != nil {
 			fields[name] = &Field{
 				Name:     name,
@@ -241,16 +229,14 @@ func readFieldList(fieldList []*ast.Field) (fields map[string]*Field) {
 				JSONInfo: jsonInfo,
 			}
 		}
-
 	}
 	return
 }
 
-func extractStructs(filename string, file *ast.File, structs map[string]*Struct) {
-	//fmt.Println("-------------------------------------------------------------------------")
-	//jsonDump(file)
-	//fmt.Println(filename, file.Scope, len(file.Scope.Objects), file.Scope.Objects)
-	//fmt.Println("-------------------------------------------------------------------------")
+func extractStructs(file *ast.File, structs map[string]*Struct) {
+	for _, imp := range file.Imports {
+		fmt.Println("import", imp.Name, imp.Path)
+	}
 	for name, obj := range file.Scope.Objects {
 		//fmt.Println(name, obj.Kind, obj.Data)
 		if obj.Kind == ast.Typ && obj.Decl != nil {
@@ -264,7 +250,7 @@ func extractStructs(filename string, file *ast.File, structs map[string]*Struct)
 				typeSpecRefl := reflect.ValueOf(typeSpec.Type)
 				if typeSpecRefl.Type().String() == "*ast.StructType" {
 					structType := typeSpec.Type.(*ast.StructType)
-					fmt.Println("structType.Fields", structType.Fields)
+					trace("StructType", obj.Name)
 					structs[name].Fields = readFieldList(structType.Fields.List)
 				} else {
 					//	fmt.Println("	what would that be", typeSpecRefl.Type().String())
@@ -276,30 +262,6 @@ func extractStructs(filename string, file *ast.File, structs map[string]*Struct)
 			//fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> a fucking func / method", obj.Kind, obj)
 		} else {
 			//fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", obj.Kind, obj)
-		}
-	}
-}
-
-func readFile(filename string, file *ast.File) {
-	for _, decl := range file.Decls {
-		if reflect.ValueOf(decl).Type().String() == "*ast.FuncDecl" {
-			funcDecl := decl.(*ast.FuncDecl)
-			if funcDecl.Recv != nil {
-				fmt.Println("that is a method named", funcDecl.Name)
-				if len(funcDecl.Recv.List) == 1 {
-					firstReceiverField := funcDecl.Recv.List[0]
-					if "*ast.StarExpr" == reflect.ValueOf(firstReceiverField.Type).Type().String() {
-						starExpr := firstReceiverField.Type.(*ast.StarExpr)
-						if "*ast.Ident" == reflect.ValueOf(starExpr.X).Type().String() {
-							ident := starExpr.X.(*ast.Ident)
-							fmt.Println("	on sth:", ident.Name)
-						}
-
-					}
-				}
-			} else {
-				fmt.Println("no receiver for", funcDecl.Name)
-			}
 		}
 	}
 }

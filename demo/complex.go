@@ -1,5 +1,7 @@
 package demo
 
+import nstd "github.com/foomo/gotsrpc/demo/nested"
+
 type Address struct {
 	City              string `json:"city,omitempty"`
 	SecretServerCrap  bool   `json:"-"`
@@ -8,6 +10,8 @@ type Address struct {
 	ArrayArrayAddress [][]*Address
 	People            []Person
 	MapCrap           map[string]map[int]bool
+	NestedPtr         *nstd.Nested
+	NestedStruct      nstd.Nested
 }
 
 type Person struct {
@@ -18,6 +22,9 @@ type Person struct {
 
 	InlinePtr *struct {
 		Foo bool
+	}
+	InlineStruct struct {
+		Bar string
 	}
 	iAmPrivate string
 }
