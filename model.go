@@ -22,12 +22,13 @@ type StructType struct {
 }
 
 type Value struct {
-	ScalarType ScalarType  `json:",omitempty"`
-	StructType *StructType `json:",omitempty"`
-	Struct     *Struct     `json:",omitempty"`
-	Map        *Map        `json:",omitempty"`
-	Array      *Array      `json:",omitempty"`
-	IsPtr      bool        `json:",omitempty"`
+	ScalarType   ScalarType  `json:",omitempty"`
+	GoScalarType string      `json:",omitempty"`
+	StructType   *StructType `json:",omitempty"`
+	Struct       *Struct     `json:",omitempty"`
+	Map          *Map        `json:",omitempty"`
+	Array        *Array      `json:",omitempty"`
+	IsPtr        bool        `json:",omitempty"`
 }
 
 type Array struct {
@@ -58,5 +59,5 @@ type Method struct {
 
 type Struct struct {
 	Name   string
-	Fields map[string]*Field
+	Fields []*Field
 }

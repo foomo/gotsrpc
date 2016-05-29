@@ -9,6 +9,18 @@ import (
 
 var ReaderTrace = false
 
+func readStructs(pkg *ast.Package) (structs map[string]*Struct, err error) {
+	structs = map[string]*Struct{}
+	for _, file := range pkg.Files {
+		//readFile(filename, file)
+		err = extractStructs(file, structs)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 func trace(args ...interface{}) {
 	if ReaderTrace {
 		fmt.Println(args...)
@@ -58,15 +70,6 @@ func extractJSONInfo(tag string) *JSONInfo {
 	}
 }
 
-func ReadStructs(pkg *ast.Package, services []string) error {
-	structs := map[string]*Struct{}
-	for _, file := range pkg.Files {
-		//readFile(filename, file)
-		extractStructs(file, structs)
-	}
-	return nil
-}
-
 func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 	switch ident.Name {
 	case "string":
@@ -92,10 +95,13 @@ func getTypesFromAstType(ident *ast.Ident) (structType string, scalarType Scalar
 func readAstType(v *Value, fieldIdent *ast.Ident) {
 	structType, scalarType := getTypesFromAstType(fieldIdent)
 	v.ScalarType = scalarType
+
 	if len(structType) > 0 {
 		v.StructType = &StructType{
 			Name: structType,
 		}
+	} else {
+		v.GoScalarType = fieldIdent.Name
 	}
 }
 
@@ -213,8 +219,8 @@ func readField(astField *ast.Field) (name string, v *Value, jsonInfo *JSONInfo) 
 	return
 }
 
-func readFieldList(fieldList []*ast.Field) (fields map[string]*Field) {
-	fields = map[string]*Field{}
+func readFieldList(fieldList []*ast.Field) (fields []*Field) {
+	fields = []*Field{}
 	for _, field := range fieldList {
 		name, value, jsonInfo := readField(field)
 
@@ -223,17 +229,17 @@ func readFieldList(fieldList []*ast.Field) (fields map[string]*Field) {
 		}
 
 		if value != nil {
-			fields[name] = &Field{
+			fields = append(fields, &Field{
 				Name:     name,
 				Value:    value,
 				JSONInfo: jsonInfo,
-			}
+			})
 		}
 	}
 	return
 }
 
-func extractStructs(file *ast.File, structs map[string]*Struct) {
+func extractStructs(file *ast.File, structs map[string]*Struct) error {
 	for _, imp := range file.Imports {
 		fmt.Println("import", imp.Name, imp.Path)
 	}
@@ -243,7 +249,7 @@ func extractStructs(file *ast.File, structs map[string]*Struct) {
 			//ast.StructType
 			structs[name] = &Struct{
 				Name:   name,
-				Fields: map[string]*Field{},
+				Fields: []*Field{},
 			}
 			if reflect.ValueOf(obj.Decl).Type().String() == "*ast.TypeSpec" {
 				typeSpec := obj.Decl.(*ast.TypeSpec)
@@ -264,4 +270,5 @@ func extractStructs(file *ast.File, structs map[string]*Struct) {
 			//fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", obj.Kind, obj)
 		}
 	}
+	return nil
 }

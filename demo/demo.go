@@ -18,3 +18,7 @@ func (s *Service) Hello(name string) (reply string, err *Err) {
 func Sepp(bar bool) string {
 	return "ich bin der sepp"
 }
+
+func (s *Service) NothingInNothinOut() {
+
+}

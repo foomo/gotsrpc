@@ -3,8 +3,9 @@ package demo
 import nstd "github.com/foomo/gotsrpc/demo/nested"
 
 type Address struct {
-	City              string `json:"city,omitempty"`
-	SecretServerCrap  bool   `json:"-"`
+	City              string   `json:"city,omitempty"`
+	Signs             []string `json:"signs,omitempty"`
+	SecretServerCrap  bool     `json:"-"`
 	PeoplePtr         []*Person
 	ArrayOfMaps       []map[string]bool
 	ArrayArrayAddress [][]*Address

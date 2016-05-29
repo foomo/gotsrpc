@@ -7,7 +7,15 @@ import (
 	"reflect"
 )
 
-func readServiceFile(file *ast.File, services map[string]*Service) error {
+func readServiceFile(file *ast.File, services []*Service) error {
+	findService := func(serviceName string) (service *Service, ok bool) {
+		for _, service := range services {
+			if service.Name == serviceName {
+				return service, true
+			}
+		}
+		return nil, false
+	}
 	for _, decl := range file.Decls {
 		if reflect.ValueOf(decl).Type().String() == "*ast.FuncDecl" {
 			funcDecl := decl.(*ast.FuncDecl)
@@ -21,13 +29,13 @@ func readServiceFile(file *ast.File, services map[string]*Service) error {
 							ident := starExpr.X.(*ast.Ident)
 							fmt.Println("	on sth:", ident.Name)
 
-							service, ok := services[ident.Name]
+							service, ok := findService(ident.Name)
 
 							if ok {
 								service.Methods = append(service.Methods, &Method{
 									Name:   funcDecl.Name.Name,
-									Args:   readFields(funcDecl.Type.Params.List),
-									Return: readFields(funcDecl.Type.Results.List),
+									Args:   readFields(funcDecl.Type.Params),
+									Return: readFields(funcDecl.Type.Results),
 								})
 							}
 						}
@@ -41,9 +49,13 @@ func readServiceFile(file *ast.File, services map[string]*Service) error {
 	return nil
 }
 
-func readFields(astFields []*ast.Field) (fields []*Field) {
+func readFields(fieldList *ast.FieldList) (fields []*Field) {
 	fields = []*Field{}
-	for _, param := range astFields {
+	if fieldList == nil {
+		return
+	}
+
+	for _, param := range fieldList.List {
 		name, value, _ := readField(param)
 		fields = append(fields, &Field{
 			Name:  name,
@@ -54,13 +66,13 @@ func readFields(astFields []*ast.Field) (fields []*Field) {
 
 }
 
-func readServicesInPackage(pkg *ast.Package, serviceNames []string) (services map[string]*Service, err error) {
-	services = map[string]*Service{}
+func readServicesInPackage(pkg *ast.Package, serviceNames []string) (services []*Service, err error) {
+	services = []*Service{}
 	for _, serviceName := range serviceNames {
-		services[serviceName] = &Service{
+		services = append(services, &Service{
 			Name:    serviceName,
 			Methods: []*Method{},
-		}
+		})
 	}
 	for _, file := range pkg.Files {
 		err = readServiceFile(file, services)
@@ -72,7 +84,7 @@ func readServicesInPackage(pkg *ast.Package, serviceNames []string) (services ma
 	return
 }
 
-func ReadServicesInPackage(goPath string, packageName string, serviceNames []string) (services map[string]*Service, err error) {
+func Read(goPath string, packageName string, serviceNames []string) (services []*Service, structs map[string]*Struct, err error) {
 	if len(serviceNames) == 0 {
 		err = errors.New("nothing to do service names are empty")
 		return
@@ -81,5 +93,10 @@ func ReadServicesInPackage(goPath string, packageName string, serviceNames []str
 	if err != nil {
 		return
 	}
-	return readServicesInPackage(pkg, serviceNames)
+	services, err = readServicesInPackage(pkg, serviceNames)
+	if err != nil {
+		return
+	}
+	structs, err = readStructs(pkg)
+	return
 }
