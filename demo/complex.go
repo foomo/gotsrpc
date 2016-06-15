@@ -30,7 +30,7 @@ type Person struct {
 	iAmPrivate string
 }
 
-func (s *Service) ExtractAddress(person *Person) (*Address, *Err) {
+func (s *Service) ExtractAddress(person *Person) (addr *Address, e *Err) {
 	if person.AddressPtr != nil {
 		return person.AddressPtr, nil
 	}

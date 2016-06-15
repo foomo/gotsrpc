@@ -6,6 +6,39 @@ import (
 	"net/http"
 )
 
+type FooGoTSRPCProxy struct {
+	EndPoint string
+	service  *Foo
+}
+
+func NewFooGoTSRPCProxy(service *Foo, endpoint string) *FooGoTSRPCProxy {
+	return &FooGoTSRPCProxy{
+		EndPoint: endpoint,
+		service:  service,
+	}
+}
+
+// ServeHTTP exposes your service
+func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		gotsrpc.ErrorMethodNotAllowed(w)
+		return
+	}
+	var args []interface{}
+	switch gotsrpc.GetCalledFunc(r, p.EndPoint) {
+	case "Hello":
+		args = []interface{}{int64(0)}
+		err := gotsrpc.LoadArgs(args, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		helloRet := p.service.Hello(args[0].(int64))
+		gotsrpc.Reply([]interface{}{helloRet}, w)
+		return
+	}
+}
+
 type ServiceGoTSRPCProxy struct {
 	EndPoint string
 	service  *Service
@@ -33,8 +66,8 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		extractAddressRet, extractAddressRet_1 := p.service.ExtractAddress(args[0].(*Person))
-		gotsrpc.Reply([]interface{}{extractAddressRet, extractAddressRet_1}, w)
+		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*Person))
+		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
 		return
 	case "Hello":
 		args = []interface{}{""}
