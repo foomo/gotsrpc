@@ -35,6 +35,9 @@ func (v *Value) tsType() string {
 func renderStruct(str *Struct, ts *code) error {
 	ts.l("export interface " + str.Name + " {").ind(1)
 	for _, f := range str.Fields {
+		if f.JSONInfo != nil && f.JSONInfo.Ignore {
+			continue
+		}
 		ts.app(f.tsName())
 		if f.Value.IsPtr {
 			ts.app("?")
@@ -88,11 +91,11 @@ func renderService(service *Service, ts *code) error {
 		if len(args) > 0 {
 			ts.app(", ")
 		}
-		ts.app("success(" + strings.Join(retArgs, ", ") + ") => void")
+		ts.app("success:(" + strings.Join(retArgs, ", ") + ") => void")
 		ts.app(", err:(request:XMLHttpRequest) => void) {").nl()
 		ts.ind(1)
 		// generic framework call
-		ts.l("GoTSRPC.call(this.endPoint, \"" + method.Name + "\"), [" + strings.Join(callArgs, ", ") + "], success, err);")
+		ts.l("GoTSRPC.call(this.endPoint, \"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "], success, err);")
 		ts.ind(-1)
 		ts.app("}")
 		ts.nl()

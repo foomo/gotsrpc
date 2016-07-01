@@ -15,7 +15,7 @@ import (
 
 func jsonDump(v interface{}) {
 	jsonBytes, err := json.MarshalIndent(v, "", "	")
-	fmt.Println(err, string(jsonBytes))
+	fmt.Fprintln(os.Stderr, err, string(jsonBytes))
 }
 func usage() {
 	fmt.Println("Usage")
@@ -27,7 +27,7 @@ func main() {
 
 	flag.Parse()
 	if len(*flagTsModule) == 0 {
-		fmt.Println("missing ts module")
+		fmt.Fprintln(os.Stderr, "missing ts module")
 	}
 
 	args := flag.Args()
@@ -39,33 +39,40 @@ func main() {
 	goPath := os.Getenv("GOPATH")
 
 	if len(goPath) == 0 {
-		fmt.Println("GOPATH not set")
+		fmt.Fprintln(os.Stderr, "GOPATH not set")
 		os.Exit(1)
 	}
 	longPackageName := args[0]
 	longPackageNameParts := strings.Split(longPackageName, "/")
 	goFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
 
+	_, err := os.Stat(goFilename)
+	if err == nil {
+		fmt.Fprintln(os.Stderr, "removing existing", goFilename)
+		os.Remove(goFilename)
+	}
+
 	packageName := longPackageNameParts[len(longPackageNameParts)-1]
 	services, structs, err := gotsrpc.Read(goPath, longPackageName, args[1:])
 
 	if err != nil {
-		fmt.Println("an error occured", err)
+		fmt.Fprintln(os.Stderr, "an error occured", err)
 		os.Exit(2)
 	}
-	jsonDump(services)
-	jsonDump(structs)
+	//jsonDump(services)
+	//jsonDump(structs)
 
 	ts, err := gotsrpc.RenderTypeScript(services, structs, *flagTsModule)
 	if err != nil {
-		fmt.Println("could not generate ts code", err)
+		fmt.Fprintln(os.Stderr, "could not generate ts code", err)
 		os.Exit(3)
 	}
+
 	fmt.Println(ts)
 
 	gocode, goerr := gotsrpc.RenderGo(services, packageName)
 	if goerr != nil {
-		fmt.Println("could not generate go code", goerr)
+		fmt.Fprintln(os.Stderr, "could not generate go code", goerr)
 		os.Exit(4)
 	}
 
@@ -73,15 +80,14 @@ func main() {
 	if formattingError == nil {
 		gocode = string(formattedGoBytes)
 	} else {
-		fmt.Println("could not format go code", formattingError)
+		fmt.Fprintln(os.Stderr, "could not format go code", formattingError)
 	}
 
 	writeErr := ioutil.WriteFile(goFilename, []byte(gocode), 0644)
 	if writeErr != nil {
-		fmt.Println("could not write go source to file", writeErr)
+		fmt.Fprintln(os.Stderr, "could not write go source to file", writeErr)
 		os.Exit(5)
-
 	}
-	fmt.Println(goFilename, gocode)
+	//fmt.Println(goFilename, gocode)
 	//gotsrpc.ReadFile("/Users/jan/go/src/github.com/foomo/gotsrpc/demo/demo.go", []string{"Service"})
 }

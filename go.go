@@ -87,18 +87,25 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 		g.l(`
         type ` + proxyName + ` struct {
 	        EndPoint string
+			allowOrigin []string
 	        service  *` + service.Name + `
         }
 
-        func New` + proxyName + `(service *` + service.Name + `, endpoint string) *` + proxyName + ` {
+        func New` + proxyName + `(service *` + service.Name + `, endpoint string, allowOrigin []string) *` + proxyName + ` {
 	        return &` + proxyName + `{
 		        EndPoint: endpoint,
+				allowOrigin : allowOrigin,
 		        service:  service,
 	        }
         }
         
         // ServeHTTP exposes your service
         func (p *` + proxyName + `) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+			for _, origin := range p.allowOrigin {
+				w.Header().Add("Access-Control-Allow-Origin", origin)
+			}
+			
 	        if r.Method != "POST" {
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return

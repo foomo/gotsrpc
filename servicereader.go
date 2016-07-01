@@ -2,7 +2,6 @@ package gotsrpc
 
 import (
 	"errors"
-	"fmt"
 	"go/ast"
 	"reflect"
 )
@@ -27,7 +26,7 @@ func readServiceFile(file *ast.File, services []*Service) error {
 						starExpr := firstReceiverField.Type.(*ast.StarExpr)
 						if "*ast.Ident" == reflect.ValueOf(starExpr.X).Type().String() {
 							ident := starExpr.X.(*ast.Ident)
-							fmt.Println("	on sth:", ident.Name)
+							trace("	on sth:", ident.Name)
 
 							service, ok := findService(ident.Name)
 

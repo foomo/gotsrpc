@@ -6,6 +6,53 @@ import (
 	"net/http"
 )
 
+type ServiceGoTSRPCProxy struct {
+	EndPoint string
+	service  *Service
+}
+
+func NewServiceGoTSRPCProxy(service *Service, endpoint string) *ServiceGoTSRPCProxy {
+	return &ServiceGoTSRPCProxy{
+		EndPoint: endpoint,
+		service:  service,
+	}
+}
+
+// ServeHTTP exposes your service
+func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		gotsrpc.ErrorMethodNotAllowed(w)
+		return
+	}
+	var args []interface{}
+	switch gotsrpc.GetCalledFunc(r, p.EndPoint) {
+	case "Hello":
+		args = []interface{}{""}
+		err := gotsrpc.LoadArgs(args, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		helloReply, helloErr := p.service.Hello(args[0].(string))
+		gotsrpc.Reply([]interface{}{helloReply, helloErr}, w)
+		return
+	case "NothingInNothinOut":
+		p.service.NothingInNothinOut()
+		gotsrpc.Reply([]interface{}{}, w)
+		return
+	case "ExtractAddress":
+		args = []interface{}{&Person{}}
+		err := gotsrpc.LoadArgs(args, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*Person))
+		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
+		return
+	}
+}
+
 type FooGoTSRPCProxy struct {
 	EndPoint string
 	service  *Foo
@@ -35,53 +82,6 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		helloRet := p.service.Hello(args[0].(int64))
 		gotsrpc.Reply([]interface{}{helloRet}, w)
-		return
-	}
-}
-
-type ServiceGoTSRPCProxy struct {
-	EndPoint string
-	service  *Service
-}
-
-func NewServiceGoTSRPCProxy(service *Service, endpoint string) *ServiceGoTSRPCProxy {
-	return &ServiceGoTSRPCProxy{
-		EndPoint: endpoint,
-		service:  service,
-	}
-}
-
-// ServeHTTP exposes your service
-func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		gotsrpc.ErrorMethodNotAllowed(w)
-		return
-	}
-	var args []interface{}
-	switch gotsrpc.GetCalledFunc(r, p.EndPoint) {
-	case "ExtractAddress":
-		args = []interface{}{&Person{}}
-		err := gotsrpc.LoadArgs(args, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*Person))
-		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
-		return
-	case "Hello":
-		args = []interface{}{""}
-		err := gotsrpc.LoadArgs(args, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		helloReply, helloErr := p.service.Hello(args[0].(string))
-		gotsrpc.Reply([]interface{}{helloReply, helloErr}, w)
-		return
-	case "NothingInNothinOut":
-		p.service.NothingInNothinOut()
-		gotsrpc.Reply([]interface{}{}, w)
 		return
 	}
 }

@@ -3,6 +3,7 @@ package gotsrpc
 import (
 	"fmt"
 	"go/ast"
+	"os"
 	"reflect"
 	"strings"
 )
@@ -23,7 +24,7 @@ func readStructs(pkg *ast.Package) (structs map[string]*Struct, err error) {
 
 func trace(args ...interface{}) {
 	if ReaderTrace {
-		fmt.Println(args...)
+		fmt.Fprintln(os.Stderr, args...)
 	}
 }
 
@@ -128,7 +129,7 @@ func readAstArrayType(v *Value, arrayType *ast.ArrayType) {
 	case "*ast.StarExpr":
 		readAstStarExpr(v, arrayType.Elt.(*ast.StarExpr))
 	default:
-		fmt.Println("array type elt", reflect.ValueOf(arrayType.Elt).Type().String())
+		trace("array type elt", reflect.ValueOf(arrayType.Elt).Type().String())
 	}
 }
 
@@ -155,7 +156,7 @@ func readAstSelectorExpr(v *Value, selectorExpr *ast.SelectorExpr) {
 			Name:    selectorExpr.Sel.Name,
 		}
 	default:
-		fmt.Println("selectorExpr.Sel !?", selectorExpr.X, reflect.ValueOf(selectorExpr.X).Type().String())
+		trace("selectorExpr.Sel !?", selectorExpr.X, reflect.ValueOf(selectorExpr.X).Type().String())
 	}
 }
 
@@ -183,7 +184,7 @@ func (v *Value) loadExpr(expr ast.Expr) {
 			}
 			readAstMapType(v.Array.Value.Map, fieldArray.Elt.(*ast.MapType))
 		default:
-			fmt.Println("---------------------> array of", reflect.ValueOf(fieldArray.Elt).Type().String())
+			trace("---------------------> array of", reflect.ValueOf(fieldArray.Elt).Type().String())
 		}
 	case "*ast.Ident":
 		fieldIdent := expr.(*ast.Ident)
@@ -240,9 +241,9 @@ func readFieldList(fieldList []*ast.Field) (fields []*Field) {
 }
 
 func extractStructs(file *ast.File, structs map[string]*Struct) error {
-	for _, imp := range file.Imports {
-		fmt.Println("import", imp.Name, imp.Path)
-	}
+	//for _, imp := range file.Imports {
+	//	fmt.Println("import", imp.Name, imp.Path)
+	//}
 	for name, obj := range file.Scope.Objects {
 		//fmt.Println(name, obj.Kind, obj.Data)
 		if obj.Kind == ast.Typ && obj.Decl != nil {
