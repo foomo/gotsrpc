@@ -26,7 +26,13 @@ func (v *Value) tsType() string {
 	case v.Array != nil:
 		return v.Array.Value.tsType() + "[]"
 	case len(v.ScalarType) > 0:
-		return string(v.ScalarType)
+		switch v.ScalarType {
+		case ScalarTypeBool:
+			return "boolean"
+		default:
+			return string(v.ScalarType)
+		}
+
 	default:
 		return "any"
 	}
