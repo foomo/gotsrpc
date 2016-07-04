@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go/ast"
 	"reflect"
+	"strings"
 )
 
 func readServiceFile(file *ast.File, services []*Service) error {
@@ -29,8 +30,8 @@ func readServiceFile(file *ast.File, services []*Service) error {
 							trace("	on sth:", ident.Name)
 
 							service, ok := findService(ident.Name)
-
-							if ok {
+							firstCharOfMethodName := funcDecl.Name.Name[0:1]
+							if ok && strings.ToLower(firstCharOfMethodName) != firstCharOfMethodName {
 								service.Methods = append(service.Methods, &Method{
 									Name:   funcDecl.Name.Name,
 									Args:   readFields(funcDecl.Type.Params),
