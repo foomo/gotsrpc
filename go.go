@@ -5,6 +5,13 @@ import (
 	"strings"
 )
 
+func (v *Value) isHTTPResponseWriter() bool {
+	return v.StructType != nil && v.StructType.Name == "ResponseWriter" && v.StructType.Package == "http"
+}
+func (v *Value) isHTTPRequest() bool {
+	return v.IsPtr && v.StructType != nil && v.StructType.Name == "Request" && v.StructType.Package == "http"
+}
+
 func (v *Value) goType() (t string) {
 	if v.IsPtr {
 		t = "*"
@@ -121,9 +128,23 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 			g.l("case \"" + method.Name + "\":")
 			g.ind(1)
 			callArgs := []string{}
+			isSessionRequest := false
 			if len(method.Args) > 0 {
+
 				args := []string{}
+
 				for argI, arg := range method.Args {
+
+					if argI == 0 && arg.Value.isHTTPResponseWriter() {
+						trace("skipping first arg is a http.ResponseWriter")
+						continue
+					}
+					if argI == 1 && arg.Value.isHTTPRequest() {
+						trace("skipping second arg is a *http.Request")
+						isSessionRequest = true
+						continue
+					}
+
 					args = append(args, arg.Value.emptyLiteral())
 					callArgs = append(callArgs, fmt.Sprint("args[", argI, "].("+arg.Value.goType()+")"))
 				}
@@ -150,6 +171,9 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 			}
 			if len(returnValueNames) > 0 {
 				g.app(strings.Join(returnValueNames, ", ") + " := ")
+			}
+			if isSessionRequest {
+				callArgs = append([]string{"w", "r"}, callArgs...)
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()

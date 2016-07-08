@@ -77,7 +77,16 @@ func renderService(service *Service, ts *code) error {
 		args := []string{}
 		callArgs := []string{}
 
-		for _, arg := range method.Args {
+		for index, arg := range method.Args {
+			if index == 0 && arg.Value.isHTTPResponseWriter() {
+				trace("skipping first arg is a http.ResponseWriter")
+				continue
+			}
+			if index == 1 && arg.Value.isHTTPRequest() {
+				trace("skipping second arg is a *http.Request")
+				continue
+			}
+
 			args = append(args, arg.tsName()+":"+arg.Value.tsType())
 			callArgs = append(callArgs, arg.Name)
 		}
