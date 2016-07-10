@@ -112,7 +112,7 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 			for _, origin := range p.allowOrigin {
 				w.Header().Add("Access-Control-Allow-Origin", origin)
 			}
-			
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
 	        if r.Method != "POST" {
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return

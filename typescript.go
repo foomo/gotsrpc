@@ -125,6 +125,7 @@ func RenderTypeScript(services []*Service, structs map[string]*Struct, tsModuleN
 	ts.l(`module GoTSRPC {
     export function call(endPoint:string, method:string, args:any[], success:any, err:any) {
         var request = new XMLHttpRequest();
+        request.withCredentials = true;
         request.open('POST', endPoint + "/" + encodeURIComponent(method), true);
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         request.send(JSON.stringify(args));            
