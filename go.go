@@ -133,6 +133,8 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 
 				args := []string{}
 
+				skipArgI := 0
+
 				for argI, arg := range method.Args {
 
 					if argI == 0 && arg.Value.isHTTPResponseWriter() {
@@ -146,7 +148,16 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 					}
 
 					args = append(args, arg.Value.emptyLiteral())
-					callArgs = append(callArgs, fmt.Sprint("args[", argI, "].("+arg.Value.goType()+")"))
+					switch arg.Value.GoScalarType {
+					case "int64":
+						callArgs = append(callArgs, fmt.Sprint(arg.Value.GoScalarType+"(args[", skipArgI, "].(float64))"))
+					default:
+						// assert
+						callArgs = append(callArgs, fmt.Sprint("args[", skipArgI, "].("+arg.Value.goType()+")"))
+
+					}
+
+					skipArgI++
 				}
 				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
 				g.l("err := gotsrpc.LoadArgs(args, r)")
