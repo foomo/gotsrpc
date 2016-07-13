@@ -65,6 +65,7 @@ func renderStruct(str *Struct, ts *code) error {
        }
    }
 */
+
 func renderService(service *Service, ts *code) error {
 	clientName := service.Name + "Client"
 	ts.l("export class " + clientName + " {").ind(1).
@@ -72,7 +73,7 @@ func renderService(service *Service, ts *code) error {
 		l("constructor(public endPoint:string = \"/service\") {  }")
 	for _, method := range service.Methods {
 
-		ts.app(method.Name + "(")
+		ts.app(lcfirst(method.Name) + "(")
 		// actual args
 		args := []string{}
 		callArgs := []string{}
@@ -131,10 +132,14 @@ func RenderTypeScript(services []*Service, structs map[string]*Struct, tsModuleN
         request.send(JSON.stringify(args));            
         request.onload = function() {
             if (request.status == 200) {
-                var data = JSON.parse(request.responseText);
-                success.apply(null, data);
+				try {
+					var data = JSON.parse(request.responseText);
+					success.apply(null, data);
+				} catch(e) {
+	                err(request);
+				}
             } else {
-                err(request)
+                err(request);
             }
         };            
         request.onerror = function() {

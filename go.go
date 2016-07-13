@@ -70,12 +70,24 @@ func ucfirst(str string) string {
 }
 
 func strfirst(str string, strfunc func(string) string) string {
-	if len(str) == 0 {
-		return ""
-	} else if len(str) == 1 {
-		return strfunc(str)
+	/*
+		if len(str) == 0 {
+			return ""
+		} else if len(str) == 1 {
+			return strfunc(str)
+		}
+		return strfunc(str[0:1]) + str[1:]
+	*/
+	res := ""
+	for i, char := range str {
+		if i == 0 {
+			res += strfunc(string(char))
+		} else {
+			res += string(char)
+		}
+
 	}
-	return strfunc(str[0:1]) + str[1:]
+	return res
 
 }
 
