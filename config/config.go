@@ -7,9 +7,10 @@ import (
 )
 
 type Target struct {
-	Name     string
-	Package  string
-	Services []string
+	Package          string
+	Services         []string
+	TypeScriptModule string `yaml:"module"`
+	Out              string
 }
 
 type Mapping struct {

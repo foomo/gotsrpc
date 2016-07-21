@@ -5,8 +5,11 @@ import "testing"
 const sampleConf = `---
 targets:
   demo:
+    services:
+      - Service
     package: github.com/foomo/gotsrpc/demo
-    out: /tmp/test.ts 
+    module: My.Service
+    out: /tmp/my-service.ts 
 mappings:
   foo/bar:
     module: Sample.Module
@@ -33,5 +36,27 @@ func TestLoadConfig(t *testing.T) {
 	}
 	if foo.Out != "path/to/ts" || foo.TypeScriptModule != "Sample.Module" {
 		t.Fatal("unexpected data", foo)
+	}
+
+	// looking at the targets
+
+	demoTarget, ok := c.Targets["demo"]
+	if !ok {
+		t.Fatal("demo target not found")
+	}
+	if demoTarget.Out != "/tmp/my-service.ts" {
+		t.Fatal("demo target out is wrong")
+	}
+	if demoTarget.Package != "github.com/foomo/gotsrpc/demo" {
+		t.Fatal("wrong target package")
+	}
+	if demoTarget.TypeScriptModule != "My.Service" {
+		t.Fatal("wromg ts module")
+	}
+	if len(demoTarget.Services) != 1 {
+		t.Fatal("wrong number of services")
+	}
+	if demoTarget.Services[0] != "Service" {
+		t.Fatal("first serive is wrong")
 	}
 }

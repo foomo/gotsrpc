@@ -4,7 +4,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"go/format"
+	"io/ioutil"
 	"os"
+	"path"
+	"strings"
 
 	"github.com/foomo/gotsrpc"
 	"github.com/foomo/gotsrpc/config"
@@ -60,8 +64,9 @@ func main() {
 	}
 	fmt.Println(os.Stderr, buildTargets)
 
-	/*
-		longPackageName := args[0]
+	for name, target := range buildTargets {
+		fmt.Println(os.Stderr, "building target", name)
+		longPackageName := target.Package
 		longPackageNameParts := strings.Split(longPackageName, "/")
 		goFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
 
@@ -72,20 +77,19 @@ func main() {
 		}
 
 		packageName := longPackageNameParts[len(longPackageNameParts)-1]
-		services, structs, err := gotsrpc.Read(goPath, longPackageName, args[1:])
+		services, structs, err := gotsrpc.Read(goPath, longPackageName, target.Services)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "an error occured while trying to understand your code", err)
 			os.Exit(2)
 		}
-		jsonDump(structs)
-		ts, err := gotsrpc.RenderTypeScript(services, structs, conf)
+		ts, err := gotsrpc.RenderTypeScript(services, structs, target.TypeScriptModule)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "could not generate ts code", err)
 			os.Exit(3)
 		}
 
-		fmt.Println(ts)
+		fmt.Println(os.Stdout, ts)
 
 		gocode, goerr := gotsrpc.RenderGo(services, packageName)
 		if goerr != nil {
@@ -105,7 +109,6 @@ func main() {
 			fmt.Fprintln(os.Stderr, "could not write go source to file", writeErr)
 			os.Exit(5)
 		}
-		//fmt.Println(goFilename, gocode)
-		//gotsrpc.ReadFile("/Users/jan/go/src/github.com/foomo/gotsrpc/demo/demo.go", []string{"Service"})
-	*/
+	}
+
 }

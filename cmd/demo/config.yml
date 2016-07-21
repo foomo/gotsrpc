@@ -1,6 +1,8 @@
 ---
 targets:
   demo:
+    services:
+      - Service
     package: github.com/foomo/gotsrpc/demo
     out: /tmp/test.ts 
 mappings:
