@@ -1,6 +1,7 @@
 package gotsrpc
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -39,6 +40,7 @@ func (v *Value) tsType() string {
 }
 
 func renderStruct(str *Struct, ts *code) error {
+	ts.l("// " + str.Package + "." + str.Name).ind(1)
 	ts.l("export interface " + str.Name + " {").ind(1)
 	for _, f := range str.Fields {
 		if f.JSONInfo != nil && f.JSONInfo.Ignore {
@@ -151,7 +153,10 @@ func RenderTypeScript(services []*Service, structs map[string]*Struct, tsModuleN
 	ts.l("module " + tsModuleName + " {")
 	ts.ind(1)
 
-	for _, str := range structs {
+	for name, str := range structs {
+		if str == nil {
+			return "", errors.New("could not resolve: " + name)
+		}
 		err = renderStruct(str, ts)
 		if err != nil {
 			return

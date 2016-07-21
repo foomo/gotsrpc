@@ -58,6 +58,7 @@ type Method struct {
 }
 
 type Struct struct {
-	Name   string
-	Fields []*Field
+	Package string
+	Name    string
+	Fields  []*Field
 }

@@ -56,12 +56,10 @@ func main() {
 	services, structs, err := gotsrpc.Read(goPath, longPackageName, args[1:])
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "an error occured", err)
+		fmt.Fprintln(os.Stderr, "an error occured while trying to understand your code", err)
 		os.Exit(2)
 	}
-	//jsonDump(services)
-	//jsonDump(structs)
-
+	jsonDump(structs)
 	ts, err := gotsrpc.RenderTypeScript(services, structs, *flagTsModule)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "could not generate ts code", err)
