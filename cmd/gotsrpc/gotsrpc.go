@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"go/format"
-	"io/ioutil"
 	"os"
-	"path"
-	"strings"
 
 	"github.com/foomo/gotsrpc"
+	"github.com/foomo/gotsrpc/config"
 )
 
 func jsonDump(v interface{}) {
@@ -19,19 +16,13 @@ func jsonDump(v interface{}) {
 }
 func usage() {
 	fmt.Println("Usage")
-	fmt.Println(os.Args[0], " --ts-module MyTS.Module.Name my.server/my/package ServiceA [ ServiceB, ... ]")
+	fmt.Println(os.Args[0], " path/to/build-config.yml [target, [target], ...]")
 	flag.PrintDefaults()
 }
 func main() {
-	flagTsModule := flag.String("ts-module", "", "TypeScript target module")
-
 	flag.Parse()
-	if len(*flagTsModule) == 0 {
-		fmt.Fprintln(os.Stderr, "missing ts module")
-	}
-
 	args := flag.Args()
-	if len(args) < 2 {
+	if len(args) < 1 {
 		usage()
 		os.Exit(1)
 	}
@@ -42,50 +33,79 @@ func main() {
 		fmt.Fprintln(os.Stderr, "GOPATH not set")
 		os.Exit(1)
 	}
-	longPackageName := args[0]
-	longPackageNameParts := strings.Split(longPackageName, "/")
-	goFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
 
-	_, err := os.Stat(goFilename)
-	if err == nil {
-		fmt.Fprintln(os.Stderr, "removing existing", goFilename)
-		os.Remove(goFilename)
-	}
-
-	packageName := longPackageNameParts[len(longPackageNameParts)-1]
-	services, structs, err := gotsrpc.Read(goPath, longPackageName, args[1:])
-
+	conf, err := config.LoadConfigFile(args[0])
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "an error occured while trying to understand your code", err)
+		fmt.Println(os.Stderr, "config load error")
 		os.Exit(2)
 	}
-	jsonDump(structs)
-	ts, err := gotsrpc.RenderTypeScript(services, structs, *flagTsModule)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "could not generate ts code", err)
-		os.Exit(3)
-	}
-
-	fmt.Println(ts)
-
-	gocode, goerr := gotsrpc.RenderGo(services, packageName)
-	if goerr != nil {
-		fmt.Fprintln(os.Stderr, "could not generate go code", goerr)
-		os.Exit(4)
-	}
-
-	formattedGoBytes, formattingError := format.Source([]byte(gocode))
-	if formattingError == nil {
-		gocode = string(formattedGoBytes)
+	fmt.Println(conf, err)
+	buildTargets := map[string]*config.Target{}
+	if len(args) > 1 {
+		for _, target := range args[1:] {
+			fmt.Println(os.Stderr, "will build target", target)
+			_, ok := conf.Targets[target]
+			if !ok {
+				fmt.Println(os.Stderr, "invalid target has to be one of:")
+				for existingTarget := range conf.Targets {
+					fmt.Println(os.Stderr, "	", existingTarget)
+				}
+				os.Exit(1)
+			}
+			buildTargets[target] = conf.Targets[target]
+		}
 	} else {
-		fmt.Fprintln(os.Stderr, "could not format go code", formattingError)
+		fmt.Println(os.Stderr, "will build all targets in config")
+		buildTargets = conf.Targets
 	}
+	fmt.Println(os.Stderr, buildTargets)
 
-	writeErr := ioutil.WriteFile(goFilename, []byte(gocode), 0644)
-	if writeErr != nil {
-		fmt.Fprintln(os.Stderr, "could not write go source to file", writeErr)
-		os.Exit(5)
-	}
-	//fmt.Println(goFilename, gocode)
-	//gotsrpc.ReadFile("/Users/jan/go/src/github.com/foomo/gotsrpc/demo/demo.go", []string{"Service"})
+	/*
+		longPackageName := args[0]
+		longPackageNameParts := strings.Split(longPackageName, "/")
+		goFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
+
+		_, err := os.Stat(goFilename)
+		if err == nil {
+			fmt.Fprintln(os.Stderr, "removing existing", goFilename)
+			os.Remove(goFilename)
+		}
+
+		packageName := longPackageNameParts[len(longPackageNameParts)-1]
+		services, structs, err := gotsrpc.Read(goPath, longPackageName, args[1:])
+
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "an error occured while trying to understand your code", err)
+			os.Exit(2)
+		}
+		jsonDump(structs)
+		ts, err := gotsrpc.RenderTypeScript(services, structs, conf)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "could not generate ts code", err)
+			os.Exit(3)
+		}
+
+		fmt.Println(ts)
+
+		gocode, goerr := gotsrpc.RenderGo(services, packageName)
+		if goerr != nil {
+			fmt.Fprintln(os.Stderr, "could not generate go code", goerr)
+			os.Exit(4)
+		}
+
+		formattedGoBytes, formattingError := format.Source([]byte(gocode))
+		if formattingError == nil {
+			gocode = string(formattedGoBytes)
+		} else {
+			fmt.Fprintln(os.Stderr, "could not format go code", formattingError)
+		}
+
+		writeErr := ioutil.WriteFile(goFilename, []byte(gocode), 0644)
+		if writeErr != nil {
+			fmt.Fprintln(os.Stderr, "could not write go source to file", writeErr)
+			os.Exit(5)
+		}
+		//fmt.Println(goFilename, gocode)
+		//gotsrpc.ReadFile("/Users/jan/go/src/github.com/foomo/gotsrpc/demo/demo.go", []string{"Service"})
+	*/
 }

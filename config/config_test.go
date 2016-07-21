@@ -1,15 +1,19 @@
-package gotsrpc
+package config
 
 import "testing"
 
 const sampleConf = `---
+targets:
+  demo:
+    package: github.com/foomo/gotsrpc/demo
+    out: /tmp/test.ts 
 mappings:
   foo/bar:
     module: Sample.Module
-    dir: path/to/ts
+    out: path/to/ts
   github.com/foomo/gotsrpc:
     module: Sample.Module.RPC
-    dir: path/to/other/folder
+    out: path/to/other/folder
 
 `
 
@@ -27,7 +31,7 @@ func TestLoadConfig(t *testing.T) {
 	if foo.GoPackage != goPackage {
 		t.Fatal("wrong go package value")
 	}
-	if foo.TypeScriptDir != "path/to/ts" || foo.TypeScriptModule != "Sample.Module" {
+	if foo.Out != "path/to/ts" || foo.TypeScriptModule != "Sample.Module" {
 		t.Fatal("unexpected data", foo)
 	}
 }

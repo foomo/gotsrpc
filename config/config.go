@@ -1,4 +1,4 @@
-package gotsrpc
+package config
 
 import (
 	"io/ioutil"
@@ -6,17 +6,24 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type GoTypeScriptMapping struct {
+type Target struct {
+	Name     string
+	Package  string
+	Services []string
+}
+
+type Mapping struct {
 	GoPackage        string `yaml:"-"`
-	TypeScriptDir    string `yaml:"dir"`
+	Out              string `yaml:"out"`
 	TypeScriptModule string `yaml:"module"`
 }
 
 type Config struct {
-	Mappings map[string]*GoTypeScriptMapping
+	Targets  map[string]*Target
+	Mappings map[string]*Mapping
 }
 
-func loadConfigfile(file string) (conf *Config, err error) {
+func LoadConfigFile(file string) (conf *Config, err error) {
 	yamlBytes, readErr := ioutil.ReadFile(file)
 	if err != nil {
 		err = readErr
