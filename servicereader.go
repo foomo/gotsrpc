@@ -2,6 +2,7 @@ package gotsrpc
 
 import (
 	"errors"
+	"fmt"
 	"go/ast"
 	"go/token"
 	"reflect"
@@ -175,8 +176,18 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 
 func collectStructs(goPath string, structs map[string]*Struct) error {
 	scannedPackages := map[string]map[string]*Struct{}
+	missingStructs := func() []string {
+		missing := []string{}
+		for name, strct := range structs {
+			if strct == nil {
+				missing = append(missing, name)
+			}
+		}
+		return missing
+	}
+	lastNumMissing := len(missingStructs())
 	for structsPending(structs) {
-		trace("pending", len(structs))
+		trace("pending", missingStructs())
 		for fullName, strct := range structs {
 			if strct != nil {
 				continue
@@ -207,7 +218,13 @@ func collectStructs(goPath string, structs map[string]*Struct) error {
 				}
 			}
 		}
+		newNumMissingStructs := len(missingStructs())
+		if newNumMissingStructs > 0 && newNumMissingStructs == lastNumMissing {
+			return errors.New(fmt.Sprintln("could not resolve at least one of the following structs", missingStructs()))
+		}
+		lastNumMissing = newNumMissingStructs
 	}
+
 	return nil
 }
 

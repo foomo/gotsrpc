@@ -117,7 +117,7 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 	for _, s := range services {
 		for _, m := range s.Methods {
 			extractImports(m.Args)
-			extractImports(m.Return)
+			// extractImports(m.Return)
 		}
 	}
 

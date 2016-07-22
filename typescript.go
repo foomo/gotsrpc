@@ -129,20 +129,21 @@ func renderService(service *Service, mappings config.TypeScriptMappings, ts *cod
 	ts.l("}")
 	return nil
 }
-func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScriptMappings) (mappedTypeScript map[string]string, err error) {
-	mappedTypeScript = map[string]string{}
-	codeMap := map[string]*code{}
+func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScriptMappings, mappedTypeScript map[string]map[string]*code) (err error) {
+
+	codeMap := map[string]map[string]*code{}
 	for _, mapping := range mappings {
-		codeMap[mapping.GoPackage] = newCode().l("module " + mapping.TypeScriptModule + " {").ind(1)
+		codeMap[mapping.GoPackage] = map[string]*code{} //newCode().l("module " + mapping.TypeScriptModule + " {").ind(1)
 	}
 	for name, str := range structs {
 		if str == nil {
 			err = errors.New("could not resolve: " + name)
 			return
 		}
-		ts, ok := codeMap[str.Package]
+		codeMap[str.Package][str.Name] = newCode().ind(1)
+		ts, ok := codeMap[str.Package][str.Name]
 		if !ok {
-			err = errors.New("missing code mapping for: " + str.Package)
+			err = errors.New("missing code mapping for go package : " + str.Package + " => you have to add a mapping from this go package to a TypeScript module in your build-config.yml in the mappings section")
 			return
 		}
 		err = renderStruct(str, mappings, ts)
@@ -151,9 +152,16 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 		}
 	}
 	for _, mapping := range mappings {
-		mappedTypeScript[mapping.TypeScriptModule] = codeMap[mapping.GoPackage].ind(-1).l("}").string()
+		for structName, structCode := range codeMap[mapping.GoPackage] {
+			_, ok := mappedTypeScript[mapping.GoPackage]
+			if !ok {
+				mappedTypeScript[mapping.GoPackage] = map[string]*code{}
+			}
+			mappedTypeScript[mapping.GoPackage][structName] = structCode
+		}
+		//.ind(-1).l("}").string()
 	}
-	return
+	return nil
 }
 func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMappings, tsModuleName string) (typeScript string, err error) {
 	ts := newCode()

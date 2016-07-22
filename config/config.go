@@ -28,7 +28,7 @@ type Config struct {
 
 func LoadConfigFile(file string) (conf *Config, err error) {
 	yamlBytes, readErr := ioutil.ReadFile(file)
-	if err != nil {
+	if readErr != nil {
 		err = readErr
 		return
 	}
