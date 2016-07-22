@@ -140,13 +140,14 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 			err = errors.New("could not resolve: " + name)
 			return
 		}
-		codeMap[str.Package][str.Name] = newCode().ind(1)
-		ts, ok := codeMap[str.Package][str.Name]
+
+		packageCodeMap, ok := codeMap[str.Package]
 		if !ok {
 			err = errors.New("missing code mapping for go package : " + str.Package + " => you have to add a mapping from this go package to a TypeScript module in your build-config.yml in the mappings section")
 			return
 		}
-		err = renderStruct(str, mappings, ts)
+		packageCodeMap[str.Name] = newCode().ind(1)
+		err = renderStruct(str, mappings, packageCodeMap[str.Name])
 		if err != nil {
 			return
 		}
