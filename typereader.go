@@ -30,7 +30,7 @@ func trace(args ...interface{}) {
 		fmt.Fprintln(os.Stderr, args...)
 	}
 }
-func jsonTrace(args ...interface{}) {
+func traceJSON(args ...interface{}) {
 	if ReaderTrace {
 		for _, arg := range args {
 			jsonBytes, jsonErr := json.MarshalIndent(arg, "", "	")
@@ -231,7 +231,7 @@ func readField(astField *ast.Field, fileImports fileImportSpecMap) (name string,
 		name = astField.Names[0].Name
 	}
 
-	trace("	reading field with name", name, "of type", astField.Type)
+	// trace("	reading field with name", name, "of type", astField.Type)
 	v = &Value{}
 	v.loadExpr(astField.Type, fileImports)
 	if astField.Tag != nil {
@@ -264,11 +264,7 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 }
 
 func extractStructs(file *ast.File, packageName string, structs map[string]*Struct) error {
-
 	trace("reading file", file.Name.Name)
-	//for _, imp := range file.Imports {
-	//	fmt.Println("import", imp.Name, imp.Path)
-	//}
 	fileImports := getFileImports(file, packageName)
 	for name, obj := range file.Scope.Objects {
 		//fmt.Println(name, obj.Kind, obj.Data)

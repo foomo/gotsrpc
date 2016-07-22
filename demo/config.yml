@@ -1,6 +1,7 @@
 ---
 targets:
   demo:
+    module: GoTSRPC.Demo
     services:
       - Service
     package: github.com/foomo/gotsrpc/demo
@@ -8,4 +9,7 @@ targets:
 mappings:
   github.com/foomo/gotsrpc/demo:
     module: GoTSRPC.Demo
+    out: /tmp/test-files.ts
+  github.com/foomo/gotsrpc/demo/nested:
+    module: GoTSRPC.Demo.Nested
     out: /tmp/test-files.ts

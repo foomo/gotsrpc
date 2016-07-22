@@ -2,30 +2,48 @@
 package demo
 
 import (
-	"github.com/foomo/gotsrpc"
-	"net/http"
+	gotsrpc "github.com/foomo/gotsrpc"
+	demo "github.com/foomo/gotsrpc/demo"
+	http "net/http"
 )
 
 type ServiceGoTSRPCProxy struct {
-	EndPoint string
-	service  *Service
+	EndPoint    string
+	allowOrigin []string
+	service     *Service
 }
 
-func NewServiceGoTSRPCProxy(service *Service, endpoint string) *ServiceGoTSRPCProxy {
+func NewServiceGoTSRPCProxy(service *Service, endpoint string, allowOrigin []string) *ServiceGoTSRPCProxy {
 	return &ServiceGoTSRPCProxy{
-		EndPoint: endpoint,
-		service:  service,
+		EndPoint:    endpoint,
+		allowOrigin: allowOrigin,
+		service:     service,
 	}
 }
 
 // ServeHTTP exposes your service
 func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	for _, origin := range p.allowOrigin {
+		w.Header().Add("Access-Control-Allow-Origin", origin)
+	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	if r.Method != "POST" {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
 	var args []interface{}
 	switch gotsrpc.GetCalledFunc(r, p.EndPoint) {
+	case "ExtractAddress":
+		args = []interface{}{&Person{}}
+		err := gotsrpc.LoadArgs(args, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*demo.Person))
+		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
+		return
 	case "Hello":
 		args = []interface{}{""}
 		err := gotsrpc.LoadArgs(args, r)
@@ -39,49 +57,6 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	case "NothingInNothinOut":
 		p.service.NothingInNothinOut()
 		gotsrpc.Reply([]interface{}{}, w)
-		return
-	case "ExtractAddress":
-		args = []interface{}{&Person{}}
-		err := gotsrpc.LoadArgs(args, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*Person))
-		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
-		return
-	}
-}
-
-type FooGoTSRPCProxy struct {
-	EndPoint string
-	service  *Foo
-}
-
-func NewFooGoTSRPCProxy(service *Foo, endpoint string) *FooGoTSRPCProxy {
-	return &FooGoTSRPCProxy{
-		EndPoint: endpoint,
-		service:  service,
-	}
-}
-
-// ServeHTTP exposes your service
-func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		gotsrpc.ErrorMethodNotAllowed(w)
-		return
-	}
-	var args []interface{}
-	switch gotsrpc.GetCalledFunc(r, p.EndPoint) {
-	case "Hello":
-		args = []interface{}{int64(0)}
-		err := gotsrpc.LoadArgs(args, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		helloRet := p.service.Hello(args[0].(int64))
-		gotsrpc.Reply([]interface{}{helloRet}, w)
 		return
 	}
 }

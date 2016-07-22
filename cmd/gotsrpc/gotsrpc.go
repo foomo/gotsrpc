@@ -83,13 +83,24 @@ func main() {
 			fmt.Fprintln(os.Stderr, "an error occured while trying to understand your code", err)
 			os.Exit(2)
 		}
-		ts, err := gotsrpc.RenderTypeScript(services, structs, target.TypeScriptModule)
+		ts, err := gotsrpc.RenderTypeScriptServices(services, conf.Mappings, target.TypeScriptModule)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "could not generate ts code", err)
 			os.Exit(3)
 		}
 
 		fmt.Println(os.Stdout, ts)
+
+		mappedCode, err := gotsrpc.RenderStructsToPackages(structs, conf.Mappings)
+		if err != nil {
+			fmt.Println("struct gen err", err)
+			os.Exit(4)
+		}
+
+		for tsModule, code := range mappedCode {
+			fmt.Println("-----------------", tsModule, "--------------------")
+			fmt.Println(code)
+		}
 
 		gocode, goerr := gotsrpc.RenderGo(services, packageName)
 		if goerr != nil {

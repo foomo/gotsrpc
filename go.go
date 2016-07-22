@@ -70,14 +70,6 @@ func ucfirst(str string) string {
 }
 
 func strfirst(str string, strfunc func(string) string) string {
-	/*
-		if len(str) == 0 {
-			return ""
-		} else if len(str) == 1 {
-			return strfunc(str)
-		}
-		return strfunc(str[0:1]) + str[1:]
-	*/
 	res := ""
 	for i, char := range str {
 		if i == 0 {
@@ -190,11 +182,9 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 				for argI, arg := range method.Args {
 
 					if argI == 0 && arg.Value.isHTTPResponseWriter() {
-						trace("skipping first arg is a http.ResponseWriter")
 						continue
 					}
 					if argI == 1 && arg.Value.isHTTPRequest() {
-						trace("skipping second arg is a *http.Request")
 						isSessionRequest = true
 						continue
 					}

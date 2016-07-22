@@ -154,7 +154,6 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 		return
 	}
 
-	jsonTrace(services)
 	structTypes := map[string]*StructType{}
 	for _, s := range services {
 		for _, m := range s.Methods {
@@ -162,7 +161,6 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 			collecStructTypes(m.Args, structTypes)
 		}
 	}
-	jsonTrace(structTypes)
 	structs = map[string]*Struct{}
 	for wantedName := range structTypes {
 		structs[wantedName] = nil
@@ -172,13 +170,13 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 
 		err = errors.New("error while collecting structs: " + collectErr.Error())
 	}
-	jsonTrace(structs)
 	return
 }
 
 func collectStructs(goPath string, structs map[string]*Struct) error {
 	scannedPackages := map[string]map[string]*Struct{}
 	for structsPending(structs) {
+		trace("pending", len(structs))
 		for fullName, strct := range structs {
 			if strct != nil {
 				continue
@@ -190,7 +188,7 @@ func collectStructs(goPath string, structs map[string]*Struct) error {
 
 			packageName := strings.Join(fullNameParts, ".")
 
-			//trace(fullName, "==========================>", fullNameParts, "=============>", packageName)
+			// trace(fullName, "==========================>", fullNameParts, "=============>", packageName)
 
 			packageStructs, ok := scannedPackages[packageName]
 			if !ok {
@@ -202,6 +200,7 @@ func collectStructs(goPath string, structs map[string]*Struct) error {
 				scannedPackages[packageName] = packageStructs
 			}
 			for packageStructName, packageStruct := range packageStructs {
+				// trace("------------------------------------>", packageStructName, packageStruct)
 				existingStruct, needed := structs[packageStructName]
 				if needed && existingStruct == nil {
 					structs[packageStructName] = packageStruct
@@ -213,8 +212,12 @@ func collectStructs(goPath string, structs map[string]*Struct) error {
 }
 
 func structsPending(structs map[string]*Struct) bool {
-	for _, structType := range structs {
-		if structType == nil || !structType.DepsSatisfied(structs) {
+	for name, structType := range structs {
+		if structType == nil {
+			trace("missing", name)
+			return true
+		}
+		if !structType.DepsSatisfied(structs) {
 			return true
 		}
 	}
@@ -227,10 +230,11 @@ func (s *Struct) DepsSatisfied(structs map[string]*Struct) bool {
 		if !ok {
 			// hey there is more todo
 			structs[fullName] = nil
+			trace("need work ----------------------" + fullName)
 			return true
 		}
 		if strct == nil {
-			trace("need work " + fullName)
+			trace("need work ----------------------" + fullName)
 			return true
 		}
 		return false
@@ -249,7 +253,6 @@ func (s *Struct) DepsSatisfied(structs map[string]*Struct) bool {
 			if needsWork(fieldStructType.FullName()) {
 				return false
 			}
-
 		}
 	}
 	return !needsWork(s.FullName())
@@ -277,7 +280,6 @@ func getStructsInPackage(goPath string, packageName string) (structs map[string]
 		pkg, err = parsePackage(runtime.GOROOT(), packageName)
 		if err != nil {
 			return nil, err
-
 		}
 	}
 	structs, err = readStructs(pkg, packageName)

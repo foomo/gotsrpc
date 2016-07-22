@@ -19,9 +19,11 @@ type Mapping struct {
 	TypeScriptModule string `yaml:"module"`
 }
 
+type TypeScriptMappings map[string]*Mapping
+
 type Config struct {
 	Targets  map[string]*Target
-	Mappings map[string]*Mapping
+	Mappings TypeScriptMappings
 }
 
 func LoadConfigFile(file string) (conf *Config, err error) {
