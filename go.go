@@ -61,10 +61,6 @@ func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
 		e += "[]" + v.Array.Value.emptyLiteral(aliases) + "{}"
 	case v.StructType != nil:
 		alias := aliases[v.StructType.Package]
-		// fmt.Println("")
-		// fmt.Println("Name", v.StructType.Name)
-		// fmt.Println("Fullname", v.StructType.FullName())
-		// fmt.Println("Package", v.StructType.Package)
 		if alias != "" {
 			e += alias + "."
 		}
@@ -212,8 +208,6 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 
 					skipArgI++
 				}
-				fmt.Println("---------------- aliases ------------------")
-				fmt.Println(aliases)
 				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
 				g.l("err := gotsrpc.LoadArgs(args, r)")
 				g.l("if err != nil {")
