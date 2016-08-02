@@ -32,7 +32,7 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 
 }
 
-func (v *Value) emptyLiteral() (e string) {
+func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
 	e = ""
 	if v.IsPtr {
 		e += "&"
@@ -58,8 +58,16 @@ func (v *Value) emptyLiteral() (e string) {
 			return "false"
 		}
 	case v.Array != nil:
-		e += "[]" + v.Array.Value.emptyLiteral() + "{}"
+		e += "[]" + v.Array.Value.emptyLiteral(aliases) + "{}"
 	case v.StructType != nil:
+		alias := aliases[v.StructType.Package]
+		// fmt.Println("")
+		// fmt.Println("Name", v.StructType.Name)
+		// fmt.Println("Fullname", v.StructType.FullName())
+		// fmt.Println("Package", v.StructType.Package)
+		if alias != "" {
+			e += alias + "."
+		}
 		e += v.StructType.Name + "{}"
 
 	}
@@ -192,7 +200,7 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 						continue
 					}
 
-					args = append(args, arg.Value.emptyLiteral())
+					args = append(args, arg.Value.emptyLiteral(aliases))
 					switch arg.Value.GoScalarType {
 					case "int64":
 						callArgs = append(callArgs, fmt.Sprint(arg.Value.GoScalarType+"(args[", skipArgI, "].(float64))"))
@@ -204,8 +212,9 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 
 					skipArgI++
 				}
-
-				g.l("args = []interface{}{" + strings.Join(callArgs, ", ") + "}")
+				fmt.Println("---------------- aliases ------------------")
+				fmt.Println(aliases)
+				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
 				g.l("err := gotsrpc.LoadArgs(args, r)")
 				g.l("if err != nil {")
 				g.ind(1)
