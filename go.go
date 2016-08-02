@@ -12,19 +12,24 @@ func (v *Value) isHTTPRequest() bool {
 	return v.IsPtr && v.StructType != nil && v.StructType.Name == "Request" && v.StructType.Package == "net/http"
 }
 
-func (v *Value) goType(aliases map[string]string) (t string) {
+func (v *Value) goType(aliases map[string]string, packageName string) (t string) {
 	if v.IsPtr {
 		t = "*"
 	}
 	switch true {
 	case v.Array != nil:
-		t += "[]" + v.Array.Value.goType(aliases)
+		t += "[]" + v.Array.Value.goType(aliases, packageName)
 	case len(v.GoScalarType) > 0:
 		t += v.GoScalarType
 	case v.StructType != nil:
-		t += aliases[v.StructType.Package] + "." + v.StructType.Name
+		if packageName != v.StructType.Package {
+			t += aliases[v.StructType.Package] + "."
+		}
+		t += v.StructType.Name
+
 	}
 	return
+
 }
 
 func (v *Value) emptyLiteral() (e string) {
@@ -83,8 +88,7 @@ func strfirst(str string, strfunc func(string) string) string {
 
 }
 
-func renderServiceProxies(services []*Service, packageName string, g *code) error {
-
+func renderServiceProxies(services []*Service, fullPackageName string, packageName string, g *code) error {
 	aliases := map[string]string{
 		"net/http":                 "http",
 		"github.com/foomo/gotsrpc": "gotsrpc",
@@ -94,7 +98,7 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 		for _, f := range fields {
 			if f.Value.StructType != nil {
 				st := f.Value.StructType
-				if st.Package != packageName {
+				if st.Package != fullPackageName {
 					alias, ok := aliases[st.Package]
 					if !ok {
 						packageParts := strings.Split(st.Package, "/")
@@ -117,7 +121,6 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 	for _, s := range services {
 		for _, m := range s.Methods {
 			extractImports(m.Args)
-			// extractImports(m.Return)
 		}
 	}
 
@@ -195,13 +198,14 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 						callArgs = append(callArgs, fmt.Sprint(arg.Value.GoScalarType+"(args[", skipArgI, "].(float64))"))
 					default:
 						// assert
-						callArgs = append(callArgs, fmt.Sprint("args[", skipArgI, "].("+arg.Value.goType(aliases)+")"))
+						callArgs = append(callArgs, fmt.Sprint("args[", skipArgI, "].("+arg.Value.goType(aliases, fullPackageName)+")"))
 
 					}
 
 					skipArgI++
 				}
-				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
+
+				g.l("args = []interface{}{" + strings.Join(callArgs, ", ") + "}")
 				g.l("err := gotsrpc.LoadArgs(args, r)")
 				g.l("if err != nil {")
 				g.ind(1)
@@ -241,9 +245,9 @@ func renderServiceProxies(services []*Service, packageName string, g *code) erro
 	return nil
 }
 
-func RenderGo(services []*Service, packageName string) (gocode string, err error) {
+func RenderGo(services []*Service, longPackageName, packageName string) (gocode string, err error) {
 	g := newCode()
-	err = renderServiceProxies(services, packageName, g)
+	err = renderServiceProxies(services, longPackageName, packageName, g)
 	if err != nil {
 		return
 	}

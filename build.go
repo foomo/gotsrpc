@@ -52,7 +52,7 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(4)
 		}
 
-		gocode, goerr := RenderGo(services, packageName)
+		gocode, goerr := RenderGo(services, longPackageName, packageName)
 		if goerr != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate go code in target", name, goerr)
 			os.Exit(4)
