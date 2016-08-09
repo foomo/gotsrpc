@@ -8,6 +8,8 @@ import (
 	"github.com/foomo/gotsrpc/config"
 )
 
+var SkipGoTSRPC = false
+
 func (f *Field) tsName() string {
 	n := f.Name
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
@@ -166,7 +168,8 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 }
 func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMappings, tsModuleName string) (typeScript string, err error) {
 	ts := newCode()
-	ts.l(`module GoTSRPC {
+	if !SkipGoTSRPC {
+		ts.l(`module GoTSRPC {
     export function call(endPoint:string, method:string, args:any[], success:any, err:any) {
         var request = new XMLHttpRequest();
         request.withCredentials = true;
@@ -190,6 +193,7 @@ func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMap
         };
     }
 }`)
+	}
 
 	ts.l("module " + tsModuleName + " {")
 	ts.ind(1)
