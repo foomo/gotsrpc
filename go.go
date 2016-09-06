@@ -241,7 +241,9 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 			g.l("return")
 			g.ind(-1)
 		}
-		g.ind(-1).l("}") // close switch
+		g.l("default:")
+		g.ind(1).l("http.Error(w, \"404 - not found \" + r.URL.Path, http.StatusNotFound)")
+		g.ind(-2).l("}") // close switch
 		g.ind(-1).l("}") // close ServeHttp
 
 	}
