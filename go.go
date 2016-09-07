@@ -168,8 +168,18 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return
 	        }
-            var args []interface{}
-	        switch gotsrpc.GetCalledFunc(r, p.EndPoint) {`)
+		`)
+		needsArgs := false
+		for _, method := range service.Methods {
+			if len(method.Args) > 0 {
+				needsArgs = true
+				break
+			}
+		}
+		if needsArgs {
+			g.l(`var args []interface{}`)
+		}
+		g.l(`switch gotsrpc.GetCalledFunc(r, p.EndPoint) {`)
 
 		// indenting into switch cases
 		g.ind(4)
