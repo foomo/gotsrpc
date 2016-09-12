@@ -22,7 +22,7 @@ func (f *Field) tsName() string {
 	return n
 }
 
-func (v *Value) tsType(mappings config.TypeScriptMappings) string {
+func (v *Value) tsType(mappings config.TypeScriptMappings, ts *code) {
 	switch true {
 	case v.IsPtr:
 		if v.StructType != nil {
@@ -32,30 +32,43 @@ func (v *Value) tsType(mappings config.TypeScriptMappings) string {
 				if ok {
 					tsModule = mapping.TypeScriptModule
 				}
-				return tsModule + "." + v.StructType.Name
+				ts.app(tsModule + "." + v.StructType.Name)
+				return
 			}
-			return v.StructType.Name
+			ts.app(v.StructType.Name)
+			return
 		}
-		return string(v.ScalarType)
+		if v.Struct != nil {
+			//v.Struct.Value.tsType(mappings, ts)
+			ts.l("{").ind(1)
+			renderStructFields(v.Struct.Fields, mappings, ts)
+			ts.ind(-1).app("}")
+			return
+		}
+		ts.app(string(v.ScalarType))
+		return
 	case v.Array != nil:
-		return v.Array.Value.tsType(mappings) + "[]"
+		v.Array.Value.tsType(mappings, ts)
+		ts.app("[]")
+		return
 	case len(v.ScalarType) > 0:
 		switch v.ScalarType {
 		case ScalarTypeBool:
-			return "boolean"
+			ts.app("boolean")
+			return
 		default:
-			return string(v.ScalarType)
+			ts.app(string(v.ScalarType))
+			return
 		}
 
 	default:
-		return "any"
+		ts.app("any")
+		return
 	}
 }
 
-func renderStruct(str *Struct, mappings config.TypeScriptMappings, ts *code) error {
-	ts.l("// " + str.FullName())
-	ts.l("export interface " + str.Name + " {").ind(1)
-	for _, f := range str.Fields {
+func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, ts *code) {
+	for _, f := range fields {
 		if f.JSONInfo != nil && f.JSONInfo.Ignore {
 			continue
 		}
@@ -63,10 +76,18 @@ func renderStruct(str *Struct, mappings config.TypeScriptMappings, ts *code) err
 		if f.Value.IsPtr {
 			ts.app("?")
 		}
-		ts.app(":" + f.Value.tsType(mappings))
+		ts.app(":")
+		f.Value.tsType(mappings, ts)
 		ts.app(";")
 		ts.nl()
 	}
+
+}
+
+func renderStruct(str *Struct, mappings config.TypeScriptMappings, ts *code) error {
+	ts.l("// " + str.FullName())
+	ts.l("export interface " + str.Name + " {").ind(1)
+	renderStructFields(str.Fields, mappings, ts)
 	ts.ind(-1).l("}")
 	return nil
 }
@@ -80,25 +101,41 @@ func renderService(service *Service, mappings config.TypeScriptMappings, ts *cod
 
 		ts.app(lcfirst(method.Name) + "(")
 		// actual args
-		args := []string{}
+		//args := []string{}
 		callArgs := []string{}
 
+		argOffset := 0
 		for index, arg := range method.Args {
 			if index == 0 && arg.Value.isHTTPResponseWriter() {
 				trace("skipping first arg is a http.ResponseWriter")
+				argOffset = 1
 				continue
 			}
 			if index == 1 && arg.Value.isHTTPRequest() {
 				trace("skipping second arg is a *http.Request")
+				argOffset = 2
 				continue
 			}
-
-			args = append(args, arg.tsName()+":"+arg.Value.tsType(mappings))
-			callArgs = append(callArgs, arg.Name)
 		}
-		ts.app(strings.Join(args, ", "))
-		// success callback
-		retArgs := []string{}
+		argCount := 0
+		for index, arg := range method.Args {
+			if index < argOffset {
+				continue
+			}
+			if index > argOffset {
+				ts.app(", ")
+			}
+			ts.app(arg.tsName() + ":")
+			arg.Value.tsType(mappings, ts)
+			callArgs = append(callArgs, arg.Name)
+			argCount++
+		}
+		if argCount > 0 {
+			ts.app(", ")
+		}
+		ts.app("success:(")
+		// + strings.Join(retArgs, ", ") +
+
 		for index, retField := range method.Return {
 			retArgName := retField.tsName()
 			if len(retArgName) == 0 {
@@ -107,12 +144,14 @@ func renderService(service *Service, mappings config.TypeScriptMappings, ts *cod
 					retArgName += "_" + fmt.Sprint(index)
 				}
 			}
-			retArgs = append(retArgs, retArgName+":"+retField.Value.tsType(mappings))
+			if index > 0 {
+				ts.app(", ")
+			}
+			ts.app(retArgName + ":")
+			retField.Value.tsType(mappings, ts)
 		}
-		if len(args) > 0 {
-			ts.app(", ")
-		}
-		ts.app("success:(" + strings.Join(retArgs, ", ") + ") => void")
+
+		ts.app(") => void")
 		ts.app(", err:(request:XMLHttpRequest) => void) {").nl()
 		ts.ind(1)
 		// generic framework call
