@@ -28,7 +28,7 @@ func Build(conf *config.Config, goPath string) {
 		}
 
 		packageName := longPackageNameParts[len(longPackageNameParts)-1]
-		services, structs, err := Read(goPath, longPackageName, target.Services)
+		services, structs, constants, err := Read(goPath, longPackageName, target.Services)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	an error occured while trying to understand your code", err)
@@ -46,7 +46,7 @@ func Build(conf *config.Config, goPath string) {
 			fmt.Fprintln(os.Stderr, "	could not write service file", target.Out, updateErr)
 			os.Exit(3)
 		}
-		err = RenderStructsToPackages(structs, conf.Mappings, mappedTypeScript)
+		err = RenderStructsToPackages(structs, conf.Mappings, constants, mappedTypeScript)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
 			os.Exit(4)
@@ -80,17 +80,21 @@ func Build(conf *config.Config, goPath string) {
 		}
 
 		fmt.Fprintln(os.Stderr, "building structs for go package", goPackage, "to ts module", mapping.TypeScriptModule, "in file", mapping.Out)
-		moduleCode := newCode().l("module " + mapping.TypeScriptModule + "{").ind(1)
-		structNames := []string{}
+		moduleCode := newCode("	").l("module " + mapping.TypeScriptModule + " {").ind(1)
+		structNames := []string{"___goConstants"}
 
 		for structName := range mappedStructsMap {
 			structNames = append(structNames, structName)
 		}
 		sort.Strings(structNames)
 		for _, structName := range structNames {
-			structCode := mappedStructsMap[structName]
-			moduleCode.app(structCode.ind(-1).l("").string())
+
+			structCode, ok := mappedStructsMap[structName]
+			if ok {
+				moduleCode.app(structCode.ind(-1).l("").string())
+			}
 		}
+
 		moduleCode.ind(-1).l("}")
 		updateErr := updateCode(mapping.Out, moduleCode.string())
 		if updateErr != nil {

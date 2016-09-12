@@ -184,11 +184,13 @@ func readAstStructType(v *Value, structType *ast.StructType, fileImports fileImp
 }
 
 func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
-	//fmt.Println(field.Names[0].Name, field.Type, reflect.ValueOf(field.Type).Type().String())
+
 	switch reflect.ValueOf(expr).Type().String() {
 	case "*ast.ArrayType":
+
 		fieldArray := expr.(*ast.ArrayType)
 		v.Array = &Array{Value: &Value{}}
+
 		switch reflect.ValueOf(fieldArray.Elt).Type().String() {
 		case "*ast.Ident":
 			readAstType(v.Array.Value, fieldArray.Elt.(*ast.Ident), fileImports)

@@ -261,7 +261,7 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 }
 
 func RenderGo(services []*Service, longPackageName, packageName string) (gocode string, err error) {
-	g := newCode()
+	g := newCode("	")
 	err = renderServiceProxies(services, longPackageName, packageName, g)
 	if err != nil {
 		return

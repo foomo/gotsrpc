@@ -141,7 +141,38 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceNames []
 	return
 }
 
-func Read(goPath string, packageName string, serviceNames []string) (services []*Service, structs map[string]*Struct, err error) {
+func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
+	constants := map[string]*ast.BasicLit{}
+	for _, file := range pkg.Files {
+		for _, decl := range file.Decls {
+			if reflect.ValueOf(decl).Type().String() == "*ast.GenDecl" {
+				genDecl := decl.(*ast.GenDecl)
+				if genDecl.Tok == token.CONST {
+					trace("got a const", genDecl.Specs)
+					for _, spec := range genDecl.Specs {
+						if "*ast.ValueSpec" == reflect.ValueOf(spec).Type().String() {
+							spec := spec.(*ast.ValueSpec)
+							for _, val := range spec.Values {
+								if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
+
+									firstValueLit := val.(*ast.BasicLit)
+									//fmt.Println("a value spec", spec.Names[0], firstValueLit.Kind, firstValueLit.Value)
+									constants[spec.Names[0].String()] = firstValueLit //.Value
+
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return constants
+
+}
+
+func Read(goPath string, packageName string, serviceNames []string) (services []*Service, structs map[string]*Struct, constants map[string]map[string]*ast.BasicLit, err error) {
 	if len(serviceNames) == 0 {
 		err = errors.New("nothing to do service names are empty")
 		return
@@ -150,6 +181,7 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 	if err != nil {
 		return
 	}
+
 	services, err = readServicesInPackage(pkg, packageName, serviceNames)
 	if err != nil {
 		return
@@ -168,8 +200,21 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 	}
 	collectErr := collectStructs(goPath, structs)
 	if collectErr != nil {
-
 		err = errors.New("error while collecting structs: " + collectErr.Error())
+	}
+	constants = map[string]map[string]*ast.BasicLit{}
+	for _, structDef := range structs {
+		structPackage := structDef.Package
+		_, ok := constants[structPackage]
+		if !ok {
+			pkg, constPkgErr := parsePackage(goPath, structPackage)
+			if constPkgErr != nil {
+				err = constPkgErr
+				return
+			}
+			constants[structPackage] = loadConstants(pkg)
+
+		}
 	}
 	return
 }
@@ -199,7 +244,7 @@ func collectStructs(goPath string, structs map[string]*Struct) error {
 
 			packageName := strings.Join(fullNameParts, ".")
 
-			// trace(fullName, "==========================>", fullNameParts, "=============>", packageName)
+			trace(fullName, "==========================>", fullNameParts, "=============>", packageName)
 
 			packageStructs, ok := scannedPackages[packageName]
 			if !ok {
@@ -211,7 +256,7 @@ func collectStructs(goPath string, structs map[string]*Struct) error {
 				scannedPackages[packageName] = packageStructs
 			}
 			for packageStructName, packageStruct := range packageStructs {
-				// trace("------------------------------------>", packageStructName, packageStruct)
+				trace("------------------------------------>", packageStructName, packageStruct)
 				existingStruct, needed := structs[packageStructName]
 				if needed && existingStruct == nil {
 					structs[packageStructName] = packageStruct
@@ -306,20 +351,35 @@ func getStructsInPackage(goPath string, packageName string) (structs map[string]
 	return structs, nil
 }
 
+func getStructTypeForField(value *Value) *StructType {
+	//field.Value.StructType
+	var strType *StructType
+	switch true {
+	case value.StructType != nil:
+		strType = value.StructType
+	//case field.Value.ArrayType
+	case value.Map != nil:
+		strType = getStructTypeForField(value.Map.Value)
+	case value.Array != nil:
+		strType = getStructTypeForField(value.Array.Value)
+	}
+	return strType
+}
+
 func collecStructTypes(fields []*Field, structTypes map[string]*StructType) {
 	for _, field := range fields {
-		if field.Value.StructType != nil {
-			fullName := field.Value.StructType.Package + "." + field.Value.StructType.Name
-			if len(field.Value.StructType.Package) == 0 {
-				fullName = field.Value.StructType.Name
+		strType := getStructTypeForField(field.Value)
+		if strType != nil {
+			fullName := strType.Package + "." + strType.Name
+			if len(strType.Package) == 0 {
+				fullName = strType.Name
 			}
 			switch fullName {
 			case "error", "net/http.Request", "net/http.ResponseWriter":
 				continue
 			default:
-				structTypes[fullName] = field.Value.StructType
+				structTypes[fullName] = strType
 			}
-
 		}
 	}
 }

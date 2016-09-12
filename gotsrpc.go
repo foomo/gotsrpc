@@ -70,7 +70,6 @@ func parsePackage(goPath string, packageName string) (pkg *ast.Package, err erro
 	strippedPackageName := packageNameParts[len(packageNameParts)-1]
 	foundPackages := []string{}
 	for pkgName, pkg := range pkgs {
-		//fmt.Println("pkgName", pkgName)
 		if pkgName == strippedPackageName {
 			return pkg, nil
 		}

@@ -3,10 +3,14 @@ package gotsrpc
 import (
 	"errors"
 	"fmt"
+	"go/ast"
+	"sort"
 	"strings"
 
 	"github.com/foomo/gotsrpc/config"
 )
+
+const goConstPseudoPackage = "__goConstants"
 
 var SkipGoTSRPC = false
 
@@ -67,16 +71,6 @@ func renderStruct(str *Struct, mappings config.TypeScriptMappings, ts *code) err
 	return nil
 }
 
-/*
-   export class ServiceClient {
-       static defaultInst = new ServiceClient()
-       constructor(public endPoint:string = "/service") {  }
-       hello(name:string, success:(reply:string, err:Err) => void, err:(request:XMLHttpRequest) => void) {
-           GoTSRPC.call(this.endPoint, "Hello", [name], success, err);
-       }
-   }
-*/
-
 func renderService(service *Service, mappings config.TypeScriptMappings, ts *code) error {
 	clientName := service.Name + "Client"
 	ts.l("export class " + clientName + " {").ind(1).
@@ -131,7 +125,7 @@ func renderService(service *Service, mappings config.TypeScriptMappings, ts *cod
 	ts.l("}")
 	return nil
 }
-func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScriptMappings, mappedTypeScript map[string]map[string]*code) (err error) {
+func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScriptMappings, constants map[string]map[string]*ast.BasicLit, mappedTypeScript map[string]map[string]*code) (err error) {
 
 	codeMap := map[string]map[string]*code{}
 	for _, mapping := range mappings {
@@ -148,26 +142,93 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 			err = errors.New("missing code mapping for go package : " + str.Package + " => you have to add a mapping from this go package to a TypeScript module in your build-config.yml in the mappings section")
 			return
 		}
-		packageCodeMap[str.Name] = newCode().ind(1)
+		packageCodeMap[str.Name] = newCode("	").ind(1)
 		err = renderStruct(str, mappings, packageCodeMap[str.Name])
 		if err != nil {
 			return
 		}
 	}
+	ensureCodeInPackage := func(goPackage string) {
+		_, ok := mappedTypeScript[goPackage]
+		if !ok {
+			mappedTypeScript[goPackage] = map[string]*code{}
+		}
+		return
+	}
 	for _, mapping := range mappings {
 		for structName, structCode := range codeMap[mapping.GoPackage] {
-			_, ok := mappedTypeScript[mapping.GoPackage]
-			if !ok {
-				mappedTypeScript[mapping.GoPackage] = map[string]*code{}
-			}
+			ensureCodeInPackage(mapping.GoPackage)
 			mappedTypeScript[mapping.GoPackage][structName] = structCode
 		}
-		//.ind(-1).l("}").string()
+	}
+	for packageName, packageConstants := range constants {
+		if len(packageConstants) > 0 {
+			ensureCodeInPackage(packageName)
+			_, done := mappedTypeScript[packageName][goConstPseudoPackage]
+			if done {
+				continue
+			}
+			constCode := newCode("	").ind(1).l("// constants from " + packageName).l("export const GoConst = {").ind(1)
+			//constCode.l()
+			mappedTypeScript[packageName][goConstPseudoPackage] = constCode
+			constPrefixParts := split(packageName, []string{"/", ".", "-"})
+			constPrefix := ""
+			for _, constPrefixPart := range constPrefixParts {
+				constPrefix += ucFirst(constPrefixPart)
+			}
+			constNames := []string{}
+			for constName, _ := range packageConstants {
+				constNames = append(constNames, constName)
+			}
+			sort.Strings(constNames)
+			for _, constName := range constNames {
+				basicLit := packageConstants[constName]
+				constCode.l(fmt.Sprint(constName, " : ", basicLit.Value, ","))
+			}
+			constCode.ind(-1).l("}")
+
+		}
+
 	}
 	return nil
 }
+
+func split(str string, seps []string) []string {
+	res := []string{}
+	strs := []string{str}
+	for _, sep := range seps {
+		nextStrs := []string{}
+		for _, str := range strs {
+			for _, part := range strings.Split(str, sep) {
+				nextStrs = append(nextStrs, part)
+			}
+		}
+		strs = nextStrs
+		res = nextStrs
+	}
+	return res
+}
+
+func ucFirst(str string) string {
+	strUpper := strings.ToUpper(str)
+	constPrefix := ""
+	var firstRune rune
+	for _, strUpperRune := range strUpper {
+		firstRune = strUpperRune
+		break
+	}
+	constPrefix += string(firstRune)
+	for i, strRune := range str {
+		if i == 0 {
+			continue
+		}
+		constPrefix += string(strRune)
+	}
+	return constPrefix
+}
+
 func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMappings, tsModuleName string) (typeScript string, err error) {
-	ts := newCode()
+	ts := newCode("	")
 	if !SkipGoTSRPC {
 		ts.l(`module GoTSRPC {
     export function call(endPoint:string, method:string, args:any[], success:any, err:any) {
