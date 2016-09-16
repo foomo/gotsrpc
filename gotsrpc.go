@@ -53,7 +53,10 @@ func Reply(response []interface{}, w http.ResponseWriter) {
 
 func jsonDump(v interface{}) {
 	jsonBytes, err := json.MarshalIndent(v, "", "	")
-	fmt.Println(err, string(jsonBytes))
+	if err != nil {
+		fmt.Println("an error occured", err)
+	}
+	fmt.Println(string(jsonBytes))
 }
 
 func parsePackage(goPath string, packageName string) (pkg *ast.Package, err error) {

@@ -28,13 +28,14 @@ func Build(conf *config.Config, goPath string) {
 		}
 
 		packageName := longPackageNameParts[len(longPackageNameParts)-1]
-		services, structs, constants, err := Read(goPath, longPackageName, target.Services)
+
+		services, structs, scalarTypes, constants, err := Read(goPath, longPackageName, target.Services)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	an error occured while trying to understand your code", err)
 			os.Exit(2)
 		}
-		ts, err := RenderTypeScriptServices(services, conf.Mappings, target.TypeScriptModule)
+		ts, err := RenderTypeScriptServices(services, conf.Mappings, scalarTypes, target.TypeScriptModule)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 			os.Exit(3)
@@ -46,7 +47,7 @@ func Build(conf *config.Config, goPath string) {
 			fmt.Fprintln(os.Stderr, "	could not write service file", target.Out, updateErr)
 			os.Exit(3)
 		}
-		err = RenderStructsToPackages(structs, conf.Mappings, constants, mappedTypeScript)
+		err = RenderStructsToPackages(structs, conf.Mappings, constants, scalarTypes, mappedTypeScript)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
 			os.Exit(4)

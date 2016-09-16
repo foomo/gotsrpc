@@ -3,7 +3,6 @@ package demo
 
 import (
 	gotsrpc "github.com/foomo/gotsrpc"
-	demo "github.com/foomo/gotsrpc/demo"
 	http "net/http"
 )
 
@@ -32,18 +31,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
+
 	var args []interface{}
 	switch gotsrpc.GetCalledFunc(r, p.EndPoint) {
-	case "ExtractAddress":
-		args = []interface{}{&Person{}}
-		err := gotsrpc.LoadArgs(args, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*demo.Person))
-		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
-		return
 	case "Hello":
 		args = []interface{}{""}
 		err := gotsrpc.LoadArgs(args, r)
@@ -54,9 +44,25 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		helloReply, helloErr := p.service.Hello(args[0].(string))
 		gotsrpc.Reply([]interface{}{helloReply, helloErr}, w)
 		return
-	case "NothingInNothinOut":
-		p.service.NothingInNothinOut()
-		gotsrpc.Reply([]interface{}{}, w)
+	case "ExtractAddress":
+		args = []interface{}{&Person{}}
+		err := gotsrpc.LoadArgs(args, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*Person))
+		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
 		return
+	case "TestScalarInPlace":
+		testScalarInPlaceRet := p.service.TestScalarInPlace()
+		gotsrpc.Reply([]interface{}{testScalarInPlaceRet}, w)
+		return
+	case "Nest":
+		nestRet := p.service.Nest()
+		gotsrpc.Reply([]interface{}{nestRet}, w)
+		return
+	default:
+		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
 	}
 }

@@ -22,6 +22,7 @@ func usage() {
 func main() {
 
 	flagSkipGotsprc := flag.Bool("skipgotsrpc", false, "if true, module GoTSRPC will not be generated")
+	flagDebug := flag.Bool("debug", false, "debug")
 	flag.Parse()
 	gotsrpc.SkipGoTSRPC = *flagSkipGotsprc
 	args := flag.Args()
@@ -29,7 +30,7 @@ func main() {
 		usage()
 		os.Exit(1)
 	}
-	gotsrpc.ReaderTrace = false
+	gotsrpc.ReaderTrace = *flagDebug
 	goPath := os.Getenv("GOPATH")
 
 	if len(goPath) == 0 {

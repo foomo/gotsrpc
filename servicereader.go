@@ -28,22 +28,27 @@ func readServiceFile(file *ast.File, packageName string, services []*Service) er
 			if funcDecl.Recv != nil {
 				trace("that is a method named", funcDecl.Name)
 				if len(funcDecl.Recv.List) == 1 {
+
 					firstReceiverField := funcDecl.Recv.List[0]
 					if "*ast.StarExpr" == reflect.ValueOf(firstReceiverField.Type).Type().String() {
 						starExpr := firstReceiverField.Type.(*ast.StarExpr)
 						if "*ast.Ident" == reflect.ValueOf(starExpr.X).Type().String() {
-							ident := starExpr.X.(*ast.Ident)
-							trace("	on sth:", ident.Name)
 
+							ident := starExpr.X.(*ast.Ident)
 							service, ok := findService(ident.Name)
 							firstCharOfMethodName := funcDecl.Name.Name[0:1]
-							if ok && strings.ToLower(firstCharOfMethodName) != firstCharOfMethodName {
-								service.Methods = append(service.Methods, &Method{
-									Name:   funcDecl.Name.Name,
-									Args:   readFields(funcDecl.Type.Params, fileImports),
-									Return: readFields(funcDecl.Type.Results, fileImports),
-								})
+							if !ok || strings.ToLower(firstCharOfMethodName) == firstCharOfMethodName {
+								// skip this method
+								continue
 							}
+
+							trace("	on sth:", ident.Name)
+
+							service.Methods = append(service.Methods, &Method{
+								Name:   funcDecl.Name.Name,
+								Args:   readFields(funcDecl.Type.Params, fileImports),
+								Return: readFields(funcDecl.Type.Results, fileImports),
+							})
 						}
 					}
 				}
@@ -107,6 +112,7 @@ func getFileImports(file *ast.File, packageName string) (imports fileImportSpecM
 }
 
 func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields []*Field) {
+	trace("reading fields")
 	fields = []*Field{}
 	if fieldList == nil {
 		return
@@ -119,6 +125,7 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 			Value: value,
 		})
 	}
+	trace("done reading fields")
 	return
 
 }
@@ -172,7 +179,7 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 
 }
 
-func Read(goPath string, packageName string, serviceNames []string) (services []*Service, structs map[string]*Struct, constants map[string]map[string]*ast.BasicLit, err error) {
+func Read(goPath string, packageName string, serviceNames []string) (services []*Service, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
 	if len(serviceNames) == 0 {
 		err = errors.New("nothing to do service names are empty")
 		return
@@ -187,54 +194,93 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 		return
 	}
 
-	structTypes := map[string]*StructType{}
+	missingTypes := map[string]bool{}
 	for _, s := range services {
 		for _, m := range s.Methods {
-			collecStructTypes(m.Return, structTypes)
-			collecStructTypes(m.Args, structTypes)
+			collectStructTypes(m.Return, missingTypes)
+			collectStructTypes(m.Args, missingTypes)
+			collectScalarTypes(m.Return, missingTypes)
+			collectScalarTypes(m.Args, missingTypes)
 		}
 	}
+	trace("missing")
+	traceJSON(missingTypes)
+
 	structs = map[string]*Struct{}
-	for wantedName := range structTypes {
-		structs[wantedName] = nil
-	}
-	collectErr := collectStructs(goPath, structs)
+	scalars = map[string]*Scalar{}
+
+	collectErr := collectTypes(goPath, missingTypes, structs, scalars)
 	if collectErr != nil {
 		err = errors.New("error while collecting structs: " + collectErr.Error())
 	}
+	trace("---------------- found structs -------------------")
+	traceJSON(structs)
+	trace("---------------- found scalars -------------------")
+	traceJSON(scalars)
 	constants = map[string]map[string]*ast.BasicLit{}
 	for _, structDef := range structs {
-		structPackage := structDef.Package
-		_, ok := constants[structPackage]
-		if !ok {
-			pkg, constPkgErr := parsePackage(goPath, structPackage)
-			if constPkgErr != nil {
-				err = constPkgErr
-				return
-			}
-			constants[structPackage] = loadConstants(pkg)
+		if structDef != nil {
+			structPackage := structDef.Package
+			_, ok := constants[structPackage]
+			if !ok {
+				pkg, constPkgErr := parsePackage(goPath, structPackage)
+				if constPkgErr != nil {
+					err = constPkgErr
+					return
+				}
+				constants[structPackage] = loadConstants(pkg)
 
+			}
 		}
 	}
+
+	// fix arg and return field lists
+	for _, service := range services {
+		for _, method := range service.Methods {
+			fixFieldStructs(method.Args, structs, scalars)
+			fixFieldStructs(method.Return, structs, scalars)
+		}
+	}
+	traceJSON("---------------------------", services)
 	return
 }
 
-func collectStructs(goPath string, structs map[string]*Struct) error {
-	scannedPackages := map[string]map[string]*Struct{}
-	missingStructs := func() []string {
+func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[string]*Scalar) {
+	for _, f := range fields {
+		if f.Value.StructType != nil {
+			// do we have that struct or is it a hidden scalar
+			name := f.Value.StructType.FullName()
+			_, strctExists := structs[name]
+			if strctExists {
+				continue
+			}
+			scalar, scalarExists := scalars[name]
+			if scalarExists {
+				f.Value.StructType = nil
+				f.Value.Scalar = scalar
+			}
+		}
+	}
+}
+
+func collectTypes(goPath string, missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) error {
+	scannedPackageStructs := map[string]map[string]*Struct{}
+	scannedPackageScalars := map[string]map[string]*Scalar{}
+	missingTypeNames := func() []string {
 		missing := []string{}
-		for name, strct := range structs {
-			if strct == nil {
+		for name, isMissing := range missingTypes {
+			if isMissing {
 				missing = append(missing, name)
 			}
 		}
 		return missing
 	}
-	lastNumMissing := len(missingStructs())
-	for structsPending(structs) {
-		trace("pending", missingStructs())
-		for fullName, strct := range structs {
-			if strct != nil {
+	lastNumMissing := len(missingTypeNames())
+
+	for typesPending(structs, scalars, missingTypes) {
+		trace("pending", missingTypeNames())
+		for fullName, typeIsMissing := range missingTypes {
+			if !typeIsMissing {
 				continue
 			}
 			fullNameParts := strings.Split(fullName, ".")
@@ -246,52 +292,84 @@ func collectStructs(goPath string, structs map[string]*Struct) error {
 
 			trace(fullName, "==========================>", fullNameParts, "=============>", packageName)
 
-			packageStructs, ok := scannedPackages[packageName]
-			if !ok {
-				parsedPackageStructs, err := getStructsInPackage(goPath, packageName)
+			packageStructs, structOK := scannedPackageStructs[packageName]
+			packageScalars, scalarOK := scannedPackageScalars[packageName]
+			if !structOK || !scalarOK {
+				parsedPackageStructs, parsedPackageScalars, err := getTypesInPackage(goPath, packageName)
 				if err != nil {
 					return err
 				}
+
+				trace("found structs in", goPath, packageName)
+				for structName, strct := range packageStructs {
+					trace("	struct", structName, strct)
+					if strct == nil {
+						panic("how could that be")
+					}
+				}
+				trace("found scalars in", goPath, packageName)
+				for scalarName, scalar := range parsedPackageScalars {
+					trace("	scalar", scalarName, scalar)
+				}
+				traceJSON(parsedPackageScalars)
 				packageStructs = parsedPackageStructs
-				scannedPackages[packageName] = packageStructs
+				packageScalars = parsedPackageScalars
+				scannedPackageStructs[packageName] = packageStructs
+				scannedPackageScalars[packageName] = packageScalars
 			}
+			traceJSON("packageStructs", packageName, packageStructs)
 			for packageStructName, packageStruct := range packageStructs {
-				trace("------------------------------------>", packageStructName, packageStruct)
-				existingStruct, needed := structs[packageStructName]
-				if needed && existingStruct == nil {
+				missing, needed := missingTypes[packageStructName]
+				if needed && missing {
+					trace("picked up package struct", packageStructName, packageStruct)
+					missingTypes[packageStructName] = false
+					if packageStruct == nil {
+						panic("waaaaaaaaa")
+					}
 					structs[packageStructName] = packageStruct
 				}
 			}
-		}
-		newNumMissingStructs := len(missingStructs())
-		if newNumMissingStructs > 0 && newNumMissingStructs == lastNumMissing {
-			return errors.New(fmt.Sprintln("could not resolve at least one of the following structs", missingStructs()))
-		}
-		lastNumMissing = newNumMissingStructs
-	}
 
+			traceJSON("packageScalars", packageScalars)
+			for packageScalarName, packageScalar := range packageScalars {
+				missing, needed := missingTypes[packageScalarName]
+				if needed && missing {
+					trace("picked up package scalar", packageScalarName, packageScalar)
+					missingTypes[packageScalarName] = false
+					scalars[packageScalarName] = packageScalar
+				}
+			}
+
+		}
+		newNumMissingTypes := len(missingTypeNames())
+		if newNumMissingTypes > 0 && newNumMissingTypes == lastNumMissing {
+			return errors.New(fmt.Sprintln("could not resolve at least one of the following types", missingTypeNames()))
+		}
+		lastNumMissing = newNumMissingTypes
+	}
 	return nil
 }
 
-func structsPending(structs map[string]*Struct) bool {
-	for name, structType := range structs {
-		if structType == nil {
-			trace("missing", name)
+func typesPending(structs map[string]*Struct, scalars map[string]*Scalar, missingTypes map[string]bool) bool {
+	for _, missing := range missingTypes {
+		if missing {
 			return true
 		}
-		if !structType.DepsSatisfied(structs) {
+	}
+	for _, structType := range structs {
+		if !structType.DepsSatisfied(missingTypes, structs, scalars) {
 			return true
 		}
 	}
 	return false
 }
 
-func (s *Struct) DepsSatisfied(structs map[string]*Struct) bool {
+func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]*Struct, scalarTypes map[string]*Scalar) bool {
 	needsWork := func(fullName string) bool {
 		strct, ok := structs[fullName]
 		if !ok {
 			// hey there is more todo
-			structs[fullName] = nil
+			missingTypes[fullName] = true
 			trace("need work ----------------------" + fullName)
 			return true
 		}
@@ -336,19 +414,19 @@ func (st *StructType) FullName() string {
 	return fullName
 }
 
-func getStructsInPackage(goPath string, packageName string) (structs map[string]*Struct, err error) {
+func getTypesInPackage(goPath string, packageName string) (structs map[string]*Struct, scalars map[string]*Scalar, err error) {
 	pkg, err := parsePackage(goPath, packageName)
 	if err != nil {
 		pkg, err = parsePackage(runtime.GOROOT(), packageName)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
-	structs, err = readStructs(pkg, packageName)
+	structs, scalars, err = readStructs(pkg, packageName)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return structs, nil
+	return structs, scalars, nil
 }
 
 func getStructTypeForField(value *Value) *StructType {
@@ -366,7 +444,36 @@ func getStructTypeForField(value *Value) *StructType {
 	return strType
 }
 
-func collecStructTypes(fields []*Field, structTypes map[string]*StructType) {
+func getScalarForField(value *Value) *Scalar {
+	//field.Value.StructType
+	var scalarType *Scalar
+	switch true {
+	case value.Scalar != nil:
+		scalarType = value.Scalar
+	//case field.Value.ArrayType
+	case value.Map != nil:
+		scalarType = getScalarForField(value.Map.Value)
+	case value.Array != nil:
+		scalarType = getScalarForField(value.Array.Value)
+	}
+	return scalarType
+}
+
+func collectScalarTypes(fields []*Field, scalarTypes map[string]bool) {
+	for _, field := range fields {
+
+		scalarType := getScalarForField(field.Value)
+		if scalarType != nil {
+			fullName := scalarType.Package + "." + scalarType.Name
+			if len(scalarType.Package) == 0 {
+				fullName = scalarType.Name
+			}
+			scalarTypes[fullName] = true
+		}
+	}
+}
+
+func collectStructTypes(fields []*Field, structTypes map[string]bool) {
 	for _, field := range fields {
 		strType := getStructTypeForField(field.Value)
 		if strType != nil {
@@ -378,7 +485,7 @@ func collecStructTypes(fields []*Field, structTypes map[string]*StructType) {
 			case "error", "net/http.Request", "net/http.ResponseWriter":
 				continue
 			default:
-				structTypes[fullName] = strType
+				structTypes[fullName] = true
 			}
 		}
 	}

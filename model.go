@@ -4,9 +4,9 @@ type ScalarType string
 
 const (
 	ScalarTypeString ScalarType = "string"
-	ScalarTypeNumber            = "number"
-	ScalarTypeBool              = "bool"
-	ScalarTypeNone              = ""
+	ScalarTypeNumber ScalarType = "number"
+	ScalarTypeBool   ScalarType = "bool"
+	ScalarTypeNone   ScalarType = ""
 )
 
 type JSONInfo struct {
@@ -22,6 +22,7 @@ type StructType struct {
 }
 
 type Value struct {
+	Scalar       *Scalar     `json:",omitempty"`
 	ScalarType   ScalarType  `json:",omitempty"`
 	GoScalarType string      `json:",omitempty"`
 	StructType   *StructType `json:",omitempty"`
@@ -61,4 +62,10 @@ type Struct struct {
 	Package string
 	Name    string
 	Fields  []*Field
+}
+
+type Scalar struct {
+	Name    string
+	Package string
+	Type    ScalarType
 }

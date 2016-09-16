@@ -7,6 +7,7 @@ interface CarMap {
 interface Car {
     color:string;
     wheels:number;
+    extras?:{[index:string]:string}
 }
 
 interface Complex {
@@ -28,7 +29,10 @@ var foo : Complex = {
     cars: {
         audi: {
             color: "white",
-            wheels:1
+            wheels:1,
+            extras:{
+                lights:"xenon"
+            }
         },
         blas: {
             color:"red",

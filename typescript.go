@@ -22,34 +22,37 @@ func (f *Field) tsName() string {
 	return n
 }
 
-func (v *Value) tsType(mappings config.TypeScriptMappings, ts *code) {
+func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) {
 	switch true {
-	case v.IsPtr:
-		if v.StructType != nil {
-			if len(v.StructType.Package) > 0 {
-				mapping, ok := mappings[v.StructType.Package]
-				var tsModule string
-				if ok {
-					tsModule = mapping.TypeScriptModule
-				}
-				ts.app(tsModule + "." + v.StructType.Name)
-				return
-			}
-			ts.app(v.StructType.Name)
-			return
-		}
-		if v.Struct != nil {
-			//v.Struct.Value.tsType(mappings, ts)
-			ts.l("{").ind(1)
-			renderStructFields(v.Struct.Fields, mappings, ts)
-			ts.ind(-1).app("}")
-			return
-		}
-		ts.app(string(v.ScalarType))
+	case v.Map != nil:
+		ts.app("{[index:" + v.Map.KeyType + "]:")
+		v.Map.Value.tsType(mappings, scalarTypes, ts)
+		ts.app("}")
 		return
 	case v.Array != nil:
-		v.Array.Value.tsType(mappings, ts)
+		v.Array.Value.tsType(mappings, scalarTypes, ts)
 		ts.app("[]")
+		return
+	case v.Scalar != nil:
+		ts.app(string(v.Scalar.Type))
+		return
+	case v.StructType != nil:
+		if len(v.StructType.Package) > 0 {
+			mapping, ok := mappings[v.StructType.Package]
+			var tsModule string
+			if ok {
+				tsModule = mapping.TypeScriptModule
+			}
+			ts.app(tsModule + "." + v.StructType.Name)
+			return
+		}
+		ts.app(v.StructType.Name)
+		return
+	case v.Struct != nil:
+		//v.Struct.Value.tsType(mappings, ts)
+		ts.l("{").ind(1)
+		renderStructFields(v.Struct.Fields, mappings, scalarTypes, ts)
+		ts.ind(-1).app("}")
 		return
 	case len(v.ScalarType) > 0:
 		switch v.ScalarType {
@@ -67,32 +70,32 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, ts *code) {
 	}
 }
 
-func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, ts *code) {
+func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) {
 	for _, f := range fields {
 		if f.JSONInfo != nil && f.JSONInfo.Ignore {
 			continue
 		}
 		ts.app(f.tsName())
-		if f.Value.IsPtr {
+		if f.Value.IsPtr || (f.JSONInfo != nil && f.JSONInfo.OmitEmpty) {
 			ts.app("?")
 		}
 		ts.app(":")
-		f.Value.tsType(mappings, ts)
+		f.Value.tsType(mappings, scalarTypes, ts)
 		ts.app(";")
 		ts.nl()
 	}
 
 }
 
-func renderStruct(str *Struct, mappings config.TypeScriptMappings, ts *code) error {
+func renderStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
 	ts.l("// " + str.FullName())
 	ts.l("export interface " + str.Name + " {").ind(1)
-	renderStructFields(str.Fields, mappings, ts)
+	renderStructFields(str.Fields, mappings, scalarTypes, ts)
 	ts.ind(-1).l("}")
 	return nil
 }
 
-func renderService(service *Service, mappings config.TypeScriptMappings, ts *code) error {
+func renderService(service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
 	clientName := service.Name + "Client"
 	ts.l("export class " + clientName + " {").ind(1).
 		l("static defaultInst = new " + clientName + ";").
@@ -126,7 +129,7 @@ func renderService(service *Service, mappings config.TypeScriptMappings, ts *cod
 				ts.app(", ")
 			}
 			ts.app(arg.tsName() + ":")
-			arg.Value.tsType(mappings, ts)
+			arg.Value.tsType(mappings, scalarTypes, ts)
 			callArgs = append(callArgs, arg.Name)
 			argCount++
 		}
@@ -148,7 +151,7 @@ func renderService(service *Service, mappings config.TypeScriptMappings, ts *cod
 				ts.app(", ")
 			}
 			ts.app(retArgName + ":")
-			retField.Value.tsType(mappings, ts)
+			retField.Value.tsType(mappings, scalarTypes, ts)
 		}
 
 		ts.app(") => void")
@@ -164,7 +167,7 @@ func renderService(service *Service, mappings config.TypeScriptMappings, ts *cod
 	ts.l("}")
 	return nil
 }
-func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScriptMappings, constants map[string]map[string]*ast.BasicLit, mappedTypeScript map[string]map[string]*code) (err error) {
+func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScriptMappings, constants map[string]map[string]*ast.BasicLit, scalarTypes map[string]*Scalar, mappedTypeScript map[string]map[string]*code) (err error) {
 
 	codeMap := map[string]map[string]*code{}
 	for _, mapping := range mappings {
@@ -182,7 +185,7 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 			return
 		}
 		packageCodeMap[str.Name] = newCode("	").ind(1)
-		err = renderStruct(str, mappings, packageCodeMap[str.Name])
+		err = renderStruct(str, mappings, scalarTypes, packageCodeMap[str.Name])
 		if err != nil {
 			return
 		}
@@ -266,7 +269,7 @@ func ucFirst(str string) string {
 	return constPrefix
 }
 
-func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMappings, tsModuleName string) (typeScript string, err error) {
+func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, tsModuleName string) (typeScript string, err error) {
 	ts := newCode("	")
 	if !SkipGoTSRPC {
 		ts.l(`module GoTSRPC {
@@ -299,7 +302,7 @@ func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMap
 	ts.ind(1)
 
 	for _, service := range services {
-		err = renderService(service, mappings, ts)
+		err = renderService(service, mappings, scalarTypes, ts)
 		if err != nil {
 			return
 		}

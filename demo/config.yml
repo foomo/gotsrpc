@@ -9,7 +9,7 @@ targets:
 mappings:
   github.com/foomo/gotsrpc/demo:
     module: GoTSRPC.Demo
-    out: /tmp/test-files.ts
+    out: /tmp/test-files-demo.ts
   github.com/foomo/gotsrpc/demo/nested:
     module: GoTSRPC.Demo.Nested
-    out: /tmp/test-files.ts
+    out: /tmp/test-files-demo-nested.ts

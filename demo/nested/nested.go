@@ -9,3 +9,8 @@ type Nested struct {
 		Bla string
 	}
 }
+
+type Amount int
+type True bool
+
+const ItIsTrue True = true
