@@ -160,15 +160,6 @@ func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpe
 	}
 }
 
-func readAstArrayType(v *Value, arrayType *ast.ArrayType, fileImports fileImportSpecMap) {
-	switch reflect.ValueOf(arrayType.Elt).Type().String() {
-	case "*ast.StarExpr":
-		readAstStarExpr(v, arrayType.Elt.(*ast.StarExpr), fileImports)
-	default:
-		trace("array type elt", reflect.ValueOf(arrayType.Elt).Type().String())
-	}
-}
-
 func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap) {
 	trace("		map key", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
 	trace("		map value", mapType.Value, reflect.ValueOf(mapType.Value).Type().String())
@@ -218,7 +209,8 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 		case "*ast.StarExpr":
 			readAstStarExpr(v.Array.Value, fieldArray.Elt.(*ast.StarExpr), fileImports)
 		case "*ast.ArrayType":
-			readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
+			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
+			v.Array.Value.loadExpr(fieldArray.Elt.(*ast.ArrayType), fileImports)
 		case "*ast.MapType":
 			v.Array.Value.Map = &Map{
 				Value: &Value{},

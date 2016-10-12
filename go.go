@@ -58,7 +58,20 @@ func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
 			return "false"
 		}
 	case v.Array != nil:
-		e += "[]" + v.Array.Value.emptyLiteral(aliases) + "{}"
+		e += "[]"
+		if v.Array.Value.IsPtr {
+			e += "*"
+		}
+		l := v.Array.Value.emptyLiteral(aliases)
+		if len(v.Array.Value.GoScalarType) == 0 {
+			if v.Array.Value.IsPtr {
+				l = strings.TrimPrefix(l, "&")
+			}
+			l = strings.TrimSuffix(l, "{}")
+		} else {
+			l = v.Array.Value.GoScalarType
+		}
+		e += l + "{}"
 	case v.StructType != nil:
 		alias := aliases[v.StructType.Package]
 		if alias != "" {
