@@ -48,6 +48,7 @@ func Reply(response []interface{}, w http.ResponseWriter) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(jsonBytes)
 }
 
