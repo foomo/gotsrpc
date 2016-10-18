@@ -7,6 +7,7 @@ import (
 	"go/token"
 	"reflect"
 	"runtime"
+	"sort"
 	"strings"
 )
 
@@ -57,7 +58,9 @@ func readServiceFile(file *ast.File, packageName string, services []*Service) er
 			}
 		}
 	}
-
+	for _, s := range services {
+		sort.Sort(s.Methods)
+	}
 	return nil
 }
 
@@ -366,14 +369,15 @@ func typesPending(structs map[string]*Struct, scalars map[string]*Scalar, missin
 
 func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]*Struct, scalarTypes map[string]*Scalar) bool {
 	needsWork := func(fullName string) bool {
-		strct, ok := structs[fullName]
-		if !ok {
+		strct, strctOK := structs[fullName]
+		scalar, scalarOK := scalarTypes[fullName]
+		if !strctOK && !scalarOK {
 			// hey there is more todo
 			missingTypes[fullName] = true
 			trace("need work ----------------------" + fullName)
 			return true
 		}
-		if strct == nil {
+		if strct == nil && scalar == nil {
 			trace("need work ----------------------" + fullName)
 			return true
 		}
