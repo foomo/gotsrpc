@@ -23,19 +23,17 @@ func (f *Field) tsName() string {
 }
 
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) {
+
 	switch true {
 	case v.Map != nil:
 		ts.app("{[index:" + v.Map.KeyType + "]:")
 		v.Map.Value.tsType(mappings, scalarTypes, ts)
 		ts.app("}")
-		return
 	case v.Array != nil:
 		v.Array.Value.tsType(mappings, scalarTypes, ts)
 		ts.app("[]")
-		return
 	case v.Scalar != nil:
 		ts.app(string(v.Scalar.Type))
-		return
 	case v.StructType != nil:
 		if len(v.StructType.Package) > 0 {
 			mapping, ok := mappings[v.StructType.Package]
@@ -43,31 +41,36 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[strin
 			if ok {
 				tsModule = mapping.TypeScriptModule
 			}
+			scalarName := v.StructType.FullName()
+			// is it a hdden scalar ?!
+			hiddenScalar, ok := scalarTypes[scalarName]
+			if ok {
+				ts.app(tsTypeFromScalarType(hiddenScalar.Type))
+				return
+			}
 			ts.app(tsModule + "." + v.StructType.Name)
 			return
 		}
 		ts.app(v.StructType.Name)
-		return
 	case v.Struct != nil:
 		//v.Struct.Value.tsType(mappings, ts)
 		ts.l("{").ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalarTypes, ts)
 		ts.ind(-1).app("}")
-		return
 	case len(v.ScalarType) > 0:
-		switch v.ScalarType {
-		case ScalarTypeBool:
-			ts.app("boolean")
-			return
-		default:
-			ts.app(string(v.ScalarType))
-			return
-		}
-
+		ts.app(tsTypeFromScalarType(v.ScalarType))
 	default:
 		ts.app("any")
-		return
 	}
+	return
+}
+
+func tsTypeFromScalarType(scalarType ScalarType) string {
+	switch scalarType {
+	case ScalarTypeBool:
+		return "boolean"
+	}
+	return string(scalarType)
 }
 
 func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) {
@@ -96,6 +99,7 @@ func renderStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes m
 }
 
 func renderService(service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
+	jsonDump(scalarTypes)
 	clientName := service.Name + "Client"
 	ts.l("export class " + clientName + " {").ind(1).
 		l("static defaultInst = new " + clientName + ";").
