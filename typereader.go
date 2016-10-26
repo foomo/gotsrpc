@@ -119,7 +119,6 @@ func readAstType(v *Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap)
 	structType, scalarType := getTypesFromAstType(fieldIdent)
 	v.ScalarType = scalarType
 	if len(structType) > 0 {
-
 		v.StructType = &StructType{
 			Name:    structType,
 			Package: fileImports.getPackagePath(""),
@@ -146,10 +145,13 @@ func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpe
 	switch reflect.ValueOf(starExpr.X).Type().String() {
 	case "*ast.Ident":
 		ident := starExpr.X.(*ast.Ident)
-		v.StructType = &StructType{
-			Name:    ident.Name,
-			Package: fileImports.getPackagePath(""),
-		}
+		readAstType(v, ident, fileImports)
+		/*
+			v.StructType = &StructType{
+				Name:    ident.Name,
+				Package: fileImports.getPackagePath(""),
+			}
+		*/
 	case "*ast.StructType":
 		// nested anonymous
 		readAstStructType(v, starExpr.X.(*ast.StructType), fileImports)
