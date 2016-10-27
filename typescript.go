@@ -99,7 +99,6 @@ func renderStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes m
 }
 
 func renderService(service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
-	jsonDump(scalarTypes)
 	clientName := service.Name + "Client"
 	ts.l("export class " + clientName + " {").ind(1).
 		l("static defaultInst = new " + clientName + ";").

@@ -146,12 +146,6 @@ func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpe
 	case "*ast.Ident":
 		ident := starExpr.X.(*ast.Ident)
 		readAstType(v, ident, fileImports)
-		/*
-			v.StructType = &StructType{
-				Name:    ident.Name,
-				Package: fileImports.getPackagePath(""),
-			}
-		*/
 	case "*ast.StructType":
 		// nested anonymous
 		readAstStructType(v, starExpr.X.(*ast.StructType), fileImports)
@@ -170,6 +164,8 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 	case "*ast.Ident":
 		_, scalarType := getTypesFromAstType(mapType.Key.(*ast.Ident))
 		m.KeyType = string(scalarType)
+	default:
+		//fmt.Println("--------------------------->", reflect.ValueOf(mapType.Key).Type().String())
 	}
 	// value
 	m.Value.loadExpr(mapType.Value, fileImports)
@@ -311,8 +307,8 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 					}
 				// case "*ast.ArrayType":
 				// 	arrayType := obj.Decl.(*ast.ArrayType)
-				//case "*ast.MapType":
-				// mapType := obj.decl.(*ast.MapType)
+				// case "*ast.MapType":
+				// 	mapType := obj.decl.(*ast.MapType)
 
 				default:
 					fmt.Println("	ignoring", obj.Name, typeSpecRefl.Type().String())
