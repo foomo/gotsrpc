@@ -107,7 +107,8 @@ func strfirst(str string, strfunc func(string) string) string {
 
 func renderServiceProxies(services []*Service, fullPackageName string, packageName string, g *code) error {
 	aliases := map[string]string{
-		"net/http":                 "http",
+		"net/http": "http",
+		"time":     "time",
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
 	r := strings.NewReplacer(".", "_", "/", "_", "-", "_")
@@ -192,7 +193,16 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 		if needsArgs {
 			g.l(`var args []interface{}`)
 		}
-		g.l(`switch gotsrpc.GetCalledFunc(r, p.EndPoint) {`)
+
+		g.l("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
+		g.l("callStats := gotsrpc.GetStatsForRequest(r)")
+		g.l("if callStats != nil {").ind(1)
+		g.l("callStats.Func = funcName")
+		g.l("callStats.Package = \"" + fullPackageName + "\"")
+		g.l("callStats.Service = \"" + service.Name + "\"")
+		g.ind(-1).l("}")
+
+		g.l(`switch funcName {`)
 
 		// indenting into switch cases
 		g.ind(4)
@@ -226,13 +236,11 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 					default:
 						// assert
 						callArgs = append(callArgs, fmt.Sprint("args[", skipArgI, "].("+arg.Value.goType(aliases, fullPackageName)+")"))
-
 					}
-
 					skipArgI++
 				}
 				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
-				g.l("err := gotsrpc.LoadArgs(args, r)")
+				g.l("err := gotsrpc.LoadArgs(args, callStats, r)")
 				g.l("if err != nil {")
 				g.ind(1)
 				g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
@@ -260,7 +268,12 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
-			g.l("gotsrpc.Reply([]interface{}{" + strings.Join(returnValueNames, ", ") + "}, w)")
+			g.l("executionStart := time.Now()")
+
+			g.l("if callStats != nil {")
+			g.ind(1).l("callStats.Execution = time.Now().Sub(executionStart)").ind(-1)
+			g.l("}")
+			g.l("gotsrpc.Reply([]interface{}{" + strings.Join(returnValueNames, ", ") + "}, callStats, r, w)")
 			g.l("return")
 			g.ind(-1)
 		}

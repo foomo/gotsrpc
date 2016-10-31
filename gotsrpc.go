@@ -1,6 +1,7 @@
 package gotsrpc
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +11,10 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"time"
 )
+
+const contextStatsKey = "gotsrpcStats"
 
 func GetCalledFunc(r *http.Request, endPoint string) string {
 	return strings.TrimPrefix(r.URL.Path, endPoint+"/")
@@ -31,25 +35,49 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 	w.Write([]byte("you gotta POST"))
 }
 
-func LoadArgs(args []interface{}, r *http.Request) error {
+func LoadArgs(args []interface{}, callStats *CallStats, r *http.Request) error {
+	start := time.Now()
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&args)
 	if err != nil {
 		return err
 	}
+	if callStats != nil {
+		callStats.Unmarshalling = time.Now().Sub(start)
+	}
 	return nil
 }
 
-func Reply(response []interface{}, w http.ResponseWriter) {
+func RequestWithStatsContext(r *http.Request) *http.Request {
+	stats := &CallStats{}
+	return r.WithContext(context.WithValue(r.Context(), contextStatsKey, stats))
+}
+
+func GetStatsForRequest(r *http.Request) *CallStats {
+	value := r.Context().Value(contextStatsKey)
+	if value == nil {
+		return nil
+	}
+	return value.(*CallStats)
+}
+
+// Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
+func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) {
+	serializationStart := time.Now()
 	jsonBytes, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("could not serialize response"))
 		return
 	}
+	if stats != nil {
+		stats.Marshalling = time.Now().Sub(serializationStart)
+	}
+	//r = r.WithContext(ctx)
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(jsonBytes)
+	//fmt.Println("replied with stats", stats, "on", ctx)
 }
 
 func jsonDump(v interface{}) {
