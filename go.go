@@ -260,6 +260,7 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 				}
 				returnValueNames = append(returnValueNames, lcfirst(method.Name)+ucfirst(retArgName))
 			}
+			g.l("executionStart := time.Now()")
 			if len(returnValueNames) > 0 {
 				g.app(strings.Join(returnValueNames, ", ") + " := ")
 			}
@@ -268,7 +269,6 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
-			g.l("executionStart := time.Now()")
 
 			g.l("if callStats != nil {")
 			g.ind(1).l("callStats.Execution = time.Now().Sub(executionStart)").ind(-1)
