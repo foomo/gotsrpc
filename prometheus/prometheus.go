@@ -1,7 +1,6 @@
 package prometheus
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/foomo/gotsrpc"
@@ -25,7 +24,6 @@ func InstrumentService(s http.HandlerFunc) (handler http.HandlerFunc) {
 			counterVec.WithLabelValues(stats.Package, stats.Service, stats.Func, "unmarshalling").Observe(float64(stats.Unmarshalling))
 			counterVec.WithLabelValues(stats.Package, stats.Service, stats.Func, "execution").Observe(float64(stats.Execution))
 			counterVec.WithLabelValues(stats.Package, stats.Service, stats.Func, "marshalling").Observe(float64(stats.Marshalling))
-			fmt.Println("Observed execution time", stats.Package+"."+stats.Service+"."+stats.Func, stats.Execution, float64(stats.Execution))
 		}
 	}
 }
