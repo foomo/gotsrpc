@@ -181,7 +181,6 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 			err = errors.New("could not resolve: " + name)
 			return
 		}
-
 		packageCodeMap, ok := codeMap[str.Package]
 		if !ok {
 			err = errors.New("missing code mapping for go package : " + str.Package + " => you have to add a mapping from this go package to a TypeScript module in your build-config.yml in the mappings section")
@@ -272,7 +271,7 @@ func ucFirst(str string) string {
 	return constPrefix
 }
 
-func RenderTypeScriptServices(services map[string]*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, tsModuleName string) (typeScript string, err error) {
+func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, tsModuleName string) (typeScript string, err error) {
 	ts := newCode("	")
 	if !SkipGoTSRPC {
 		ts.l(`module GoTSRPC {
@@ -301,9 +300,10 @@ func RenderTypeScriptServices(services map[string]*Service, mappings config.Type
     }
 }`)
 	}
-
-	ts.l("module " + tsModuleName + " {")
-	ts.ind(1)
+	if config.ModuleKindCommonJS != moduleKind {
+		ts.l("module " + tsModuleName + " {")
+		ts.ind(1)
+	}
 
 	for endPoint, service := range services {
 		err = renderService(service, endPoint, mappings, scalarTypes, ts)
@@ -311,8 +311,10 @@ func RenderTypeScriptServices(services map[string]*Service, mappings config.Type
 			return
 		}
 	}
-	ts.ind(-1)
-	ts.l("}")
+	if config.ModuleKindCommonJS != moduleKind {
+		ts.ind(-1)
+		ts.l("}")
+	}
 	typeScript = ts.string()
 	return
 }

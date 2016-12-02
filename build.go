@@ -36,7 +36,7 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(2)
 		}
 
-		ts, err := RenderTypeScriptServices(services, conf.Mappings, scalarTypes, target.TypeScriptModule)
+		ts, err := RenderTypeScriptServices(conf.ModuleKind, services, conf.Mappings, scalarTypes, target.TypeScriptModule)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 			os.Exit(3)
@@ -82,7 +82,15 @@ func Build(conf *config.Config, goPath string) {
 		}
 
 		fmt.Fprintln(os.Stderr, "building structs for go package", goPackage, "to ts module", mapping.TypeScriptModule, "in file", mapping.Out)
-		moduleCode := newCode("	").l("module " + mapping.TypeScriptModule + " {").ind(1)
+		moduleCode := newCode("	")
+		structIndent := -1
+		if conf.ModuleKind == config.ModuleKindCommonJS {
+			structIndent = -3
+			moduleCode.l("// hello commonjs")
+		} else {
+			moduleCode.l("module " + mapping.TypeScriptModule + " {").ind(1)
+		}
+
 		structNames := []string{"___goConstants"}
 
 		for structName := range mappedStructsMap {
@@ -93,11 +101,15 @@ func Build(conf *config.Config, goPath string) {
 
 			structCode, ok := mappedStructsMap[structName]
 			if ok {
-				moduleCode.app(structCode.ind(-1).l("").string())
+				moduleCode.app(structCode.ind(structIndent).l("").string())
 			}
 		}
 
-		moduleCode.ind(-1).l("}")
+		if conf.ModuleKind == config.ModuleKindCommonJS {
+			moduleCode.l("// end of common js")
+		} else {
+			moduleCode.ind(-1).l("}")
+		}
 		updateErr := updateCode(mapping.Out, moduleCode.string())
 		if updateErr != nil {
 			fmt.Fprintln(os.Stderr, "	failed to update code in", mapping.Out, updateErr)

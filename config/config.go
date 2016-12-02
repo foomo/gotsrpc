@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 
 	"gopkg.in/yaml.v2"
@@ -21,9 +23,17 @@ type Mapping struct {
 
 type TypeScriptMappings map[string]*Mapping
 
+type ModuleKind string
+
+const (
+	ModuleKindDefault  ModuleKind = "default"
+	ModuleKindCommonJS ModuleKind = "commonjs"
+)
+
 type Config struct {
-	Targets  map[string]*Target
-	Mappings TypeScriptMappings
+	ModuleKind ModuleKind
+	Targets    map[string]*Target
+	Mappings   TypeScriptMappings
 }
 
 func LoadConfigFile(file string) (conf *Config, err error) {
@@ -40,6 +50,15 @@ func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 	yamlErr := yaml.Unmarshal(yamlBytes, conf)
 	if yamlErr != nil {
 		err = yamlErr
+		return
+	}
+	switch conf.ModuleKind {
+	case ModuleKindCommonJS, ModuleKindDefault:
+	case "":
+		conf.ModuleKind = ModuleKindDefault
+
+	default:
+		err = errors.New(fmt.Sprintln("illegal module kind:", conf.ModuleKind, "must be in", ModuleKindDefault, ModuleKindCommonJS))
 		return
 	}
 	for goPackage, mapping := range conf.Mappings {

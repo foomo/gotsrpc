@@ -9,6 +9,7 @@ targets:
       /service/demo: Service
     package: github.com/foomo/gotsrpc/demo
     module: My.Service
+		modulekind: commonjs
     out: /tmp/my-service.ts 
 mappings:
   foo/bar:
