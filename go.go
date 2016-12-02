@@ -175,10 +175,14 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
         func (p *` + proxyName + `) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			for _, origin := range p.allowOrigin {
+				// todo we have to compare this with the referer ... and only send one
 				w.Header().Add("Access-Control-Allow-Origin", origin)
 			}
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-	        if r.Method != "POST" {
+	        if r.Method != http.MethodPost {
+				if r.Method == http.MethodOptions {
+					return
+				}
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return
 	        }
