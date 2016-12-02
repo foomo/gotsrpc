@@ -102,7 +102,7 @@ func renderService(service *Service, mappings config.TypeScriptMappings, scalarT
 	clientName := service.Name + "Client"
 	ts.l("export class " + clientName + " {").ind(1).
 		l("static defaultInst = new " + clientName + ";").
-		l("constructor(public endPoint:string = \"/service\") {  }")
+		l("constructor(public endPoint:string = \"/service\", public transport = GoTSRPC.call) {  }")
 	for _, method := range service.Methods {
 
 		ts.app(lcfirst(method.Name) + "(")
@@ -161,7 +161,7 @@ func renderService(service *Service, mappings config.TypeScriptMappings, scalarT
 		ts.app(", err:(request:XMLHttpRequest) => void) {").nl()
 		ts.ind(1)
 		// generic framework call
-		ts.l("GoTSRPC.call(this.endPoint, \"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "], success, err);")
+		ts.l("this.transport(this.endPoint, \"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "], success, err);")
 		ts.ind(-1)
 		ts.app("}")
 		ts.nl()
@@ -280,7 +280,8 @@ func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMap
         var request = new XMLHttpRequest();
         request.withCredentials = true;
         request.open('POST', endPoint + "/" + encodeURIComponent(method), true);
-        request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+		// this causes problems, when the browser decides to do a cors OPTIONS request
+        // request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
         request.send(JSON.stringify(args));            
         request.onload = function() {
             if (request.status == 200) {
