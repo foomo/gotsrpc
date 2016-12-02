@@ -8,7 +8,7 @@ import (
 
 type Target struct {
 	Package          string
-	Services         []string
+	Services         map[string]string
 	TypeScriptModule string `yaml:"module"`
 	Out              string
 }

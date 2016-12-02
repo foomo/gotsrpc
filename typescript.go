@@ -98,11 +98,11 @@ func renderStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes m
 	return nil
 }
 
-func renderService(service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
+func renderService(service *Service, endpoint string, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
 	clientName := service.Name + "Client"
 	ts.l("export class " + clientName + " {").ind(1).
 		l("static defaultInst = new " + clientName + ";").
-		l("constructor(public endPoint:string = \"/service\", public transport = GoTSRPC.call) {  }")
+		l("constructor(public endPoint:string = \"" + endpoint + "\", public transport = GoTSRPC.call) {  }")
 	for _, method := range service.Methods {
 
 		ts.app(lcfirst(method.Name) + "(")
@@ -272,7 +272,7 @@ func ucFirst(str string) string {
 	return constPrefix
 }
 
-func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, tsModuleName string) (typeScript string, err error) {
+func RenderTypeScriptServices(services map[string]*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, tsModuleName string) (typeScript string, err error) {
 	ts := newCode("	")
 	if !SkipGoTSRPC {
 		ts.l(`module GoTSRPC {
@@ -305,8 +305,8 @@ func RenderTypeScriptServices(services []*Service, mappings config.TypeScriptMap
 	ts.l("module " + tsModuleName + " {")
 	ts.ind(1)
 
-	for _, service := range services {
-		err = renderService(service, mappings, scalarTypes, ts)
+	for endPoint, service := range services {
+		err = renderService(service, endPoint, mappings, scalarTypes, ts)
 		if err != nil {
 			return
 		}

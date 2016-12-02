@@ -35,6 +35,7 @@ func Build(conf *config.Config, goPath string) {
 			fmt.Fprintln(os.Stderr, "	an error occured while trying to understand your code", err)
 			os.Exit(2)
 		}
+
 		ts, err := RenderTypeScriptServices(services, conf.Mappings, scalarTypes, target.TypeScriptModule)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)

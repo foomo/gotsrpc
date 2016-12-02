@@ -105,7 +105,7 @@ func strfirst(str string, strfunc func(string) string) string {
 
 }
 
-func renderServiceProxies(services []*Service, fullPackageName string, packageName string, g *code) error {
+func renderServiceProxies(services map[string]*Service, fullPackageName string, packageName string, g *code) error {
 	aliases := map[string]string{
 		"net/http": "http",
 		"time":     "time",
@@ -290,7 +290,7 @@ func renderServiceProxies(services []*Service, fullPackageName string, packageNa
 	return nil
 }
 
-func RenderGo(services []*Service, longPackageName, packageName string) (gocode string, err error) {
+func RenderGo(services map[string]*Service, longPackageName, packageName string) (gocode string, err error) {
 	g := newCode("	")
 	err = renderServiceProxies(services, longPackageName, packageName, g)
 	if err != nil {

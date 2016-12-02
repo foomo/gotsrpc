@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func readServiceFile(file *ast.File, packageName string, services []*Service) error {
+func readServiceFile(file *ast.File, packageName string, services map[string]*Service) error {
 	findService := func(serviceName string) (service *Service, ok bool) {
 		for _, service := range services {
 			if service.Name == serviceName {
@@ -133,13 +133,13 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 
 }
 
-func readServicesInPackage(pkg *ast.Package, packageName string, serviceNames []string) (services []*Service, err error) {
-	services = []*Service{}
-	for _, serviceName := range serviceNames {
-		services = append(services, &Service{
+func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services map[string]*Service, err error) {
+	services = map[string]*Service{}
+	for endpoint, serviceName := range serviceMap {
+		services[endpoint] = &Service{
 			Name:    serviceName,
 			Methods: []*Method{},
-		})
+		}
 	}
 	for _, file := range pkg.Files {
 		err = readServiceFile(file, packageName, services)
@@ -182,8 +182,8 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 
 }
 
-func Read(goPath string, packageName string, serviceNames []string) (services []*Service, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
-	if len(serviceNames) == 0 {
+func Read(goPath string, packageName string, serviceMap map[string]string) (services map[string]*Service, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
+	if len(serviceMap) == 0 {
 		err = errors.New("nothing to do service names are empty")
 		return
 	}
@@ -191,8 +191,7 @@ func Read(goPath string, packageName string, serviceNames []string) (services []
 	if err != nil {
 		return
 	}
-
-	services, err = readServicesInPackage(pkg, packageName, serviceNames)
+	services, err = readServicesInPackage(pkg, packageName, serviceMap)
 	if err != nil {
 		return
 	}

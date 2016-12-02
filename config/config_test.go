@@ -6,7 +6,7 @@ const sampleConf = `---
 targets:
   demo:
     services:
-      - Service
+      /service/demo: Service
     package: github.com/foomo/gotsrpc/demo
     module: My.Service
     out: /tmp/my-service.ts 
@@ -56,7 +56,7 @@ func TestLoadConfig(t *testing.T) {
 	if len(demoTarget.Services) != 1 {
 		t.Fatal("wrong number of services")
 	}
-	if demoTarget.Services[0] != "Service" {
-		t.Fatal("first serive is wrong")
+	if demoTarget.Services["/service/demo"] != "Service" {
+		t.Fatal("first service is wrong")
 	}
 }
