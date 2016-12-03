@@ -154,7 +154,7 @@ func renderServiceProxies(services map[string]*Service, fullPackageName string, 
 			` + imports + `
         )
     `)
-	for _, service := range services {
+	for endpoint, service := range services {
 		proxyName := service.Name + "GoTSRPCProxy"
 		g.l(`
         type ` + proxyName + ` struct {
@@ -162,6 +162,15 @@ func renderServiceProxies(services map[string]*Service, fullPackageName string, 
 			allowOrigin []string
 	        service  *` + service.Name + `
         }
+
+        func NewDefault` + proxyName + `(service *` + service.Name + `, allowOrigin []string) *` + proxyName + ` {
+	        return &` + proxyName + `{
+		        EndPoint: "` + endpoint + `",
+				allowOrigin : allowOrigin,
+		        service:  service,
+	        }
+        }
+
 
         func New` + proxyName + `(service *` + service.Name + `, endpoint string, allowOrigin []string) *` + proxyName + ` {
 	        return &` + proxyName + `{
