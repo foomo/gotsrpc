@@ -12,6 +12,7 @@ import (
 
 const goConstPseudoPackage = "__goConstants"
 
+// @todo refactor this is wrong
 var SkipGoTSRPC = false
 
 func (f *Field) tsName() string {
@@ -98,11 +99,24 @@ func renderStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes m
 	return nil
 }
 
-func renderService(service *Service, endpoint string, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
+func renderService(skipGoTSRPC bool, moduleKind config.ModuleKind, service *Service, endpoint string, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
 	clientName := service.Name + "Client"
-	ts.l("export class " + clientName + " {").ind(1).
-		l("static defaultInst = new " + clientName + ";").
-		l("constructor(public endPoint:string = \"" + endpoint + "\", public transport = GoTSRPC.call) {  }")
+
+	ts.l("export class " + clientName + " {").ind(1)
+
+	if moduleKind == config.ModuleKindCommonJS {
+		if skipGoTSRPC {
+			ts.l("constructor(public endPoint:string = \"" + endpoint + "\", public transport:(endPoint:string, method:string, args:any[], success:any, err:any) => void) {  }")
+		} else {
+			ts.l("static defaultInst = new " + clientName + ";")
+			ts.l("constructor(public endPoint:string = \"" + endpoint + "\", public transport = call) {  }")
+		}
+
+	} else {
+		ts.l("static defaultInst = new " + clientName + ";")
+		ts.l("constructor(public endPoint:string = \"" + endpoint + "\", public transport = GoTSRPC.call) {  }")
+	}
+
 	for _, method := range service.Methods {
 
 		ts.app(lcfirst(method.Name) + "(")
@@ -274,8 +288,12 @@ func ucFirst(str string) string {
 func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, tsModuleName string) (typeScript string, err error) {
 	ts := newCode("	")
 	if !SkipGoTSRPC {
-		ts.l(`module GoTSRPC {
-    export function call(endPoint:string, method:string, args:any[], success:any, err:any) {
+
+		if moduleKind != config.ModuleKindCommonJS {
+			ts.l(`module GoTSRPC {`)
+		}
+
+		ts.l(`export const call = (endPoint:string, method:string, args:any[], success:any, err:any) => {
         var request = new XMLHttpRequest();
         request.withCredentials = true;
         request.open('POST', endPoint + "/" + encodeURIComponent(method), true);
@@ -298,15 +316,19 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]
             err(request);
         };
     }
-}`)
+`)
+
 	}
 	if config.ModuleKindCommonJS != moduleKind {
+		if !SkipGoTSRPC {
+			ts.l("} // close")
+		}
 		ts.l("module " + tsModuleName + " {")
 		ts.ind(1)
 	}
 
 	for endPoint, service := range services {
-		err = renderService(service, endPoint, mappings, scalarTypes, ts)
+		err = renderService(SkipGoTSRPC, moduleKind, service, endPoint, mappings, scalarTypes, ts)
 		if err != nil {
 			return
 		}

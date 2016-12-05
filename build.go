@@ -10,10 +10,48 @@ import (
 	"sort"
 	"strings"
 
+	"path/filepath"
+
 	"github.com/foomo/gotsrpc/config"
 )
 
+func deriveCommonJSMapping(conf *config.Config) {
+	replacer := strings.NewReplacer(".", "_", "/", "_", "-", "_")
+	for _, mapping := range conf.Mappings {
+		mapping.TypeScriptModule = replacer.Replace(mapping.GoPackage) //strings.Replace(strings.Replace(mapping.GoPackage, ".", "_", -1), "/", "_", -1)
+	}
+}
+
+func relativeFilePath(a, b string) (r string, e error) {
+	r, e = filepath.Rel(path.Dir(a), b)
+	if e != nil {
+		return
+	}
+	r = strings.TrimSuffix(r, ".ts")
+	return
+}
+
+func commonJSImports(conf *config.Config, c *code, tsFilename string) {
+	c.l("// hello commonjs - we need some imports")
+	for _, importMapping := range conf.Mappings {
+
+		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out)
+		if relativeErr != nil {
+			fmt.Println("can not derive a relative path between", tsFilename, "and", importMapping.Out, relativeErr)
+			os.Exit(1)
+		}
+
+		c.l("import * as " + importMapping.TypeScriptModule + " from '" + relativePath + "'; // " + tsFilename + " to " + importMapping.Out)
+	}
+
+}
+
 func Build(conf *config.Config, goPath string) {
+
+	if conf.ModuleKind == config.ModuleKindCommonJS {
+		deriveCommonJSMapping(conf)
+	}
+
 	mappedTypeScript := map[string]map[string]*code{}
 	for name, target := range conf.Targets {
 		fmt.Fprintln(os.Stderr, "building target", name)
@@ -40,6 +78,12 @@ func Build(conf *config.Config, goPath string) {
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 			os.Exit(3)
+		}
+		if conf.ModuleKind == config.ModuleKindCommonJS {
+			tsClientCode := newCode("	")
+			commonJSImports(conf, tsClientCode, target.Out)
+			tsClientCode.l("").l("")
+			ts = tsClientCode.string() + ts
 		}
 
 		// fmt.Fprintln(os.Stdout, ts)
@@ -73,7 +117,7 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(5)
 		}
 	}
-
+	//	spew.Dump(mappedTypeScript)
 	for goPackage, mappedStructsMap := range mappedTypeScript {
 		mapping, ok := conf.Mappings[goPackage]
 		if !ok {
@@ -86,7 +130,7 @@ func Build(conf *config.Config, goPath string) {
 		structIndent := -1
 		if conf.ModuleKind == config.ModuleKindCommonJS {
 			structIndent = -3
-			moduleCode.l("// hello commonjs")
+			commonJSImports(conf, moduleCode, mapping.Out)
 		} else {
 			moduleCode.l("module " + mapping.TypeScriptModule + " {").ind(1)
 		}
