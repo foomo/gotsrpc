@@ -41,7 +41,7 @@ func commonJSImports(conf *config.Config, c *code, tsFilename string) {
 			os.Exit(1)
 		}
 
-		c.l("import * as " + importMapping.TypeScriptModule + " from '" + relativePath + "'; // " + tsFilename + " to " + importMapping.Out)
+		c.l("import * as " + importMapping.TypeScriptModule + " from './" + relativePath + "'; // " + tsFilename + " to " + importMapping.Out)
 	}
 
 }

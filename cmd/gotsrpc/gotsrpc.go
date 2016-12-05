@@ -40,7 +40,7 @@ func main() {
 
 	conf, err := config.LoadConfigFile(args[0])
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "config load error, could not load config from", args[0])
+		fmt.Fprintln(os.Stderr, "config load error, could not load config from", args[0], ":", err)
 		os.Exit(2)
 	}
 	gotsrpc.Build(conf, goPath)

@@ -39,7 +39,7 @@ type Config struct {
 func LoadConfigFile(file string) (conf *Config, err error) {
 	yamlBytes, readErr := ioutil.ReadFile(file)
 	if readErr != nil {
-		err = readErr
+		err = errors.New("could not read config file: " + readErr.Error())
 		return
 	}
 	return loadConfig(yamlBytes)
@@ -49,7 +49,7 @@ func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 	conf = &Config{}
 	yamlErr := yaml.Unmarshal(yamlBytes, conf)
 	if yamlErr != nil {
-		err = yamlErr
+		err = errors.New("could not parse yaml: " + yamlErr.Error())
 		return
 	}
 	switch conf.ModuleKind {
