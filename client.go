@@ -22,7 +22,7 @@ func CallClient(url string, endpoint string, method string, args []interface{}, 
 	// Create request
 	request := "[" + strings.Join(jsonArgs, ",") + "]"
 	// Create post url
-	postURL := fmt.Sprintf("%s%s%s", url, endpoint, method)
+	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
 	// Post
 	resp, err := http.Post(postURL, "application/json", strings.NewReader(request))
 	if err != nil {
