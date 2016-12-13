@@ -11,7 +11,7 @@ import (
 // CallClient calls a method on the remove service
 func CallClient(url string, endpoint string, method string, args []interface{}, reply []interface{}) error {
 	// Marshall args
-	jsonArgs := make([]string, len(args))
+	jsonArgs := []string{}
 	for _, value := range args {
 		jsonArg, err := json.Marshal(value)
 		if err != nil {
@@ -29,14 +29,14 @@ func CallClient(url string, endpoint string, method string, args []interface{}, 
 		return err
 	}
 	defer resp.Body.Close()
-	// Check status
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Error: %s", resp.Status)
-	}
 	// Read in body
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+	// Check status
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 	// Unmarshal reply
 	if err := json.Unmarshal(body, &reply); err != nil {
