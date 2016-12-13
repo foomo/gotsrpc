@@ -92,7 +92,9 @@ func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 		return ScalarTypeString
 	case "bool":
 		return ScalarTypeBool
-	case "int", "int32", "int64", "float", "float32", "float64":
+	case "float", "float32", "float64",
+		"int", "int8", "int16", "int32", "int64",
+		"uint", "uint8", "uint16", "uint32", "uint64":
 		return ScalarTypeNumber
 	default:
 		if ident.Obj != nil && ident.Obj.Decl != nil && reflect.ValueOf(ident.Obj.Decl).Type().String() == "*ast.TypeSpec" {
