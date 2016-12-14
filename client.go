@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// ClientTransport to use for calls
+var ClientTransport = &http.Transport{}
+
 // CallClient calls a method on the remove service
 func CallClient(url string, endpoint string, method string, args []interface{}, reply []interface{}) error {
 	// Marshall args
@@ -24,7 +27,8 @@ func CallClient(url string, endpoint string, method string, args []interface{}, 
 	// Create post url
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
 	// Post
-	resp, err := http.Post(postURL, "application/json", strings.NewReader(request))
+	client := &http.Client{Transport: ClientTransport}
+	resp, err := client.Post(postURL, "application/json", strings.NewReader(request))
 	if err != nil {
 		return err
 	}
