@@ -204,25 +204,27 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 		v.Array = &Array{Value: &Value{}}
 
 		switch reflect.ValueOf(fieldArray.Elt).Type().String() {
+		case "*ast.ArrayType":
+			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
+			v.Array.Value.loadExpr(fieldArray.Elt.(*ast.ArrayType), fileImports)
 		case "*ast.Ident":
 			readAstType(v.Array.Value, fieldArray.Elt.(*ast.Ident), fileImports)
 		case "*ast.StarExpr":
 			readAstStarExpr(v.Array.Value, fieldArray.Elt.(*ast.StarExpr), fileImports)
-		case "*ast.ArrayType":
-			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
-			v.Array.Value.loadExpr(fieldArray.Elt.(*ast.ArrayType), fileImports)
 		case "*ast.MapType":
 			v.Array.Value.Map = &Map{
 				Value: &Value{},
 			}
 			readAstMapType(v.Array.Value.Map, fieldArray.Elt.(*ast.MapType), fileImports)
+		case "*ast.SelectorExpr":
+			readAstSelectorExpr(v.Array.Value, fieldArray.Elt.(*ast.SelectorExpr), fileImports)
+		case "*ast.StructType":
+			readAstStructType(v.Array.Value, fieldArray.Elt.(*ast.StructType), fileImports)
 		default:
 			trace("---------------------> array of", reflect.ValueOf(fieldArray.Elt).Type().String())
 		}
 	case "*ast.Ident":
-
 		fieldIdent := expr.(*ast.Ident)
-
 		readAstType(v, fieldIdent, fileImports)
 	case "*ast.StarExpr":
 		// a pointer on sth
