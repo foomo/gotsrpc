@@ -26,10 +26,17 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 			t += aliases[v.StructType.Package] + "."
 		}
 		t += v.StructType.Name
-
+	case v.Scalar != nil:
+		// TODO this is a hack to retrieve string types
+		if packageName != v.Scalar.Package {
+			t += aliases[v.Scalar.Package] + "."
+		}
+		t += v.Scalar.Name[len(v.Scalar.Package)+1:]
+	default:
+		// TODO
 	}
-	return
 
+	return
 }
 
 func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
@@ -346,12 +353,12 @@ func renderServiceProxies(services map[string]*Service, fullPackageName string, 
 				rets = append(rets, "&"+name)
 				returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
 			}
-			returns = append(returns, "err error")
+			returns = append(returns, "clientErr error")
 			g.l(`func (c *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
 			g.ind(1)
 			g.l(`args := []interface{}{` + strings.Join(args, ", ") + `}`)
 			g.l(`reply := []interface{}{` + strings.Join(rets, ", ") + `}`)
-			g.l(`err = gotsrpc.CallClient(c.URL, c.EndPoint, "` + method.Name + `", args, reply)`)
+			g.l(`clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "` + method.Name + `", args, reply)`)
 			g.l(`return`)
 			g.ind(-1)
 			g.l(`}`)
