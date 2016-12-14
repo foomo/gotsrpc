@@ -3,7 +3,7 @@ targets:
   demo:
     module: GoTSRPC.Demo
     services:
-      - Service
+      /service/demo: Service
     package: github.com/foomo/gotsrpc/demo
     out: /tmp/test.ts 
 mappings:

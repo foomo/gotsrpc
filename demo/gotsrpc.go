@@ -3,13 +3,23 @@ package demo
 
 import (
 	gotsrpc "github.com/foomo/gotsrpc"
+	nested "github.com/foomo/gotsrpc/demo/nested"
 	http "net/http"
+	time "time"
 )
 
 type ServiceGoTSRPCProxy struct {
 	EndPoint    string
 	allowOrigin []string
 	service     *Service
+}
+
+func NewDefaultServiceGoTSRPCProxy(service *Service, allowOrigin []string) *ServiceGoTSRPCProxy {
+	return &ServiceGoTSRPCProxy{
+		EndPoint:    "/service/demo",
+		allowOrigin: allowOrigin,
+		service:     service,
+	}
 }
 
 func NewServiceGoTSRPCProxy(service *Service, endpoint string, allowOrigin []string) *ServiceGoTSRPCProxy {
@@ -24,45 +34,131 @@ func NewServiceGoTSRPCProxy(service *Service, endpoint string, allowOrigin []str
 func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	for _, origin := range p.allowOrigin {
+		// todo we have to compare this with the referer ... and only send one
 		w.Header().Add("Access-Control-Allow-Origin", origin)
 	}
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
+		if r.Method == http.MethodOptions {
+			return
+		}
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
 
 	var args []interface{}
-	switch gotsrpc.GetCalledFunc(r, p.EndPoint) {
-	case "Hello":
-		args = []interface{}{""}
-		err := gotsrpc.LoadArgs(args, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		helloReply, helloErr := p.service.Hello(args[0].(string))
-		gotsrpc.Reply([]interface{}{helloReply, helloErr}, w)
-		return
+	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
+	callStats := gotsrpc.GetStatsForRequest(r)
+	if callStats != nil {
+		callStats.Func = funcName
+		callStats.Package = "github.com/foomo/gotsrpc/demo"
+		callStats.Service = "Service"
+	}
+	switch funcName {
 	case "ExtractAddress":
 		args = []interface{}{&Person{}}
-		err := gotsrpc.LoadArgs(args, r)
+		err := gotsrpc.LoadArgs(args, callStats, r)
 		if err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
+		executionStart := time.Now()
 		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*Person))
-		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, w)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, callStats, r, w)
 		return
-	case "TestScalarInPlace":
-		testScalarInPlaceRet := p.service.TestScalarInPlace()
-		gotsrpc.Reply([]interface{}{testScalarInPlaceRet}, w)
+	case "GiveMeAScalar":
+		executionStart := time.Now()
+		giveMeAScalarAmount, giveMeAScalarWahr, giveMeAScalarHier := p.service.GiveMeAScalar()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{giveMeAScalarAmount, giveMeAScalarWahr, giveMeAScalarHier}, callStats, r, w)
+		return
+	case "Hello":
+		args = []interface{}{""}
+		err := gotsrpc.LoadArgs(args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		helloReply, helloErr := p.service.Hello(args[0].(string))
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{helloReply, helloErr}, callStats, r, w)
 		return
 	case "Nest":
+		executionStart := time.Now()
 		nestRet := p.service.Nest()
-		gotsrpc.Reply([]interface{}{nestRet}, w)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{nestRet}, callStats, r, w)
+		return
+	case "TestScalarInPlace":
+		executionStart := time.Now()
+		testScalarInPlaceRet := p.service.TestScalarInPlace()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{testScalarInPlaceRet}, callStats, r, w)
 		return
 	default:
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
 	}
+}
+
+type ServiceGoTSRPCClient struct {
+	URL      string
+	EndPoint string
+}
+
+func NewDefaultServiceGoTSRPCClient(url string) *ServiceGoTSRPCClient {
+	return NewServiceGoTSRPCClient(url, "/service/demo")
+}
+
+func NewServiceGoTSRPCClient(url string, endpoint string) *ServiceGoTSRPCClient {
+	return &ServiceGoTSRPCClient{
+		URL:      url,
+		EndPoint: endpoint,
+	}
+}
+
+func (c *ServiceGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
+	args := []interface{}{person}
+	reply := []interface{}{&addr, &e}
+	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "ExtractAddress", args, reply)
+	return
+}
+
+func (c *ServiceGoTSRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&amount, &wahr, &hier}
+	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "GiveMeAScalar", args, reply)
+	return
+}
+
+func (c *ServiceGoTSRPCClient) Hello(name string) (reply string, err *Err, clientErr error) {
+	args := []interface{}{name}
+	reply := []interface{}{&reply, &err}
+	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
+	return
+}
+
+func (c *ServiceGoTSRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&retNest_0}
+	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Nest", args, reply)
+	return
+}
+
+func (c *ServiceGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&retTestScalarInPlace_0}
+	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "TestScalarInPlace", args, reply)
+	return
 }

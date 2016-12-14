@@ -1,8 +1,6 @@
 package demo
 
-import "github.com/foomo/gotsrpc/demo/nested"
-
-//import nstd "github.com/foomo/gotsrpc/demo/nested"
+import nstd "github.com/foomo/gotsrpc/demo/nested"
 
 type Address struct {
 	City              string   `json:"city,omitempty"`
@@ -13,8 +11,8 @@ type Address struct {
 	ArrayArrayAddress [][]*Address
 	People            []Person
 	MapCrap           map[string]map[int]bool
-	NestedPtr         *nested.Nested
-	NestedStruct      nested.Nested
+	NestedPtr         *nstd.Nested
+	NestedStruct      nstd.Nested
 }
 
 type Person struct {
@@ -43,11 +41,11 @@ func (s *Service) TestScalarInPlace() ScalarInPlace {
 	return ScalarInPlace("hier")
 }
 
-func (s *Service) Nest() *nested.Nested {
+func (s *Service) Nest() *nstd.Nested {
 	return nil
 }
 
-//func (s *Service) GiveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {
-func (s *Service) giveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace) {
-	return nested.Amount(10), nested.ItIsTrue, ScalarInPlace("hier")
+func (s *Service) GiveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {
+	//func (s *Service) giveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {
+	return nstd.Amount(10), nstd.ItIsTrue, ScalarInPlace("hier")
 }
