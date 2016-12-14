@@ -133,27 +133,32 @@ func renderServiceProxies(services map[string]*Service, fullPackageName string, 
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
 	r := strings.NewReplacer(".", "_", "/", "_", "-", "_")
+
+	extractImport := func(st *StructType) {
+		if st.Package != fullPackageName {
+			alias, ok := aliases[st.Package]
+			if !ok {
+				packageParts := strings.Split(st.Package, "/")
+				beautifulAlias := packageParts[len(packageParts)-1]
+				uglyAlias := r.Replace(st.Package)
+				alias = beautifulAlias
+				for _, otherAlias := range aliases {
+					if otherAlias == beautifulAlias {
+						alias = uglyAlias
+						break
+					}
+				}
+				aliases[st.Package] = alias
+			}
+		}
+	}
+
 	extractImports := func(fields []*Field) {
 		for _, f := range fields {
 			if f.Value.StructType != nil {
-				st := f.Value.StructType
-				if st.Package != fullPackageName {
-					alias, ok := aliases[st.Package]
-					if !ok {
-						packageParts := strings.Split(st.Package, "/")
-						beautifulAlias := packageParts[len(packageParts)-1]
-						uglyAlias := r.Replace(st.Package)
-						alias = beautifulAlias
-						for _, otherAlias := range aliases {
-							if otherAlias == beautifulAlias {
-								alias = uglyAlias
-								break
-							}
-						}
-						aliases[st.Package] = alias
-					}
-
-				}
+				extractImport(f.Value.StructType)
+			} else if f.Value.Array != nil && f.Value.Array.Value.StructType != nil {
+				extractImport(f.Value.Array.Value.StructType)
 			}
 		}
 	}
