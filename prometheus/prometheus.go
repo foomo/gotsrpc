@@ -28,7 +28,7 @@ func InstrumentService(s http.HandlerFunc) (handler http.HandlerFunc) {
 	}
 }
 
-func InstrumentGoRPCService()  {
+func InstrumentGoRPCService() gotsrpc.GoRPCCallStatsHandlerFun {
 	callsCounter := p.NewSummaryVec(p.SummaryOpts{
 		Namespace: "gorpc",
 		Subsystem: "service",

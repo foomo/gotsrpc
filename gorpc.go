@@ -1,4 +1,4 @@
 package gotsrpc
 
 
-type GoRPCCallStatsHandlerFun func(stats CallStats)
+type GoRPCCallStatsHandlerFun func(stats *CallStats)

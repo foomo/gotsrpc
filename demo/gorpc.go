@@ -17,7 +17,7 @@ type (
 	ServiceGoRPCProxy struct {
 		server           *gorpc.Server
 		service          *Service
-		callStatsHandler *gotsrpc.GoRPCCallStatsHandlerFun
+		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
 	ExtractAddressRequest struct {
@@ -92,7 +92,7 @@ func (p *ServiceGoRPCProxy) Stop() {
 	p.server.Stop()
 }
 
-func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler *gotsrpc.GoRPCCallStatsHandlerFun) {
+func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
 	p.callStatsHandler = handler
 }
 
@@ -126,7 +126,7 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 	}
 
 	if p.callStatsHandler != nil {
-		*p.callStatsHandler(gotsrpc.CallStats{
+		p.callStatsHandler(&gotsrpc.CallStats{
 			Func:      funcName,
 			Package:   "github.com/foomo/gotsrpc/demo",
 			Service:   "Service",

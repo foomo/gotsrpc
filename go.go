@@ -442,7 +442,7 @@ func renderRPCServiceProxies(services map[string]*Service, fullPackageName strin
         ` + proxyName + ` struct {
         	server *gorpc.Server
 	        service  *` + service.Name + `
-	        callStatsHandler *gotsrpc.GoRPCCallStatsHandlerFun
+	        callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
         }
 		`)
 		// Request & Response types
@@ -498,7 +498,7 @@ func renderRPCServiceProxies(services map[string]*Service, fullPackageName strin
         	p.server.Stop()
         }
 
-        func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler *gotsrpc.GoRPCCallStatsHandlerFun) {
+        func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
 					p.callStatsHandler = handler
 				}
 		`)
@@ -543,7 +543,7 @@ func renderRPCServiceProxies(services map[string]*Service, fullPackageName strin
 		g.l(`}`)
 		g.nl()
 		g.l(`if p.callStatsHandler != nil {`)
-		g.l(`*p.callStatsHandler(gotsrpc.CallStats{`)
+		g.l(`p.callStatsHandler(&gotsrpc.CallStats{`)
 		g.l(`Func: funcName,`)
 		g.l(`Package: "` + fullPackageName + `",`)
 		g.l(`Service: "` + service.Name + `",`)
