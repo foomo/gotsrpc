@@ -27,3 +27,17 @@ func InstrumentService(s http.HandlerFunc) (handler http.HandlerFunc) {
 		}
 	}
 }
+
+func InstrumentGoRPCService()  {
+	callsCounter := p.NewSummaryVec(p.SummaryOpts{
+		Namespace: "gorpc",
+		Subsystem: "service",
+		Name:      "time_seconds",
+		Help:      "seconds to execute a service method",
+	}, []string{"package", "service", "func", "type"})
+	p.MustRegister(callsCounter)
+
+	return func(stats *gotsrpc.CallStats) {
+		callsCounter.WithLabelValues(stats.Package, stats.Service, stats.Func, "execution").Observe(float64(stats.Execution))
+	}
+}

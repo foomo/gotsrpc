@@ -9,10 +9,11 @@ import (
 )
 
 type Target struct {
-	Package          string
-	Services         map[string]string
+	Package          string `yaml:"package"`
+	Services         map[string]string `yaml:"services"`
 	TypeScriptModule string `yaml:"module"`
-	Out              string
+	Out              string `yaml:"out"`
+	RPC              bool `yaml:"rpc"`
 }
 
 type Mapping struct {

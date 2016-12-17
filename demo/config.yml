@@ -5,7 +5,8 @@ targets:
     services:
       /service/demo: Service
     package: github.com/foomo/gotsrpc/demo
-    out: /tmp/test.ts 
+    out: /tmp/test.ts
+    rpc: true
 mappings:
   github.com/foomo/gotsrpc/demo:
     module: GoTSRPC.Demo

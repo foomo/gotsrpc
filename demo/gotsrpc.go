@@ -3,7 +3,6 @@ package demo
 
 import (
 	gotsrpc "github.com/foomo/gotsrpc"
-	nested "github.com/foomo/gotsrpc/demo/nested"
 	http "net/http"
 	time "time"
 )
@@ -110,55 +109,4 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	default:
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
 	}
-}
-
-type ServiceGoTSRPCClient struct {
-	URL      string
-	EndPoint string
-}
-
-func NewDefaultServiceGoTSRPCClient(url string) *ServiceGoTSRPCClient {
-	return NewServiceGoTSRPCClient(url, "/service/demo")
-}
-
-func NewServiceGoTSRPCClient(url string, endpoint string) *ServiceGoTSRPCClient {
-	return &ServiceGoTSRPCClient{
-		URL:      url,
-		EndPoint: endpoint,
-	}
-}
-
-func (c *ServiceGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
-	args := []interface{}{person}
-	reply := []interface{}{&addr, &e}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "ExtractAddress", args, reply)
-	return
-}
-
-func (c *ServiceGoTSRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
-	args := []interface{}{}
-	reply := []interface{}{&amount, &wahr, &hier}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "GiveMeAScalar", args, reply)
-	return
-}
-
-func (c *ServiceGoTSRPCClient) Hello(name string) (reply string, err *Err, clientErr error) {
-	args := []interface{}{name}
-	reply := []interface{}{&reply, &err}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
-	return
-}
-
-func (c *ServiceGoTSRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
-	args := []interface{}{}
-	reply := []interface{}{&retNest_0}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Nest", args, reply)
-	return
-}
-
-func (c *ServiceGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
-	args := []interface{}{}
-	reply := []interface{}{&retTestScalarInPlace_0}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "TestScalarInPlace", args, reply)
-	return
 }
