@@ -14,9 +14,83 @@ import (
 )
 
 type (
-	ServiceGoRPCProxy struct {
+	FooGoRPCProxy struct {
 		server           *gorpc.Server
-		service          *Service
+		service          *Foo
+		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
+	}
+
+	HelloRequest struct {
+		Number int64
+	}
+	HelloResponse struct {
+		RetHello_0 int
+	}
+)
+
+func init() {
+	gob.Register(HelloRequest{})
+	gob.Register(HelloResponse{})
+}
+
+func NewFooGoRPCProxy(addr string, service *Foo, tlsConfig *tls.Config) *FooGoRPCProxy {
+	proxy := &FooGoRPCProxy{
+		service: service,
+	}
+
+	if tlsConfig != nil {
+		proxy.server = gorpc.NewTLSServer(addr, proxy.handler, tlsConfig)
+	} else {
+		proxy.server = gorpc.NewTCPServer(addr, proxy.handler)
+	}
+
+	return proxy
+}
+
+func (p *FooGoRPCProxy) Start() error {
+	return p.server.Start()
+}
+
+func (p *FooGoRPCProxy) Stop() {
+	p.server.Stop()
+}
+
+func (p *FooGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
+	p.callStatsHandler = handler
+}
+
+func (p *FooGoRPCProxy) handler(clientAddr string, request interface{}) (response interface{}) {
+	start := time.Now()
+
+	reqType := reflect.TypeOf(request).String()
+	funcNameParts := strings.Split(reqType, ".")
+	funcName := funcNameParts[len(funcNameParts)-1]
+
+	switch funcName {
+	case "HelloRequest":
+		req := request.(HelloRequest)
+		retHello_0 := p.service.Hello(req.Number)
+		response = HelloResponse{RetHello_0: retHello_0}
+	default:
+		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
+	}
+
+	if p.callStatsHandler != nil {
+		p.callStatsHandler(&gotsrpc.CallStats{
+			Func:      funcName,
+			Package:   "github.com/foomo/gotsrpc/demo",
+			Service:   "Foo",
+			Execution: time.Since(start),
+		})
+	}
+
+	return
+}
+
+type (
+	DemoGoRPCProxy struct {
+		server           *gorpc.Server
+		service          *Demo
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
@@ -44,6 +118,12 @@ type (
 		Err   *Err
 	}
 
+	MapCrapRequest struct {
+	}
+	MapCrapResponse struct {
+		Crap map[string][]int
+	}
+
 	NestRequest struct {
 	}
 	NestResponse struct {
@@ -64,14 +144,16 @@ func init() {
 	gob.Register(GiveMeAScalarResponse{})
 	gob.Register(HelloRequest{})
 	gob.Register(HelloResponse{})
+	gob.Register(MapCrapRequest{})
+	gob.Register(MapCrapResponse{})
 	gob.Register(NestRequest{})
 	gob.Register(NestResponse{})
 	gob.Register(TestScalarInPlaceRequest{})
 	gob.Register(TestScalarInPlaceResponse{})
 }
 
-func NewServiceGoRPCProxy(addr string, service *Service, tlsConfig *tls.Config) *ServiceGoRPCProxy {
-	proxy := &ServiceGoRPCProxy{
+func NewDemoGoRPCProxy(addr string, service *Demo, tlsConfig *tls.Config) *DemoGoRPCProxy {
+	proxy := &DemoGoRPCProxy{
 		service: service,
 	}
 
@@ -84,19 +166,19 @@ func NewServiceGoRPCProxy(addr string, service *Service, tlsConfig *tls.Config) 
 	return proxy
 }
 
-func (p *ServiceGoRPCProxy) Start() error {
+func (p *DemoGoRPCProxy) Start() error {
 	return p.server.Start()
 }
 
-func (p *ServiceGoRPCProxy) Stop() {
+func (p *DemoGoRPCProxy) Stop() {
 	p.server.Stop()
 }
 
-func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
+func (p *DemoGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
 	p.callStatsHandler = handler
 }
 
-func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (response interface{}) {
+func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (response interface{}) {
 	start := time.Now()
 
 	reqType := reflect.TypeOf(request).String()
@@ -115,6 +197,9 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		req := request.(HelloRequest)
 		reply, err := p.service.Hello(req.Name)
 		response = HelloResponse{Reply: reply, Err: err}
+	case "MapCrapRequest":
+		crap := p.service.MapCrap()
+		response = MapCrapResponse{Crap: crap}
 	case "NestRequest":
 		retNest_0 := p.service.Nest()
 		response = NestResponse{RetNest_0: retNest_0}
@@ -129,7 +214,7 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		p.callStatsHandler(&gotsrpc.CallStats{
 			Func:      funcName,
 			Package:   "github.com/foomo/gotsrpc/demo",
-			Service:   "Service",
+			Service:   "Demo",
 			Execution: time.Since(start),
 		})
 	}

@@ -30,22 +30,26 @@ type Person struct {
 	iAmPrivate string
 }
 
-func (s *Service) ExtractAddress(person *Person) (addr *Address, e *Err) {
+func (d *Demo) ExtractAddress(person *Person) (addr *Address, e *Err) {
 	if person.AddressPtr != nil {
 		return person.AddressPtr, nil
 	}
 	return nil, &Err{"there is no address on that person"}
 }
 
-func (s *Service) TestScalarInPlace() ScalarInPlace {
+func (d *Demo) TestScalarInPlace() ScalarInPlace {
 	return ScalarInPlace("hier")
 }
 
-func (s *Service) Nest() *nstd.Nested {
+func (d *Demo) MapCrap() (crap map[string][]int) {
+	return map[string][]int{}
+}
+
+func (d *Demo) Nest() *nstd.Nested {
 	return nil
 }
 
-func (s *Service) GiveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {
+func (d *Demo) GiveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {
 	//func (s *Service) giveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {
 	return nstd.Amount(10), nstd.ItIsTrue, ScalarInPlace("hier")
 }

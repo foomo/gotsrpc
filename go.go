@@ -3,6 +3,8 @@ package gotsrpc
 import (
 	"fmt"
 	"strings"
+
+	"github.com/foomo/gotsrpc/config"
 )
 
 func (v *Value) isHTTPResponseWriter() bool {
@@ -27,6 +29,8 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 			t += aliases[v.StructType.Package] + "."
 		}
 		t += v.StructType.Name
+	case v.Map != nil:
+		t += `map[` + v.Map.KeyType + `]` + v.Map.Value.goType(aliases, packageName)
 	case v.Scalar != nil:
 		// TODO this is a hack to retrieve string types
 		if packageName != v.Scalar.Package {
@@ -35,6 +39,7 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 		t += v.Scalar.Name[len(v.Scalar.Package)+1:]
 	default:
 		// TODO
+		fmt.Println("WARN: can't resolve goType")
 	}
 
 	return
@@ -124,7 +129,6 @@ func strfirst(str string, strfunc func(string) string) string {
 
 	}
 	return res
-
 }
 
 func extractImports(fields []*Field, fullPackageName string, aliases map[string]string) {
@@ -159,15 +163,20 @@ func extractImports(fields []*Field, fullPackageName string, aliases map[string]
 	}
 }
 
-func renderTSRPCServiceProxies(services map[string]*Service, fullPackageName string, packageName string, g *code) error {
+func renderTSRPCServiceProxies(services map[string]*Service, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
 		"time": "time",
 		"net/http": "http",
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
 
-	for _, s := range services {
-		for _, m := range s.Methods {
+	for _, service := range services {
+		// Check if we should render this service as ts rcp
+		// Note: remove once there's a separate gorcp generator
+		if !config.IsTSRPC(service.Name) {
+			continue
+		}
+		for _, m := range service.Methods {
 			extractImports(m.Args, fullPackageName, aliases)
 		}
 	}
@@ -185,6 +194,12 @@ func renderTSRPCServiceProxies(services map[string]*Service, fullPackageName str
         )
     `)
 	for endpoint, service := range services {
+		// Check if we should render this service as ts rcp
+		// Note: remove once there's a separate gorcp generator
+		if !config.IsTSRPC(service.Name) {
+			continue
+		}
+
 		proxyName := service.Name + "GoTSRPCProxy"
 		g.l(`
         type ` + proxyName + ` struct {
@@ -329,13 +344,18 @@ func renderTSRPCServiceProxies(services map[string]*Service, fullPackageName str
 	return nil
 }
 
-func renderTSRPCServiceClients(services map[string]*Service, fullPackageName string, packageName string, g *code) error {
+func renderTSRPCServiceClients(services map[string]*Service, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
 
-	for _, s := range services {
-		for _, m := range s.Methods {
+	for _, service := range services {
+		// Check if we should render this service as ts rcp
+		// Note: remove once there's a separate gorcp generator
+		if !config.IsTSRPC(service.Name) {
+			continue
+		}
+		for _, m := range service.Methods {
 			extractImports(m.Args, fullPackageName, aliases)
 			extractImports(m.Return, fullPackageName, aliases)
 		}
@@ -354,6 +374,12 @@ func renderTSRPCServiceClients(services map[string]*Service, fullPackageName str
         )
     `)
 	for endpoint, service := range services {
+		// Check if we should render this service as ts rcp
+		// Note: remove once there's a separate gorcp generator
+		if !config.IsTSRPC(service.Name) {
+			continue
+		}
+
 		clientName := service.Name + "GoTSRPCClient"
 		g.l(`
         type ` + clientName + ` struct {
@@ -402,7 +428,7 @@ func renderTSRPCServiceClients(services map[string]*Service, fullPackageName str
 	return nil
 }
 
-func renderRPCServiceProxies(services map[string]*Service, fullPackageName string, packageName string, g *code) error {
+func renderGoRPCServiceProxies(services map[string]*Service, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
 		"fmt": "fmt",
 		"time": "time",
@@ -414,8 +440,12 @@ func renderRPCServiceProxies(services map[string]*Service, fullPackageName strin
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
 
-	for _, s := range services {
-		for _, m := range s.Methods {
+	for _, service := range services {
+		if !config.IsGoRPC(service.Name) {
+			continue
+		}
+
+		for _, m := range service.Methods {
 			extractImports(m.Args, fullPackageName, aliases)
 			extractImports(m.Return, fullPackageName, aliases)
 		}
@@ -433,7 +463,12 @@ func renderRPCServiceProxies(services map[string]*Service, fullPackageName strin
 		` + imports + `
 			)
 	`)
+
 	for _, service := range services {
+		if !config.IsGoRPC(service.Name) {
+			continue
+		}
+
 		proxyName := service.Name + "GoRPCProxy"
 		// Types
 		g.l(`type (`)
@@ -498,7 +533,7 @@ func renderRPCServiceProxies(services map[string]*Service, fullPackageName strin
         	p.server.Stop()
         }
 
-        func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
+        func (p *` + proxyName + `) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
 					p.callStatsHandler = handler
 				}
 		`)
@@ -557,14 +592,17 @@ func renderRPCServiceProxies(services map[string]*Service, fullPackageName strin
 	return nil
 }
 
-func renderRPCServiceClients(services map[string]*Service, fullPackageName string, packageName string, g *code) error {
+func renderGoRPCServiceClients(services map[string]*Service, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
 		"crypto/tls": "tls",
 		"github.com/valyala/gorpc": "gorpc",
 	}
 
-	for _, s := range services {
-		for _, m := range s.Methods {
+	for _, service := range services {
+		if !config.IsGoRPC(service.Name) {
+			continue
+		}
+		for _, m := range service.Methods {
 			extractImports(m.Args, fullPackageName, aliases)
 			extractImports(m.Return, fullPackageName, aliases)
 		}
@@ -583,6 +621,9 @@ func renderRPCServiceClients(services map[string]*Service, fullPackageName strin
 			)
 	`)
 	for _, service := range services {
+		if !config.IsGoRPC(service.Name) {
+			continue
+		}
 		clientName := service.Name + "GoRPCClient"
 		// Client type
 		g.l(`
@@ -655,9 +696,9 @@ func renderRPCServiceClients(services map[string]*Service, fullPackageName strin
 	return nil
 }
 
-func RenderGoTSRPCProxies(services map[string]*Service, longPackageName, packageName string) (gocode string, err error) {
+func RenderGoTSRPCProxies(services map[string]*Service, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
 	g := newCode("	")
-	err = renderTSRPCServiceProxies(services, longPackageName, packageName, g)
+	err = renderTSRPCServiceProxies(services, longPackageName, packageName, config, g)
 	if err != nil {
 		return
 	}
@@ -665,9 +706,9 @@ func RenderGoTSRPCProxies(services map[string]*Service, longPackageName, package
 	return
 }
 
-func RenderGoTSRPCClients(services map[string]*Service, longPackageName, packageName string) (gocode string, err error) {
+func RenderGoTSRPCClients(services map[string]*Service, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
 	g := newCode("	")
-	err = renderTSRPCServiceClients(services, longPackageName, packageName, g)
+	err = renderTSRPCServiceClients(services, longPackageName, packageName, config, g)
 	if err != nil {
 		return
 	}
@@ -675,9 +716,9 @@ func RenderGoTSRPCClients(services map[string]*Service, longPackageName, package
 	return
 }
 
-func RenderGoRPCProxies(services map[string]*Service, longPackageName, packageName string) (gocode string, err error) {
+func RenderGoRPCProxies(services map[string]*Service, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
 	g := newCode("	")
-	err = renderRPCServiceProxies(services, longPackageName, packageName, g)
+	err = renderGoRPCServiceProxies(services, longPackageName, packageName, config, g)
 	if err != nil {
 		return
 	}
@@ -685,9 +726,9 @@ func RenderGoRPCProxies(services map[string]*Service, longPackageName, packageNa
 	return
 }
 
-func RenderGoRPCClients(services map[string]*Service, longPackageName, packageName string) (gocode string, err error) {
+func RenderGoRPCClients(services map[string]*Service, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
 	g := newCode("	")
-	err = renderRPCServiceClients(services, longPackageName, packageName, g)
+	err = renderGoRPCServiceClients(services, longPackageName, packageName, config, g)
 	if err != nil {
 		return
 	}

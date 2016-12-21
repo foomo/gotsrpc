@@ -3,10 +3,14 @@ targets:
   demo:
     module: GoTSRPC.Demo
     services:
-      /service/demo: Service
+      /service/foo: Foo
+      /service/demo: Demo
     package: github.com/foomo/gotsrpc/demo
     out: /tmp/test.ts
-    rpc: true
+    gorpc:
+      - Foo
+      - Demo
+
 mappings:
   github.com/foomo/gotsrpc/demo:
     module: GoTSRPC.Demo

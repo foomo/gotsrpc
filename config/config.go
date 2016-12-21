@@ -9,11 +9,33 @@ import (
 )
 
 type Target struct {
-	Package          string `yaml:"package"`
+	Package          string            `yaml:"package"`
 	Services         map[string]string `yaml:"services"`
-	TypeScriptModule string `yaml:"module"`
-	Out              string `yaml:"out"`
-	RPC              bool `yaml:"rpc"`
+	TypeScriptModule string            `yaml:"module"`
+	Out              string            `yaml:"out"`
+	GoRPC            []string          `yaml:"gorpc"`
+	TSRPC            []string          `yaml:"tsrpc"`
+}
+
+func (t *Target) IsGoRPC(service string) bool {
+	for _, value := range t.GoRPC {
+		if value == service {
+			return true
+		}
+	}
+	return false
+}
+
+func (t *Target) IsTSRPC(service string) bool {
+	if len(t.TSRPC) == 0 {
+		return true
+	}
+	for _, value := range t.TSRPC {
+		if value == service {
+			return true
+		}
+	}
+	return false
 }
 
 type Mapping struct {

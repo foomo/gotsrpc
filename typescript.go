@@ -285,7 +285,7 @@ func ucFirst(str string) string {
 	return constPrefix
 }
 
-func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, tsModuleName string) (typeScript string, err error) {
+func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]*Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, target *config.Target) (typeScript string, err error) {
 	ts := newCode("	")
 	if !SkipGoTSRPC {
 
@@ -299,7 +299,7 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]
         request.open('POST', endPoint + "/" + encodeURIComponent(method), true);
 		// this causes problems, when the browser decides to do a cors OPTIONS request
         // request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        request.send(JSON.stringify(args));            
+        request.send(JSON.stringify(args));
         request.onload = function() {
             if (request.status == 200) {
 				try {
@@ -311,7 +311,7 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]
             } else {
                 err(request);
             }
-        };            
+        };
         request.onerror = function() {
             err(request);
         };
@@ -323,11 +323,16 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services map[string]
 		if !SkipGoTSRPC {
 			ts.l("} // close")
 		}
-		ts.l("module " + tsModuleName + " {")
+		ts.l("module " + target.TypeScriptModule + " {")
 		ts.ind(1)
 	}
 
 	for endPoint, service := range services {
+		// Check if we should render this service as ts rcp
+		// Note: remove once there's a separate gorcp generator
+		if !target.IsTSRPC(service.Name) {
+			continue
+		}
 		err = renderService(SkipGoTSRPC, moduleKind, service, endPoint, mappings, scalarTypes, ts)
 		if err != nil {
 			return

@@ -7,12 +7,12 @@ import (
 	gorpc "github.com/valyala/gorpc"
 )
 
-type ServiceGoRPCClient struct {
+type FooGoRPCClient struct {
 	client *gorpc.Client
 }
 
-func NewServiceGoRPCClient(addr string, tlsConfig *tls.Config) *ServiceGoRPCClient {
-	client := &ServiceGoRPCClient{}
+func NewFooGoRPCClient(addr string, tlsConfig *tls.Config) *FooGoRPCClient {
+	client := &FooGoRPCClient{}
 	if tlsConfig == nil {
 		client.client = gorpc.NewTCPClient(addr)
 	} else {
@@ -22,15 +22,49 @@ func NewServiceGoRPCClient(addr string, tlsConfig *tls.Config) *ServiceGoRPCClie
 	return client
 }
 
-func (c *ServiceGoRPCClient) Start() {
+func (c *FooGoRPCClient) Start() {
 	c.client.Start()
 }
 
-func (c *ServiceGoRPCClient) Stop() {
+func (c *FooGoRPCClient) Stop() {
 	c.client.Stop()
 }
 
-func (c *ServiceGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
+func (c *FooGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+	req := HelloRequest{Number: number}
+	res, err := c.client.Call(req)
+	if err != nil {
+		clientErr = err
+		return
+	}
+	response := res.(HelloResponse)
+	return response.RetHello_0, nil
+}
+
+type DemoGoRPCClient struct {
+	client *gorpc.Client
+}
+
+func NewDemoGoRPCClient(addr string, tlsConfig *tls.Config) *DemoGoRPCClient {
+	client := &DemoGoRPCClient{}
+	if tlsConfig == nil {
+		client.client = gorpc.NewTCPClient(addr)
+	} else {
+		client.client = gorpc.NewTLSClient(addr, tlsConfig)
+	}
+	client.Start()
+	return client
+}
+
+func (c *DemoGoRPCClient) Start() {
+	c.client.Start()
+}
+
+func (c *DemoGoRPCClient) Stop() {
+	c.client.Stop()
+}
+
+func (c *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
 	req := ExtractAddressRequest{Person: person}
 	res, err := c.client.Call(req)
 	if err != nil {
@@ -41,7 +75,7 @@ func (c *ServiceGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *E
 	return response.Addr, response.E, nil
 }
 
-func (c *ServiceGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
+func (c *DemoGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
 	req := GiveMeAScalarRequest{}
 	res, err := c.client.Call(req)
 	if err != nil {
@@ -52,7 +86,7 @@ func (c *ServiceGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.
 	return response.Amount, response.Wahr, response.Hier, nil
 }
 
-func (c *ServiceGoRPCClient) Hello(name string) (reply string, err *Err, clientErr error) {
+func (c *DemoGoRPCClient) Hello(name string) (reply string, err *Err, clientErr error) {
 	req := HelloRequest{Name: name}
 	res, err := c.client.Call(req)
 	if err != nil {
@@ -63,7 +97,18 @@ func (c *ServiceGoRPCClient) Hello(name string) (reply string, err *Err, clientE
 	return response.Reply, response.Err, nil
 }
 
-func (c *ServiceGoRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
+func (c *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
+	req := MapCrapRequest{}
+	res, err := c.client.Call(req)
+	if err != nil {
+		clientErr = err
+		return
+	}
+	response := res.(MapCrapResponse)
+	return response.Crap, nil
+}
+
+func (c *DemoGoRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
 	req := NestRequest{}
 	res, err := c.client.Call(req)
 	if err != nil {
@@ -74,7 +119,7 @@ func (c *ServiceGoRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) 
 	return response.RetNest_0, nil
 }
 
-func (c *ServiceGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
+func (c *DemoGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
 	req := TestScalarInPlaceRequest{}
 	res, err := c.client.Call(req)
 	if err != nil {

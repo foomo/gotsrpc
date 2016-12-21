@@ -7,22 +7,22 @@ import (
 	time "time"
 )
 
-type ServiceGoTSRPCProxy struct {
+type FooGoTSRPCProxy struct {
 	EndPoint    string
 	allowOrigin []string
-	service     *Service
+	service     *Foo
 }
 
-func NewDefaultServiceGoTSRPCProxy(service *Service, allowOrigin []string) *ServiceGoTSRPCProxy {
-	return &ServiceGoTSRPCProxy{
-		EndPoint:    "/service/demo",
+func NewDefaultFooGoTSRPCProxy(service *Foo, allowOrigin []string) *FooGoTSRPCProxy {
+	return &FooGoTSRPCProxy{
+		EndPoint:    "/service/foo",
 		allowOrigin: allowOrigin,
 		service:     service,
 	}
 }
 
-func NewServiceGoTSRPCProxy(service *Service, endpoint string, allowOrigin []string) *ServiceGoTSRPCProxy {
-	return &ServiceGoTSRPCProxy{
+func NewFooGoTSRPCProxy(service *Foo, endpoint string, allowOrigin []string) *FooGoTSRPCProxy {
+	return &FooGoTSRPCProxy{
 		EndPoint:    endpoint,
 		allowOrigin: allowOrigin,
 		service:     service,
@@ -30,7 +30,7 @@ func NewServiceGoTSRPCProxy(service *Service, endpoint string, allowOrigin []str
 }
 
 // ServeHTTP exposes your service
-func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	for _, origin := range p.allowOrigin {
 		// todo we have to compare this with the referer ... and only send one
@@ -51,7 +51,73 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	if callStats != nil {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/demo"
-		callStats.Service = "Service"
+		callStats.Service = "Foo"
+	}
+	switch funcName {
+	case "Hello":
+		args = []interface{}{int64(0)}
+		err := gotsrpc.LoadArgs(args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		helloRet := p.service.Hello(int64(args[0].(float64)))
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
+		return
+	default:
+		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
+	}
+}
+
+type DemoGoTSRPCProxy struct {
+	EndPoint    string
+	allowOrigin []string
+	service     *Demo
+}
+
+func NewDefaultDemoGoTSRPCProxy(service *Demo, allowOrigin []string) *DemoGoTSRPCProxy {
+	return &DemoGoTSRPCProxy{
+		EndPoint:    "/service/demo",
+		allowOrigin: allowOrigin,
+		service:     service,
+	}
+}
+
+func NewDemoGoTSRPCProxy(service *Demo, endpoint string, allowOrigin []string) *DemoGoTSRPCProxy {
+	return &DemoGoTSRPCProxy{
+		EndPoint:    endpoint,
+		allowOrigin: allowOrigin,
+		service:     service,
+	}
+}
+
+// ServeHTTP exposes your service
+func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	for _, origin := range p.allowOrigin {
+		// todo we have to compare this with the referer ... and only send one
+		w.Header().Add("Access-Control-Allow-Origin", origin)
+	}
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	if r.Method != http.MethodPost {
+		if r.Method == http.MethodOptions {
+			return
+		}
+		gotsrpc.ErrorMethodNotAllowed(w)
+		return
+	}
+
+	var args []interface{}
+	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
+	callStats := gotsrpc.GetStatsForRequest(r)
+	if callStats != nil {
+		callStats.Func = funcName
+		callStats.Package = "github.com/foomo/gotsrpc/demo"
+		callStats.Service = "Demo"
 	}
 	switch funcName {
 	case "ExtractAddress":
@@ -89,6 +155,14 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
 		gotsrpc.Reply([]interface{}{helloReply, helloErr}, callStats, r, w)
+		return
+	case "MapCrap":
+		executionStart := time.Now()
+		mapCrapCrap := p.service.MapCrap()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{mapCrapCrap}, callStats, r, w)
 		return
 	case "Nest":
 		executionStart := time.Now()
