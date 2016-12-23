@@ -165,8 +165,8 @@ func extractImports(fields []*Field, fullPackageName string, aliases map[string]
 
 func renderTSRPCServiceProxies(services map[string]*Service, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
-		"time": "time",
-		"net/http": "http",
+		"time":                     "time",
+		"net/http":                 "http",
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
 
@@ -430,12 +430,12 @@ func renderTSRPCServiceClients(services map[string]*Service, fullPackageName str
 
 func renderGoRPCServiceProxies(services map[string]*Service, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
-		"fmt": "fmt",
-		"time": "time",
-		"strings": "strings",
-		"reflect": "reflect",
-		"crypto/tls": "tls",
-		"encoding/gob": "gob",
+		"fmt":                      "fmt",
+		"time":                     "time",
+		"strings":                  "strings",
+		"reflect":                  "reflect",
+		"crypto/tls":               "tls",
+		"encoding/gob":             "gob",
 		"github.com/valyala/gorpc": "gorpc",
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
@@ -483,13 +483,13 @@ func renderGoRPCServiceProxies(services map[string]*Service, fullPackageName str
 		// Request & Response types
 		for _, method := range service.Methods {
 			// Request type
-			g.l(ucfirst(method.Name) + `Request struct {`)
+			g.l(ucfirst(service.Name+method.Name) + `Request struct {`)
 			for _, a := range method.Args {
 				g.l(ucfirst(a.Name) + ` ` + a.Value.goType(aliases, fullPackageName))
 			}
 			g.l(`}`)
 			// Response type
-			g.l(ucfirst(method.Name) + `Response struct {`)
+			g.l(ucfirst(service.Name+method.Name) + `Response struct {`)
 			for i, r := range method.Return {
 				name := r.Name
 				if len(name) == 0 {
@@ -505,8 +505,8 @@ func renderGoRPCServiceProxies(services map[string]*Service, fullPackageName str
 		// Init
 		g.l(`func init() {`)
 		for _, method := range service.Methods {
-			g.l(`gob.Register(` + ucfirst(method.Name) + `Request{})`)
-			g.l(`gob.Register(` + ucfirst(method.Name) + `Response{})`)
+			g.l(`gob.Register(` + ucfirst(service.Name+method.Name) + `Request{})`)
+			g.l(`gob.Register(` + ucfirst(service.Name+method.Name) + `Response{})`)
 		}
 		g.l(`}`)
 		// Constructor
@@ -562,16 +562,16 @@ func renderGoRPCServiceProxies(services map[string]*Service, fullPackageName str
 				rets = append(rets, name)
 				retParams = append(retParams, ucfirst(name)+`: `+name)
 			}
-			g.l(`case "` + method.Name + `Request":`)
+			g.l(`case "` + service.Name + method.Name + `Request":`)
 			if len(argParams) > 0 {
-				g.l(`req := request.(` + method.Name + `Request)`)
+				g.l(`req := request.(` + service.Name + method.Name + `Request)`)
 			}
 			if len(rets) > 0 {
-				g.l(strings.Join(rets, ", ") + ` := p.service.` + method.Name + `(`+strings.Join(argParams, ", ")+`)`)
+				g.l(strings.Join(rets, ", ") + ` := p.service.` + method.Name + `(` + strings.Join(argParams, ", ") + `)`)
 			} else {
-				g.l(`p.service.` + method.Name + `(`+strings.Join(argParams, ", ")+`)`)
+				g.l(`p.service.` + method.Name + `(` + strings.Join(argParams, ", ") + `)`)
 			}
-			g.l(`response = ` + method.Name + `Response{`+strings.Join(retParams, ", ")+`}`)
+			g.l(`response = ` + service.Name + method.Name + `Response{` + strings.Join(retParams, ", ") + `}`)
 		}
 		g.l(`default:`)
 		g.l(`fmt.Println("Unkown request type", reflect.TypeOf(request).String())`)
@@ -594,7 +594,7 @@ func renderGoRPCServiceProxies(services map[string]*Service, fullPackageName str
 
 func renderGoRPCServiceClients(services map[string]*Service, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
-		"crypto/tls": "tls",
+		"crypto/tls":               "tls",
 		"github.com/valyala/gorpc": "gorpc",
 	}
 
@@ -658,8 +658,8 @@ func renderGoRPCServiceClients(services map[string]*Service, fullPackageName str
 			args := []string{}
 			params := []string{}
 			for _, a := range method.Args {
-				args = append(args, ucfirst(a.Name) + `: ` + a.Name)
-				params = append(params, a.Name + " " + a.Value.goType(aliases, fullPackageName))
+				args = append(args, ucfirst(a.Name)+`: `+a.Name)
+				params = append(params, a.Name+" "+a.Value.goType(aliases, fullPackageName))
 			}
 			rets := []string{}
 			returns := []string{}
@@ -668,24 +668,24 @@ func renderGoRPCServiceClients(services map[string]*Service, fullPackageName str
 				if len(name) == 0 {
 					name = fmt.Sprintf("ret%s_%d", method.Name, i)
 				}
-				rets = append(rets, "response." + ucfirst(name))
-				returns = append(returns, name + " " + r.Value.goType(aliases, fullPackageName))
+				rets = append(rets, "response."+ucfirst(name))
+				returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
 			}
 			returns = append(returns, "clientErr error")
 			g.l(`func (c *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
-			g.l(`req := ` + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
+			g.l(`req := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
 			if len(rets) > 0 {
-				g.l(`res, err := c.client.Call(req)`)
+				g.l(`rpcCallRes, rpcCallErr := c.client.Call(req)`)
 			} else {
-				g.l(`_, err := c.client.Call(req)`)
+				g.l(`_, rpcCallErr := c.client.Call(req)`)
 			}
-			g.l(`if err != nil {`)
-			g.l(`clientErr = err`)
+			g.l(`if rpcCallErr != nil {`)
+			g.l(`clientErr = rpcCallErr`)
 			g.l(`return`)
 			g.l(`}`)
 			if len(rets) > 0 {
-				g.l(`response := res.(` + method.Name + `Response)`)
-				g.l(`return ` +  strings.Join(rets, ", ") + `, nil`)
+				g.l(`response := rpcCallRes.(` + service.Name + method.Name + `Response)`)
+				g.l(`return ` + strings.Join(rets, ", ") + `, nil`)
 			} else {
 				g.l(`return nil`)
 			}
