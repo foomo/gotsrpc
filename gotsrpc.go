@@ -3,6 +3,7 @@ package gotsrpc
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"errors"
 	"fmt"
 	"go/ast"
@@ -37,13 +38,17 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 
 func LoadArgs(args []interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&args)
+
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(body, &args); err != nil {
 		return err
 	}
 	if callStats != nil {
 		callStats.Unmarshalling = time.Now().Sub(start)
+		callStats.RequestSize = len(body)
 	}
 	return nil
 }
@@ -71,6 +76,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		return
 	}
 	if stats != nil {
+		stats.ResponseSize = len(jsonBytes)
 		stats.Marshalling = time.Now().Sub(serializationStart)
 	}
 	//r = r.WithContext(ctx)
