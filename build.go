@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -58,7 +59,7 @@ func Build(conf *config.Config, goPath string) {
 
 		longPackageName := target.Package
 		longPackageNameParts := strings.Split(longPackageName, "/")
-		goRPCProxiesFilename := path.Join(goPath, "src", longPackageName,  "gorpc.go")
+		goRPCProxiesFilename := path.Join(goPath, "src", longPackageName, "gorpc.go")
 		goRPCClientsFilename := path.Join(goPath, "src", longPackageName, "gorpcclient.go")
 		goTSRPCProxiesFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
 		goTSRPCClientsFilename := path.Join(goPath, "src", longPackageName, "gotsrpcclient.go")
@@ -76,8 +77,8 @@ func Build(conf *config.Config, goPath string) {
 		remove(goTSRPCClientsFilename)
 
 		packageName := longPackageNameParts[len(longPackageNameParts)-1]
-
-		services, structs, scalarTypes, constants, err := Read(goPath, longPackageName, target.Services)
+		goPaths := []string{goPath, runtime.GOROOT()}
+		services, structs, scalarTypes, constants, err := Read(goPaths, longPackageName, target.Services)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	an error occured while trying to understand your code", err)

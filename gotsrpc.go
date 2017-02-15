@@ -3,12 +3,12 @@ package gotsrpc
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io/ioutil"
 	"net/http"
 	"path"
 	"strings"
@@ -94,12 +94,22 @@ func jsonDump(v interface{}) {
 	fmt.Println(string(jsonBytes))
 }
 
-func parsePackage(goPath string, packageName string) (pkg *ast.Package, err error) {
-	fset := token.NewFileSet()
-	dir := path.Join(goPath, "src", packageName)
-	pkgs, err := parser.ParseDir(fset, dir, nil, parser.AllErrors)
+func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, error) {
+	for _, goPath := range goPaths {
+		fset := token.NewFileSet()
+		dir := path.Join(goPath, "src", packageName)
+		pkgs, err := parser.ParseDir(fset, dir, nil, parser.AllErrors)
+		if err == nil {
+			return pkgs, nil
+		}
+	}
+	return nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", "))
+}
+
+func parsePackage(goPaths []string, packageName string) (pkg *ast.Package, err error) {
+	pkgs, err := parseDir(goPaths, packageName)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("could not parse package " + packageName + ": " + err.Error())
 	}
 	packageNameParts := strings.Split(packageName, "/")
 	if len(packageNameParts) == 0 {
