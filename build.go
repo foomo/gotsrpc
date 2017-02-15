@@ -123,20 +123,21 @@ func Build(conf *config.Config, goPath string) {
 				os.Exit(5)
 			}
 		}
+		if len(target.TSRPC) > 0 {
+			goTSRPCProxiesCode, goerr := RenderGoTSRPCProxies(services, longPackageName, packageName, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc proxies code in target", name, goerr)
+				os.Exit(4)
+			}
+			formatAndWrite(goTSRPCProxiesCode, goTSRPCProxiesFilename)
 
-		goTSRPCProxiesCode, goerr := RenderGoTSRPCProxies(services, longPackageName, packageName, target)
-		if goerr != nil {
-			fmt.Fprintln(os.Stderr, "	could not generate go ts rpc proxies code in target", name, goerr)
-			os.Exit(4)
+			goTSRPCClientsCode, goerr := RenderGoTSRPCClients(services, longPackageName, packageName, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc clients code in target", name, goerr)
+				os.Exit(4)
+			}
+			formatAndWrite(goTSRPCClientsCode, goTSRPCClientsFilename)
 		}
-		formatAndWrite(goTSRPCProxiesCode, goTSRPCProxiesFilename)
-
-		goTSRPCClientsCode, goerr := RenderGoTSRPCClients(services, longPackageName, packageName, target)
-		if goerr != nil {
-			fmt.Fprintln(os.Stderr, "	could not generate go ts rpc clients code in target", name, goerr)
-			os.Exit(4)
-		}
-		formatAndWrite(goTSRPCClientsCode, goTSRPCClientsFilename)
 
 		if len(target.GoRPC) > 0 {
 			goRPCProxiesCode, goerr := RenderGoRPCProxies(services, longPackageName, packageName, target)
