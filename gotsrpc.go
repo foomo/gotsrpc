@@ -95,6 +95,7 @@ func jsonDump(v interface{}) {
 }
 
 func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, error) {
+	errorStrings := map[string]string{}
 	for _, goPath := range goPaths {
 		fset := token.NewFileSet()
 		dir := path.Join(goPath, "src", packageName)
@@ -102,8 +103,9 @@ func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, er
 		if err == nil {
 			return pkgs, nil
 		}
+		errorStrings[dir] = err.Error()
 	}
-	return nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", "))
+	return nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
 }
 
 func parsePackage(goPaths []string, packageName string) (pkg *ast.Package, err error) {
