@@ -24,7 +24,11 @@ func renderPHPRPCServiceClients(service *Service, namespce string, g *code) erro
 	g.nl()
 
 	// Constructor
-	g.l(`public function __constructor($endpoint, $options=null)`)
+	g.l(`/**`)
+	g.l(` * @param string $endpoint`)
+	g.l(` * @param array $options`)
+	g.l(` */`)
+	g.l(`public function __construct($endpoint, array $options=null)`)
 	g.l(`{`)
 	g.ind(1)
 	g.l(`$this->endpoint = $endpoint;`)
@@ -37,29 +41,15 @@ func renderPHPRPCServiceClients(service *Service, namespce string, g *code) erro
 	for _, method := range service.Methods {
 		args := []string{}
 		params := []string{}
+
+		g.l(`/**`)
 		for _, a := range method.Args {
 			args = append(args, "$"+a.Name)
 			params = append(params, "$"+a.Name)
+			g.l(` * @param $` + a.Name)
 		}
-		//rets := []string{}
-		//returns := []string{}
-		//for i, r := range method.Return {
-		//	name := r.Name
-		//	if len(name) == 0 {
-		//		name = fmt.Sprintf("ret%s_%d", method.Name, i)
-		//	}
-		//	rets = append(rets, "&"+name)
-		//	returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
-		//}
-		//returns = append(returns, "clientErr error")
-		//g.l(`func (c *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
-		//g.l(`args := []interface{}{` + strings.Join(args, ", ") + `}`)
-		//g.l(`reply := []interface{}{` + strings.Join(rets, ", ") + `}`)
-		//g.l(`clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "` + method.Name + `", args, reply)`)
-		//g.l(`return`)
-		//g.l(`}`)
-		//g.nl()
-
+		g.l(` * @return array`)
+		g.l(` */`)
 		g.l(`public function ` + lcfirst(method.Name) + `(` + strings.Join(params, ", ") + `)`)
 		g.l(`{`)
 		g.ind(1)
@@ -70,13 +60,24 @@ func renderPHPRPCServiceClients(service *Service, namespce string, g *code) erro
 	}
 
 	// Protected methods
+	g.l(`/**`)
+	g.l(` * @param string $method`)
+	g.l(` * @param array $request`)
+	g.l(` * @return array`)
+	g.l(` * @throws \Exception`)
+	g.l(` */`)
 	g.l(`protected function call($method, array $request)`)
 	g.l(`{`)
 	g.ind(1)
 	g.l(`$options = $this->options;`)
 	g.l(`$options['http']['content'] = json_encode($request);`)
-	g.l(`$options['http']['content'] = json_encode($request);`)
-	g.l(`return json_decode(file_get_contents($this->endpoint . '/' . $method, false, stream_context_create($options)));`)
+	g.l(`if (false === $content = @file_get_contents($this->endpoint . '/' . $method, false, stream_context_create($options))) {`)
+	g.ind(1)
+	g.l(`$err = error_get_last();`)
+	g.l(`throw new \Exception($err['message'], $err['type']);`)
+	g.ind(-1)
+	g.l(`}`)
+	g.l(`return json_decode($content);`)
 	g.ind(-1)
 	g.l(`}`)
 	g.nl()
