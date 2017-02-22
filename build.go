@@ -7,11 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
 	"sort"
 	"strings"
-
-	"path/filepath"
 
 	"github.com/foomo/gotsrpc/config"
 )
@@ -153,6 +152,17 @@ func Build(conf *config.Config, goPath string) {
 				os.Exit(4)
 			}
 			formatAndWrite(goRPCClientsCode, goRPCClientsFilename)
+		}
+
+		if len(target.PHPRPC) > 0 {
+			phpRPCClientsCode, goerr := RenderPHPRPCClients(services, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate php rpc clients code in target", name, goerr)
+				os.Exit(4)
+			}
+			for filename, code := range phpRPCClientsCode {
+				updateCode(filename, code)
+			}
 		}
 	}
 

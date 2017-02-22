@@ -528,7 +528,7 @@ func renderGoRPCServiceProxies(services map[string]*Service, fullPackageName str
         func (p *` + proxyName + `) Start() error {
         	return p.server.Start()
         }
-        
+
 		func (p *` + proxyName + `) Serve() error {
         	return p.server.Serve()
         }

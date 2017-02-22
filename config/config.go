@@ -8,13 +8,19 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type PHPTarget struct {
+	Out       string `yaml:"out"`
+	Namespace string `yaml:"namespace"`
+}
+
 type Target struct {
-	Package          string            `yaml:"package"`
-	Services         map[string]string `yaml:"services"`
-	TypeScriptModule string            `yaml:"module"`
-	Out              string            `yaml:"out"`
-	GoRPC            []string          `yaml:"gorpc"`
-	TSRPC            []string          `yaml:"tsrpc"`
+	Package          string                `yaml:"package"`
+	Services         map[string]string     `yaml:"services"`
+	TypeScriptModule string                `yaml:"module"`
+	Out              string                `yaml:"out"`
+	GoRPC            []string              `yaml:"gorpc"`
+	TSRPC            []string              `yaml:"tsrpc"`
+	PHPRPC           map[string]*PHPTarget `yaml:"phprpc"`
 }
 
 func (t *Target) IsGoRPC(service string) bool {
@@ -36,6 +42,18 @@ func (t *Target) IsTSRPC(service string) bool {
 		}
 	}
 	return false
+}
+
+func (t *Target) IsPHPRPC(service string) bool {
+	if len(t.PHPRPC) == 0 {
+		return false
+	}
+	_, ok := t.PHPRPC[service]
+	return ok
+}
+
+func (t *Target) GetPHPTarget(service string) *PHPTarget {
+	return t.PHPRPC[service]
 }
 
 type Mapping struct {
