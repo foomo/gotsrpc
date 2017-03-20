@@ -632,7 +632,7 @@ func renderGoRPCServiceClients(services map[string]*Service, fullPackageName str
 		// Client type
 		g.l(`
         type ` + clientName + ` struct {
-        	client *gorpc.Client
+        	Client *gorpc.Client
         }
 		`)
 		// Constructor
@@ -640,20 +640,19 @@ func renderGoRPCServiceClients(services map[string]*Service, fullPackageName str
         func New` + clientName + `(addr string, tlsConfig *tls.Config) *` + clientName + ` {
         	client := &` + clientName + `{}
         	if tlsConfig == nil {
-						client.client = gorpc.NewTCPClient(addr)
+						client.Client = gorpc.NewTCPClient(addr)
 					} else {
-						client.client = gorpc.NewTLSClient(addr, tlsConfig)
+						client.Client = gorpc.NewTLSClient(addr, tlsConfig)
 					}
-					client.Start()
 					return client
         }
 
         func (c *` + clientName + `) Start() {
-        	c.client.Start()
+        	c.Client.Start()
       	}
 
         func (c *` + clientName + `) Stop() {
-        	c.client.Stop()
+        	c.Client.Stop()
       	}
 		`)
 		g.nl()
@@ -679,9 +678,9 @@ func renderGoRPCServiceClients(services map[string]*Service, fullPackageName str
 			g.l(`func (c *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
 			g.l(`req := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
 			if len(rets) > 0 {
-				g.l(`rpcCallRes, rpcCallErr := c.client.Call(req)`)
+				g.l(`rpcCallRes, rpcCallErr := c.Client.Call(req)`)
 			} else {
-				g.l(`_, rpcCallErr := c.client.Call(req)`)
+				g.l(`_, rpcCallErr := c.Client.Call(req)`)
 			}
 			g.l(`if rpcCallErr != nil {`)
 			g.l(`clientErr = rpcCallErr`)
