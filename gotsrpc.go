@@ -8,6 +8,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io/ioutil"
 	"net/http"
 	"path"
 	"strings"
@@ -37,13 +38,17 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&args)
+
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(body, &args); err != nil {
 		return err
 	}
 	if callStats != nil {
 		callStats.Unmarshalling = time.Now().Sub(start)
+		callStats.RequestSize = len(body)
 	}
 	return nil
 }
@@ -71,6 +76,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		return
 	}
 	if stats != nil {
+		stats.ResponseSize = len(jsonBytes)
 		stats.Marshalling = time.Now().Sub(serializationStart)
 	}
 	//r = r.WithContext(ctx)
@@ -88,12 +94,24 @@ func jsonDump(v interface{}) {
 	fmt.Println(string(jsonBytes))
 }
 
-func parsePackage(goPath string, packageName string) (pkg *ast.Package, err error) {
-	fset := token.NewFileSet()
-	dir := path.Join(goPath, "src", packageName)
-	pkgs, err := parser.ParseDir(fset, dir, nil, parser.AllErrors)
+func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, error) {
+	errorStrings := map[string]string{}
+	for _, goPath := range goPaths {
+		fset := token.NewFileSet()
+		dir := path.Join(goPath, "src", packageName)
+		pkgs, err := parser.ParseDir(fset, dir, nil, parser.AllErrors)
+		if err == nil {
+			return pkgs, nil
+		}
+		errorStrings[dir] = err.Error()
+	}
+	return nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
+}
+
+func parsePackage(goPaths []string, packageName string) (pkg *ast.Package, err error) {
+	pkgs, err := parseDir(goPaths, packageName)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("could not parse package " + packageName + ": " + err.Error())
 	}
 	packageNameParts := strings.Split(packageName, "/")
 	if len(packageNameParts) == 0 {

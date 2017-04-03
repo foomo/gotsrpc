@@ -6,7 +6,6 @@ import (
 	"go/ast"
 	"go/token"
 	"reflect"
-	"runtime"
 	"sort"
 	"strings"
 )
@@ -182,13 +181,14 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 
 }
 
-func Read(goPath string, packageName string, serviceMap map[string]string) (services map[string]*Service, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
+func Read(goPaths []string, packageName string, serviceMap map[string]string) (services map[string]*Service, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
 	if len(serviceMap) == 0 {
 		err = errors.New("nothing to do service names are empty")
 		return
 	}
-	pkg, err := parsePackage(goPath, packageName)
-	if err != nil {
+	pkg, parseErr := parsePackage(goPaths, packageName)
+	if parseErr != nil {
+		err = parseErr
 		return
 	}
 	services, err = readServicesInPackage(pkg, packageName, serviceMap)
@@ -211,7 +211,7 @@ func Read(goPath string, packageName string, serviceMap map[string]string) (serv
 	structs = map[string]*Struct{}
 	scalars = map[string]*Scalar{}
 
-	collectErr := collectTypes(goPath, missingTypes, structs, scalars)
+	collectErr := collectTypes(goPaths, missingTypes, structs, scalars)
 	if collectErr != nil {
 		err = errors.New("error while collecting structs: " + collectErr.Error())
 	}
@@ -225,7 +225,7 @@ func Read(goPath string, packageName string, serviceMap map[string]string) (serv
 			structPackage := structDef.Package
 			_, ok := constants[structPackage]
 			if !ok {
-				pkg, constPkgErr := parsePackage(goPath, structPackage)
+				pkg, constPkgErr := parsePackage(goPaths, structPackage)
 				if constPkgErr != nil {
 					err = constPkgErr
 					return
@@ -265,7 +265,7 @@ func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[st
 	}
 }
 
-func collectTypes(goPath string, missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) error {
+func collectTypes(goPaths []string, missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) error {
 	scannedPackageStructs := map[string]map[string]*Struct{}
 	scannedPackageScalars := map[string]map[string]*Scalar{}
 	missingTypeNames := func() []string {
@@ -297,19 +297,19 @@ func collectTypes(goPath string, missingTypes map[string]bool, structs map[strin
 			packageStructs, structOK := scannedPackageStructs[packageName]
 			packageScalars, scalarOK := scannedPackageScalars[packageName]
 			if !structOK || !scalarOK {
-				parsedPackageStructs, parsedPackageScalars, err := getTypesInPackage(goPath, packageName)
+				parsedPackageStructs, parsedPackageScalars, err := getTypesInPackage(goPaths, packageName)
 				if err != nil {
 					return err
 				}
 
-				trace("found structs in", goPath, packageName)
+				trace("found structs in", goPaths, packageName)
 				for structName, strct := range packageStructs {
 					trace("	struct", structName, strct)
 					if strct == nil {
 						panic("how could that be")
 					}
 				}
-				trace("found scalars in", goPath, packageName)
+				trace("found scalars in", goPaths, packageName)
 				for scalarName, scalar := range parsedPackageScalars {
 					trace("	scalar", scalarName, scalar)
 				}
@@ -417,13 +417,10 @@ func (st *StructType) FullName() string {
 	return fullName
 }
 
-func getTypesInPackage(goPath string, packageName string) (structs map[string]*Struct, scalars map[string]*Scalar, err error) {
-	pkg, err := parsePackage(goPath, packageName)
+func getTypesInPackage(goPaths []string, packageName string) (structs map[string]*Struct, scalars map[string]*Scalar, err error) {
+	pkg, err := parsePackage(goPaths, packageName)
 	if err != nil {
-		pkg, err = parsePackage(runtime.GOROOT(), packageName)
-		if err != nil {
-			return nil, nil, err
-		}
+		return nil, nil, err
 	}
 	structs, scalars, err = readStructs(pkg, packageName)
 	if err != nil {

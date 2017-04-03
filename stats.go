@@ -7,4 +7,6 @@ type CallStats struct {
 	Execution              time.Duration
 	Marshalling            time.Duration
 	Unmarshalling          time.Duration
+	RequestSize            int
+	ResponseSize            int
 }

@@ -39,7 +39,7 @@ func serveFile(name string, w http.ResponseWriter) {
 
 func main() {
 	d := &Demo{
-		proxy: demo.NewServiceGoTSRPCProxy(&demo.Service{}, "/service"),
+		proxy: demo.NewServiceGoTSRPCProxy(&demo.Demo{}, "/service"),
 	}
 	fmt.Println(http.ListenAndServe(":8080", d))
 }

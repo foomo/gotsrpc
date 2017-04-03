@@ -92,7 +92,9 @@ func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 		return ScalarTypeString
 	case "bool":
 		return ScalarTypeBool
-	case "int", "int32", "int64", "float", "float32", "float64":
+	case "float", "float32", "float64",
+		"int", "int8", "int16", "int32", "int64",
+		"uint", "uint8", "uint16", "uint32", "uint64":
 		return ScalarTypeNumber
 	default:
 		if ident.Obj != nil && ident.Obj.Decl != nil && reflect.ValueOf(ident.Obj.Decl).Type().String() == "*ast.TypeSpec" {
@@ -202,25 +204,27 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 		v.Array = &Array{Value: &Value{}}
 
 		switch reflect.ValueOf(fieldArray.Elt).Type().String() {
+		case "*ast.ArrayType":
+			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
+			v.Array.Value.loadExpr(fieldArray.Elt.(*ast.ArrayType), fileImports)
 		case "*ast.Ident":
 			readAstType(v.Array.Value, fieldArray.Elt.(*ast.Ident), fileImports)
 		case "*ast.StarExpr":
 			readAstStarExpr(v.Array.Value, fieldArray.Elt.(*ast.StarExpr), fileImports)
-		case "*ast.ArrayType":
-			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
-			v.Array.Value.loadExpr(fieldArray.Elt.(*ast.ArrayType), fileImports)
 		case "*ast.MapType":
 			v.Array.Value.Map = &Map{
 				Value: &Value{},
 			}
 			readAstMapType(v.Array.Value.Map, fieldArray.Elt.(*ast.MapType), fileImports)
+		case "*ast.SelectorExpr":
+			readAstSelectorExpr(v.Array.Value, fieldArray.Elt.(*ast.SelectorExpr), fileImports)
+		case "*ast.StructType":
+			readAstStructType(v.Array.Value, fieldArray.Elt.(*ast.StructType), fileImports)
 		default:
 			trace("---------------------> array of", reflect.ValueOf(fieldArray.Elt).Type().String())
 		}
 	case "*ast.Ident":
-
 		fieldIdent := expr.(*ast.Ident)
-
 		readAstType(v, fieldIdent, fileImports)
 	case "*ast.StarExpr":
 		// a pointer on sth

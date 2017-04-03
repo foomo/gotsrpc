@@ -7,10 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
-
-	"path/filepath"
 
 	"github.com/foomo/gotsrpc/config"
 )
@@ -55,26 +55,36 @@ func Build(conf *config.Config, goPath string) {
 	mappedTypeScript := map[string]map[string]*code{}
 	for name, target := range conf.Targets {
 		fmt.Fprintln(os.Stderr, "building target", name)
+
 		longPackageName := target.Package
 		longPackageNameParts := strings.Split(longPackageName, "/")
-		goFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
+		goRPCProxiesFilename := path.Join(goPath, "src", longPackageName, "gorpc.go")
+		goRPCClientsFilename := path.Join(goPath, "src", longPackageName, "gorpcclient.go")
+		goTSRPCProxiesFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
+		goTSRPCClientsFilename := path.Join(goPath, "src", longPackageName, "gotsrpcclient.go")
 
-		_, err := os.Stat(goFilename)
-		if err == nil {
-			fmt.Fprintln(os.Stderr, "	removing existing", goFilename)
-			os.Remove(goFilename)
+		remove := func(filename string) {
+			_, err := os.Stat(filename)
+			if err == nil {
+				fmt.Fprintln(os.Stderr, "	removing existing", filename)
+				os.Remove(filename)
+			}
 		}
+		remove(goRPCProxiesFilename)
+		remove(goRPCClientsFilename)
+		remove(goTSRPCProxiesFilename)
+		remove(goTSRPCClientsFilename)
 
 		packageName := longPackageNameParts[len(longPackageNameParts)-1]
-
-		services, structs, scalarTypes, constants, err := Read(goPath, longPackageName, target.Services)
+		goPaths := []string{goPath, runtime.GOROOT()}
+		services, structs, scalarTypes, constants, err := Read(goPaths, longPackageName, target.Services)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	an error occured while trying to understand your code", err)
 			os.Exit(2)
 		}
 
-		ts, err := RenderTypeScriptServices(conf.ModuleKind, services, conf.Mappings, scalarTypes, target.TypeScriptModule)
+		ts, err := RenderTypeScriptServices(conf.ModuleKind, services, conf.Mappings, scalarTypes, target)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 			os.Exit(3)
@@ -98,25 +108,64 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(4)
 		}
 
-		gocode, goerr := RenderGo(services, longPackageName, packageName)
-		if goerr != nil {
-			fmt.Fprintln(os.Stderr, "	could not generate go code in target", name, goerr)
-			os.Exit(4)
+		formatAndWrite := func(code string, filename string) {
+			formattedGoBytes, formattingError := format.Source([]byte(code))
+			if formattingError == nil {
+				code = string(formattedGoBytes)
+			} else {
+				fmt.Fprintln(os.Stderr, "	could not format go ts rpc proxies code", formattingError)
+			}
+
+			writeErr := ioutil.WriteFile(filename, []byte(code), 0644)
+			if writeErr != nil {
+				fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
+				os.Exit(5)
+			}
+		}
+		if len(target.TSRPC) > 0 {
+			goTSRPCProxiesCode, goerr := RenderGoTSRPCProxies(services, longPackageName, packageName, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc proxies code in target", name, goerr)
+				os.Exit(4)
+			}
+			formatAndWrite(goTSRPCProxiesCode, goTSRPCProxiesFilename)
+
+			goTSRPCClientsCode, goerr := RenderGoTSRPCClients(services, longPackageName, packageName, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc clients code in target", name, goerr)
+				os.Exit(4)
+			}
+			formatAndWrite(goTSRPCClientsCode, goTSRPCClientsFilename)
 		}
 
-		formattedGoBytes, formattingError := format.Source([]byte(gocode))
-		if formattingError == nil {
-			gocode = string(formattedGoBytes)
-		} else {
-			fmt.Fprintln(os.Stderr, "	could not format go code", formattingError)
+		if len(target.GoRPC) > 0 {
+			goRPCProxiesCode, goerr := RenderGoRPCProxies(services, longPackageName, packageName, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate go rpc proxies code in target", name, goerr)
+				os.Exit(4)
+			}
+			formatAndWrite(goRPCProxiesCode, goRPCProxiesFilename)
+
+			goRPCClientsCode, goerr := RenderGoRPCClients(services, longPackageName, packageName, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate go rpc clients code in target", name, goerr)
+				os.Exit(4)
+			}
+			formatAndWrite(goRPCClientsCode, goRPCClientsFilename)
 		}
 
-		writeErr := ioutil.WriteFile(goFilename, []byte(gocode), 0644)
-		if writeErr != nil {
-			fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
-			os.Exit(5)
+		if len(target.PHPRPC) > 0 {
+			phpRPCClientsCode, goerr := RenderPHPRPCClients(services, target)
+			if goerr != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate php rpc clients code in target", name, goerr)
+				os.Exit(4)
+			}
+			for filename, code := range phpRPCClientsCode {
+				updateCode(filename, code)
+			}
 		}
 	}
+
 	//	spew.Dump(mappedTypeScript)
 	for goPackage, mappedStructsMap := range mappedTypeScript {
 		mapping, ok := conf.Mappings[goPackage]
