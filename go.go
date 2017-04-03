@@ -299,7 +299,7 @@ func renderTSRPCServiceProxies(services map[string]*Service, fullPackageName str
 					skipArgI++
 				}
 				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
-				g.l("err := gotsrpc.LoadArgs(args, callStats, r)")
+				g.l("err := gotsrpc.LoadArgs(&args, callStats, r)")
 				g.l("if err != nil {")
 				g.ind(1)
 				g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
