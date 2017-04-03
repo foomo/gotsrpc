@@ -35,7 +35,7 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 	w.Write([]byte("you gotta POST"))
 }
 
-func LoadArgs(args []interface{}, callStats *CallStats, r *http.Request) error {
+func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&args)

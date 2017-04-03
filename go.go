@@ -244,8 +244,6 @@ func renderServiceProxies(services map[string]*Service, fullPackageName string, 
 
 					args = append(args, arg.Value.emptyLiteral(aliases))
 					switch arg.Value.GoScalarType {
-					case "int64":
-						callArgs = append(callArgs, fmt.Sprint(arg.Value.GoScalarType+"(args[", skipArgI, "].(float64))"))
 					default:
 						// assert
 						callArgs = append(callArgs, fmt.Sprint("args[", skipArgI, "].("+arg.Value.goType(aliases, fullPackageName)+")"))
