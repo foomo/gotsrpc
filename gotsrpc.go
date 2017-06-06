@@ -98,7 +98,12 @@ func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, er
 	errorStrings := map[string]string{}
 	for _, goPath := range goPaths {
 		fset := token.NewFileSet()
-		dir := path.Join(goPath, "src", packageName)
+		var dir string
+		if strings.HasSuffix(goPath, "vendor") {
+			dir = path.Join(goPath,packageName)
+		} else {
+			dir = path.Join(goPath, "src", packageName)
+		}
 		pkgs, err := parser.ParseDir(fset, dir, nil, parser.AllErrors)
 		if err == nil {
 			return pkgs, nil

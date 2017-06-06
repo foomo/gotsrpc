@@ -75,8 +75,20 @@ func Build(conf *config.Config, goPath string) {
 		remove(goTSRPCProxiesFilename)
 		remove(goTSRPCClientsFilename)
 
+		workDirectory, err := os.Getwd()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		vendorDirectory := path.Join(workDirectory, "vendor")
+
 		packageName := longPackageNameParts[len(longPackageNameParts)-1]
 		goPaths := []string{goPath, runtime.GOROOT()}
+
+		if _, err := os.Stat(vendorDirectory); !os.IsNotExist(err) {
+			goPaths = append(goPaths, vendorDirectory)
+		}
+
 		services, structs, scalarTypes, constants, err := Read(goPaths, longPackageName, target.Services)
 
 		if err != nil {
