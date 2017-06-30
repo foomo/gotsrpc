@@ -1,8 +1,9 @@
 package gotsrpc
 
 import (
-	"github.com/foomo/gotsrpc/config"
 	"strings"
+
+	"github.com/foomo/gotsrpc/config"
 )
 
 func renderPHPRPCServiceClients(service *Service, namespce string, g *code) error {
@@ -39,12 +40,16 @@ func renderPHPRPCServiceClients(service *Service, namespce string, g *code) erro
 
 	// Service methods
 	for _, method := range service.Methods {
-		args := []string{}
 		params := []string{}
 
 		g.l(`/**`)
-		for _, a := range method.Args {
-			args = append(args, "$"+a.Name)
+		for i, a := range method.Args {
+			if i == 0 && a.Value.isHTTPResponseWriter() {
+				continue
+			}
+			if i == 1 && a.Value.isHTTPRequest() {
+				continue
+			}
 			params = append(params, "$"+a.Name)
 			g.l(` * @param $` + a.Name)
 		}
