@@ -46,9 +46,6 @@ func commonJSImports(conf *config.Config, c *code, tsFilename string) {
 
 }
 
-func impossiblePanic() {
-	panic("that is impossible")
-}
 func Build(conf *config.Config, goPath string) {
 
 	if conf.ModuleKind == config.ModuleKindCommonJS {
@@ -64,11 +61,7 @@ func Build(conf *config.Config, goPath string) {
 	}
 	sort.Strings(names)
 
-	for _, name := range names {
-		target, targetOK := conf.Targets[name]
-		if !targetOK {
-			impossiblePanic()
-		}
+	for name, target := range conf.Targets {
 		fmt.Fprintln(os.Stderr, "building target", name)
 
 		longPackageName := target.Package
@@ -194,16 +187,8 @@ func Build(conf *config.Config, goPath string) {
 	}
 
 	//	spew.Dump(mappedTypeScript)
-	goPackages := []string{}
-	for goPackage := range mappedTypeScript {
-		goPackages = append(goPackages, goPackage)
-	}
 
-	for _, goPackage := range goPackages {
-		mappedStructsMap, mappedStructsMapOK := mappedTypeScript[goPackage]
-		if !mappedStructsMapOK {
-			impossiblePanic()
-		}
+	for goPackage, mappedStructsMap := range mappedTypeScript {
 		mapping, ok := conf.Mappings[goPackage]
 		if !ok {
 			fmt.Fprintln(os.Stderr, "reverse mapping error in struct generation for package", goPackage)
