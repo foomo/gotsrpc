@@ -1,7 +1,7 @@
 ---
+modulekind: commonjs
 targets:
   demo:
-    module: GoTSRPC.Demo
     services:
       /service/foo: Foo
       /service/demo: Demo
@@ -16,9 +16,7 @@ targets:
 
 mappings:
   github.com/foomo/gotsrpc/demo:
-    module: GoTSRPC.Demo
     out: /tmp/test-files-demo.ts
   github.com/foomo/gotsrpc/demo/nested:
-    module: GoTSRPC.Demo.Nested
     out: /tmp/test-files-demo-nested.ts
 ...
