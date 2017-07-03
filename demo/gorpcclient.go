@@ -7,39 +7,6 @@ import (
 	gorpc "github.com/valyala/gorpc"
 )
 
-type FooGoRPCClient struct {
-	Client *gorpc.Client
-}
-
-func NewFooGoRPCClient(addr string, tlsConfig *tls.Config) *FooGoRPCClient {
-	client := &FooGoRPCClient{}
-	if tlsConfig == nil {
-		client.Client = gorpc.NewTCPClient(addr)
-	} else {
-		client.Client = gorpc.NewTLSClient(addr, tlsConfig)
-	}
-	return client
-}
-
-func (c *FooGoRPCClient) Start() {
-	c.Client.Start()
-}
-
-func (c *FooGoRPCClient) Stop() {
-	c.Client.Stop()
-}
-
-func (c *FooGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
-	req := FooHelloRequest{Number: number}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
-		return
-	}
-	response := rpcCallRes.(FooHelloResponse)
-	return response.RetHello_0, nil
-}
-
 type DemoGoRPCClient struct {
 	Client *gorpc.Client
 }
@@ -126,4 +93,37 @@ func (c *DemoGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPl
 	}
 	response := rpcCallRes.(DemoTestScalarInPlaceResponse)
 	return response.RetTestScalarInPlace_0, nil
+}
+
+type FooGoRPCClient struct {
+	Client *gorpc.Client
+}
+
+func NewFooGoRPCClient(addr string, tlsConfig *tls.Config) *FooGoRPCClient {
+	client := &FooGoRPCClient{}
+	if tlsConfig == nil {
+		client.Client = gorpc.NewTCPClient(addr)
+	} else {
+		client.Client = gorpc.NewTLSClient(addr, tlsConfig)
+	}
+	return client
+}
+
+func (c *FooGoRPCClient) Start() {
+	c.Client.Start()
+}
+
+func (c *FooGoRPCClient) Stop() {
+	c.Client.Stop()
+}
+
+func (c *FooGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+	req := FooHelloRequest{Number: number}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(FooHelloResponse)
+	return response.RetHello_0, nil
 }

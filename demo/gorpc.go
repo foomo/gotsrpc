@@ -14,84 +14,6 @@ import (
 )
 
 type (
-	FooGoRPCProxy struct {
-		server           *gorpc.Server
-		service          *Foo
-		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
-	}
-
-	FooHelloRequest struct {
-		Number int64
-	}
-	FooHelloResponse struct {
-		RetHello_0 int
-	}
-)
-
-func init() {
-	gob.Register(FooHelloRequest{})
-	gob.Register(FooHelloResponse{})
-}
-
-func NewFooGoRPCProxy(addr string, service *Foo, tlsConfig *tls.Config) *FooGoRPCProxy {
-	proxy := &FooGoRPCProxy{
-		service: service,
-	}
-
-	if tlsConfig != nil {
-		proxy.server = gorpc.NewTLSServer(addr, proxy.handler, tlsConfig)
-	} else {
-		proxy.server = gorpc.NewTCPServer(addr, proxy.handler)
-	}
-
-	return proxy
-}
-
-func (p *FooGoRPCProxy) Start() error {
-	return p.server.Start()
-}
-
-func (p *FooGoRPCProxy) Serve() error {
-	return p.server.Serve()
-}
-
-func (p *FooGoRPCProxy) Stop() {
-	p.server.Stop()
-}
-
-func (p *FooGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
-	p.callStatsHandler = handler
-}
-
-func (p *FooGoRPCProxy) handler(clientAddr string, request interface{}) (response interface{}) {
-	start := time.Now()
-
-	reqType := reflect.TypeOf(request).String()
-	funcNameParts := strings.Split(reqType, ".")
-	funcName := funcNameParts[len(funcNameParts)-1]
-
-	switch funcName {
-	case "FooHelloRequest":
-		req := request.(FooHelloRequest)
-		retHello_0 := p.service.Hello(req.Number)
-		response = FooHelloResponse{RetHello_0: retHello_0}
-	default:
-		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
-	}
-
-	if p.callStatsHandler != nil {
-		p.callStatsHandler(&gotsrpc.CallStats{
-			Func:      funcName,
-			Package:   "github.com/foomo/gotsrpc/demo",
-			Service:   "Foo",
-			Execution: time.Since(start),
-		})
-	}
-
-	return
-}
-
-type (
 	DemoGoRPCProxy struct {
 		server           *gorpc.Server
 		service          *Demo
@@ -223,6 +145,84 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 			Func:      funcName,
 			Package:   "github.com/foomo/gotsrpc/demo",
 			Service:   "Demo",
+			Execution: time.Since(start),
+		})
+	}
+
+	return
+}
+
+type (
+	FooGoRPCProxy struct {
+		server           *gorpc.Server
+		service          *Foo
+		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
+	}
+
+	FooHelloRequest struct {
+		Number int64
+	}
+	FooHelloResponse struct {
+		RetHello_0 int
+	}
+)
+
+func init() {
+	gob.Register(FooHelloRequest{})
+	gob.Register(FooHelloResponse{})
+}
+
+func NewFooGoRPCProxy(addr string, service *Foo, tlsConfig *tls.Config) *FooGoRPCProxy {
+	proxy := &FooGoRPCProxy{
+		service: service,
+	}
+
+	if tlsConfig != nil {
+		proxy.server = gorpc.NewTLSServer(addr, proxy.handler, tlsConfig)
+	} else {
+		proxy.server = gorpc.NewTCPServer(addr, proxy.handler)
+	}
+
+	return proxy
+}
+
+func (p *FooGoRPCProxy) Start() error {
+	return p.server.Start()
+}
+
+func (p *FooGoRPCProxy) Serve() error {
+	return p.server.Serve()
+}
+
+func (p *FooGoRPCProxy) Stop() {
+	p.server.Stop()
+}
+
+func (p *FooGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
+	p.callStatsHandler = handler
+}
+
+func (p *FooGoRPCProxy) handler(clientAddr string, request interface{}) (response interface{}) {
+	start := time.Now()
+
+	reqType := reflect.TypeOf(request).String()
+	funcNameParts := strings.Split(reqType, ".")
+	funcName := funcNameParts[len(funcNameParts)-1]
+
+	switch funcName {
+	case "FooHelloRequest":
+		req := request.(FooHelloRequest)
+		retHello_0 := p.service.Hello(req.Number)
+		response = FooHelloResponse{RetHello_0: retHello_0}
+	default:
+		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
+	}
+
+	if p.callStatsHandler != nil {
+		p.callStatsHandler(&gotsrpc.CallStats{
+			Func:      funcName,
+			Package:   "github.com/foomo/gotsrpc/demo",
+			Service:   "Foo",
 			Execution: time.Since(start),
 		})
 	}
