@@ -6,3 +6,6 @@ demo:
 .PHONY: install
 install:
 	GOBIN=/usr/local/bin go install cmd/gotsrpc/gotsrpc.go
+	
+test: demo
+	go test $(glide nv)
