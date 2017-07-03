@@ -8,124 +8,122 @@ import (
 )
 
 type FooGoRPCClient struct {
-	client *gorpc.Client
+	Client *gorpc.Client
 }
 
 func NewFooGoRPCClient(addr string, tlsConfig *tls.Config) *FooGoRPCClient {
 	client := &FooGoRPCClient{}
 	if tlsConfig == nil {
-		client.client = gorpc.NewTCPClient(addr)
+		client.Client = gorpc.NewTCPClient(addr)
 	} else {
-		client.client = gorpc.NewTLSClient(addr, tlsConfig)
+		client.Client = gorpc.NewTLSClient(addr, tlsConfig)
 	}
-	client.Start()
 	return client
 }
 
 func (c *FooGoRPCClient) Start() {
-	c.client.Start()
+	c.Client.Start()
 }
 
 func (c *FooGoRPCClient) Stop() {
-	c.client.Stop()
+	c.Client.Stop()
 }
 
 func (c *FooGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
-	req := HelloRequest{Number: number}
-	res, err := c.client.Call(req)
-	if err != nil {
-		clientErr = err
+	req := FooHelloRequest{Number: number}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
 		return
 	}
-	response := res.(HelloResponse)
+	response := rpcCallRes.(FooHelloResponse)
 	return response.RetHello_0, nil
 }
 
 type DemoGoRPCClient struct {
-	client *gorpc.Client
+	Client *gorpc.Client
 }
 
 func NewDemoGoRPCClient(addr string, tlsConfig *tls.Config) *DemoGoRPCClient {
 	client := &DemoGoRPCClient{}
 	if tlsConfig == nil {
-		client.client = gorpc.NewTCPClient(addr)
+		client.Client = gorpc.NewTCPClient(addr)
 	} else {
-		client.client = gorpc.NewTLSClient(addr, tlsConfig)
+		client.Client = gorpc.NewTLSClient(addr, tlsConfig)
 	}
-	client.Start()
 	return client
 }
 
 func (c *DemoGoRPCClient) Start() {
-	c.client.Start()
+	c.Client.Start()
 }
 
 func (c *DemoGoRPCClient) Stop() {
-	c.client.Stop()
+	c.Client.Stop()
 }
 
 func (c *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
-	req := ExtractAddressRequest{Person: person}
-	res, err := c.client.Call(req)
-	if err != nil {
-		clientErr = err
+	req := DemoExtractAddressRequest{Person: person}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
 		return
 	}
-	response := res.(ExtractAddressResponse)
+	response := rpcCallRes.(DemoExtractAddressResponse)
 	return response.Addr, response.E, nil
 }
 
 func (c *DemoGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
-	req := GiveMeAScalarRequest{}
-	res, err := c.client.Call(req)
-	if err != nil {
-		clientErr = err
+	req := DemoGiveMeAScalarRequest{}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
 		return
 	}
-	response := res.(GiveMeAScalarResponse)
+	response := rpcCallRes.(DemoGiveMeAScalarResponse)
 	return response.Amount, response.Wahr, response.Hier, nil
 }
 
-func (c *DemoGoRPCClient) Hello(name string) (reply string, err *Err, clientErr error) {
-	req := HelloRequest{Name: name}
-	res, err := c.client.Call(req)
-	if err != nil {
-		clientErr = err
+func (c *DemoGoRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
+	req := DemoHelloRequest{Name: name}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
 		return
 	}
-	response := res.(HelloResponse)
-	return response.Reply, response.Err, nil
+	response := rpcCallRes.(DemoHelloResponse)
+	return response.RetHello_0, response.RetHello_1, nil
 }
 
 func (c *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
-	req := MapCrapRequest{}
-	res, err := c.client.Call(req)
-	if err != nil {
-		clientErr = err
+	req := DemoMapCrapRequest{}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
 		return
 	}
-	response := res.(MapCrapResponse)
+	response := rpcCallRes.(DemoMapCrapResponse)
 	return response.Crap, nil
 }
 
 func (c *DemoGoRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
-	req := NestRequest{}
-	res, err := c.client.Call(req)
-	if err != nil {
-		clientErr = err
+	req := DemoNestRequest{}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
 		return
 	}
-	response := res.(NestResponse)
+	response := rpcCallRes.(DemoNestResponse)
 	return response.RetNest_0, nil
 }
 
 func (c *DemoGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
-	req := TestScalarInPlaceRequest{}
-	res, err := c.client.Call(req)
-	if err != nil {
-		clientErr = err
+	req := DemoTestScalarInPlaceRequest{}
+	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
 		return
 	}
-	response := res.(TestScalarInPlaceResponse)
+	response := rpcCallRes.(DemoTestScalarInPlaceResponse)
 	return response.RetTestScalarInPlace_0, nil
 }

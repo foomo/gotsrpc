@@ -6,29 +6,6 @@ import (
 	nested "github.com/foomo/gotsrpc/demo/nested"
 )
 
-type FooGoTSRPCClient struct {
-	URL      string
-	EndPoint string
-}
-
-func NewDefaultFooGoTSRPCClient(url string) *FooGoTSRPCClient {
-	return NewFooGoTSRPCClient(url, "/service/foo")
-}
-
-func NewFooGoTSRPCClient(url string, endpoint string) *FooGoTSRPCClient {
-	return &FooGoTSRPCClient{
-		URL:      url,
-		EndPoint: endpoint,
-	}
-}
-
-func (c *FooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
-	args := []interface{}{number}
-	reply := []interface{}{&retHello_0}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
-	return
-}
-
 type DemoGoTSRPCClient struct {
 	URL      string
 	EndPoint string
@@ -59,9 +36,9 @@ func (c *DemoGoTSRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.T
 	return
 }
 
-func (c *DemoGoTSRPCClient) Hello(name string) (reply string, err *Err, clientErr error) {
+func (c *DemoGoTSRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
 	args := []interface{}{name}
-	reply := []interface{}{&reply, &err}
+	reply := []interface{}{&retHello_0, &retHello_1}
 	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
 	return
 }
@@ -84,5 +61,28 @@ func (c *DemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarIn
 	args := []interface{}{}
 	reply := []interface{}{&retTestScalarInPlace_0}
 	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "TestScalarInPlace", args, reply)
+	return
+}
+
+type FooGoTSRPCClient struct {
+	URL      string
+	EndPoint string
+}
+
+func NewDefaultFooGoTSRPCClient(url string) *FooGoTSRPCClient {
+	return NewFooGoTSRPCClient(url, "/service/foo")
+}
+
+func NewFooGoTSRPCClient(url string, endpoint string) *FooGoTSRPCClient {
+	return &FooGoTSRPCClient{
+		URL:      url,
+		EndPoint: endpoint,
+	}
+}
+
+func (c *FooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+	args := []interface{}{number}
+	reply := []interface{}{&retHello_0}
+	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
 	return
 }

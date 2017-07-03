@@ -10,6 +10,9 @@ targets:
     gorpc:
       - Foo
       - Demo
+    tsrpc:
+      - Foo
+      - Demo
 
 mappings:
   github.com/foomo/gotsrpc/demo:

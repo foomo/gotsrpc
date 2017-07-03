@@ -150,11 +150,11 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		executionStart := time.Now()
-		helloReply, helloErr := p.service.Hello(args[0].(string))
+		helloRet, helloRet_1 := p.service.Hello(args[0].(string))
 		if callStats != nil {
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
-		gotsrpc.Reply([]interface{}{helloReply, helloErr}, callStats, r, w)
+		gotsrpc.Reply([]interface{}{helloRet, helloRet_1}, callStats, r, w)
 		return
 	case "MapCrap":
 		executionStart := time.Now()

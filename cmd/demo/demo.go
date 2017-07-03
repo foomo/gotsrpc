@@ -10,7 +10,7 @@ import (
 )
 
 type Demo struct {
-	proxy *demo.ServiceGoTSRPCProxy
+	proxy *demo.DemoGoTSRPCProxy
 }
 
 func (d *Demo) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +39,7 @@ func serveFile(name string, w http.ResponseWriter) {
 
 func main() {
 	d := &Demo{
-		proxy: demo.NewServiceGoTSRPCProxy(&demo.Demo{}, "/service"),
+		proxy: demo.NewDefaultDemoGoTSRPCProxy(&demo.Demo{}, []string{}),
 	}
 	fmt.Println(http.ListenAndServe(":8080", d))
 }
