@@ -36,7 +36,7 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 	w.Write([]byte("you gotta POST"))
 }
 
-func LoadArgs(args []interface{}, callStats *CallStats, r *http.Request) error {
+func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
 
 	body, err := ioutil.ReadAll(r.Body)

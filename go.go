@@ -274,10 +274,13 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			if len(method.Args) > 0 {
 
 				args := []string{}
+				argsDecls := []string{}
 
 				skipArgI := 0
 
 				for argI, arg := range method.Args {
+
+					argName := "arg_" + arg.Name //strconv.Itoa(argI)
 
 					if argI == 0 && arg.Value.isHTTPResponseWriter() {
 						continue
@@ -287,19 +290,16 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 						continue
 					}
 
-					args = append(args, arg.Value.emptyLiteral(aliases))
-					switch arg.Value.GoScalarType {
-					case "int", "int8", "int16", "int32", "int64",
-						"uint", "uint8", "uint16", "uint32", "uint64":
-						callArgs = append(callArgs, fmt.Sprint(arg.Value.GoScalarType+"(args[", skipArgI, "].(float64))"))
-					default:
-						// assert
-						callArgs = append(callArgs, fmt.Sprint("args[", skipArgI, "].("+arg.Value.goType(aliases, fullPackageName)+")"))
-					}
+					argsDecls = append(argsDecls, argName+" := "+arg.Value.emptyLiteral(aliases))
+					args = append(args, "&"+argName)
+					callArgs = append(callArgs, argName)
 					skipArgI++
 				}
+				for _, argDecl := range argsDecls {
+					g.l(argDecl)
+				}
 				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
-				g.l("err := gotsrpc.LoadArgs(args, callStats, r)")
+				g.l("err := gotsrpc.LoadArgs(&args, callStats, r)")
 				g.l("if err != nil {")
 				g.ind(1)
 				g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
