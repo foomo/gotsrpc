@@ -100,7 +100,7 @@ func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, er
 		fset := token.NewFileSet()
 		var dir string
 		if strings.HasSuffix(goPath, "vendor") {
-			dir = path.Join(goPath,packageName)
+			dir = path.Join(goPath, packageName)
 		} else {
 			dir = path.Join(goPath, "src", packageName)
 		}

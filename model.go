@@ -48,11 +48,14 @@ type Field struct {
 }
 
 type Service struct {
-	Name    string
-	Methods ServiceMethods
+	Name     string
+	Methods  ServiceMethods
+	Endpoint string
 }
 
 type ServiceMethods []*Method
+
+type ServiceList []*Service
 
 func (sm ServiceMethods) Len() int           { return len(sm) }
 func (sm ServiceMethods) Swap(i, j int)      { sm[i], sm[j] = sm[j], sm[i] }

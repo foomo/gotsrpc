@@ -93,7 +93,7 @@ func renderPHPRPCServiceClients(service *Service, namespce string, g *code) erro
 	return nil
 }
 
-func RenderPHPRPCClients(services map[string]*Service, config *config.Target) (code map[string]string, err error) {
+func RenderPHPRPCClients(services ServiceList, config *config.Target) (code map[string]string, err error) {
 	code = map[string]string{}
 	for _, service := range services {
 		// Check if we should render this service as ts rcp
