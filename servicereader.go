@@ -163,13 +163,17 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 							spec := spec.(*ast.ValueSpec)
 							for _, val := range spec.Values {
 								if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
-
 									firstValueLit := val.(*ast.BasicLit)
-									//fmt.Println("a value spec", spec.Names[0], firstValueLit.Kind, firstValueLit.Value)
-									constants[spec.Names[0].String()] = firstValueLit //.Value
-
+									constName := spec.Names[0].String()
+									for indexRune, r := range constName {
+										if indexRune == 0 {
+											if string(r) == strings.ToUpper(string(r)) {
+												constants[constName] = firstValueLit
+											}
+											break
+										}
+									}
 								}
-
 							}
 						}
 					}
