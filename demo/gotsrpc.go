@@ -55,14 +55,15 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	switch funcName {
 	case "Hello":
-		args = []interface{}{int64(0)}
-		err := gotsrpc.LoadArgs(args, callStats, r)
+		arg_number := int64(0)
+		args = []interface{}{&arg_number}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
 		if err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
-		helloRet := p.service.Hello(int64(args[0].(float64)))
+		helloRet := p.service.Hello(arg_number)
 		if callStats != nil {
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
@@ -121,14 +122,15 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	switch funcName {
 	case "ExtractAddress":
-		args = []interface{}{&Person{}}
-		err := gotsrpc.LoadArgs(args, callStats, r)
+		arg_person := &Person{}
+		args = []interface{}{&arg_person}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
 		if err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
-		extractAddressAddr, extractAddressE := p.service.ExtractAddress(args[0].(*Person))
+		extractAddressAddr, extractAddressE := p.service.ExtractAddress(arg_person)
 		if callStats != nil {
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
@@ -143,14 +145,15 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		gotsrpc.Reply([]interface{}{giveMeAScalarAmount, giveMeAScalarWahr, giveMeAScalarHier}, callStats, r, w)
 		return
 	case "Hello":
-		args = []interface{}{""}
-		err := gotsrpc.LoadArgs(args, callStats, r)
+		arg_name := ""
+		args = []interface{}{&arg_name}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
 		if err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
-		helloRet, helloRet_1 := p.service.Hello(args[0].(string))
+		helloRet, helloRet_1 := p.service.Hello(arg_name)
 		if callStats != nil {
 			callStats.Execution = time.Now().Sub(executionStart)
 		}

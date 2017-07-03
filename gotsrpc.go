@@ -43,12 +43,20 @@ func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	if err := json.Unmarshal(body, &args); err != nil {
-		return err
+	errLoad := loadArgs(&args, body)
+	if errLoad != nil {
+		return errLoad
 	}
 	if callStats != nil {
 		callStats.Unmarshalling = time.Now().Sub(start)
 		callStats.RequestSize = len(body)
+	}
+	return nil
+}
+
+func loadArgs(args interface{}, jsonBytes []byte) error {
+	if err := json.Unmarshal(jsonBytes, &args); err != nil {
+		return err
 	}
 	return nil
 }
