@@ -8,7 +8,7 @@ cache:
 
 
 script:
-  echo "Run tests here"
+  - echo "Run tests here"
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
