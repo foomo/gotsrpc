@@ -6,8 +6,9 @@ cache:
   directories:
     - ./vendor
 
+
 script:
-  - make test
+  echo "Run tests here"
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
