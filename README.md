@@ -1,23 +1,69 @@
-# Go TypeScript RPC
-
-Where to define this ?!
+# Go / TypeScript and Go / Go RPC
 
 ```bash
-gotsrpc -ts-target path/to/local/whatever.ts -ts-module My.Module.Foo my/package/path ServiceStructA [ServiceStructB ...]
-gotsrpc build gotsrpc.yml
+gotsrpc gotsrpc.yml
 ```
+
+Will generate client and server side go and TypeScript code. Have fun!
+
+## config expamples
+
+### commonjs
+
+[demo/config.yml](demo/config-commonjs.yml)
 
 ```yaml
 ---
-# gotsrpc.yml
+modulekind: commonjs
 targets:
-  -
-    package: my/package/path
-    expose:
-      - ServiceStructA
-      - ServiceStructB
-    ts:
-        module: My.Module.Foo
-        target: path/to/local/whatever.ts
-    
+  demo:
+    services:
+      /service/foo: Foo
+      /service/demo: Demo
+    package: github.com/foomo/gotsrpc/demo
+    out: /tmp/test.ts
+    gorpc:
+      - Foo
+      - Demo
+    tsrpc:
+      - Foo
+      - Demo
+
+mappings:
+  github.com/foomo/gotsrpc/demo:
+    out: /tmp/test-files-demo.ts
+  github.com/foomo/gotsrpc/demo/nested:
+    out: /tmp/test-files-demo-nested.ts
+...
+```
+
+### oldschool TypeScript
+
+[demo/config.yml](demo/config.yml)
+
+```yaml
+---
+targets:
+  demo:
+    module: GoTSRPC.Demo
+    services:
+      /service/foo: Foo
+      /service/demo: Demo
+    package: github.com/foomo/gotsrpc/demo
+    out: /tmp/test.ts
+    gorpc:
+      - Foo
+      - Demo
+    tsrpc:
+      - Foo
+      - Demo
+
+mappings:
+  github.com/foomo/gotsrpc/demo:
+    module: GoTSRPC.Demo
+    out: /tmp/test-files-demo.ts
+  github.com/foomo/gotsrpc/demo/nested:
+    module: GoTSRPC.Demo.Nested
+    out: /tmp/test-files-demo-nested.ts
+...
 ```

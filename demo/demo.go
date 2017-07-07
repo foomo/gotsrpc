@@ -10,7 +10,7 @@ type Demo struct {
 	Bla bool
 }
 
-func (d *Demo) Hello(name string) (reply string, err *Err) {
+func (d *Demo) Hello(name string) (string, *Err) {
 	if name == "Peter" {
 		return "", &Err{"fuck you Peter I do not like you"}
 	}

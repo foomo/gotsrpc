@@ -36,19 +36,27 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 	w.Write([]byte("you gotta POST"))
 }
 
-func LoadArgs(args []interface{}, callStats *CallStats, r *http.Request) error {
+func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return err
 	}
-	if err := json.Unmarshal(body, &args); err != nil {
-		return err
+	errLoad := loadArgs(&args, body)
+	if errLoad != nil {
+		return errLoad
 	}
 	if callStats != nil {
 		callStats.Unmarshalling = time.Now().Sub(start)
 		callStats.RequestSize = len(body)
+	}
+	return nil
+}
+
+func loadArgs(args interface{}, jsonBytes []byte) error {
+	if err := json.Unmarshal(jsonBytes, &args); err != nil {
+		return err
 	}
 	return nil
 }
@@ -100,7 +108,7 @@ func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, er
 		fset := token.NewFileSet()
 		var dir string
 		if strings.HasSuffix(goPath, "vendor") {
-			dir = path.Join(goPath,packageName)
+			dir = path.Join(goPath, packageName)
 		} else {
 			dir = path.Join(goPath, "src", packageName)
 		}

@@ -53,6 +53,14 @@ func Build(conf *config.Config, goPath string) {
 	}
 
 	mappedTypeScript := map[string]map[string]*code{}
+
+	// preserve alphabetic order
+	names := []string{}
+	for name := range conf.Targets {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
 	for name, target := range conf.Targets {
 		fmt.Fprintln(os.Stderr, "building target", name)
 
@@ -179,6 +187,7 @@ func Build(conf *config.Config, goPath string) {
 	}
 
 	//	spew.Dump(mappedTypeScript)
+
 	for goPackage, mappedStructsMap := range mappedTypeScript {
 		mapping, ok := conf.Mappings[goPackage]
 		if !ok {

@@ -10,9 +10,11 @@ install:
 build: goreleaser
 	goreleaser
 
-
 goreleaser:
 	@go get github.com/goreleaser/goreleaser && go install github.com/goreleaser/goreleaser
 
 glide:
 	@go get github.com/Masterminds/glide && glide install
+
+test: demo
+	go test $(glide nv)

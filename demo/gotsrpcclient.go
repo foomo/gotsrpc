@@ -59,9 +59,9 @@ func (c *DemoGoTSRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.T
 	return
 }
 
-func (c *DemoGoTSRPCClient) Hello(name string) (reply string, err *Err, clientErr error) {
+func (c *DemoGoTSRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
 	args := []interface{}{name}
-	reply := []interface{}{&reply, &err}
+	reply := []interface{}{&retHello_0, &retHello_1}
 	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
 	return
 }

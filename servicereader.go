@@ -10,7 +10,11 @@ import (
 	"strings"
 )
 
-func readServiceFile(file *ast.File, packageName string, services map[string]*Service) error {
+func (sl ServiceList) Len() int           { return len(sl) }
+func (sl ServiceList) Swap(i, j int)      { sl[i], sl[j] = sl[j], sl[i] }
+func (sl ServiceList) Less(i, j int) bool { return strings.Compare(sl[i].Name, sl[j].Name) > 0 }
+
+func readServiceFile(file *ast.File, packageName string, services ServiceList) error {
 	findService := func(serviceName string) (service *Service, ok bool) {
 		for _, service := range services {
 			if service.Name == serviceName {
@@ -132,13 +136,14 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 
 }
 
-func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services map[string]*Service, err error) {
-	services = map[string]*Service{}
+func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services ServiceList, err error) {
+	services = ServiceList{}
 	for endpoint, serviceName := range serviceMap {
-		services[endpoint] = &Service{
-			Name:    serviceName,
-			Methods: []*Method{},
-		}
+		services = append(services, &Service{
+			Name:     serviceName,
+			Methods:  []*Method{},
+			Endpoint: endpoint,
+		})
 	}
 	for _, file := range pkg.Files {
 		err = readServiceFile(file, packageName, services)
@@ -147,6 +152,7 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 		}
 
 	}
+	sort.Sort(services)
 	return
 }
 
@@ -163,13 +169,17 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 							spec := spec.(*ast.ValueSpec)
 							for _, val := range spec.Values {
 								if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
-
 									firstValueLit := val.(*ast.BasicLit)
-									//fmt.Println("a value spec", spec.Names[0], firstValueLit.Kind, firstValueLit.Value)
-									constants[spec.Names[0].String()] = firstValueLit //.Value
-
+									constName := spec.Names[0].String()
+									for indexRune, r := range constName {
+										if indexRune == 0 {
+											if string(r) == strings.ToUpper(string(r)) {
+												constants[constName] = firstValueLit
+											}
+											break
+										}
+									}
 								}
-
 							}
 						}
 					}
@@ -181,7 +191,7 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 
 }
 
-func Read(goPaths []string, packageName string, serviceMap map[string]string) (services map[string]*Service, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
+func Read(goPaths []string, packageName string, serviceMap map[string]string) (services ServiceList, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
 	if len(serviceMap) == 0 {
 		err = errors.New("nothing to do service names are empty")
 		return

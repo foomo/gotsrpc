@@ -20,17 +20,17 @@ type (
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
-	HelloRequest struct {
+	FooHelloRequest struct {
 		Number int64
 	}
-	HelloResponse struct {
+	FooHelloResponse struct {
 		RetHello_0 int
 	}
 )
 
 func init() {
-	gob.Register(HelloRequest{})
-	gob.Register(HelloResponse{})
+	gob.Register(FooHelloRequest{})
+	gob.Register(FooHelloResponse{})
 }
 
 func NewFooGoRPCProxy(addr string, service *Foo, tlsConfig *tls.Config) *FooGoRPCProxy {
@@ -51,6 +51,10 @@ func (p *FooGoRPCProxy) Start() error {
 	return p.server.Start()
 }
 
+func (p *FooGoRPCProxy) Serve() error {
+	return p.server.Serve()
+}
+
 func (p *FooGoRPCProxy) Stop() {
 	p.server.Stop()
 }
@@ -67,10 +71,10 @@ func (p *FooGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 	funcName := funcNameParts[len(funcNameParts)-1]
 
 	switch funcName {
-	case "HelloRequest":
-		req := request.(HelloRequest)
+	case "FooHelloRequest":
+		req := request.(FooHelloRequest)
 		retHello_0 := p.service.Hello(req.Number)
-		response = HelloResponse{RetHello_0: retHello_0}
+		response = FooHelloResponse{RetHello_0: retHello_0}
 	default:
 		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
 	}
@@ -94,62 +98,62 @@ type (
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
-	ExtractAddressRequest struct {
+	DemoExtractAddressRequest struct {
 		Person *Person
 	}
-	ExtractAddressResponse struct {
+	DemoExtractAddressResponse struct {
 		Addr *Address
 		E    *Err
 	}
 
-	GiveMeAScalarRequest struct {
+	DemoGiveMeAScalarRequest struct {
 	}
-	GiveMeAScalarResponse struct {
+	DemoGiveMeAScalarResponse struct {
 		Amount nested.Amount
 		Wahr   nested.True
 		Hier   ScalarInPlace
 	}
 
-	HelloRequest struct {
+	DemoHelloRequest struct {
 		Name string
 	}
-	HelloResponse struct {
-		Reply string
-		Err   *Err
+	DemoHelloResponse struct {
+		RetHello_0 string
+		RetHello_1 *Err
 	}
 
-	MapCrapRequest struct {
+	DemoMapCrapRequest struct {
 	}
-	MapCrapResponse struct {
+	DemoMapCrapResponse struct {
 		Crap map[string][]int
 	}
 
-	NestRequest struct {
+	DemoNestRequest struct {
 	}
-	NestResponse struct {
+	DemoNestResponse struct {
 		RetNest_0 *nested.Nested
 	}
 
-	TestScalarInPlaceRequest struct {
+	DemoTestScalarInPlaceRequest struct {
 	}
-	TestScalarInPlaceResponse struct {
+	DemoTestScalarInPlaceResponse struct {
 		RetTestScalarInPlace_0 ScalarInPlace
 	}
 )
 
 func init() {
-	gob.Register(ExtractAddressRequest{})
-	gob.Register(ExtractAddressResponse{})
-	gob.Register(GiveMeAScalarRequest{})
-	gob.Register(GiveMeAScalarResponse{})
-	gob.Register(HelloRequest{})
-	gob.Register(HelloResponse{})
-	gob.Register(MapCrapRequest{})
-	gob.Register(MapCrapResponse{})
-	gob.Register(NestRequest{})
-	gob.Register(NestResponse{})
-	gob.Register(TestScalarInPlaceRequest{})
-	gob.Register(TestScalarInPlaceResponse{})
+	gob.Register(DemoExtractAddressRequest{})
+	gob.Register(DemoExtractAddressResponse{})
+	gob.Register(DemoGiveMeAScalarRequest{})
+	gob.Register(DemoGiveMeAScalarResponse{})
+	gob.Register(DemoHelloRequest{})
+	gob.Register(DemoHelloResponse{})
+	gob.Register(DemoMapCrapRequest{})
+	gob.Register(DemoMapCrapResponse{})
+	gob.Register(DemoNestRequest{})
+	gob.Register(DemoNestResponse{})
+	gob.Register(DemoTestScalarInPlaceRequest{})
+	gob.Register(DemoTestScalarInPlaceResponse{})
 }
 
 func NewDemoGoRPCProxy(addr string, service *Demo, tlsConfig *tls.Config) *DemoGoRPCProxy {
@@ -170,6 +174,10 @@ func (p *DemoGoRPCProxy) Start() error {
 	return p.server.Start()
 }
 
+func (p *DemoGoRPCProxy) Serve() error {
+	return p.server.Serve()
+}
+
 func (p *DemoGoRPCProxy) Stop() {
 	p.server.Stop()
 }
@@ -186,26 +194,26 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 	funcName := funcNameParts[len(funcNameParts)-1]
 
 	switch funcName {
-	case "ExtractAddressRequest":
-		req := request.(ExtractAddressRequest)
+	case "DemoExtractAddressRequest":
+		req := request.(DemoExtractAddressRequest)
 		addr, e := p.service.ExtractAddress(req.Person)
-		response = ExtractAddressResponse{Addr: addr, E: e}
-	case "GiveMeAScalarRequest":
+		response = DemoExtractAddressResponse{Addr: addr, E: e}
+	case "DemoGiveMeAScalarRequest":
 		amount, wahr, hier := p.service.GiveMeAScalar()
-		response = GiveMeAScalarResponse{Amount: amount, Wahr: wahr, Hier: hier}
-	case "HelloRequest":
-		req := request.(HelloRequest)
-		reply, err := p.service.Hello(req.Name)
-		response = HelloResponse{Reply: reply, Err: err}
-	case "MapCrapRequest":
+		response = DemoGiveMeAScalarResponse{Amount: amount, Wahr: wahr, Hier: hier}
+	case "DemoHelloRequest":
+		req := request.(DemoHelloRequest)
+		retHello_0, retHello_1 := p.service.Hello(req.Name)
+		response = DemoHelloResponse{RetHello_0: retHello_0, RetHello_1: retHello_1}
+	case "DemoMapCrapRequest":
 		crap := p.service.MapCrap()
-		response = MapCrapResponse{Crap: crap}
-	case "NestRequest":
+		response = DemoMapCrapResponse{Crap: crap}
+	case "DemoNestRequest":
 		retNest_0 := p.service.Nest()
-		response = NestResponse{RetNest_0: retNest_0}
-	case "TestScalarInPlaceRequest":
+		response = DemoNestResponse{RetNest_0: retNest_0}
+	case "DemoTestScalarInPlaceRequest":
 		retTestScalarInPlace_0 := p.service.TestScalarInPlace()
-		response = TestScalarInPlaceResponse{RetTestScalarInPlace_0: retTestScalarInPlace_0}
+		response = DemoTestScalarInPlaceResponse{RetTestScalarInPlace_0: retTestScalarInPlace_0}
 	default:
 		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
 	}
