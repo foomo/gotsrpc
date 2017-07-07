@@ -1,0 +1,32 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  - binary: gotsrpc
+    main:   ./cmd/gotsrpc/gotsrpc.go
+    env:
+        - CGO_ENABLED=0
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+
+# .goreleaser.yml
+archive:
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+
+
+
+brew:
+  # Reporitory to push the tap to.
+  github:
+    owner: foomo
+    name: homebrew-gotsrpc
+
+  caveats: "gotsrpc gotsrpc.yml"
+  homepage: "https://github.com/foomo/gotsrpc"
+  description: "CLI utility to generate go and typescript RPC calls easily"
