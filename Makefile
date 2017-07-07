@@ -7,8 +7,8 @@ demo:
 install:
 	GOBIN=/usr/local/bin go install cmd/gotsrpc/gotsrpc.go
 
-build: goreleaser
-	goreleaser
+build: goreleaser glide
+	goreleaser --rm-dist
 
 goreleaser:
 	@go get github.com/goreleaser/goreleaser && go install github.com/goreleaser/goreleaser
