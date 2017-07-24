@@ -62,6 +62,24 @@ func (sm ServiceMethods) Len() int           { return len(sm) }
 func (sm ServiceMethods) Swap(i, j int)      { sm[i], sm[j] = sm[j], sm[i] }
 func (sm ServiceMethods) Less(i, j int) bool { return sm[i].Name < sm[j].Name }
 
+func (sm ServiceMethods) getMethodByName(name string) *Method {
+	for _, m := range sm {
+		if m.Name == name {
+			return m
+		}
+	}
+	return nil
+}
+
+func (sl ServiceList) getServiceByName(name string) *Service {
+	for _, s := range sl {
+		if s.Name == name {
+			return s
+		}
+	}
+	return nil
+}
+
 type Method struct {
 	Name   string
 	Args   []*Field
