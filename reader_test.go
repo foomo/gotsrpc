@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFoo(t *testing.T) {
+func getTestServiceList(t *testing.T) ServiceList {
 	ReaderTrace = true
 	serviceMap := map[string]string{
 		"/demo": "Demo",
@@ -19,8 +19,7 @@ func TestFoo(t *testing.T) {
 	assert.NoError(t, parseErr)
 
 	services, err := readServicesInPackage(pkg, packageName, serviceMap)
-
-	t.Log(services, err)
+	assert.NoError(t, err)
 
 	missingTypes := map[string]bool{}
 	for _, s := range services {
@@ -31,6 +30,17 @@ func TestFoo(t *testing.T) {
 			collectScalarTypes(m.Args, missingTypes)
 		}
 	}
-	//spew.Dump(services)
+	return services
+}
 
+func TestInterfaceReading(t *testing.T) {
+	services := getTestServiceList(t)
+	//spew.Dump(services)
+	demoService := services.getServiceByName("Demo")
+	assert.NotNil(t, demoService)
+	helloInterfaceMethod := demoService.Methods.getMethodByName("HelloInterface")
+	assert.NotNil(t, helloInterfaceMethod)
+	assert.True(t, helloInterfaceMethod.Args[0].Value.IsInterface)
+	assert.True(t, helloInterfaceMethod.Args[1].Value.Map.Value.IsInterface)
+	assert.True(t, helloInterfaceMethod.Args[2].Value.Array.Value.IsInterface)
 }

@@ -17,6 +17,10 @@ func (d *Demo) Hello(name string) (string, *Err) {
 	return "Hello from the server: " + name, nil
 }
 
+func (d *Demo) HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) {
+
+}
+
 func (d *Demo) nothingInNothinOut() {
 
 }
