@@ -22,6 +22,7 @@ type StructType struct {
 }
 
 type Value struct {
+	IsInterface  bool        `json:",omitempty"`
 	Scalar       *Scalar     `json:",omitempty"`
 	ScalarType   ScalarType  `json:",omitempty"`
 	GoScalarType string      `json:",omitempty"`
