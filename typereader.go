@@ -196,6 +196,11 @@ func readAstStructType(v *Value, structType *ast.StructType, fileImports fileImp
 	v.Struct.Fields = readFieldList(structType.Fields.List, fileImports)
 }
 
+func readAstInterfaceType(v *Value, interfaceType *ast.InterfaceType, fileImports fileImportSpecMap) {
+	v.IsInterface = true
+
+}
+
 func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 
 	switch reflect.ValueOf(expr).Type().String() {
@@ -220,6 +225,8 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 			readAstSelectorExpr(v.Array.Value, fieldArray.Elt.(*ast.SelectorExpr), fileImports)
 		case "*ast.StructType":
 			readAstStructType(v.Array.Value, fieldArray.Elt.(*ast.StructType), fileImports)
+		case "*ast.InterfaceType":
+			readAstInterfaceType(v.Array.Value, fieldArray.Elt.(*ast.InterfaceType), fileImports)
 		default:
 			trace("---------------------> array of", reflect.ValueOf(fieldArray.Elt).Type().String())
 		}
@@ -238,6 +245,8 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 		readAstSelectorExpr(v, expr.(*ast.SelectorExpr), fileImports)
 	case "*ast.StructType":
 		readAstStructType(v, expr.(*ast.StructType), fileImports)
+	case "*ast.InterfaceType":
+		readAstInterfaceType(v, expr.(*ast.InterfaceType), fileImports)
 	default:
 		trace("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())
 	}
