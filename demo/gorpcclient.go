@@ -21,17 +21,17 @@ func NewFooGoRPCClient(addr string, tlsConfig *tls.Config) *FooGoRPCClient {
 	return client
 }
 
-func (c *FooGoRPCClient) Start() {
-	c.Client.Start()
+func (goTSRPCClientInstance *FooGoRPCClient) Start() {
+	goTSRPCClientInstance.Client.Start()
 }
 
-func (c *FooGoRPCClient) Stop() {
-	c.Client.Stop()
+func (goTSRPCClientInstance *FooGoRPCClient) Stop() {
+	goTSRPCClientInstance.Client.Stop()
 }
 
-func (c *FooGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+func (goTSRPCClientInstance *FooGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
 	req := FooHelloRequest{Number: number}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr
 		return
@@ -54,17 +54,17 @@ func NewDemoGoRPCClient(addr string, tlsConfig *tls.Config) *DemoGoRPCClient {
 	return client
 }
 
-func (c *DemoGoRPCClient) Start() {
-	c.Client.Start()
+func (goTSRPCClientInstance *DemoGoRPCClient) Start() {
+	goTSRPCClientInstance.Client.Start()
 }
 
-func (c *DemoGoRPCClient) Stop() {
-	c.Client.Stop()
+func (goTSRPCClientInstance *DemoGoRPCClient) Stop() {
+	goTSRPCClientInstance.Client.Stop()
 }
 
-func (c *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
+func (goTSRPCClientInstance *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
 	req := DemoExtractAddressRequest{Person: person}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr
 		return
@@ -73,9 +73,9 @@ func (c *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err,
 	return response.Addr, response.E, nil
 }
 
-func (c *DemoGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
+func (goTSRPCClientInstance *DemoGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
 	req := DemoGiveMeAScalarRequest{}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr
 		return
@@ -84,9 +84,9 @@ func (c *DemoGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.Tru
 	return response.Amount, response.Wahr, response.Hier, nil
 }
 
-func (c *DemoGoRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
+func (goTSRPCClientInstance *DemoGoRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
 	req := DemoHelloRequest{Name: name}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr
 		return
@@ -95,9 +95,19 @@ func (c *DemoGoRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err
 	return response.RetHello_0, response.RetHello_1, nil
 }
 
-func (c *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
+func (goTSRPCClientInstance *DemoGoRPCClient) HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) (clientErr error) {
+	req := DemoHelloInterfaceRequest{Anything: anything, AnythingMap: anythingMap, AnythingSlice: anythingSlice}
+	_, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	return nil
+}
+
+func (goTSRPCClientInstance *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	req := DemoMapCrapRequest{}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr
 		return
@@ -106,9 +116,9 @@ func (c *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	return response.Crap, nil
 }
 
-func (c *DemoGoRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
+func (goTSRPCClientInstance *DemoGoRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
 	req := DemoNestRequest{}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr
 		return
@@ -117,9 +127,9 @@ func (c *DemoGoRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
 	return response.RetNest_0, nil
 }
 
-func (c *DemoGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
+func (goTSRPCClientInstance *DemoGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
 	req := DemoTestScalarInPlaceRequest{}
-	rpcCallRes, rpcCallErr := c.Client.Call(req)
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr
 		return

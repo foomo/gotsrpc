@@ -8,7 +8,7 @@ import (
 )
 
 func getTestServiceList(t *testing.T) ServiceList {
-	ReaderTrace = true
+	// ReaderTrace = true
 	serviceMap := map[string]string{
 		"/demo": "Demo",
 	}

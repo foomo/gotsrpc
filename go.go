@@ -25,7 +25,7 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 	case len(v.GoScalarType) > 0:
 		t += v.GoScalarType
 	case v.StructType != nil:
-		if packageName != v.StructType.Package {
+		if packageName != v.StructType.Package && aliases[v.StructType.Package] != "" {
 			t += aliases[v.StructType.Package] + "."
 		}
 		t += v.StructType.Name
@@ -37,6 +37,8 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 			t += aliases[v.Scalar.Package] + "."
 		}
 		t += v.Scalar.Name[len(v.Scalar.Package)+1:]
+	case v.IsInterface:
+		t += "interface{}"
 	default:
 		// TODO
 		fmt.Println("WARN: can't resolve goType")
@@ -51,6 +53,8 @@ func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
 		e += "&"
 	}
 	switch true {
+	case v.Map != nil:
+		e += "map[" + v.Map.KeyType + "]" + v.Map.Value.emptyLiteral(aliases)
 	case len(v.GoScalarType) > 0:
 		switch v.GoScalarType {
 		case "string":
@@ -105,7 +109,8 @@ func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
 			e += alias + "."
 		}
 		e += v.StructType.Name + "{}"
-
+	case v.IsInterface:
+		e += "interface{}{}"
 	}
 	return
 }
@@ -290,14 +295,17 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 						continue
 					}
 
-					argsDecls = append(argsDecls, argName+" := "+arg.Value.emptyLiteral(aliases))
+					//argsDecls = append(argsDecls, argName+" := "+arg.Value.emptyLiteral(aliases))
+					argsDecls = append(argsDecls, argName+"  "+arg.Value.goType(aliases, packageName))
 					args = append(args, "&"+argName)
 					callArgs = append(callArgs, argName)
 					skipArgI++
 				}
+				g.l("var (")
 				for _, argDecl := range argsDecls {
 					g.l(argDecl)
 				}
+				g.l(")")
 				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
 				g.l("err := gotsrpc.LoadArgs(&args, callStats, r)")
 				g.l("if err != nil {")
@@ -416,10 +424,10 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 				returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
 			}
 			returns = append(returns, "clientErr error")
-			g.l(`func (c *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
+			g.l(`func (goTSRPCClientInstance *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
 			g.l(`args := []interface{}{` + strings.Join(args, ", ") + `}`)
 			g.l(`reply := []interface{}{` + strings.Join(rets, ", ") + `}`)
-			g.l(`clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "` + method.Name + `", args, reply)`)
+			g.l(`clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "` + method.Name + `", args, reply)`)
 			g.l(`return`)
 			g.l(`}`)
 			g.nl()
@@ -647,12 +655,12 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 					return client
         }
 
-        func (c *` + clientName + `) Start() {
-        	c.Client.Start()
+        func (goTSRPCClientInstance *` + clientName + `) Start() {
+        	goTSRPCClientInstance.Client.Start()
       	}
 
-        func (c *` + clientName + `) Stop() {
-        	c.Client.Stop()
+        func (goTSRPCClientInstance *` + clientName + `) Stop() {
+        	goTSRPCClientInstance.Client.Stop()
       	}
 		`)
 		g.nl()
@@ -675,12 +683,12 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 				returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
 			}
 			returns = append(returns, "clientErr error")
-			g.l(`func (c *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
+			g.l(`func (goTSRPCClientInstance *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
 			g.l(`req := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
 			if len(rets) > 0 {
-				g.l(`rpcCallRes, rpcCallErr := c.Client.Call(req)`)
+				g.l(`rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)`)
 			} else {
-				g.l(`_, rpcCallErr := c.Client.Call(req)`)
+				g.l(`_, rpcCallErr := goTSRPCClientInstance.Client.Call(req)`)
 			}
 			g.l(`if rpcCallErr != nil {`)
 			g.l(`clientErr = rpcCallErr`)

@@ -22,10 +22,10 @@ func NewFooGoTSRPCClient(url string, endpoint string) *FooGoTSRPCClient {
 	}
 }
 
-func (c *FooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+func (goTSRPCClientInstance *FooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
 	args := []interface{}{number}
 	reply := []interface{}{&retHello_0}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "Hello", args, reply)
 	return
 }
 
@@ -45,44 +45,51 @@ func NewDemoGoTSRPCClient(url string, endpoint string) *DemoGoTSRPCClient {
 	}
 }
 
-func (c *DemoGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
+func (goTSRPCClientInstance *DemoGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
 	args := []interface{}{person}
 	reply := []interface{}{&addr, &e}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "ExtractAddress", args, reply)
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "ExtractAddress", args, reply)
 	return
 }
 
-func (c *DemoGoTSRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
+func (goTSRPCClientInstance *DemoGoTSRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&amount, &wahr, &hier}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "GiveMeAScalar", args, reply)
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "GiveMeAScalar", args, reply)
 	return
 }
 
-func (c *DemoGoTSRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
+func (goTSRPCClientInstance *DemoGoTSRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
 	args := []interface{}{name}
 	reply := []interface{}{&retHello_0, &retHello_1}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Hello", args, reply)
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "Hello", args, reply)
 	return
 }
 
-func (c *DemoGoTSRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
+func (goTSRPCClientInstance *DemoGoTSRPCClient) HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) (clientErr error) {
+	args := []interface{}{anything, anythingMap, anythingSlice}
+	reply := []interface{}{}
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "HelloInterface", args, reply)
+	return
+}
+
+func (goTSRPCClientInstance *DemoGoTSRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&crap}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "MapCrap", args, reply)
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "MapCrap", args, reply)
 	return
 }
 
-func (c *DemoGoTSRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
+func (goTSRPCClientInstance *DemoGoTSRPCClient) Nest() (retNest_0 *nested.Nested, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&retNest_0}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "Nest", args, reply)
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "Nest", args, reply)
 	return
 }
 
-func (c *DemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
+func (goTSRPCClientInstance *DemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&retTestScalarInPlace_0}
-	clientErr = gotsrpc.CallClient(c.URL, c.EndPoint, "TestScalarInPlace", args, reply)
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "TestScalarInPlace", args, reply)
 	return
 }
