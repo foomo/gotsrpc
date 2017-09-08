@@ -32,9 +32,14 @@ func relativeFilePath(a, b string) (r string, e error) {
 }
 
 func commonJSImports(conf *config.Config, c *code, tsFilename string) {
-	c.l("// hello commonjs - we need some imports")
-	for _, importMapping := range conf.Mappings {
-
+	c.l("// hello commonjs - we need some imports - sorted in alphabetical order, by go package")
+	packageNames := []string{}
+	for packageName := range conf.Mappings {
+		packageNames = append(packageNames, packageName)
+	}
+	sort.Strings(packageNames)
+	for _, packageName := range packageNames {
+		importMapping := conf.Mappings[packageName]
 		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out)
 		if relativeErr != nil {
 			fmt.Println("can not derive a relative path between", tsFilename, "and", importMapping.Out, relativeErr)
