@@ -88,6 +88,8 @@ func extractJSONInfo(tag string) *JSONInfo {
 
 func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 	switch ident.Name {
+	case "byte":
+		return ScalarTypeByte
 	case "string":
 		return ScalarTypeString
 	case "bool":

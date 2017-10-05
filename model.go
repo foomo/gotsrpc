@@ -3,6 +3,7 @@ package gotsrpc
 type ScalarType string
 
 const (
+	ScalarTypeByte   ScalarType = "Uint8"
 	ScalarTypeString ScalarType = "string"
 	ScalarTypeNumber ScalarType = "number"
 	ScalarTypeBool   ScalarType = "bool"
