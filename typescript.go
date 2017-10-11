@@ -306,7 +306,7 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services ServiceList
 					var data = JSON.parse(request.responseText);
 					success.apply(null, data);
 				} catch(e) {
-	                err(request);
+	                err(e);
 				}
             } else {
                 err(request);
