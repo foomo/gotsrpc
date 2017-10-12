@@ -68,6 +68,8 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[strin
 
 func tsTypeFromScalarType(scalarType ScalarType) string {
 	switch scalarType {
+	case ScalarTypeByte:
+		return "string"
 	case ScalarTypeBool:
 		return "boolean"
 	}
