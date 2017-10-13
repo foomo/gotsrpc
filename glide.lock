@@ -1,14 +1,10 @@
-hash: bb12281cdd21149fad328dd936222f4ad0c94b0bb74529b9c4bd29b90fe77175
-updated: 2017-07-24T18:15:44.480751714+02:00
+hash: 249ea428695a3cfe9f583980181fb650d69d107954538d0684342754f61c0c68
+updated: 2017-10-12T16:13:47.627906627+02:00
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
-- name: github.com/davecgh/go-spew
-  version: 346938d642f2ec3594ed81d874461961cd0faa76
-  subpackages:
-  - spew
 - name: github.com/golang/protobuf
   version: da116c3771bf4a398a43f44e069195ef1c9688ef
   subpackages:
@@ -35,8 +31,22 @@ imports:
   version: abf152e5f3e97f2fafac028d2cc06c1feb87ffa5
 - name: github.com/stretchr/testify
   version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  subpackages:
+  - assert
 - name: github.com/valyala/gorpc
   version: 908281bef77441f2d0ec1792189b4032a1dace0c
+- name: golang.org/x/tools
+  version: e4b401d06e5ee9f990011dc4f24cd24162131565
+  subpackages:
+  - imports
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
-testImports: []
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
