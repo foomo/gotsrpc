@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/foomo/gotsrpc/config"
+	"golang.org/x/tools/imports"
 )
 
 func deriveCommonJSMapping(conf *config.Config) {
@@ -141,7 +142,13 @@ func Build(conf *config.Config, goPath string) {
 				fmt.Fprintln(os.Stderr, "	could not format go ts rpc proxies code", formattingError)
 			}
 
-			writeErr := ioutil.WriteFile(filename, []byte(code), 0644)
+			codeBytes, errProcessImports := imports.Process(filename, []byte(code), nil)
+			if errProcessImports != nil {
+				fmt.Fprintln(os.Stderr, "	goimports does not like this", errProcessImports)
+				os.Exit(5)
+			}
+
+			writeErr := ioutil.WriteFile(filename, codeBytes, 0644)
 			if writeErr != nil {
 				fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
 				os.Exit(5)
