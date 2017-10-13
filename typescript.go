@@ -172,7 +172,7 @@ func renderService(skipGoTSRPC bool, moduleKind config.ModuleKind, service *Serv
 		}
 
 		ts.app(") => void")
-		ts.app(", err:(request:XMLHttpRequest) => void) {").nl()
+		ts.app(", err:(request:XMLHttpRequest, e?:Error) => void) {").nl()
 		ts.ind(1)
 		// generic framework call
 		ts.l("this.transport(this.endPoint, \"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "], success, err);")
@@ -306,7 +306,7 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services ServiceList
 					var data = JSON.parse(request.responseText);
 					success.apply(null, data);
 				} catch(e) {
-	                err(request);
+	                err(request, e);
 				}
             } else {
                 err(request);
