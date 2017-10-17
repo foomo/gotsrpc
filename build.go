@@ -33,6 +33,8 @@ func relativeFilePath(a, b string) (r string, e error) {
 
 func commonJSImports(conf *config.Config, c *code, tsFilename string) {
 	c.l("// hello commonjs - we need some imports")
+	c.l("/* tslint:disable */")
+
 	for _, importMapping := range conf.Mappings {
 
 		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out)
