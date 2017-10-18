@@ -6,7 +6,7 @@ targets:
       /service/foo: Foo
       /service/demo: Demo
     package: github.com/foomo/gotsrpc/demo
-    out: /tmp/test.ts
+    out: demo/output-commonjs/client.ts
     gorpc:
       - Foo
       - Demo
@@ -16,7 +16,7 @@ targets:
 
 mappings:
   github.com/foomo/gotsrpc/demo:
-    out: /tmp/test-files-demo.ts
+    out: demo/output-commonjs/demo.ts
   github.com/foomo/gotsrpc/demo/nested:
-    out: /tmp/test-files-demo-nested.ts
+    out: demo/output-commonjs/demo-nested.ts
 ...

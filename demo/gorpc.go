@@ -5,12 +5,13 @@ import (
 	tls "crypto/tls"
 	gob "encoding/gob"
 	fmt "fmt"
-	gotsrpc "github.com/foomo/gotsrpc"
-	nested "github.com/foomo/gotsrpc/demo/nested"
-	gorpc "github.com/valyala/gorpc"
 	reflect "reflect"
 	strings "strings"
 	time "time"
+
+	gotsrpc "github.com/foomo/gotsrpc"
+	nested "github.com/foomo/gotsrpc/demo/nested"
+	gorpc "github.com/valyala/gorpc"
 )
 
 type (

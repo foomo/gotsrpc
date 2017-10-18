@@ -28,6 +28,7 @@ type Person struct {
 		Bar string
 	}
 	iAmPrivate string
+	DNA        []byte
 }
 
 func (d *Demo) ExtractAddress(person *Person) (addr *Address, e *Err) {

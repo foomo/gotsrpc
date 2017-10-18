@@ -2,9 +2,10 @@
 package demo
 
 import (
-	gotsrpc "github.com/foomo/gotsrpc"
 	http "net/http"
 	time "time"
+
+	gotsrpc "github.com/foomo/gotsrpc"
 )
 
 type FooGoTSRPCProxy struct {
