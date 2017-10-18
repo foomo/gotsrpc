@@ -306,10 +306,10 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services ServiceList
             if (request.status == 200) {
 				try {
 					var data = JSON.parse(request.responseText);
-					success.apply(null, data);
 				} catch(e) {
 	                err(request, e);
 				}
+				success.apply(null, data);
             } else {
                 err(request);
             }
