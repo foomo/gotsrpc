@@ -10,6 +10,8 @@ import (
 	"github.com/foomo/gotsrpc/config"
 )
 
+const Version = "0.10.0"
+
 func jsonDump(v interface{}) {
 	jsonBytes, err := json.MarshalIndent(v, "", "	")
 	fmt.Fprintln(os.Stderr, err, string(jsonBytes))
@@ -23,12 +25,17 @@ func main() {
 
 	flagSkipGotsprc := flag.Bool("skipgotsrpc", false, "if true, module GoTSRPC will not be generated")
 	flagDebug := flag.Bool("debug", false, "debug")
+
 	flag.Parse()
 	gotsrpc.SkipGoTSRPC = *flagSkipGotsprc
 	args := flag.Args()
 	if len(args) != 1 {
 		usage()
 		os.Exit(1)
+	}
+	if flag.Arg(0) == "version" {
+		fmt.Println(Version)
+		os.Exit(0)
 	}
 	gotsrpc.ReaderTrace = *flagDebug
 	goPath := os.Getenv("GOPATH")
