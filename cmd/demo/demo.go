@@ -41,5 +41,6 @@ func main() {
 	d := &Demo{
 		proxy: demo.NewDefaultDemoGoTSRPCProxy(&demo.Demo{}, []string{}),
 	}
+	fmt.Println("staring a demo on http://127.0.0.1:8080 - open it and take a look at the console")
 	fmt.Println(http.ListenAndServe(":8080", d))
 }
