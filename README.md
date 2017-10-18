@@ -1,5 +1,28 @@
 # Go / TypeScript and Go / Go RPC
 
+## Installation
+
+From source to /usr/local/bin/gotsrpc:
+
+```bash
+go get github.com/foomo/gotsrpc
+cd $GOPATH/src/github.com/foomo/gotsrpc
+make install
+```
+
+If you trust us there are precompiled versions:
+
+[/foomo/gotsrpc/releases](/foomo/gotsrpc/releases)
+
+On the mac:
+
+```bash
+brew install foomo/gotsrpc/gotsrpc
+```
+
+
+## Usage
+
 ```bash
 gotsrpc gotsrpc.yml
 ```
