@@ -32,9 +32,11 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[strin
 		ts.app("}")
 	case v.Array != nil:
 		v.Array.Value.tsType(mappings, scalarTypes, ts)
-		ts.app("[]")
+		if v.Array.Value.ScalarType != ScalarTypeByte {
+			ts.app("[]")
+		}
 	case v.Scalar != nil:
-		ts.app(string(v.Scalar.Type))
+		ts.app(tsTypeFromScalarType(v.Scalar.Type))
 	case v.StructType != nil:
 		if len(v.StructType.Package) > 0 {
 			mapping, ok := mappings[v.StructType.Package]
