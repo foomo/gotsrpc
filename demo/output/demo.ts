@@ -1,3 +1,4 @@
+/* tslint:disable */
 module GoTSRPC.Demo {
 	// github.com/foomo/gotsrpc/demo.Address
 	export interface Address {

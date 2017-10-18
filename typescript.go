@@ -349,3 +349,7 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services ServiceList
 	typeScript = ts.string()
 	return
 }
+
+func getTSHeaderComment() string {
+	return "/* tslint:disable */\n"
+}

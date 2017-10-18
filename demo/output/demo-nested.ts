@@ -1,3 +1,4 @@
+/* tslint:disable */
 module GoTSRPC.Demo.Nested {
 	// github.com/foomo/gotsrpc/demo/nested.Nested
 	export interface Nested {

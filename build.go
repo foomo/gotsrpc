@@ -123,7 +123,7 @@ func Build(conf *config.Config, goPath string) {
 		}
 
 		// fmt.Fprintln(os.Stdout, ts)
-		updateErr := updateCode(target.Out, ts)
+		updateErr := updateCode(target.Out, getTSHeaderComment()+ts)
 		if updateErr != nil {
 			fmt.Fprintln(os.Stderr, "	could not write service file", target.Out, updateErr)
 			os.Exit(3)
@@ -198,8 +198,6 @@ func Build(conf *config.Config, goPath string) {
 		}
 	}
 
-	//	spew.Dump(mappedTypeScript)
-
 	for goPackage, mappedStructsMap := range mappedTypeScript {
 		mapping, ok := conf.Mappings[goPackage]
 		if !ok {
@@ -236,7 +234,7 @@ func Build(conf *config.Config, goPath string) {
 		} else {
 			moduleCode.ind(-1).l("}")
 		}
-		updateErr := updateCode(mapping.Out, moduleCode.string())
+		updateErr := updateCode(mapping.Out, getTSHeaderComment()+moduleCode.string())
 		if updateErr != nil {
 			fmt.Fprintln(os.Stderr, "	failed to update code in", mapping.Out, updateErr)
 		}
