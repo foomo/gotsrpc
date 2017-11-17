@@ -330,6 +330,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			g.ind(-1)
 		}
 		g.l("default:")
+		g.ind(1).l("gotsrpc.ClearStats(r)")
 		g.ind(1).l("http.Error(w, \"404 - not found \" + r.URL.Path, http.StatusNotFound)")
 		g.ind(-2).l("}") // close switch
 		g.ind(-1).l("}") // close ServeHttp
