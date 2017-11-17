@@ -74,6 +74,10 @@ func GetStatsForRequest(r *http.Request) *CallStats {
 	return value.(*CallStats)
 }
 
+func ClearStats(r *http.Request) {
+	*r = *r.WithContext(context.WithValue(r.Context(), contextStatsKey, nil))
+}
+
 // Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
 func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) {
 	serializationStart := time.Now()
