@@ -33,6 +33,7 @@ func relativeFilePath(a, b string) (r string, e error) {
 }
 
 func commonJSImports(conf *config.Config, c *code, tsFilename string) {
+	c.l("// tslint:disable")
 	c.l("// hello commonjs - we need some imports - sorted in alphabetical order, by go package")
 	packageNames := []string{}
 	for packageName := range conf.Mappings {
