@@ -73,6 +73,7 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
 		return
 	default:
+		gotsrpc.ClearStats(r)
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
 	}
 }
@@ -185,6 +186,14 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{}, callStats, r, w)
 		return
+	case "HelloScalarError":
+		executionStart := time.Now()
+		helloScalarErrorErr := p.service.HelloScalarError()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{helloScalarErrorErr}, callStats, r, w)
+		return
 	case "MapCrap":
 		executionStart := time.Now()
 		mapCrapCrap := p.service.MapCrap()
@@ -210,6 +219,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		gotsrpc.Reply([]interface{}{testScalarInPlaceRet}, callStats, r, w)
 		return
 	default:
+		gotsrpc.ClearStats(r)
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
 	}
 }

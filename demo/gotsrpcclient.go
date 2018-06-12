@@ -73,6 +73,13 @@ func (goTSRPCClientInstance *DemoGoTSRPCClient) HelloInterface(anything interfac
 	return
 }
 
+func (goTSRPCClientInstance *DemoGoTSRPCClient) HelloScalarError() (err *ScalarError, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&err}
+	clientErr = gotsrpc.CallClient(goTSRPCClientInstance.URL, goTSRPCClientInstance.EndPoint, "HelloScalarError", args, reply)
+	return
+}
+
 func (goTSRPCClientInstance *DemoGoTSRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&crap}

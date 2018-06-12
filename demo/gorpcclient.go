@@ -106,6 +106,17 @@ func (goTSRPCClientInstance *DemoGoRPCClient) HelloInterface(anything interface{
 	return nil
 }
 
+func (goTSRPCClientInstance *DemoGoRPCClient) HelloScalarError() (err *ScalarError, clientErr error) {
+	req := DemoHelloScalarErrorRequest{}
+	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(DemoHelloScalarErrorResponse)
+	return response.Err, nil
+}
+
 func (goTSRPCClientInstance *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	req := DemoMapCrapRequest{}
 	rpcCallRes, rpcCallErr := goTSRPCClientInstance.Client.Call(req)

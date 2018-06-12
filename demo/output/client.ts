@@ -48,6 +48,9 @@ module GoTSRPC.Demo {
 		helloInterface(anything:any, anythingMap:{[index:string]:any}, anythingSlice:any[], success:() => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
 		}
+		helloScalarError(success:(err:string) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "HelloScalarError", [], success, err);
+		}
 		mapCrap(success:(crap:{[index:string]:number[]}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "MapCrap", [], success, err);
 		}

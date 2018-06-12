@@ -131,6 +131,12 @@ type (
 	DemoHelloInterfaceResponse struct {
 	}
 
+	DemoHelloScalarErrorRequest struct {
+	}
+	DemoHelloScalarErrorResponse struct {
+		Err *ScalarError
+	}
+
 	DemoMapCrapRequest struct {
 	}
 	DemoMapCrapResponse struct {
@@ -159,6 +165,8 @@ func init() {
 	gob.Register(DemoHelloResponse{})
 	gob.Register(DemoHelloInterfaceRequest{})
 	gob.Register(DemoHelloInterfaceResponse{})
+	gob.Register(DemoHelloScalarErrorRequest{})
+	gob.Register(DemoHelloScalarErrorResponse{})
 	gob.Register(DemoMapCrapRequest{})
 	gob.Register(DemoMapCrapResponse{})
 	gob.Register(DemoNestRequest{})
@@ -220,6 +228,9 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 		req := request.(DemoHelloInterfaceRequest)
 		p.service.HelloInterface(req.Anything, req.AnythingMap, req.AnythingSlice)
 		response = DemoHelloInterfaceResponse{}
+	case "DemoHelloScalarErrorRequest":
+		err := p.service.HelloScalarError()
+		response = DemoHelloScalarErrorResponse{Err: err}
 	case "DemoMapCrapRequest":
 		crap := p.service.MapCrap()
 		response = DemoMapCrapResponse{Crap: crap}

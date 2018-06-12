@@ -4,6 +4,16 @@ type Err struct {
 	Message string `json:"message"`
 }
 
+func (e *Err) Error() string {
+	return e.Message
+}
+
+type ScalarError string
+
+func (se *ScalarError) Error() string {
+	return string(*se)
+}
+
 type ScalarInPlace string
 
 type Demo struct {
@@ -19,6 +29,10 @@ func (d *Demo) Hello(name string) (string, *Err) {
 
 func (d *Demo) HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) {
 
+}
+
+func (d *Demo) HelloScalarError() (err *ScalarError) {
+	return
 }
 
 func (d *Demo) nothingInNothinOut() {
