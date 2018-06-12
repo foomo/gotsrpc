@@ -21,5 +21,6 @@ goreleaser:
 glide:
 	@go get github.com/Masterminds/glide && glide install
 
-test: demo
-	go test $(glide nv)
+test: 
+	go test -v ./...
+	

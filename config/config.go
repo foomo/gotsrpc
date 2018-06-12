@@ -89,6 +89,8 @@ func LoadConfigFile(file string) (conf *Config, err error) {
 	return loadConfig(yamlBytes)
 }
 
+var ErrInvalidTSClientFlavor = errors.New(fmt.Sprintln("unknown ts client flavor: must be empty or ", TSClientFlavorAsync))
+
 func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 	conf = &Config{}
 	yamlErr := yaml.Unmarshal(yamlBytes, conf)
@@ -99,13 +101,13 @@ func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 	switch conf.TSClientFlavor {
 	case "", TSClientFlavorAsync:
 	default:
-		err = errors.New("unknown ts client flavor: " + conf.TSClientFlavor + " must be empty or " + TSClientFlavorAsync)
+		err = ErrInvalidTSClientFlavor
+		return
 	}
 	switch conf.ModuleKind {
 	case ModuleKindCommonJS, ModuleKindDefault:
 	case "":
 		conf.ModuleKind = ModuleKindDefault
-
 	default:
 		err = errors.New(fmt.Sprintln("illegal module kind:", conf.ModuleKind, "must be in", ModuleKindDefault, ModuleKindCommonJS))
 		return

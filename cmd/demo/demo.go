@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os/exec"
 	"strings"
 
 	"github.com/foomo/gotsrpc/demo"
@@ -41,6 +42,13 @@ func main() {
 	d := &Demo{
 		proxy: demo.NewDefaultDemoGoTSRPCProxy(&demo.Demo{}, []string{}),
 	}
-	fmt.Println("staring a demo on http://127.0.0.1:8080 - open it and take a look at the console")
+	fmt.Println("starting a demo server on http://127.0.0.1:8080 - open it and take a look at the console")
+	cmd := exec.Command("open", "http://127.0.0.1:8080")
+	go func() {
+		err := cmd.Run()
+		if err != nil {
+			fmt.Println("tried to open things with you default browser - did fail", err)
+		}
+	}()
 	fmt.Println(http.ListenAndServe(":8080", d))
 }

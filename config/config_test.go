@@ -60,4 +60,32 @@ func TestLoadConfig(t *testing.T) {
 	if demoTarget.Services["/service/demo"] != "Service" {
 		t.Fatal("first service is wrong")
 	}
+
+}
+
+const sampleConfInvalidClientFlavor = `---
+tsclientflavor: asynci
+targets:
+  demo:
+    services:
+      /service/demo: Service
+    package: github.com/foomo/gotsrpc/demo
+    module: My.Service
+    modulekind: commonjs
+    out: /tmp/my-service.ts 
+mappings:
+  foo/bar:
+    module: Sample.Module
+    out: path/to/ts
+  github.com/foomo/gotsrpc:
+    module: Sample.Module.RPC
+    out: path/to/other/folder
+
+`
+
+func TestLoadConfigInvalidClientFlavor(t *testing.T) {
+	_, err := loadConfig([]byte(sampleConfInvalidClientFlavor))
+	if err == nil {
+		t.Fatal("that config must be invalid")
+	}
 }
