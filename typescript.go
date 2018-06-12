@@ -95,7 +95,7 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 
 }
 
-func renderStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
+func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
 	ts.l("// " + str.FullName())
 	ts.l("export interface " + str.Name + " {").ind(1)
 	renderStructFields(str.Fields, mappings, scalarTypes, ts)
@@ -103,92 +103,14 @@ func renderStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes m
 	return nil
 }
 
-func renderService(skipGoTSRPC bool, moduleKind config.ModuleKind, service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
-	clientName := service.Name + "Client"
-
-	ts.l("export class " + clientName + " {").ind(1)
-
-	if moduleKind == config.ModuleKindCommonJS {
-		if skipGoTSRPC {
-			ts.l("constructor(public endPoint:string = \"" + service.Endpoint + "\", public transport:(endPoint:string, method:string, args:any[], success:any, err:any) => void) {  }")
-		} else {
-			ts.l("static defaultInst = new " + clientName + ";")
-			ts.l("constructor(public endPoint:string = \"" + service.Endpoint + "\", public transport = call) {  }")
-		}
-
-	} else {
-		ts.l("static defaultInst = new " + clientName + ";")
-		ts.l("constructor(public endPoint:string = \"" + service.Endpoint + "\", public transport = GoTSRPC.call) {  }")
-	}
-
-	for _, method := range service.Methods {
-
-		ts.app(lcfirst(method.Name) + "(")
-		// actual args
-		//args := []string{}
-		callArgs := []string{}
-
-		argOffset := 0
-		for index, arg := range method.Args {
-			if index == 0 && arg.Value.isHTTPResponseWriter() {
-				trace("skipping first arg is a http.ResponseWriter")
-				argOffset = 1
-				continue
-			}
-			if index == 1 && arg.Value.isHTTPRequest() {
-				trace("skipping second arg is a *http.Request")
-				argOffset = 2
-				continue
-			}
-		}
-		argCount := 0
-		for index, arg := range method.Args {
-			if index < argOffset {
-				continue
-			}
-			if index > argOffset {
-				ts.app(", ")
-			}
-			ts.app(arg.tsName() + ":")
-			arg.Value.tsType(mappings, scalarTypes, ts)
-			callArgs = append(callArgs, arg.Name)
-			argCount++
-		}
-		if argCount > 0 {
-			ts.app(", ")
-		}
-		ts.app("success:(")
-		// + strings.Join(retArgs, ", ") +
-
-		for index, retField := range method.Return {
-			retArgName := retField.tsName()
-			if len(retArgName) == 0 {
-				retArgName = "ret"
-				if index > 0 {
-					retArgName += "_" + fmt.Sprint(index)
-				}
-			}
-			if index > 0 {
-				ts.app(", ")
-			}
-			ts.app(retArgName + ":")
-			retField.Value.tsType(mappings, scalarTypes, ts)
-		}
-
-		ts.app(") => void")
-		ts.app(", err:(request:XMLHttpRequest, e?:Error) => void) {").nl()
-		ts.ind(1)
-		// generic framework call
-		ts.l("this.transport(this.endPoint, \"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "], success, err);")
-		ts.ind(-1)
-		ts.app("}")
-		ts.nl()
-	}
-	ts.ind(-1)
-	ts.l("}")
-	return nil
-}
-func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScriptMappings, constants map[string]map[string]*ast.BasicLit, scalarTypes map[string]*Scalar, mappedTypeScript map[string]map[string]*code) (err error) {
+func renderTypescriptStructsToPackages(
+	moduleKind config.ModuleKind,
+	structs map[string]*Struct,
+	mappings config.TypeScriptMappings,
+	constants map[string]map[string]*ast.BasicLit,
+	scalarTypes map[string]*Scalar,
+	mappedTypeScript map[string]map[string]*code,
+) (err error) {
 
 	codeMap := map[string]map[string]*code{}
 	for _, mapping := range mappings {
@@ -204,8 +126,12 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 			err = errors.New("missing code mapping for go package : " + str.Package + " => you have to add a mapping from this go package to a TypeScript module in your build-config.yml in the mappings section")
 			return
 		}
-		packageCodeMap[str.Name] = newCode("	").ind(1)
-		err = renderStruct(str, mappings, scalarTypes, packageCodeMap[str.Name])
+		packageCodeMap[str.Name] = newCode("	")
+		// fmt.Println("--------------------------->", moduleKind == config.ModuleKindCommonJS)
+		if !(moduleKind == config.ModuleKindCommonJS) {
+			packageCodeMap[str.Name].ind(1)
+		}
+		err = renderTypescriptStruct(str, mappings, scalarTypes, packageCodeMap[str.Name])
 		if err != nil {
 			return
 		}
@@ -230,7 +156,11 @@ func RenderStructsToPackages(structs map[string]*Struct, mappings config.TypeScr
 			if done {
 				continue
 			}
-			constCode := newCode("	").ind(1).l("// constants from " + packageName).l("export const GoConst = {").ind(1)
+			constCode := newCode("	")
+			if moduleKind != config.ModuleKindCommonJS {
+				constCode.ind(1)
+			}
+			constCode.l("// constants from " + packageName).l("export const GoConst = {").ind(1)
 			//constCode.l()
 			mappedTypeScript[packageName][goConstPseudoPackage] = constCode
 			constPrefixParts := split(packageName, []string{"/", ".", "-"})
@@ -289,9 +219,9 @@ func ucFirst(str string) string {
 	return constPrefix
 }
 
-func RenderTypeScriptServices(moduleKind config.ModuleKind, services ServiceList, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, target *config.Target) (typeScript string, err error) {
+func RenderTypeScriptServices(moduleKind config.ModuleKind, tsClientFlavor config.TSClientFlavor, services ServiceList, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, target *config.Target) (typeScript string, err error) {
 	ts := newCode("	")
-	if !SkipGoTSRPC {
+	if !SkipGoTSRPC && tsClientFlavor == "" {
 
 		if moduleKind != config.ModuleKindCommonJS {
 			ts.l(`module GoTSRPC {`)
@@ -337,7 +267,12 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, services ServiceList
 		if !target.IsTSRPC(service.Name) {
 			continue
 		}
-		err = renderService(SkipGoTSRPC, moduleKind, service, mappings, scalarTypes, ts)
+		switch tsClientFlavor {
+		case config.TSClientFlavorAsync:
+			err = renderTypescriptClientAsync(service, mappings, scalarTypes, ts)
+		default:
+			err = renderTypescriptClient(SkipGoTSRPC, moduleKind, service, mappings, scalarTypes, ts)
+		}
 		if err != nil {
 			return
 		}

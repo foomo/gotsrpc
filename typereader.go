@@ -15,13 +15,27 @@ func readStructs(pkg *ast.Package, packageName string) (structs map[string]*Stru
 	structs = map[string]*Struct{}
 	trace("reading files in package", packageName)
 	scalarTypes = map[string]*Scalar{}
+	errorTypes := map[string]bool{}
 	for _, file := range pkg.Files {
 		err = extractTypes(file, packageName, structs, scalarTypes)
 		if err != nil {
 			return
 		}
+
+		err = extractErrorTypes(file, packageName, errorTypes)
+		if err != nil {
+			return
+		}
 	}
-	// jsonDump(scalarTypes)
+	for name, structType := range structs {
+		_, isErrorType := errorTypes[name]
+		if isErrorType {
+			structType.IsError = true
+		}
+	}
+	//jsonDump(errorTypes)
+	//jsonDump(scalarTypes)
+	//jsonDump(structs)
 	return
 }
 
@@ -291,8 +305,36 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 	return
 }
 
+func extractErrorTypes(file *ast.File, packageName string, errorTypes map[string]bool) (err error) {
+	for _, d := range file.Decls {
+		if reflect.ValueOf(d).Type().String() == "*ast.FuncDecl" {
+			funcDecl := d.(*ast.FuncDecl)
+			if funcDecl.Recv != nil && len(funcDecl.Recv.List) == 1 {
+				firstReceiverField := funcDecl.Recv.List[0]
+				if "*ast.StarExpr" == reflect.ValueOf(firstReceiverField.Type).Type().String() {
+					starExpr := firstReceiverField.Type.(*ast.StarExpr)
+					if "*ast.Ident" == reflect.ValueOf(starExpr.X).Type().String() {
+						ident := starExpr.X.(*ast.Ident)
+						if funcDecl.Name.Name == "Error" && funcDecl.Type.Params.NumFields() == 0 && funcDecl.Type.Results.NumFields() == 1 {
+							returnValueField := funcDecl.Type.Results.List[0]
+							refl := reflect.ValueOf(returnValueField.Type)
+							if refl.Type().String() == "*ast.Ident" {
+								returnValueIdent := returnValueField.Type.(*ast.Ident)
+								if returnValueIdent.Name == "string" {
+									errorTypes[packageName+"."+ident.Name] = true
+								}
+								//fmt.Println("error for:", ident.Name, returnValueIdent.Name)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return
+}
+
 func extractTypes(file *ast.File, packageName string, structs map[string]*Struct, scalarTypes map[string]*Scalar) error {
-	trace("reading file", file.Name.Name)
 	fileImports := getFileImports(file, packageName)
 	for name, obj := range file.Scope.Objects {
 		if obj.Kind == ast.Typ && obj.Decl != nil {

@@ -10,5 +10,4 @@ func TestSplit(t *testing.T) {
 			t.Fatal("expected", expected, "got", actual)
 		}
 	}
-
 }

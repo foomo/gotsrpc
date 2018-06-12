@@ -38,6 +38,8 @@ Will generate client and server side go and TypeScript code. Have fun!
 ```yaml
 ---
 modulekind: commonjs
+# if you want an async api vs classic callbacks - here you are
+tsclientflavor: async
 targets:
   demo:
     services:
@@ -59,6 +61,44 @@ mappings:
     out: /tmp/test-files-demo-nested.ts
 ...
 ```
+#### an async example
+
+How to use async clients in this case with axios:
+
+```TypeScript
+import axios, { AxiosPromise } from "axios";
+import { ServiceClient as ExampleClient } from "./some/generated/client";
+
+// axios transport
+let getTransport = endpoint => async <T>(method, args = []) => {
+	return new Promise<T>(async (resolve, reject) => {
+		try {
+			let axiosPromise: any = await axios.post<T>(
+				endpoint + encodeURIComponent(method),
+				JSON.stringify(args),
+			);
+			return resolve(axiosPromise.data);
+		} catch (e) {
+			return reject(e);
+		}
+	});
+};
+
+let client = new ExampleClient(getTransport(ExampleClient.defaultEndpoint));
+
+export async function test() {
+	try {
+    let result = await client.getResult();
+    console.log("here is the result", result);
+	} catch (e) {
+		// e => network?
+		// e => json
+    // e => domain error type
+    console.error("something went wrong ...", e);
+  }
+}
+```
+
 
 ### oldschool TypeScript
 

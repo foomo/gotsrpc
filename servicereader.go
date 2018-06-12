@@ -259,11 +259,13 @@ func Read(goPaths []string, packageName string, serviceMap map[string]string) (s
 
 func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[string]*Scalar) {
 	for _, f := range fields {
+
 		if f.Value.StructType != nil {
 			// do we have that struct or is it a hidden scalar
 			name := f.Value.StructType.FullName()
-			_, strctExists := structs[name]
+			s, strctExists := structs[name]
 			if strctExists {
+				f.Value.IsError = s.IsError
 				continue
 			}
 			scalar, scalarExists := scalars[name]

@@ -110,7 +110,7 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(2)
 		}
 
-		ts, err := RenderTypeScriptServices(conf.ModuleKind, services, conf.Mappings, scalarTypes, target)
+		ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, target)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 			os.Exit(3)
@@ -128,7 +128,8 @@ func Build(conf *config.Config, goPath string) {
 			fmt.Fprintln(os.Stderr, "	could not write service file", target.Out, updateErr)
 			os.Exit(3)
 		}
-		err = RenderStructsToPackages(structs, conf.Mappings, constants, scalarTypes, mappedTypeScript)
+
+		err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constants, scalarTypes, mappedTypeScript)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
 			os.Exit(4)

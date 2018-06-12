@@ -42,5 +42,9 @@ func (c *code) app(str string) *code {
 }
 
 func (c *code) string() string {
+	if c.line != "" {
+		c.lines = append(c.lines, c.line)
+		c.line = ""
+	}
 	return strings.Join(c.lines, "\n")
 }

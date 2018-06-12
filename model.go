@@ -23,6 +23,7 @@ type StructType struct {
 }
 
 type Value struct {
+	IsError      bool        `json:",omitempty"`
 	IsInterface  bool        `json:",omitempty"`
 	Scalar       *Scalar     `json:",omitempty"`
 	ScalarType   ScalarType  `json:",omitempty"`
@@ -88,6 +89,7 @@ type Method struct {
 }
 
 type Struct struct {
+	IsError bool
 	Package string
 	Name    string
 	Fields  []*Field

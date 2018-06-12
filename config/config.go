@@ -65,16 +65,19 @@ type Mapping struct {
 type TypeScriptMappings map[string]*Mapping
 
 type ModuleKind string
+type TSClientFlavor string
 
 const (
-	ModuleKindDefault  ModuleKind = "default"
-	ModuleKindCommonJS ModuleKind = "commonjs"
+	ModuleKindDefault   ModuleKind     = "default"
+	ModuleKindCommonJS  ModuleKind     = "commonjs"
+	TSClientFlavorAsync TSClientFlavor = "async"
 )
 
 type Config struct {
-	ModuleKind ModuleKind
-	Targets    map[string]*Target
-	Mappings   TypeScriptMappings
+	ModuleKind     ModuleKind
+	TSClientFlavor TSClientFlavor
+	Targets        map[string]*Target
+	Mappings       TypeScriptMappings
 }
 
 func LoadConfigFile(file string) (conf *Config, err error) {
@@ -92,6 +95,11 @@ func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 	if yamlErr != nil {
 		err = errors.New("could not parse yaml: " + yamlErr.Error())
 		return
+	}
+	switch conf.TSClientFlavor {
+	case "", TSClientFlavorAsync:
+	default:
+		err = errors.New("unknown ts client flavor: " + conf.TSClientFlavor + " must be empty or " + TSClientFlavorAsync)
 	}
 	switch conf.ModuleKind {
 	case ModuleKindCommonJS, ModuleKindDefault:

@@ -27,11 +27,10 @@ var GoTSRPC;
         };
     };
 })(GoTSRPC || (GoTSRPC = {})); // close
-var GoTSRPC;
 (function (GoTSRPC) {
     var Demo;
     (function (Demo) {
-        var FooClient = (function () {
+        var FooClient = /** @class */ (function () {
             function FooClient(endPoint, transport) {
                 if (endPoint === void 0) { endPoint = "/service/foo"; }
                 if (transport === void 0) { transport = GoTSRPC.call; }
@@ -45,7 +44,7 @@ var GoTSRPC;
             return FooClient;
         }());
         Demo.FooClient = FooClient;
-        var DemoClient = (function () {
+        var DemoClient = /** @class */ (function () {
             function DemoClient(endPoint, transport) {
                 if (endPoint === void 0) { endPoint = "/service/demo"; }
                 if (transport === void 0) { transport = GoTSRPC.call; }
@@ -63,6 +62,9 @@ var GoTSRPC;
             };
             DemoClient.prototype.helloInterface = function (anything, anythingMap, anythingSlice, success, err) {
                 this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
+            };
+            DemoClient.prototype.helloScalarError = function (success, err) {
+                this.transport(this.endPoint, "HelloScalarError", [], success, err);
             };
             DemoClient.prototype.mapCrap = function (success, err) {
                 this.transport(this.endPoint, "MapCrap", [], success, err);
