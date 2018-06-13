@@ -74,7 +74,7 @@ let getTransport = endpoint => async <T>(method, args = []) => {
 	return new Promise<T>(async (resolve, reject) => {
 		try {
 			let axiosPromise: any = await axios.post<T>(
-				endpoint + encodeURIComponent(method),
+				endpoint + "/" + encodeURIComponent(method),
 				JSON.stringify(args),
 			);
 			return resolve(axiosPromise.data);
