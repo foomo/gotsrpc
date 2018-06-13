@@ -66,14 +66,14 @@ mappings:
 How to use async clients in this case with axios:
 
 ```TypeScript
-import axios, { AxiosPromise } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { ServiceClient as ExampleClient } from "./some/generated/client";
 
 // axios transport
 let getTransport = endpoint => async <T>(method, args = []) => {
 	return new Promise<T>(async (resolve, reject) => {
 		try {
-			let axiosPromise: any = await axios.post<T>(
+			let axiosPromise: AxiosResponse<T> = await axios.post<T>(
 				endpoint + "/" + encodeURIComponent(method),
 				JSON.stringify(args),
 			);
@@ -88,14 +88,14 @@ let client = new ExampleClient(getTransport(ExampleClient.defaultEndpoint));
 
 export async function test() {
 	try {
-    let result = await client.getResult();
-    console.log("here is the result", result);
+		let result = await client.getResult();
+		console.log("here is the result", result);
 	} catch (e) {
 		// e => network?
 		// e => json
-    // e => domain error type
-    console.error("something went wrong ...", e);
-  }
+		// e => domain error type
+		console.error("something went wrong ...", e);
+	}
 }
 ```
 
