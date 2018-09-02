@@ -93,6 +93,8 @@ type Struct struct {
 	Package string
 	Name    string
 	Fields  []*Field
+	Map     *Map
+	Array   *Array
 }
 
 type Scalar struct {

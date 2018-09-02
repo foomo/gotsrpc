@@ -7,7 +7,7 @@ import (
 	"github.com/foomo/gotsrpc/config"
 )
 
-func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, ts *code) error {
+func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, structs map[string]*Struct, ts *code) error {
 	clientName := service.Name + "Client"
 
 	ts.l("export class " + clientName + " {").ind(1)
@@ -54,7 +54,7 @@ func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, serv
 				ts.app(", ")
 			}
 			ts.app(arg.tsName() + ":")
-			arg.Value.tsType(mappings, scalarTypes, ts)
+			arg.Value.tsType(mappings, scalarTypes, structs, ts)
 			callArgs = append(callArgs, arg.Name)
 			argCount++
 		}
@@ -76,7 +76,7 @@ func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, serv
 				ts.app(", ")
 			}
 			ts.app(retArgName + ":")
-			retField.Value.tsType(mappings, scalarTypes, ts)
+			retField.Value.tsType(mappings, scalarTypes, structs, ts)
 		}
 
 		ts.app(") => void")

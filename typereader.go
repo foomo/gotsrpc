@@ -362,11 +362,22 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 						Package: packageName,
 						Type:    getScalarFromAstIdent(scalarIdent),
 					}
-				// case "*ast.ArrayType":
-				// 	arrayType := obj.Decl.(*ast.ArrayType)
-				// case "*ast.MapType":
-				// 	mapType := obj.decl.(*ast.MapType)
-
+				case "*ast.ArrayType":
+					arrayValue := &Value{}
+					arrayValue.loadExpr(typeSpec.Type, fileImports)
+					structs[structName] = &Struct{
+						Name:    name,
+						Package: packageName,
+						Array:   arrayValue.Array,
+					}
+				case "*ast.MapType":
+					mapValue := &Value{}
+					mapValue.loadExpr(typeSpec.Type, fileImports)
+					structs[structName] = &Struct{
+						Name:    name,
+						Package: packageName,
+						Map:     mapValue.Map,
+					}
 				default:
 					fmt.Println("	ignoring", obj.Name, typeSpecRefl.Type().String())
 				}

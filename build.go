@@ -110,7 +110,7 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(2)
 		}
 
-		ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, target)
+		ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, structs, target)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 			os.Exit(3)
