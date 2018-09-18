@@ -1,12 +1,13 @@
 package gotsrpc
 
 import (
-	"encoding/json"
 	"fmt"
 	"go/ast"
 	"os"
 	"reflect"
 	"strings"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 var ReaderTrace = false
@@ -44,15 +45,15 @@ func trace(args ...interface{}) {
 		fmt.Fprintln(os.Stderr, args...)
 	}
 }
-func traceJSON(args ...interface{}) {
+func traceData(args ...interface{}) {
 	if ReaderTrace {
 		for _, arg := range args {
-			jsonBytes, jsonErr := json.MarshalIndent(arg, "", "	")
-			if jsonErr != nil {
+			yamlBytes, errMarshal := yaml.Marshal(arg)
+			if errMarshal != nil {
 				trace(arg)
 				continue
 			}
-			trace(string(jsonBytes))
+			trace(string(yamlBytes))
 		}
 	}
 }
