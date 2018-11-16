@@ -140,7 +140,9 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 				ts.l("return responseObject;")
 			}
 		} else {
-			if countReturns == 1 {
+			if countReturns == 0 {
+				ts.l("await " + call)
+			} else if countReturns == 1 {
 				ts.l("return (await " + call + ")[0]")
 			} else {
 				ts.l("let response = await " + call)
