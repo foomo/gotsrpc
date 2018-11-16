@@ -145,7 +145,13 @@ func Build(conf *config.Config, goPath string) {
 
 			codeBytes, errProcessImports := imports.Process(filename, []byte(code), nil)
 			if errProcessImports != nil {
-				fmt.Fprintln(os.Stderr, "	goimports does not like this", errProcessImports)
+				fmt.Fprintln(
+					os.Stderr,
+					"	goimports does not like the generated code: ",
+					errProcessImports,
+					", this is the code: ",
+					code,
+				)
 				os.Exit(5)
 			}
 
