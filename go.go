@@ -147,7 +147,7 @@ func extractImports(fields []*Field, fullPackageName string, aliases map[string]
 				packageParts := strings.Split(st.Package, "/")
 				beautifulAlias := packageParts[len(packageParts)-1]
 				uglyAlias := r.Replace(st.Package)
-				alias = beautifulAlias
+				alias = uglyAlias //beautifulAlias
 				for _, otherAlias := range aliases {
 					if otherAlias == beautifulAlias {
 						alias = uglyAlias
