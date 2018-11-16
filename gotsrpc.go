@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path"
+	"sort"
 	"strings"
 	"time"
 )
@@ -125,6 +126,20 @@ func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, er
 	return nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
 }
 
+type byLen []string
+
+func (a byLen) Len() int {
+	return len(a)
+}
+
+func (a byLen) Less(i, j int) bool {
+	return len(a[i]) > len(a[j])
+}
+
+func (a byLen) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
 func parsePackage(goPaths []string, packageName string) (pkg *ast.Package, err error) {
 	pkgs, err := parseDir(goPaths, packageName)
 	if err != nil {
@@ -136,11 +151,46 @@ func parsePackage(goPaths []string, packageName string) (pkg *ast.Package, err e
 	}
 	strippedPackageName := packageNameParts[len(packageNameParts)-1]
 	foundPackages := []string{}
+	sortedGoPaths := make([]string, len(goPaths))
+	for iGoPath := range goPaths {
+		sortedGoPaths[iGoPath] = goPaths[iGoPath]
+	}
+	sort.Sort(byLen(sortedGoPaths))
+
 	for pkgName, pkg := range pkgs {
+		// fmt.Println("---------------------> got", pkgName, "looking for", packageName, strippedPackageName)
+		// fmt.Println(goPaths)
+		// if pkgName == "stripe" {
+		// 	//spew.Dump(pkg)
+		// 	for pkgFile, pkg := range pkg.Files {
+		// 		fmt.Println("file = ", pkgFile)
+		// 		spew.Dump(pkg)
+		// 	}
+		// }
 		if pkgName == strippedPackageName {
 			return pkg, nil
 		}
+
+		for pkgFile := range pkg.Files {
+			for _, goPath := range sortedGoPaths {
+				// fmt.Println("::::::::::::::::::::::::::::::::", iGoPath, goPath)
+				prefix := goPath + "/" // + "/src/"
+				if strings.HasPrefix(pkgFile, prefix) && !strings.HasSuffix(pkgFile, "_test.go") && !strings.HasSuffix(pkgFile, "_generator.go") {
+					trimmedFilename := strings.TrimPrefix(pkgFile, prefix)
+					parts := strings.Split(trimmedFilename, "/")
+					if len(parts) > 1 {
+						parts = parts[0 : len(parts)-1]
+						// fmt.Println(">>>>>>", strings.Join(parts, "/"))
+						// fmt.Println("==========>", pkgFile, prefix)
+						if strings.Join(parts, "/") == packageName {
+							return pkg, nil
+						}
+					}
+				}
+			}
+		}
+
 		foundPackages = append(foundPackages, pkgName)
 	}
-	return nil, errors.New("package \"" + packageName + "\" not found in " + strings.Join(foundPackages, ", "))
+	return nil, errors.New("package \"" + packageName + "\" not found in " + strings.Join(foundPackages, ", ") + " looking in go paths" + strings.Join(goPaths, ", "))
 }
