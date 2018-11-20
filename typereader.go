@@ -184,6 +184,25 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 		_, scalarType := getTypesFromAstType(mapType.Key.(*ast.Ident))
 		m.KeyType = string(scalarType)
 	default:
+		// todo: implement support for "*ast.Scalar" type (sca)
+		// this is important for scalar types in map keys
+		// Example:
+		//(*ast.MapType)(0xc420e2cc90)({
+		//Map: (token.Pos) 276258,
+		//		Key: (*ast.SelectorExpr)(0xc420301900)({
+		//	X: (*ast.Ident)(0xc4203018c0)(constants),
+		//		Sel: (*ast.Ident)(0xc4203018e0)(Site)
+		//	}),
+		//Value: (*ast.ArrayType)(0xc420e2cc60)({
+		//	Lbrack: (token.Pos) 276277,
+		//			Len: (ast.Expr) <nil>,
+		//			Elt: (*ast.SelectorExpr)(0xc420301960)({
+		//		X: (*ast.Ident)(0xc420301920)(elastic),
+		//			Sel: (*ast.Ident)(0xc420301940)(CategoryDocument)
+		//		})
+		//	})
+		//})
+
 		//fmt.Println("--------------------------->", reflect.ValueOf(mapType.Key).Type().String())
 	}
 	// value
