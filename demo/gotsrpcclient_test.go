@@ -28,7 +28,7 @@ func RandStringRunes(n int) string {
 
 
 var (
-	client *DemoGoTSRPCClient
+	client DemoGoTSRPCClient
 	server *httptest.Server
 )
 
