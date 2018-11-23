@@ -1,5 +1,5 @@
-hash: 249ea428695a3cfe9f583980181fb650d69d107954538d0684342754f61c0c68
-updated: 2017-10-12T16:13:47.627906627+02:00
+hash: 629adb2b190665615fa6558666181d5fb97f23adecccfe1675ff0dec498207ec
+updated: 2018-11-22T15:17:52.360766+01:00
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
@@ -30,14 +30,19 @@ imports:
 - name: github.com/prometheus/procfs
   version: abf152e5f3e97f2fafac028d2cc06c1feb87ffa5
 - name: github.com/stretchr/testify
-  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  version: f35b8ab0b5a2cef36673838d662e249dd9c94686
   subpackages:
   - assert
+- name: github.com/ugorji/go
+  version: b4c50a2b199d93b13dc15e78929cfb23bfdf21ab
+  subpackages:
+  - codec
 - name: github.com/valyala/gorpc
   version: 908281bef77441f2d0ec1792189b4032a1dace0c
 - name: golang.org/x/tools
   version: e4b401d06e5ee9f990011dc4f24cd24162131565
   subpackages:
+  - go/ast/astutil
   - imports
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0

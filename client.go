@@ -1,50 +1,93 @@
 package gotsrpc
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
+	"github.com/pkg/errors"
+	"github.com/ugorji/go/codec"
+	"io"
 	"io/ioutil"
 	"net/http"
-	"strings"
 )
 
 // ClientTransport to use for calls
 var ClientTransport = &http.Transport{}
 
-// CallClient calls a method on the remove service
-func CallClient(url string, endpoint string, method string, args []interface{}, reply []interface{}) error {
-	// Marshall args
-	jsonArgs := []string{}
-	for _, value := range args {
-		jsonArg, err := json.Marshal(value)
-		if err != nil {
-			return err
-		}
-		jsonArgs = append(jsonArgs, string(jsonArg))
+var _ Client = &bufferedClient{}
+
+type Client interface {
+	Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
+}
+
+func NewClient(httpClient *http.Client) Client {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
 	}
+	return &bufferedClient{client: httpClient}
+}
+
+func newRequest(url string, contentType string, reader io.Reader) (r *http.Request, err error) {
+	request, errRequest := http.NewRequest("POST", url, reader)
+	if errRequest != nil {
+		return nil, errors.Wrap(errRequest, "could not create a request")
+	}
+	request.Header.Set("Content-Type", contentType)
+	request.Header.Set("Accept", contentType)
+	return request, nil
+}
+
+type bufferedClient struct {
+	client *http.Client
+}
+
+// CallClient calls a method on the remove service
+func (c *bufferedClient) Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
+	// Marshall args
+
+	b := new(bytes.Buffer)
+	errEncode := codec.NewEncoder(b, msgpackHandle).Encode(args)
+	if errEncode != nil {
+		return errors.Wrap(errEncode, "could not encode argument")
+	}
+
 	// Create request
-	request := "[" + strings.Join(jsonArgs, ",") + "]"
 	// Create post url
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
 	// Post
-	client := &http.Client{Transport: ClientTransport}
-	resp, err := client.Post(postURL, "application/json", strings.NewReader(request))
-	if err != nil {
-		return err
+
+	request, errRequest := newRequest(postURL, msgpackContentType, b)
+	if errRequest != nil {
+		return errRequest
 	}
-	defer resp.Body.Close()
-	// Read in body
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
+
+	resp, errDo := c.client.Do(request)
+	if errDo != nil {
+		return errors.Wrap(err, "could not execute request")
 	}
+
 	// Check status
 	if resp.StatusCode != http.StatusOK {
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
-	// Unmarshal reply
-	if err := json.Unmarshal(body, &reply); err != nil {
-		return err
+
+	var errDecode error
+	switch resp.Header.Get("Content-Type") {
+	case msgpackContentType:
+		errDecode = codec.NewDecoder(resp.Body, msgpackHandle).Decode(reply)
+	case jsonContentType:
+		errDecode = codec.NewDecoder(resp.Body, jsonHandle).Decode(reply)
+	default:
+		errDecode = codec.NewDecoder(resp.Body, jsonHandle).Decode(reply)
 	}
-	return nil
+
+	// Unmarshal reply
+	if errDecode != nil {
+		return errors.Wrap(errDecode, "could not decode response from client")
+	}
+	return err
 }

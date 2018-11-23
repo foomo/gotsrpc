@@ -146,7 +146,7 @@ type (
 	DemoNestRequest struct {
 	}
 	DemoNestResponse struct {
-		RetNest_0 *nested.Nested
+		RetNest_0 []*nested.Nested
 	}
 
 	DemoTestScalarInPlaceRequest struct {

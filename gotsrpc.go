@@ -3,12 +3,12 @@ package gotsrpc
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
+	"github.com/ugorji/go/codec"
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
 	"net/http"
 	"path"
 	"strings"
@@ -38,18 +38,20 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
-
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return err
+	var errDecode error
+	switch r.Header.Get("Content-Type") {
+	case msgpackContentType:
+		errDecode = codec.NewDecoder(r.Body, msgpackHandle).Decode(args)
+	default:
+		errDecode = codec.NewDecoder(r.Body, jsonHandle).Decode(args)
 	}
-	errLoad := loadArgs(&args, body)
-	if errLoad != nil {
-		return errLoad
+
+	if errDecode != nil {
+		return errors.Wrap(errDecode, "could not decode arguments")
 	}
 	if callStats != nil {
 		callStats.Unmarshalling = time.Now().Sub(start)
-		callStats.RequestSize = len(body)
+		callStats.RequestSize = int(r.ContentLength)
 	}
 	return nil
 }
@@ -80,30 +82,33 @@ func ClearStats(r *http.Request) {
 
 // Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
 func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) {
+	writer := newResponseWriterWithLength(w)
 	serializationStart := time.Now()
-	jsonBytes, err := json.Marshal(response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("could not serialize response"))
+	var errEncode error
+
+	switch r.Header.Get("Accept") {
+	case msgpackContentType:
+		writer.Header().Set("Content-Type", msgpackContentType)
+		errEncode = codec.NewEncoder(writer, msgpackHandle).Encode(response)
+	case jsonContentType:
+		writer.Header().Set("Content-Type", jsonContentType)
+		errEncode = codec.NewEncoder(writer, jsonHandle).Encode(response)
+	default:
+		writer.Header().Set("Content-Type", jsonContentType)
+		errEncode = codec.NewEncoder(writer, jsonHandle).Encode(response)
+	}
+
+	if errEncode != nil {
+		fmt.Println(errEncode)
+		http.Error(w, "could not encode data to accepted format", http.StatusInternalServerError)
 		return
 	}
+
 	if stats != nil {
-		stats.ResponseSize = len(jsonBytes)
+		stats.ResponseSize = writer.length
 		stats.Marshalling = time.Now().Sub(serializationStart)
 	}
-	//r = r.WithContext(ctx)
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Write(jsonBytes)
-	//fmt.Println("replied with stats", stats, "on", ctx)
-}
-
-func jsonDump(v interface{}) {
-	jsonBytes, err := json.MarshalIndent(v, "", "	")
-	if err != nil {
-		fmt.Println("an error occured", err)
-	}
-	fmt.Println(string(jsonBytes))
+	//writer.WriteHeader(http.StatusOK)
 }
 
 func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, error) {
