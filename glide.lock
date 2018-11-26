@@ -1,18 +1,20 @@
-hash: 629adb2b190665615fa6558666181d5fb97f23adecccfe1675ff0dec498207ec
-updated: 2018-11-22T15:17:52.360766+01:00
+hash: fa41763018fc177e5a35bdae1c36d2c2b51697c6931528836ed78f74a531f05d
+updated: 2018-11-26T16:35:09.040671+01:00
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
   subpackages:
   - quantile
 - name: github.com/golang/protobuf
-  version: da116c3771bf4a398a43f44e069195ef1c9688ef
+  version: 1643683e1b54a9e88ad26d98f81400c8c9d9f4f9
   subpackages:
   - proto
 - name: github.com/matttproud/golang_protobuf_extensions
   version: c12348ce28de40eed0136aa2b644d0ee0650e56c
   subpackages:
   - pbutil
+- name: github.com/pkg/errors
+  version: c605e284fe17294bda444b34710735b29d1a9d90
 - name: github.com/prometheus/client_golang
   version: c5b7fccd204277076155f10851dad72b76a49317
   subpackages:
@@ -40,7 +42,7 @@ imports:
 - name: github.com/valyala/gorpc
   version: 908281bef77441f2d0ec1792189b4032a1dace0c
 - name: golang.org/x/tools
-  version: e4b401d06e5ee9f990011dc4f24cd24162131565
+  version: 6d70fb2e85323e81c89374331d3d2b93304faa36
   subpackages:
   - go/ast/astutil
   - imports
@@ -48,7 +50,7 @@ imports:
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports:
 - name: github.com/davecgh/go-spew
-  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  version: 8991bc29aa16c548c550c7ff78260e27b9ab7c73
   subpackages:
   - spew
 - name: github.com/pmezard/go-difflib
