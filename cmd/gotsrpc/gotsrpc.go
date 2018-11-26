@@ -10,7 +10,8 @@ import (
 	"github.com/foomo/gotsrpc/config"
 )
 
-const Version = "0.11.0"
+// todo @stefan inject me
+const Version = "0.12.0"
 
 func jsonDump(v interface{}) {
 	jsonBytes, err := json.MarshalIndent(v, "", "	")

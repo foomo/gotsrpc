@@ -110,7 +110,7 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(2)
 		}
 
-		ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, target)
+		ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, structs, target)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 			os.Exit(3)
@@ -145,7 +145,13 @@ func Build(conf *config.Config, goPath string) {
 
 			codeBytes, errProcessImports := imports.Process(filename, []byte(code), nil)
 			if errProcessImports != nil {
-				fmt.Fprintln(os.Stderr, "	goimports does not like this", errProcessImports)
+				fmt.Fprintln(
+					os.Stderr,
+					"	goimports does not like the generated code: ",
+					errProcessImports,
+					", this is the code: ",
+					code,
+				)
 				os.Exit(5)
 			}
 

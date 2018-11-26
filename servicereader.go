@@ -191,7 +191,17 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 
 }
 
-func Read(goPaths []string, packageName string, serviceMap map[string]string) (services ServiceList, structs map[string]*Struct, scalars map[string]*Scalar, constants map[string]map[string]*ast.BasicLit, err error) {
+func Read(
+	goPaths []string,
+	packageName string,
+	serviceMap map[string]string,
+) (
+	services ServiceList,
+	structs map[string]*Struct,
+	scalars map[string]*Scalar,
+	constants map[string]map[string]*ast.BasicLit,
+	err error,
+) {
 	if len(serviceMap) == 0 {
 		err = errors.New("nothing to do service names are empty")
 		return
@@ -216,7 +226,7 @@ func Read(goPaths []string, packageName string, serviceMap map[string]string) (s
 		}
 	}
 	trace("missing")
-	traceJSON(missingTypes)
+	traceData(missingTypes)
 
 	structs = map[string]*Struct{}
 	scalars = map[string]*Scalar{}
@@ -226,15 +236,18 @@ func Read(goPaths []string, packageName string, serviceMap map[string]string) (s
 		err = errors.New("error while collecting structs: " + collectErr.Error())
 	}
 	trace("---------------- found structs -------------------")
-	traceJSON(structs)
+	traceData(structs)
+	trace("---------------- /found structs -------------------")
 	trace("---------------- found scalars -------------------")
-	traceJSON(scalars)
+	traceData(scalars)
+	trace("---------------- /found scalars -------------------")
 	constants = map[string]map[string]*ast.BasicLit{}
 	for _, structDef := range structs {
 		if structDef != nil {
 			structPackage := structDef.Package
 			_, ok := constants[structPackage]
 			if !ok {
+				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
 				pkg, constPkgErr := parsePackage(goPaths, structPackage)
 				if constPkgErr != nil {
 					err = constPkgErr
@@ -253,7 +266,7 @@ func Read(goPaths []string, packageName string, serviceMap map[string]string) (s
 			fixFieldStructs(method.Return, structs, scalars)
 		}
 	}
-	traceJSON("---------------------------", services)
+	traceData("---------------------------", services)
 	return
 }
 
@@ -287,6 +300,7 @@ func collectTypes(goPaths []string, missingTypes map[string]bool, structs map[st
 				missing = append(missing, name)
 			}
 		}
+		// fmt.Println("missing types", len(missingTypes), "missing", len(missing))
 		return missing
 	}
 	lastNumMissing := len(missingTypeNames())
@@ -325,13 +339,13 @@ func collectTypes(goPaths []string, missingTypes map[string]bool, structs map[st
 				for scalarName, scalar := range parsedPackageScalars {
 					trace("	scalar", scalarName, scalar)
 				}
-				traceJSON(parsedPackageScalars)
+				traceData(parsedPackageScalars)
 				packageStructs = parsedPackageStructs
 				packageScalars = parsedPackageScalars
 				scannedPackageStructs[packageName] = packageStructs
 				scannedPackageScalars[packageName] = packageScalars
 			}
-			traceJSON("packageStructs", packageName, packageStructs)
+			traceData("packageStructs", packageName, packageStructs)
 			for packageStructName, packageStruct := range packageStructs {
 				missing, needed := missingTypes[packageStructName]
 				if needed && missing {
@@ -344,7 +358,7 @@ func collectTypes(goPaths []string, missingTypes map[string]bool, structs map[st
 				}
 			}
 
-			traceJSON("packageScalars", packageScalars)
+			traceData("packageScalars", packageScalars)
 			for packageScalarName, packageScalar := range packageScalars {
 				missing, needed := missingTypes[packageScalarName]
 				if needed && missing {
@@ -357,6 +371,19 @@ func collectTypes(goPaths []string, missingTypes map[string]bool, structs map[st
 		}
 		newNumMissingTypes := len(missingTypeNames())
 		if newNumMissingTypes > 0 && newNumMissingTypes == lastNumMissing {
+			//packageStructs, structOK := scannedPackageStructs[packageName]
+			for scalarName, scalars := range scannedPackageScalars {
+				fmt.Println("scanned scalars ", scalarName)
+				for _, scalar := range scalars {
+					fmt.Println("	", scalar.Name)
+				}
+			}
+			for structName, strcts := range scannedPackageStructs {
+				fmt.Println("scanned struct ", structName)
+				for _, strct := range strcts {
+					fmt.Println("	", strct.Name)
+				}
+			}
 			return errors.New(fmt.Sprintln("could not resolve at least one of the following types", missingTypeNames()))
 		}
 		lastNumMissing = newNumMissingTypes
@@ -410,6 +437,15 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 			}
 		}
 	}
+	if s.Array != nil {
+		if s.Array.Value != nil {
+			if s.Array.Value.StructType != nil {
+				if needsWork(s.Array.Value.StructType.FullName()) {
+					return false
+				}
+			}
+		}
+	}
 	return !needsWork(s.FullName())
 }
 
@@ -429,7 +465,14 @@ func (st *StructType) FullName() string {
 	return fullName
 }
 
-func getTypesInPackage(goPaths []string, packageName string) (structs map[string]*Struct, scalars map[string]*Scalar, err error) {
+func getTypesInPackage(
+	goPaths []string,
+	packageName string,
+) (
+	structs map[string]*Struct,
+	scalars map[string]*Scalar,
+	err error,
+) {
 	pkg, err := parsePackage(goPaths, packageName)
 	if err != nil {
 		return nil, nil, err

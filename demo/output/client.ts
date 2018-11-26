@@ -54,7 +54,7 @@ module GoTSRPC.Demo {
 		mapCrap(success:(crap:{[index:string]:number[]}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "MapCrap", [], success, err);
 		}
-		nest(success:(ret:GoTSRPC.Demo.Nested.Nested) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		nest(success:(ret:GoTSRPC.Demo.Nested.Nested[]) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "Nest", [], success, err);
 		}
 		testScalarInPlace(success:(ret:string) => void, err:(request:XMLHttpRequest, e?:Error) => void) {

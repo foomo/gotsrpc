@@ -1,12 +1,13 @@
 package gotsrpc
 
 import (
-	"encoding/json"
 	"fmt"
 	"go/ast"
 	"os"
 	"reflect"
 	"strings"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 var ReaderTrace = false
@@ -44,15 +45,15 @@ func trace(args ...interface{}) {
 		fmt.Fprintln(os.Stderr, args...)
 	}
 }
-func traceJSON(args ...interface{}) {
+func traceData(args ...interface{}) {
 	if ReaderTrace {
 		for _, arg := range args {
-			jsonBytes, jsonErr := json.MarshalIndent(arg, "", "	")
-			if jsonErr != nil {
+			yamlBytes, errMarshal := yaml.Marshal(arg)
+			if errMarshal != nil {
 				trace(arg)
 				continue
 			}
-			trace(string(jsonBytes))
+			trace(string(yamlBytes))
 		}
 	}
 }
@@ -183,6 +184,25 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 		_, scalarType := getTypesFromAstType(mapType.Key.(*ast.Ident))
 		m.KeyType = string(scalarType)
 	default:
+		// todo: implement support for "*ast.Scalar" type (sca)
+		// this is important for scalar types in map keys
+		// Example:
+		//(*ast.MapType)(0xc420e2cc90)({
+		//Map: (token.Pos) 276258,
+		//		Key: (*ast.SelectorExpr)(0xc420301900)({
+		//	X: (*ast.Ident)(0xc4203018c0)(constants),
+		//		Sel: (*ast.Ident)(0xc4203018e0)(Site)
+		//	}),
+		//Value: (*ast.ArrayType)(0xc420e2cc60)({
+		//	Lbrack: (token.Pos) 276277,
+		//			Len: (ast.Expr) <nil>,
+		//			Elt: (*ast.SelectorExpr)(0xc420301960)({
+		//		X: (*ast.Ident)(0xc420301920)(elastic),
+		//			Sel: (*ast.Ident)(0xc420301940)(CategoryDocument)
+		//		})
+		//	})
+		//})
+
 		//fmt.Println("--------------------------->", reflect.ValueOf(mapType.Key).Type().String())
 	}
 	// value
@@ -362,11 +382,22 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 						Package: packageName,
 						Type:    getScalarFromAstIdent(scalarIdent),
 					}
-				// case "*ast.ArrayType":
-				// 	arrayType := obj.Decl.(*ast.ArrayType)
-				// case "*ast.MapType":
-				// 	mapType := obj.decl.(*ast.MapType)
-
+				case "*ast.ArrayType":
+					arrayValue := &Value{}
+					arrayValue.loadExpr(typeSpec.Type, fileImports)
+					structs[structName] = &Struct{
+						Name:    name,
+						Package: packageName,
+						Array:   arrayValue.Array,
+					}
+				case "*ast.MapType":
+					mapValue := &Value{}
+					mapValue.loadExpr(typeSpec.Type, fileImports)
+					structs[structName] = &Struct{
+						Name:    name,
+						Package: packageName,
+						Map:     mapValue.Map,
+					}
 				default:
 					fmt.Println("	ignoring", obj.Name, typeSpecRefl.Type().String())
 				}
