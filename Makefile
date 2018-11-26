@@ -14,15 +14,23 @@ demo: generate
 install:
 	GOBIN=/usr/local/bin go install cmd/gotsrpc/gotsrpc.go
 
-release: goreleaser glide
+.PHONY: build
+build: goreleaser
+	goreleaser  --skip-publish --skip-validate
+
+.PHONY: release
+release: goreleaser
 	goreleaser --rm-dist
 
+.PHONY: goreleaser
 goreleaser:
 	@go get github.com/goreleaser/goreleaser && go install github.com/goreleaser/goreleaser
 
+.PHONY: glide
 glide:
 	@go get github.com/Masterminds/glide && glide install
 
-test: 
+.PHONY: test
+test:
 	go test -v ./...
 	

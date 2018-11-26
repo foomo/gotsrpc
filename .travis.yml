@@ -1,14 +1,12 @@
 language: go
 go:
-  - 1.10.x
+  - 1.11.2
 
 cache:
   directories:
     - ./vendor
 
-branches:
-  only:
-  - master
-
 script:
-  -  make release
+  - make glide
+  - make test
+  - if [ -n "$TRAVIS_TAG" ]; make release; fi
