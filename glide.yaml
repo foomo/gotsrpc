@@ -1,5 +1,6 @@
 package: github.com/foomo/gotsrpc
 import:
+- package: github.com/pkg/errors
 - package: github.com/prometheus/client_golang
   version: ~0.8.0
   subpackages:
@@ -11,3 +12,7 @@ import:
 - package: golang.org/x/tools
   subpackages:
   - imports
+- package: github.com/ugorji/go
+  version: ^1.1.1
+  subpackages:
+  - codec

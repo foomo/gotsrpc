@@ -29,7 +29,7 @@ gotsrpc gotsrpc.yml
 
 Will generate client and server side go and TypeScript code. Have fun!
 
-## config expamples
+## config examples
 
 ### commonjs
 
