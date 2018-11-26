@@ -9,5 +9,6 @@ cache:
 script:
   - make glide
   - make test
-  - if [ -n "$TRAVIS_TAG" ]; make release; fi
-  - echo "Done!"
+  - if [[ -n "${TRAVIS_TAG}" ]]; then
+      make release
+    fi
