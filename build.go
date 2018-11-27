@@ -110,29 +110,32 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(2)
 		}
 
-		ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, structs, target)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
-			os.Exit(3)
-		}
-		if conf.ModuleKind == config.ModuleKindCommonJS {
-			tsClientCode := newCode("	")
-			commonJSImports(conf, tsClientCode, target.Out)
-			tsClientCode.l("").l("")
-			ts = tsClientCode.string() + ts
-		}
+		if target.Out != "" {
 
-		// fmt.Fprintln(os.Stdout, ts)
-		updateErr := updateCode(target.Out, getTSHeaderComment()+ts)
-		if updateErr != nil {
-			fmt.Fprintln(os.Stderr, "	could not write service file", target.Out, updateErr)
-			os.Exit(3)
-		}
+			ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, structs, target)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
+				os.Exit(3)
+			}
+			if conf.ModuleKind == config.ModuleKindCommonJS {
+				tsClientCode := newCode("	")
+				commonJSImports(conf, tsClientCode, target.Out)
+				tsClientCode.l("").l("")
+				ts = tsClientCode.string() + ts
+			}
 
-		err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constants, scalarTypes, mappedTypeScript)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
-			os.Exit(4)
+			// fmt.Fprintln(os.Stdout, ts)
+			updateErr := updateCode(target.Out, getTSHeaderComment()+ts)
+			if updateErr != nil {
+				fmt.Fprintln(os.Stderr, "	could not write service file", target.Out, updateErr)
+				os.Exit(3)
+			}
+
+			err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constants, scalarTypes, mappedTypeScript)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
+				os.Exit(4)
+			}
 		}
 
 		formatAndWrite := func(code string, filename string) {
