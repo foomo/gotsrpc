@@ -5,7 +5,7 @@ package demo
 import (
 	tls "crypto/tls"
 
-	nested "github.com/foomo/gotsrpc/demo/nested"
+	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -75,7 +75,7 @@ func (tsc *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Er
 	return response.Addr, response.E, nil
 }
 
-func (tsc *DemoGoRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
+func (tsc *DemoGoRPCClient) GiveMeAScalar() (amount github_com_foomo_gotsrpc_demo_nested.Amount, wahr github_com_foomo_gotsrpc_demo_nested.True, hier ScalarInPlace, clientErr error) {
 	req := DemoGiveMeAScalarRequest{}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
 	if rpcCallErr != nil {
@@ -129,7 +129,7 @@ func (tsc *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	return response.Crap, nil
 }
 
-func (tsc *DemoGoRPCClient) Nest() (retNest_0 []*nested.Nested, clientErr error) {
+func (tsc *DemoGoRPCClient) Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error) {
 	req := DemoNestRequest{}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
 	if rpcCallErr != nil {

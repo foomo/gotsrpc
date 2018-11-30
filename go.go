@@ -433,7 +433,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 	        return &` + clientName + `{
 		        URL: url,
 		        EndPoint: endpoint,
-				Client: gotsrpc.NewClient(nil),
+				Client: gotsrpc.NewClient(),
 	        }
         }`)
 

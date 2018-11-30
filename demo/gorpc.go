@@ -11,7 +11,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc"
-	nested "github.com/foomo/gotsrpc/demo/nested"
+	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -111,8 +111,8 @@ type (
 	DemoGiveMeAScalarRequest struct {
 	}
 	DemoGiveMeAScalarResponse struct {
-		Amount nested.Amount
-		Wahr   nested.True
+		Amount github_com_foomo_gotsrpc_demo_nested.Amount
+		Wahr   github_com_foomo_gotsrpc_demo_nested.True
 		Hier   ScalarInPlace
 	}
 
@@ -147,7 +147,7 @@ type (
 	DemoNestRequest struct {
 	}
 	DemoNestResponse struct {
-		RetNest_0 []*nested.Nested
+		RetNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested
 	}
 
 	DemoTestScalarInPlaceRequest struct {

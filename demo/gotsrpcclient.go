@@ -4,7 +4,7 @@ package demo
 
 import (
 	gotsrpc "github.com/foomo/gotsrpc"
-	nested "github.com/foomo/gotsrpc/demo/nested"
+	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
 )
 
 type FooGoTSRPCClient interface {
@@ -25,7 +25,7 @@ func NewFooGoTSRPCClient(url string, endpoint string) FooGoTSRPCClient {
 	return &tsrpcFooGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
-		Client:   gotsrpc.NewClient(nil),
+		Client:   gotsrpc.NewClient(),
 	}
 }
 
@@ -41,16 +41,14 @@ func (tsc *tsrpcFooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr
 
 type DemoGoTSRPCClient interface {
 	ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error)
-	GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error)
+	GiveMeAScalar() (amount github_com_foomo_gotsrpc_demo_nested.Amount, wahr github_com_foomo_gotsrpc_demo_nested.True, hier ScalarInPlace, clientErr error)
 	Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error)
 	HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) (clientErr error)
 	HelloScalarError() (err *ScalarError, clientErr error)
 	MapCrap() (crap map[string][]int, clientErr error)
-	Nest() (retNest_0 []*nested.Nested, clientErr error)
+	Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error)
 	TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error)
 }
-
-var _ DemoGoTSRPCClient = &tsrpcDemoGoTSRPCClient{}
 
 type tsrpcDemoGoTSRPCClient struct {
 	URL      string
@@ -66,7 +64,7 @@ func NewDemoGoTSRPCClient(url string, endpoint string) DemoGoTSRPCClient {
 	return &tsrpcDemoGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
-		Client:   gotsrpc.NewClient(nil),
+		Client:   gotsrpc.NewClient(),
 	}
 }
 
@@ -80,7 +78,7 @@ func (tsc *tsrpcDemoGoTSRPCClient) ExtractAddress(person *Person) (addr *Address
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) GiveMeAScalar() (amount nested.Amount, wahr nested.True, hier ScalarInPlace, clientErr error) {
+func (tsc *tsrpcDemoGoTSRPCClient) GiveMeAScalar() (amount github_com_foomo_gotsrpc_demo_nested.Amount, wahr github_com_foomo_gotsrpc_demo_nested.True, hier ScalarInPlace, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&amount, &wahr, &hier}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "GiveMeAScalar", args, reply)
@@ -115,7 +113,7 @@ func (tsc *tsrpcDemoGoTSRPCClient) MapCrap() (crap map[string][]int, clientErr e
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) Nest() (retNest_0 []*nested.Nested, clientErr error) {
+func (tsc *tsrpcDemoGoTSRPCClient) Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&retNest_0}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Nest", args, reply)

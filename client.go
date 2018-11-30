@@ -18,13 +18,12 @@ var _ Client = &bufferedClient{}
 
 type Client interface {
 	Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
+	SetEncoding(encoding ClientEncoding)
+	SetHttpClient(client *http.Client)
 }
 
-func NewClient(httpClient *http.Client) Client {
-	if httpClient == nil {
-		httpClient = http.DefaultClient
-	}
-	return &bufferedClient{client: httpClient}
+func NewClient() Client {
+	return &bufferedClient{client: http.DefaultClient, handle: getHandleForEncoding(EncodingMsgpack)}
 }
 
 func newRequest(url string, contentType string, reader io.Reader) (r *http.Request, err error) {
@@ -32,21 +31,31 @@ func newRequest(url string, contentType string, reader io.Reader) (r *http.Reque
 	if errRequest != nil {
 		return nil, errors.Wrap(errRequest, "could not create a request")
 	}
+
 	request.Header.Set("Content-Type", contentType)
 	request.Header.Set("Accept", contentType)
+
 	return request, nil
 }
 
 type bufferedClient struct {
 	client *http.Client
+	handle *clientHandle
+}
+
+func (c *bufferedClient) SetEncoding(encoding ClientEncoding) {
+	c.handle = getHandleForEncoding(encoding)
+}
+
+func (c *bufferedClient) SetHttpClient(client *http.Client) {
+	c.client = client
 }
 
 // CallClient calls a method on the remove service
 func (c *bufferedClient) Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
 	// Marshall args
-
 	b := new(bytes.Buffer)
-	errEncode := codec.NewEncoder(b, msgpackHandle).Encode(args)
+	errEncode := codec.NewEncoder(b, c.handle.handle).Encode(args)
 	if errEncode != nil {
 		return errors.Wrap(errEncode, "could not encode argument")
 	}
@@ -56,7 +65,7 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
 	// Post
 
-	request, errRequest := newRequest(postURL, msgpackContentType, b)
+	request, errRequest := newRequest(postURL, c.handle.contentType, b)
 	if errRequest != nil {
 		return errRequest
 	}
@@ -77,14 +86,8 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 	}
 
 	var errDecode error
-	switch resp.Header.Get("Content-Type") {
-	case msgpackContentType:
-		errDecode = codec.NewDecoder(resp.Body, msgpackHandle).Decode(reply)
-	case jsonContentType:
-		errDecode = codec.NewDecoder(resp.Body, jsonHandle).Decode(reply)
-	default:
-		errDecode = codec.NewDecoder(resp.Body, jsonHandle).Decode(reply)
-	}
+	responseHandle := getHandlerForContentType(resp.Header.Get("Content-Type")).handle
+	errDecode = codec.NewDecoder(resp.Body, responseHandle).Decode(reply)
 
 	// Unmarshal reply
 	if errDecode != nil {

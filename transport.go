@@ -6,19 +6,53 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
-var (
-	msgpackHandle = &codec.MsgpackHandle{
-		RawToString: true,
-	}
-	msgpackContentType = "application/msgpack; charset=utf-8"
+type ClientEncoding int
+
+const (
+	EncodingMsgpack = ClientEncoding(0)
+	EncodingJson    = ClientEncoding(1)
 )
 
-var (
-	jsonHandle = &codec.JsonHandle{
+type clientHandle struct {
+	handle      codec.Handle
+	contentType string
+}
+
+var msgpackClientHandle = &clientHandle{
+	handle: &codec.MsgpackHandle{
+		RawToString: true,
+	},
+	contentType: "application/msgpack; charset=utf-8",
+}
+
+var jsonClientHandle = &clientHandle{
+	handle: &codec.JsonHandle{
 		MapKeyAsString: true,
+	},
+	contentType: "application/json; charset=utf-8",
+}
+
+func getHandleForEncoding(encoding ClientEncoding) *clientHandle {
+	switch encoding {
+	case EncodingMsgpack:
+		return msgpackClientHandle
+	case EncodingJson:
+		return jsonClientHandle
+	default:
+		return jsonClientHandle
 	}
-	jsonContentType = "application/json; charset=utf-8"
-)
+}
+
+func getHandlerForContentType(contentType string) *clientHandle {
+	switch contentType {
+	case msgpackClientHandle.contentType:
+		return msgpackClientHandle
+	case jsonClientHandle.contentType:
+		return jsonClientHandle
+	default:
+		return jsonClientHandle
+	}
+}
 
 type responseWriterWithLength struct {
 	http.ResponseWriter

@@ -39,15 +39,9 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
-	var errDecode error
-	switch r.Header.Get("Content-Type") {
-	case msgpackContentType:
-		errDecode = codec.NewDecoder(r.Body, msgpackHandle).Decode(args)
-	default:
-		errDecode = codec.NewDecoder(r.Body, jsonHandle).Decode(args)
-	}
 
-	if errDecode != nil {
+	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
+	if errDecode := codec.NewDecoder(r.Body, handle).Decode(args); errDecode != nil {
 		return errors.Wrap(errDecode, "could not decode arguments")
 	}
 	if callStats != nil {
@@ -85,21 +79,12 @@ func ClearStats(r *http.Request) {
 func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) {
 	writer := newResponseWriterWithLength(w)
 	serializationStart := time.Now()
-	var errEncode error
 
-	switch r.Header.Get("Accept") {
-	case msgpackContentType:
-		writer.Header().Set("Content-Type", msgpackContentType)
-		errEncode = codec.NewEncoder(writer, msgpackHandle).Encode(response)
-	case jsonContentType:
-		writer.Header().Set("Content-Type", jsonContentType)
-		errEncode = codec.NewEncoder(writer, jsonHandle).Encode(response)
-	default:
-		writer.Header().Set("Content-Type", jsonContentType)
-		errEncode = codec.NewEncoder(writer, jsonHandle).Encode(response)
-	}
+	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
 
-	if errEncode != nil {
+	writer.Header().Set("Content-Type", clientHandle.contentType)
+
+	if errEncode := codec.NewEncoder(writer, clientHandle.handle).Encode(response); errEncode != nil {
 		fmt.Println(errEncode)
 		http.Error(w, "could not encode data to accepted format", http.StatusInternalServerError)
 		return
@@ -109,7 +94,6 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		stats.ResponseSize = writer.length
 		stats.Marshalling = time.Now().Sub(serializationStart)
 	}
-	//writer.WriteHeader(http.StatusOK)
 }
 
 func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, error) {
