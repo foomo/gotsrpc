@@ -3,15 +3,16 @@ package gotsrpc
 import (
 	"bytes"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/ugorji/go/codec"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/pkg/errors"
+	"github.com/ugorji/go/codec"
 )
 
 // ClientTransport to use for calls
-var ClientTransport = &http.Transport{}
+// var ClientTransport = &http.Transport{}
 
 var _ Client = &bufferedClient{}
 

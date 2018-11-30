@@ -11,7 +11,7 @@ import (
 )
 
 // todo @stefan inject me
-const Version = "0.12.2"
+const Version = "0.12.3"
 
 func jsonDump(v interface{}) {
 	jsonBytes, err := json.MarshalIndent(v, "", "	")

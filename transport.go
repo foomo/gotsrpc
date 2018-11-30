@@ -1,20 +1,24 @@
 package gotsrpc
 
 import (
-	"github.com/ugorji/go/codec"
 	"net/http"
+
+	"github.com/ugorji/go/codec"
 )
 
 var (
-	msgpackHandle      = &codec.MsgpackHandle{}
+	msgpackHandle = &codec.MsgpackHandle{
+		RawToString: true,
+	}
 	msgpackContentType = "application/msgpack; charset=utf-8"
 )
 
 var (
-	jsonHandle      = &codec.JsonHandle{}
+	jsonHandle = &codec.JsonHandle{
+		MapKeyAsString: true,
+	}
 	jsonContentType = "application/json; charset=utf-8"
 )
-
 
 type responseWriterWithLength struct {
 	http.ResponseWriter
