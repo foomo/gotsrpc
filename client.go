@@ -72,7 +72,7 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 
 	resp, errDo := c.client.Do(request)
 	if errDo != nil {
-		return errors.Wrap(err, "could not execute request")
+		return errors.Wrap(errDo, "could not execute request")
 	}
 
 	// Check status
