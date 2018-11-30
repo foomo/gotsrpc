@@ -141,7 +141,7 @@ func extractImports(fields []*Field, fullPackageName string, aliases map[string]
 	r := strings.NewReplacer(".", "_", "/", "_", "-", "_")
 
 	extractImport := func(packageName string) {
-		if packageName!= fullPackageName {
+		if packageName != fullPackageName {
 			alias, ok := aliases[packageName]
 			if !ok {
 				packageParts := strings.Split(packageName, "/")
@@ -415,6 +415,12 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 			ms := newMethodSignature(method, aliases, fullPackageName)
 			g.l(ms.renderSignature())
 		}
+
+
+
+
+		g.l(`SetClientEncoding(encoding gotsrpc.ClientEncoding)`)
+		g.l(`SetTransportHttpClient(client *http.Client) `)
 		g.l(`} `)
 
 		//Render Constructors
@@ -436,11 +442,15 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 				Client: gotsrpc.NewClient(),
 	        }
         }`)
-
 		//Render Methods
+
 		g.l(`
-		func (tsc *` + clientName + `) SetClient(client gotsrpc.Client) {
-			tsc.Client = client
+		func (tsc *` + clientName + `) SetClientEncoding(encoding gotsrpc.ClientEncoding) {
+			tsc.Client.SetClientEncoding(encoding)
+		}`)
+		g.l(`
+		func (tsc *` + clientName + `) SetTransportHttpClient(client *http.Client) {
+			tsc.Client.SetTransportHttpClient(client)
 		}`)
 
 		for _, method := range service.Methods {

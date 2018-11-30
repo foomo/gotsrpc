@@ -18,8 +18,8 @@ var _ Client = &bufferedClient{}
 
 type Client interface {
 	Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
-	SetEncoding(encoding ClientEncoding)
-	SetHttpClient(client *http.Client)
+	SetClientEncoding(encoding ClientEncoding)
+	SetTransportHttpClient(client *http.Client)
 }
 
 func NewClient() Client {
@@ -43,11 +43,11 @@ type bufferedClient struct {
 	handle *clientHandle
 }
 
-func (c *bufferedClient) SetEncoding(encoding ClientEncoding) {
+func (c *bufferedClient) SetClientEncoding(encoding ClientEncoding) {
 	c.handle = getHandleForEncoding(encoding)
 }
 
-func (c *bufferedClient) SetHttpClient(client *http.Client) {
+func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 	c.client = client
 }
 

@@ -3,12 +3,16 @@
 package demo
 
 import (
+	http "net/http"
+
 	gotsrpc "github.com/foomo/gotsrpc"
 	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
 )
 
 type FooGoTSRPCClient interface {
 	Hello(number int64) (retHello_0 int, clientErr error)
+	SetClientEncoding(encoding gotsrpc.ClientEncoding)
+	SetTransportHttpClient(client *http.Client)
 }
 
 type tsrpcFooGoTSRPCClient struct {
@@ -29,8 +33,12 @@ func NewFooGoTSRPCClient(url string, endpoint string) FooGoTSRPCClient {
 	}
 }
 
-func (tsc *tsrpcFooGoTSRPCClient) SetClient(client gotsrpc.Client) {
-	tsc.Client = client
+func (tsc *tsrpcFooGoTSRPCClient) SetClientEncoding(encoding gotsrpc.ClientEncoding) {
+	tsc.Client.SetClientEncoding(encoding)
+}
+
+func (tsc *tsrpcFooGoTSRPCClient) SetTransportHttpClient(client *http.Client) {
+	tsc.Client.SetTransportHttpClient(client)
 }
 func (tsc *tsrpcFooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
 	args := []interface{}{number}
@@ -48,6 +56,8 @@ type DemoGoTSRPCClient interface {
 	MapCrap() (crap map[string][]int, clientErr error)
 	Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error)
 	TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error)
+	SetClientEncoding(encoding gotsrpc.ClientEncoding)
+	SetTransportHttpClient(client *http.Client)
 }
 
 type tsrpcDemoGoTSRPCClient struct {
@@ -68,8 +78,12 @@ func NewDemoGoTSRPCClient(url string, endpoint string) DemoGoTSRPCClient {
 	}
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) SetClient(client gotsrpc.Client) {
-	tsc.Client = client
+func (tsc *tsrpcDemoGoTSRPCClient) SetClientEncoding(encoding gotsrpc.ClientEncoding) {
+	tsc.Client.SetClientEncoding(encoding)
+}
+
+func (tsc *tsrpcDemoGoTSRPCClient) SetTransportHttpClient(client *http.Client) {
+	tsc.Client.SetTransportHttpClient(client)
 }
 func (tsc *tsrpcDemoGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
 	args := []interface{}{person}
