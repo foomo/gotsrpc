@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -10,13 +9,10 @@ import (
 	"github.com/foomo/gotsrpc/config"
 )
 
-// todo @stefan inject me
-const Version = "0.12.3"
+var (
+	version string
+)
 
-func jsonDump(v interface{}) {
-	jsonBytes, err := json.MarshalIndent(v, "", "	")
-	fmt.Fprintln(os.Stderr, err, string(jsonBytes))
-}
 func usage() {
 	fmt.Println("Usage")
 	fmt.Println(os.Args[0], " path/to/build-config.yml")
@@ -35,7 +31,7 @@ func main() {
 		os.Exit(1)
 	}
 	if flag.Arg(0) == "version" {
-		fmt.Println(Version)
+		fmt.Println(version)
 		os.Exit(0)
 	}
 	gotsrpc.ReaderTrace = *flagDebug
