@@ -26,10 +26,14 @@ func NewDefaultFooGoTSRPCClient(url string) FooGoTSRPCClient {
 }
 
 func NewFooGoTSRPCClient(url string, endpoint string) FooGoTSRPCClient {
+	return NewFooGoTSRPCClientWithClient(url, "/service/foo", nil)
+}
+
+func NewFooGoTSRPCClientWithClient(url string, endpoint string, client *http.Client) FooGoTSRPCClient {
 	return &tsrpcFooGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
-		Client:   gotsrpc.NewClient(),
+		Client:   gotsrpc.NewClientWithHttpClient(client),
 	}
 }
 
@@ -71,10 +75,14 @@ func NewDefaultDemoGoTSRPCClient(url string) DemoGoTSRPCClient {
 }
 
 func NewDemoGoTSRPCClient(url string, endpoint string) DemoGoTSRPCClient {
+	return NewDemoGoTSRPCClientWithClient(url, "/service/demo", nil)
+}
+
+func NewDemoGoTSRPCClientWithClient(url string, endpoint string, client *http.Client) DemoGoTSRPCClient {
 	return &tsrpcDemoGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
-		Client:   gotsrpc.NewClient(),
+		Client:   gotsrpc.NewClientWithHttpClient(client),
 	}
 }
 
