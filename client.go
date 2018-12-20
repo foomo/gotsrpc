@@ -23,7 +23,7 @@ type Client interface {
 }
 
 func NewClient() Client {
-	return &bufferedClient{client: http.DefaultClient, handle: getHandleForEncoding(EncodingMsgpack)}
+	return &bufferedClient{client: defaultHttpFactory(), handle: getHandleForEncoding(EncodingMsgpack)}
 }
 
 func newRequest(url string, contentType string, reader io.Reader) (r *http.Request, err error) {
