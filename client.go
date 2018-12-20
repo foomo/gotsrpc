@@ -26,6 +26,14 @@ func NewClient() Client {
 	return &bufferedClient{client: defaultHttpFactory(), handle: getHandleForEncoding(EncodingMsgpack)}
 }
 
+func NewClientWithHttpClient(client *http.Client) Client {
+	if client != nil {
+		return &bufferedClient{client: client, handle: getHandleForEncoding(EncodingMsgpack)}
+	} else {
+		return &bufferedClient{client: defaultHttpFactory(), handle: getHandleForEncoding(EncodingMsgpack)}
+	}
+}
+
 func newRequest(url string, contentType string, reader io.Reader) (r *http.Request, err error) {
 	request, errRequest := http.NewRequest("POST", url, reader)
 	if errRequest != nil {

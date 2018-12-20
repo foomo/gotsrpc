@@ -436,12 +436,17 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
         }
 
         func New` + interfaceName + `(url string, endpoint string) ` + interfaceName + ` {
+			return New` + interfaceName + `WithClient(url, "` + service.Endpoint + `", nil) 
+        }
+
+        func New` + interfaceName + `WithClient(url string, endpoint string, client *http.Client) ` + interfaceName + ` {
 	        return &` + clientName + `{
 		        URL: url,
 		        EndPoint: endpoint,
-				Client: gotsrpc.NewClient(),
+		        Client: gotsrpc.NewClientWithHttpClient(client),
 	        }
-        }`)
+		}`)
+
 		//Render Methods
 
 		g.l(`
