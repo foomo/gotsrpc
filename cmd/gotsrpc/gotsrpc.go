@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go/build"
 	"os"
 
 	"github.com/foomo/gotsrpc"
@@ -35,11 +36,12 @@ func main() {
 		os.Exit(0)
 	}
 	gotsrpc.ReaderTrace = *flagDebug
-	goPath := os.Getenv("GOPATH")
 
-	if len(goPath) == 0 {
-		fmt.Fprintln(os.Stderr, "GOPATH not set")
-		os.Exit(1)
+	// check if GOPATH has been set as env variable
+	// if not use the default from the build pkg
+	goPath := os.Getenv("GOPATH")
+	if goPath == "" {
+		goPath = build.Default.GOPATH
 	}
 
 	conf, err := config.LoadConfigFile(args[0])
