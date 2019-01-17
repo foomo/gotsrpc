@@ -12,7 +12,7 @@ make install
 
 If you trust us there are precompiled versions:
 
-[/foomo/gotsrpc/releases](/foomo/gotsrpc/releases)
+[releases](https://github.com/foomo/gotsrpc/releases)
 
 On the mac:
 
