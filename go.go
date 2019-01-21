@@ -383,6 +383,7 @@ func (ms *goMethod) renderSignature() string {
 func renderTSRPCServiceClients(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
 		"github.com/foomo/gotsrpc": "gotsrpc",
+		"net/http":                 "net_http",
 	}
 
 	for _, service := range services {
@@ -416,11 +417,8 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 			g.l(ms.renderSignature())
 		}
 
-
-
-
 		g.l(`SetClientEncoding(encoding gotsrpc.ClientEncoding)`)
-		g.l(`SetTransportHttpClient(client *http.Client) `)
+		g.l(`SetTransportHttpClient(client *net_http.Client) `)
 		g.l(`} `)
 
 		//Render Constructors
@@ -439,7 +437,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 			return New` + interfaceName + `WithClient(url, "` + service.Endpoint + `", nil) 
         }
 
-        func New` + interfaceName + `WithClient(url string, endpoint string, client *http.Client) ` + interfaceName + ` {
+        func New` + interfaceName + `WithClient(url string, endpoint string, client *net_http.Client) ` + interfaceName + ` {
 	        return &` + clientName + `{
 		        URL: url,
 		        EndPoint: endpoint,
@@ -454,7 +452,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 			tsc.Client.SetClientEncoding(encoding)
 		}`)
 		g.l(`
-		func (tsc *` + clientName + `) SetTransportHttpClient(client *http.Client) {
+		func (tsc *` + clientName + `) SetTransportHttpClient(client *net_http.Client) {
 			tsc.Client.SetTransportHttpClient(client)
 		}`)
 

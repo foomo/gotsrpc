@@ -3,7 +3,7 @@
 package demo
 
 import (
-	http "net/http"
+	net_http "net/http"
 
 	gotsrpc "github.com/foomo/gotsrpc"
 	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
@@ -12,7 +12,7 @@ import (
 type FooGoTSRPCClient interface {
 	Hello(number int64) (retHello_0 int, clientErr error)
 	SetClientEncoding(encoding gotsrpc.ClientEncoding)
-	SetTransportHttpClient(client *http.Client)
+	SetTransportHttpClient(client *net_http.Client)
 }
 
 type tsrpcFooGoTSRPCClient struct {
@@ -29,7 +29,7 @@ func NewFooGoTSRPCClient(url string, endpoint string) FooGoTSRPCClient {
 	return NewFooGoTSRPCClientWithClient(url, "/service/foo", nil)
 }
 
-func NewFooGoTSRPCClientWithClient(url string, endpoint string, client *http.Client) FooGoTSRPCClient {
+func NewFooGoTSRPCClientWithClient(url string, endpoint string, client *net_http.Client) FooGoTSRPCClient {
 	return &tsrpcFooGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
@@ -41,7 +41,7 @@ func (tsc *tsrpcFooGoTSRPCClient) SetClientEncoding(encoding gotsrpc.ClientEncod
 	tsc.Client.SetClientEncoding(encoding)
 }
 
-func (tsc *tsrpcFooGoTSRPCClient) SetTransportHttpClient(client *http.Client) {
+func (tsc *tsrpcFooGoTSRPCClient) SetTransportHttpClient(client *net_http.Client) {
 	tsc.Client.SetTransportHttpClient(client)
 }
 func (tsc *tsrpcFooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
@@ -61,7 +61,7 @@ type DemoGoTSRPCClient interface {
 	Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error)
 	TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error)
 	SetClientEncoding(encoding gotsrpc.ClientEncoding)
-	SetTransportHttpClient(client *http.Client)
+	SetTransportHttpClient(client *net_http.Client)
 }
 
 type tsrpcDemoGoTSRPCClient struct {
@@ -78,7 +78,7 @@ func NewDemoGoTSRPCClient(url string, endpoint string) DemoGoTSRPCClient {
 	return NewDemoGoTSRPCClientWithClient(url, "/service/demo", nil)
 }
 
-func NewDemoGoTSRPCClientWithClient(url string, endpoint string, client *http.Client) DemoGoTSRPCClient {
+func NewDemoGoTSRPCClientWithClient(url string, endpoint string, client *net_http.Client) DemoGoTSRPCClient {
 	return &tsrpcDemoGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
@@ -90,7 +90,7 @@ func (tsc *tsrpcDemoGoTSRPCClient) SetClientEncoding(encoding gotsrpc.ClientEnco
 	tsc.Client.SetClientEncoding(encoding)
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) SetTransportHttpClient(client *http.Client) {
+func (tsc *tsrpcDemoGoTSRPCClient) SetTransportHttpClient(client *net_http.Client) {
 	tsc.Client.SetTransportHttpClient(client)
 }
 func (tsc *tsrpcDemoGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
