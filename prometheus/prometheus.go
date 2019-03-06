@@ -25,7 +25,7 @@ func InstrumentService(s http.HandlerFunc) (handler http.HandlerFunc) {
 	p.MustRegister(requestDuration)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		*r = *gotsrpc.RequestWithStatsContext(r)
+		r = gotsrpc.RequestWithStatsContext(r)
 		s.ServeHTTP(w, r)
 		stats := gotsrpc.GetStatsForRequest(r)
 		if stats != nil {
