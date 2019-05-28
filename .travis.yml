@@ -2,6 +2,9 @@ language: go
 go:
   - 1.12.5
 
+env:
+- GO111MODULE=on
+
 cache:
   directories:
   - $HOME/.cache/go-build
