@@ -52,6 +52,14 @@ func commonJSImports(conf *config.Config, c *code, tsFilename string) {
 
 }
 
+func getPathForTarget(gomod config.Namespace, goPath string, target *config.Target) (outputPath string) {
+	if gomod.Name != "" && strings.HasPrefix(target.Package, gomod.Name) {
+		return strings.Replace(goPath, gomod.Name, gomod.Path, 1)
+	} else {
+		return path.Join(goPath, "src", target.Package)
+	}
+}
+
 func Build(conf *config.Config, goPath string) {
 
 	if conf.ModuleKind == config.ModuleKindCommonJS {
@@ -72,10 +80,12 @@ func Build(conf *config.Config, goPath string) {
 
 		longPackageName := target.Package
 		longPackageNameParts := strings.Split(longPackageName, "/")
-		goRPCProxiesFilename := path.Join(goPath, "src", longPackageName, "gorpc.go")
-		goRPCClientsFilename := path.Join(goPath, "src", longPackageName, "gorpcclient.go")
-		goTSRPCProxiesFilename := path.Join(goPath, "src", longPackageName, "gotsrpc.go")
-		goTSRPCClientsFilename := path.Join(goPath, "src", longPackageName, "gotsrpcclient.go")
+		outputPath := getPathForTarget(conf.Module, goPath, target)
+
+		goRPCProxiesFilename := path.Join(outputPath, "gorpc.go")
+		goRPCClientsFilename := path.Join(outputPath, "gorpcclient.go")
+		goTSRPCProxiesFilename := path.Join(outputPath, "gotsrpc.go")
+		goTSRPCClientsFilename := path.Join(outputPath, "gotsrpcclient.go")
 
 		remove := func(filename string) {
 			_, err := os.Stat(filename)
@@ -103,10 +113,10 @@ func Build(conf *config.Config, goPath string) {
 			goPaths = append(goPaths, vendorDirectory)
 		}
 
-		services, structs, scalarTypes, constants, err := Read(goPaths, longPackageName, target.Services)
+		services, structs, scalarTypes, constants, err := Read(goPaths, conf.Module, longPackageName, target.Services)
 
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "	an error occured while trying to understand your code", err)
+			fmt.Fprintln(os.Stderr, "\t an error occured while trying to understand your code: ", err)
 			os.Exit(2)
 		}
 

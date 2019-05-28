@@ -1,13 +1,13 @@
 language: go
 go:
-  - 1.11.2
+  - 1.12.5
 
 cache:
   directories:
-    - ./vendor
+  - $HOME/.cache/go-build
+  - $HOME/gopath/pkg/mod
 
 script:
-  - make glide
   - make test
   - if [[ -n "${TRAVIS_TAG}" ]]; then
     make release;

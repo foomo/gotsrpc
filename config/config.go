@@ -3,9 +3,10 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
-
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"path"
+	"path/filepath"
 )
 
 type PHPTarget struct {
@@ -73,7 +74,13 @@ const (
 	TSClientFlavorAsync TSClientFlavor = "async"
 )
 
+type Namespace struct {
+	Name string
+	Path string
+}
+
 type Config struct {
+	Module         Namespace
 	ModuleKind     ModuleKind
 	TSClientFlavor TSClientFlavor
 	Targets        map[string]*Target
@@ -83,10 +90,21 @@ type Config struct {
 func LoadConfigFile(file string) (conf *Config, err error) {
 	yamlBytes, readErr := ioutil.ReadFile(file)
 	if readErr != nil {
-		err = errors.New("could not read config file: " + readErr.Error())
-		return
+		return nil, errors.New("could not read config file: " + readErr.Error())
 	}
-	return loadConfig(yamlBytes)
+	conf, err = loadConfig(yamlBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	if conf.Module.Path != "" && !path.IsAbs(conf.Module.Path) {
+		absPath, err := filepath.Abs(filepath.Join(filepath.Dir(file), conf.Module.Path))
+		if err != nil {
+			return nil, err
+		}
+		conf.Module.Path = absPath
+	}
+	return conf, nil
 }
 
 var ErrInvalidTSClientFlavor = errors.New(fmt.Sprintln("unknown ts client flavor: must be empty or ", TSClientFlavorAsync))
@@ -115,5 +133,6 @@ func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 	for goPackage, mapping := range conf.Mappings {
 		mapping.GoPackage = goPackage
 	}
+
 	return
 }

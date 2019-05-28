@@ -1,0 +1,5 @@
+---
+module:
+  name: github.com/foomo/gotsrpc
+  path: /go/src/github.com/foomo/gotsrpc
+
