@@ -1,6 +1,11 @@
 package config
 
-import "testing"
+import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"strings"
+	"testing"
+)
 
 const sampleConf = `---
 targets:
@@ -88,4 +93,17 @@ func TestLoadConfigInvalidClientFlavor(t *testing.T) {
 	if err == nil {
 		t.Fatal("that config must be invalid")
 	}
+}
+
+func TestLoadConfigFile_GomodAbsolute(t *testing.T) {
+	config, err := LoadConfigFile("testdata/gomod.absolute.yml")
+	assert.NoError(t, err)
+	assert.Equal(t, "/go/src/github.com/foomo/gotsrpc", config.Module.Path)
+}
+
+func TestLoadConfigFile_GomodRelative(t *testing.T) {
+	config, err := LoadConfigFile("testdata/gomod.relative.yml")
+	assert.NoError(t, err)
+	fmt.Println(config.Module.Path)
+	assert.True(t, strings.HasSuffix(config.Module.Path, "gotsrpc/config/demo"))
 }

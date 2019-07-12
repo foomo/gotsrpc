@@ -3,6 +3,7 @@ package gotsrpc
 import (
 	"errors"
 	"fmt"
+	"github.com/foomo/gotsrpc/config"
 	"go/ast"
 	"go/token"
 	"reflect"
@@ -193,6 +194,7 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 
 func Read(
 	goPaths []string,
+	gomod config.Namespace,
 	packageName string,
 	serviceMap map[string]string,
 ) (
@@ -206,7 +208,7 @@ func Read(
 		err = errors.New("nothing to do service names are empty")
 		return
 	}
-	pkg, parseErr := parsePackage(goPaths, packageName)
+	pkg, parseErr := parsePackage(goPaths, gomod, packageName)
 	if parseErr != nil {
 		err = parseErr
 		return
@@ -231,7 +233,7 @@ func Read(
 	structs = map[string]*Struct{}
 	scalars = map[string]*Scalar{}
 
-	collectErr := collectTypes(goPaths, missingTypes, structs, scalars)
+	collectErr := collectTypes(goPaths, gomod, missingTypes, structs, scalars)
 	if collectErr != nil {
 		err = errors.New("error while collecting structs: " + collectErr.Error())
 	}
@@ -248,7 +250,7 @@ func Read(
 			_, ok := constants[structPackage]
 			if !ok {
 				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
-				pkg, constPkgErr := parsePackage(goPaths, structPackage)
+				pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage)
 				if constPkgErr != nil {
 					err = constPkgErr
 					return
@@ -290,7 +292,7 @@ func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[st
 	}
 }
 
-func collectTypes(goPaths []string, missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) error {
+func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) error {
 	scannedPackageStructs := map[string]map[string]*Struct{}
 	scannedPackageScalars := map[string]map[string]*Scalar{}
 	missingTypeNames := func() []string {
@@ -323,7 +325,7 @@ func collectTypes(goPaths []string, missingTypes map[string]bool, structs map[st
 			packageStructs, structOK := scannedPackageStructs[packageName]
 			packageScalars, scalarOK := scannedPackageScalars[packageName]
 			if !structOK || !scalarOK {
-				parsedPackageStructs, parsedPackageScalars, err := getTypesInPackage(goPaths, packageName)
+				parsedPackageStructs, parsedPackageScalars, err := getTypesInPackage(goPaths, gomod, packageName)
 				if err != nil {
 					return err
 				}
@@ -467,13 +469,14 @@ func (st *StructType) FullName() string {
 
 func getTypesInPackage(
 	goPaths []string,
+	gomod config.Namespace,
 	packageName string,
 ) (
 	structs map[string]*Struct,
 	scalars map[string]*Scalar,
 	err error,
 ) {
-	pkg, err := parsePackage(goPaths, packageName)
+	pkg, err := parsePackage(goPaths, gomod, packageName)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -490,7 +493,7 @@ func getStructTypeForField(value *Value) *StructType {
 	switch true {
 	case value.StructType != nil:
 		strType = value.StructType
-	//case field.Value.ArrayType
+		//case field.Value.ArrayType
 	case value.Map != nil:
 		strType = getStructTypeForField(value.Map.Value)
 	case value.Array != nil:
@@ -505,7 +508,7 @@ func getScalarForField(value *Value) *Scalar {
 	switch true {
 	case value.Scalar != nil:
 		scalarType = value.Scalar
-	//case field.Value.ArrayType
+		//case field.Value.ArrayType
 	case value.Map != nil:
 		scalarType = getScalarForField(value.Map.Value)
 	case value.Array != nil:

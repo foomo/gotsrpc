@@ -26,10 +26,6 @@ release: goreleaser
 goreleaser:
 	@go get github.com/goreleaser/goreleaser && go install github.com/goreleaser/goreleaser
 
-.PHONY: glide
-glide:
-	@go get github.com/Masterminds/glide && glide install
-
 .PHONY: test
 test:
 	go test -v ./...

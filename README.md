@@ -29,14 +29,14 @@ gotsrpc gotsrpc.yml
 
 Will generate client and server side go and TypeScript code. Have fun!
 
-## config examples
+## Configuration Examples
 
-### commonjs
+### Standard Example
 
 [demo/config.yml](demo/config-commonjs.yml)
 
 ```yaml
----
+
 modulekind: commonjs
 # if you want an async api vs classic callbacks - here you are
 tsclientflavor: async
@@ -61,7 +61,8 @@ mappings:
     out: /tmp/test-files-demo-nested.ts
 ...
 ```
-#### an async example
+
+#### Async Example
 
 How to use async clients in this case with axios:
 
@@ -100,12 +101,12 @@ export async function test() {
 ```
 
 
-### oldschool TypeScript
+### Oldschool Typescript
 
 [demo/config.yml](demo/config.yml)
 
 ```yaml
----
+
 targets:
   demo:
     module: GoTSRPC.Demo
@@ -129,4 +130,16 @@ mappings:
     module: GoTSRPC.Demo.Nested
     out: /tmp/test-files-demo-nested.ts
 ...
+```
+
+## GOModule Support
+
+To support go modules add 
+
+```yaml
+
+module:
+  name: github.com/foomo/gotsrpc
+  path: ../ # Relative Or Absolute Path where the package was checked out (root of the package)
+
 ```

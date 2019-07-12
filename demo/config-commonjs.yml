@@ -1,4 +1,8 @@
 ---
+module:
+  name: github.com/foomo/gotsrpc
+  path: ../
+
 modulekind: commonjs
 targets:
   demo:
