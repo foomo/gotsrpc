@@ -54,7 +54,8 @@ func commonJSImports(conf *config.Config, c *code, tsFilename string) {
 
 func getPathForTarget(gomod config.Namespace, goPath string, target *config.Target) (outputPath string) {
 	if gomod.Name != "" && strings.HasPrefix(target.Package, gomod.Name) {
-		return strings.Replace(goPath, gomod.Name, gomod.Path, 1)
+		relative := strings.TrimPrefix(target.Package, gomod.Name)
+		return path.Join(gomod.Path, relative)
 	} else {
 		return path.Join(goPath, "src", target.Package)
 	}
@@ -76,11 +77,11 @@ func Build(conf *config.Config, goPath string) {
 	sort.Strings(names)
 
 	for name, target := range conf.Targets {
-		fmt.Fprintln(os.Stderr, "building target", name)
 
 		longPackageName := target.Package
 		longPackageNameParts := strings.Split(longPackageName, "/")
 		outputPath := getPathForTarget(conf.Module, goPath, target)
+		fmt.Fprintf(os.Stderr, "building target %s (%s -> %s)\n", name, longPackageName, outputPath)
 
 		goRPCProxiesFilename := path.Join(outputPath, "gorpc.go")
 		goRPCClientsFilename := path.Join(outputPath, "gorpcclient.go")
