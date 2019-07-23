@@ -19,10 +19,15 @@ type clientHandle struct {
 }
 
 var msgpackClientHandle = &clientHandle{
-	handle: &codec.MsgpackHandle{
-		RawToString: true,
-	},
+	handle:      &codec.MsgpackHandle{},
 	contentType: "application/msgpack; charset=utf-8",
+}
+
+func init() {
+	mh := new(codec.MsgpackHandle)
+	msgpackClientHandle.handle = mh
+	// attempting to set promoted field in literal will cause a compiler error
+	mh.RawToString = true
 }
 
 var jsonClientHandle = &clientHandle{
@@ -72,4 +77,3 @@ func (w *responseWriterWithLength) Write(b []byte) (n int, err error) {
 func (w *responseWriterWithLength) Length() int {
 	return w.length
 }
-
