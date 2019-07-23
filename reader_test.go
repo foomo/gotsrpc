@@ -1,6 +1,7 @@
 package gotsrpc
 
 import (
+	"github.com/foomo/gotsrpc/config"
 	"os"
 	"testing"
 
@@ -15,7 +16,7 @@ func getTestServiceList(t *testing.T) ServiceList {
 
 	packageName := "github.com/foomo/gotsrpc/demo"
 
-	pkg, parseErr := parsePackage([]string{os.Getenv("GOPATH")}, packageName)
+	pkg, parseErr := parsePackage([]string{os.Getenv("GOPATH")}, config.Namespace{}, packageName)
 	assert.NoError(t, parseErr)
 
 	services, err := readServicesInPackage(pkg, packageName, serviceMap)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/foomo/gotsrpc/config"
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
 	"go/ast"
@@ -96,7 +97,14 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	}
 }
 
-func parseDir(goPaths []string, packageName string) (map[string]*ast.Package, error) {
+func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map[string]*ast.Package, error) {
+
+	if gomod.Name != "" && strings.HasPrefix(packageName, gomod.Name) {
+		fset := token.NewFileSet()
+		dir := strings.Replace(packageName, gomod.Name, gomod.Path, 1)
+		return parser.ParseDir(fset, dir, nil, parser.AllErrors)
+	}
+
 	errorStrings := map[string]string{}
 	for _, goPath := range goPaths {
 		fset := token.NewFileSet()
@@ -129,8 +137,8 @@ func (a byLen) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
-func parsePackage(goPaths []string, packageName string) (pkg *ast.Package, err error) {
-	pkgs, err := parseDir(goPaths, packageName)
+func parsePackage(goPaths []string, gomod config.Namespace, packageName string) (pkg *ast.Package, err error) {
+	pkgs, err := parseDir(goPaths, gomod, packageName)
 	if err != nil {
 		return nil, errors.New("could not parse package " + packageName + ": " + err.Error())
 	}
@@ -139,7 +147,7 @@ func parsePackage(goPaths []string, packageName string) (pkg *ast.Package, err e
 		return nil, errors.New("invalid package name given")
 	}
 	strippedPackageName := packageNameParts[len(packageNameParts)-1]
-	foundPackages := []string{}
+	var foundPackages []string
 	sortedGoPaths := make([]string, len(goPaths))
 	for iGoPath := range goPaths {
 		sortedGoPaths[iGoPath] = goPaths[iGoPath]
