@@ -53,7 +53,7 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[strin
 			}
 
 			hiddenStruct, okHiddenStruct := structs[scalarName]
-			if okHiddenStruct && hiddenStruct.Array != nil {
+			if okHiddenStruct && hiddenStruct.Array != nil && hiddenStruct.Array.Value.StructType != nil {
 
 				hiddenMapping, hiddenMappingOK := mappings[hiddenStruct.Array.Value.StructType.Package]
 				var tsModule string
