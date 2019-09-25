@@ -24,7 +24,6 @@ func (f *Field) tsName() string {
 }
 
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, structs map[string]*Struct, ts *code) {
-
 	switch true {
 	case v.Map != nil:
 		ts.app("{[index:" + v.Map.KeyType + "]:")
@@ -38,7 +37,7 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[strin
 	case v.Scalar != nil:
 		ts.app(tsTypeFromScalarType(v.Scalar.Type))
 	case v.StructType != nil:
-		if len(v.StructType.Package) > 0 {
+		if v.StructType.Package != "" {
 			mapping, ok := mappings[v.StructType.Package]
 			var tsModule string
 			if ok {
@@ -53,22 +52,30 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[strin
 			}
 
 			hiddenStruct, okHiddenStruct := structs[scalarName]
-			if okHiddenStruct && hiddenStruct.Array != nil && hiddenStruct.Array.Value.StructType != nil {
-
-				hiddenMapping, hiddenMappingOK := mappings[hiddenStruct.Array.Value.StructType.Package]
-				var tsModule string
-				if hiddenMappingOK {
-					tsModule = hiddenMapping.TypeScriptModule
+			if okHiddenStruct && hiddenStruct.Array != nil {
+				if hiddenStruct.Array.Value.StructType != nil {
+					hiddenMapping, hiddenMappingOK := mappings[hiddenStruct.Array.Value.StructType.Package]
+					var tsModule string
+					if hiddenMappingOK {
+						tsModule = hiddenMapping.TypeScriptModule
+					}
+					ts.app(tsModule + "." + hiddenStruct.Array.Value.StructType.Name + "[]")
+					return
 				}
-				ts.app(tsModule + "." + hiddenStruct.Array.Value.StructType.Name + "[]")
-				return
+				if hiddenStruct.Array.Value.StructType == nil {
+					if hiddenStruct.Array.Value.GoScalarType == "byte" { // this fixes types like primitive.ID [12]byte
+						ts.app(tsTypeFromScalarType(hiddenStruct.Array.Value.ScalarType))
+					}
+					return
+				}
 			}
+
 			ts.app(tsModule + "." + v.StructType.Name)
 			return
 		}
 		ts.app(v.StructType.Name)
 	case v.Struct != nil:
-		//v.Struct.Value.tsType(mappings, ts)
+		// v.Struct.Value.tsType(mappings, ts)
 		ts.l("{").ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalarTypes, structs, ts)
 		ts.ind(-1).app("}")
@@ -104,7 +111,6 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 		ts.app(";")
 		ts.nl()
 	}
-
 }
 
 func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, structs map[string]*Struct, ts *code) error {
@@ -114,12 +120,13 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 	}
 	ts.l("// " + str.FullName())
 	ts.l("export interface " + str.Name + " {").ind(1)
-	if str.Map != nil {
+	switch {
+	case str.Map != nil:
 		ts.app("[index:" + str.Map.KeyType + "]:")
 		str.Map.Value.tsType(mappings, scalarTypes, structs, ts)
 		ts.app(";")
 		ts.nl()
-	} else {
+	default:
 		renderStructFields(str.Fields, mappings, scalarTypes, structs, ts)
 	}
 	ts.ind(-1).l("}")
@@ -134,10 +141,9 @@ func renderTypescriptStructsToPackages(
 	scalarTypes map[string]*Scalar,
 	mappedTypeScript map[string]map[string]*code,
 ) (err error) {
-
 	codeMap := map[string]map[string]*code{}
 	for _, mapping := range mappings {
-		codeMap[mapping.GoPackage] = map[string]*code{} //newCode().l("module " + mapping.TypeScriptModule + " {").ind(1)
+		codeMap[mapping.GoPackage] = map[string]*code{} // newCode().l("module " + mapping.TypeScriptModule + " {").ind(1)
 	}
 	for name, str := range structs {
 		if str == nil {
@@ -184,7 +190,7 @@ func renderTypescriptStructsToPackages(
 				constCode.ind(1)
 			}
 			constCode.l("// constants from " + packageName).l("export const GoConst = {").ind(1)
-			//constCode.l()
+			// constCode.l()
 			mappedTypeScript[packageName][goConstPseudoPackage] = constCode
 			constPrefixParts := split(packageName, []string{"/", ".", "-"})
 			constPrefix := ""
@@ -192,7 +198,7 @@ func renderTypescriptStructsToPackages(
 				constPrefix += ucFirst(constPrefixPart)
 			}
 			constNames := []string{}
-			for constName, _ := range packageConstants {
+			for constName := range packageConstants {
 				constNames = append(constNames, constName)
 			}
 			sort.Strings(constNames)
@@ -203,7 +209,6 @@ func renderTypescriptStructsToPackages(
 			constCode.ind(-1).l("}")
 
 		}
-
 	}
 	return nil
 }
