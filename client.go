@@ -11,6 +11,10 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
+const (
+	HeaderServiceToService = "X-Foomo-S2S"
+)
+
 // ClientTransport to use for calls
 // var ClientTransport = &http.Transport{}
 
@@ -45,6 +49,7 @@ func newRequest(url string, contentType string, reader io.Reader, headers http.H
 	}
 	request.Header.Set("Content-Type", contentType)
 	request.Header.Set("Accept", contentType)
+	request.Header.Set(HeaderServiceToService, "true")
 
 	return request, nil
 }

@@ -22,8 +22,6 @@ archive:
     - goos: windows
       format: zip
 
-
-
 brew:
   # Reporitory to push the tap to.
   github:
