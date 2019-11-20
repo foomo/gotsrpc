@@ -15,11 +15,8 @@ var defaultHttpFactory HttpClientFactory = func() *http.Client {
 		DialContext: (&net.Dialer{
 			Timeout:   45 * time.Second,
 			KeepAlive: 45 * time.Second,
-			DualStack: true,
 		}).DialContext,
-		MaxIdleConnsPerHost: 20,
-		MaxIdleConns:        20,
-		IdleConnTimeout:     5 * time.Minute,
+		DisableKeepAlives: true,
 
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 5 * time.Second,
