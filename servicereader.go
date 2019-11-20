@@ -3,12 +3,13 @@ package gotsrpc
 import (
 	"errors"
 	"fmt"
-	"github.com/foomo/gotsrpc/config"
 	"go/ast"
 	"go/token"
 	"reflect"
 	"sort"
 	"strings"
+
+	"github.com/foomo/gotsrpc/config"
 )
 
 func (sl ServiceList) Len() int           { return len(sl) }
@@ -138,6 +139,9 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 }
 
 func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services ServiceList, err error) {
+	if pkg == nil {
+		return nil, errors.New("package cannot be nil")
+	}
 	services = ServiceList{}
 	for endpoint, serviceName := range serviceMap {
 		services = append(services, &Service{

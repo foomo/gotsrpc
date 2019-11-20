@@ -33,15 +33,3 @@ func getTestServiceList(t *testing.T) ServiceList {
 	}
 	return services
 }
-
-func TestInterfaceReading(t *testing.T) {
-	services := getTestServiceList(t)
-	//spew.Dump(services)
-	demoService := services.getServiceByName("Demo")
-	assert.NotNil(t, demoService)
-	helloInterfaceMethod := demoService.Methods.getMethodByName("HelloInterface")
-	assert.NotNil(t, helloInterfaceMethod)
-	assert.True(t, helloInterfaceMethod.Args[0].Value.IsInterface)
-	assert.True(t, helloInterfaceMethod.Args[1].Value.Map.Value.IsInterface)
-	assert.True(t, helloInterfaceMethod.Args[2].Value.Array.Value.IsInterface)
-}

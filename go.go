@@ -408,7 +408,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 		}
 
 		interfaceName := service.Name + "GoTSRPCClient"
-		clientName := "tsrpc" + interfaceName
+		clientName := "HTTP" + interfaceName
 
 		//Render Interface
 		g.l(`type ` + interfaceName + ` interface { `)
@@ -417,8 +417,6 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 			g.l(ms.renderSignature())
 		}
 
-		g.l(`SetClientEncoding(encoding gotsrpc.ClientEncoding)`)
-		g.l(`SetTransportHttpClient(client *net_http.Client) `)
 		g.l(`} `)
 
 		//Render Constructors
@@ -429,31 +427,20 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 			Client gotsrpc.Client
         }
 
-        func NewDefault` + interfaceName + `(url string) ` + interfaceName + ` {
+        func NewDefault` + interfaceName + `(url string) *` + clientName + ` {
 	        return New` + interfaceName + `(url, "` + service.Endpoint + `")
         }
 
-        func New` + interfaceName + `(url string, endpoint string) ` + interfaceName + ` {
+        func New` + interfaceName + `(url string, endpoint string) *` + clientName + ` {
 			return New` + interfaceName + `WithClient(url, "` + service.Endpoint + `", nil) 
         }
 
-        func New` + interfaceName + `WithClient(url string, endpoint string, client *net_http.Client) ` + interfaceName + ` {
+        func New` + interfaceName + `WithClient(url string, endpoint string, client *net_http.Client) *` + clientName + ` {
 	        return &` + clientName + `{
 		        URL: url,
 		        EndPoint: endpoint,
 		        Client: gotsrpc.NewClientWithHttpClient(client),
 	        }
-		}`)
-
-		//Render Methods
-
-		g.l(`
-		func (tsc *` + clientName + `) SetClientEncoding(encoding gotsrpc.ClientEncoding) {
-			tsc.Client.SetClientEncoding(encoding)
-		}`)
-		g.l(`
-		func (tsc *` + clientName + `) SetTransportHttpClient(client *net_http.Client) {
-			tsc.Client.SetTransportHttpClient(client)
 		}`)
 
 		for _, method := range service.Methods {

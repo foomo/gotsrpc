@@ -11,40 +11,30 @@ import (
 
 type FooGoTSRPCClient interface {
 	Hello(number int64) (retHello_0 int, clientErr error)
-	SetClientEncoding(encoding gotsrpc.ClientEncoding)
-	SetTransportHttpClient(client *net_http.Client)
 }
 
-type tsrpcFooGoTSRPCClient struct {
+type HTTPFooGoTSRPCClient struct {
 	URL      string
 	EndPoint string
 	Client   gotsrpc.Client
 }
 
-func NewDefaultFooGoTSRPCClient(url string) FooGoTSRPCClient {
+func NewDefaultFooGoTSRPCClient(url string) *HTTPFooGoTSRPCClient {
 	return NewFooGoTSRPCClient(url, "/service/foo")
 }
 
-func NewFooGoTSRPCClient(url string, endpoint string) FooGoTSRPCClient {
+func NewFooGoTSRPCClient(url string, endpoint string) *HTTPFooGoTSRPCClient {
 	return NewFooGoTSRPCClientWithClient(url, "/service/foo", nil)
 }
 
-func NewFooGoTSRPCClientWithClient(url string, endpoint string, client *net_http.Client) FooGoTSRPCClient {
-	return &tsrpcFooGoTSRPCClient{
+func NewFooGoTSRPCClientWithClient(url string, endpoint string, client *net_http.Client) *HTTPFooGoTSRPCClient {
+	return &HTTPFooGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
 		Client:   gotsrpc.NewClientWithHttpClient(client),
 	}
 }
-
-func (tsc *tsrpcFooGoTSRPCClient) SetClientEncoding(encoding gotsrpc.ClientEncoding) {
-	tsc.Client.SetClientEncoding(encoding)
-}
-
-func (tsc *tsrpcFooGoTSRPCClient) SetTransportHttpClient(client *net_http.Client) {
-	tsc.Client.SetTransportHttpClient(client)
-}
-func (tsc *tsrpcFooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+func (tsc *HTTPFooGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
 	args := []interface{}{number}
 	reply := []interface{}{&retHello_0}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Hello", args, reply)
@@ -60,89 +50,79 @@ type DemoGoTSRPCClient interface {
 	MapCrap() (crap map[string][]int, clientErr error)
 	Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error)
 	TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error)
-	SetClientEncoding(encoding gotsrpc.ClientEncoding)
-	SetTransportHttpClient(client *net_http.Client)
 }
 
-type tsrpcDemoGoTSRPCClient struct {
+type HTTPDemoGoTSRPCClient struct {
 	URL      string
 	EndPoint string
 	Client   gotsrpc.Client
 }
 
-func NewDefaultDemoGoTSRPCClient(url string) DemoGoTSRPCClient {
+func NewDefaultDemoGoTSRPCClient(url string) *HTTPDemoGoTSRPCClient {
 	return NewDemoGoTSRPCClient(url, "/service/demo")
 }
 
-func NewDemoGoTSRPCClient(url string, endpoint string) DemoGoTSRPCClient {
+func NewDemoGoTSRPCClient(url string, endpoint string) *HTTPDemoGoTSRPCClient {
 	return NewDemoGoTSRPCClientWithClient(url, "/service/demo", nil)
 }
 
-func NewDemoGoTSRPCClientWithClient(url string, endpoint string, client *net_http.Client) DemoGoTSRPCClient {
-	return &tsrpcDemoGoTSRPCClient{
+func NewDemoGoTSRPCClientWithClient(url string, endpoint string, client *net_http.Client) *HTTPDemoGoTSRPCClient {
+	return &HTTPDemoGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
 		Client:   gotsrpc.NewClientWithHttpClient(client),
 	}
 }
-
-func (tsc *tsrpcDemoGoTSRPCClient) SetClientEncoding(encoding gotsrpc.ClientEncoding) {
-	tsc.Client.SetClientEncoding(encoding)
-}
-
-func (tsc *tsrpcDemoGoTSRPCClient) SetTransportHttpClient(client *net_http.Client) {
-	tsc.Client.SetTransportHttpClient(client)
-}
-func (tsc *tsrpcDemoGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
 	args := []interface{}{person}
 	reply := []interface{}{&addr, &e}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "ExtractAddress", args, reply)
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) GiveMeAScalar() (amount github_com_foomo_gotsrpc_demo_nested.Amount, wahr github_com_foomo_gotsrpc_demo_nested.True, hier ScalarInPlace, clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) GiveMeAScalar() (amount github_com_foomo_gotsrpc_demo_nested.Amount, wahr github_com_foomo_gotsrpc_demo_nested.True, hier ScalarInPlace, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&amount, &wahr, &hier}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "GiveMeAScalar", args, reply)
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error) {
 	args := []interface{}{name}
 	reply := []interface{}{&retHello_0, &retHello_1}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Hello", args, reply)
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) (clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) (clientErr error) {
 	args := []interface{}{anything, anythingMap, anythingSlice}
 	reply := []interface{}{}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "HelloInterface", args, reply)
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) HelloScalarError() (err *ScalarError, clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) HelloScalarError() (err *ScalarError, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&err}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "HelloScalarError", args, reply)
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&crap}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "MapCrap", args, reply)
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&retNest_0}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Nest", args, reply)
 	return
 }
 
-func (tsc *tsrpcDemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
+func (tsc *HTTPDemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&retTestScalarInPlace_0}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "TestScalarInPlace", args, reply)
