@@ -23,6 +23,9 @@ export class DemoClient {
 	helloInterface(anything:any, anythingMap:{[index:string]:any}, anythingSlice:any[], success:() => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
 	}
+	helloNumberMaps(intMap:{[index:number]:string}, success:(floatMap:{[index:number]:string}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "HelloNumberMaps", [intMap], success, err);
+	}
 	helloScalarError(success:(err:string) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "HelloScalarError", [], success, err);
 	}

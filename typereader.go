@@ -183,6 +183,7 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 	case "*ast.Ident":
 		_, scalarType := getTypesFromAstType(mapType.Key.(*ast.Ident))
 		m.KeyType = string(scalarType)
+		m.KeyGoType = mapType.Key.(*ast.Ident).Name
 	default:
 		// todo: implement support for "*ast.Scalar" type (sca)
 		// this is important for scalar types in map keys

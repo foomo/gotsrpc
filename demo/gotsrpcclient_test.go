@@ -2,14 +2,15 @@ package demo
 
 import (
 	"fmt"
-	"github.com/foomo/gotsrpc/demo/nested"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"net/http/httptest"
 	"net/url"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/foomo/gotsrpc/demo/nested"
+	"github.com/stretchr/testify/assert"
 )
 
 func init() {
@@ -25,7 +26,6 @@ func RandStringRunes(n int) string {
 	}
 	return string(b)
 }
-
 
 var (
 	client DemoGoTSRPCClient
@@ -50,6 +50,18 @@ func TestDefault(t *testing.T) {
 	assert.NoError(t, errClient)
 	assert.Nil(t, errServer)
 	fmt.Println(resp)
+}
+
+func TestHelloNumberMaps(t *testing.T) {
+	setup()
+	defer teardown()
+	intMap := map[int]string{1: "one", 2: "two", 3: "three"}
+	floatMap, errClient := client.HelloNumberMaps(intMap)
+	assert.NoError(t, errClient)
+	for f, fstr := range floatMap {
+		i := int(f)
+		assert.Equal(t, fstr, intMap[i])
+	}
 }
 
 func benchmarkRequests(b *testing.B, count int) {
@@ -81,7 +93,7 @@ func GeneratePerson(count int) *Person {
 }
 
 func GenerateAddress() *Address {
-	gen :=  func() string{
+	gen := func() string {
 		return RandStringRunes(32)
 	}
 	genarr := func(count int) (ret []string) {

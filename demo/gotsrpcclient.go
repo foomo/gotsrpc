@@ -46,6 +46,7 @@ type DemoGoTSRPCClient interface {
 	GiveMeAScalar() (amount github_com_foomo_gotsrpc_demo_nested.Amount, wahr github_com_foomo_gotsrpc_demo_nested.True, hier ScalarInPlace, clientErr error)
 	Hello(name string) (retHello_0 string, retHello_1 *Err, clientErr error)
 	HelloInterface(anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) (clientErr error)
+	HelloNumberMaps(intMap map[int]string) (floatMap map[float64]string, clientErr error)
 	HelloScalarError() (err *ScalarError, clientErr error)
 	MapCrap() (crap map[string][]int, clientErr error)
 	Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error)
@@ -98,6 +99,13 @@ func (tsc *HTTPDemoGoTSRPCClient) HelloInterface(anything interface{}, anythingM
 	args := []interface{}{anything, anythingMap, anythingSlice}
 	reply := []interface{}{}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "HelloInterface", args, reply)
+	return
+}
+
+func (tsc *HTTPDemoGoTSRPCClient) HelloNumberMaps(intMap map[int]string) (floatMap map[float64]string, clientErr error) {
+	args := []interface{}{intMap}
+	reply := []interface{}{&floatMap}
+	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "HelloNumberMaps", args, reply)
 	return
 }
 

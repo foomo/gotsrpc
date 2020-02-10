@@ -187,6 +187,23 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{}, callStats, r, w)
 		return
+	case "HelloNumberMaps":
+		var (
+			arg_intMap map[int]string
+		)
+		args = []interface{}{&arg_intMap}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		helloNumberMapsFloatMap := p.service.HelloNumberMaps(arg_intMap)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{helloNumberMapsFloatMap}, callStats, r, w)
+		return
 	case "HelloScalarError":
 		executionStart := time.Now()
 		helloScalarErrorErr := p.service.HelloScalarError()

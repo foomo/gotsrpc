@@ -31,6 +31,14 @@ func (d *Demo) HelloInterface(anything interface{}, anythingMap map[string]inter
 
 }
 
+func (d *Demo) HelloNumberMaps(intMap map[int]string) (floatMap map[float64]string) {
+	floatMap = map[float64]string{}
+	for i, str := range intMap {
+		floatMap[float64(i)] = str
+	}
+	return
+}
+
 func (d *Demo) HelloScalarError() (err *ScalarError) {
 	return
 }

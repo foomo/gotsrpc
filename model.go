@@ -40,8 +40,9 @@ type Array struct {
 }
 
 type Map struct {
-	Value   *Value
-	KeyType string
+	Value     *Value
+	KeyType   string
+	KeyGoType string
 }
 
 type Field struct {

@@ -107,6 +107,17 @@ func (tsc *DemoGoRPCClient) HelloInterface(anything interface{}, anythingMap map
 	return nil
 }
 
+func (tsc *DemoGoRPCClient) HelloNumberMaps(intMap map[int]string) (floatMap map[float64]string, clientErr error) {
+	req := DemoHelloNumberMapsRequest{IntMap: intMap}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(DemoHelloNumberMapsResponse)
+	return response.FloatMap, nil
+}
+
 func (tsc *DemoGoRPCClient) HelloScalarError() (err *ScalarError, clientErr error) {
 	req := DemoHelloScalarErrorRequest{}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)

@@ -63,6 +63,9 @@ var GoTSRPC;
             DemoClient.prototype.helloInterface = function (anything, anythingMap, anythingSlice, success, err) {
                 this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
             };
+            DemoClient.prototype.helloNumberMaps = function (intMap, success, err) {
+                this.transport(this.endPoint, "HelloNumberMaps", [intMap], success, err);
+            };
             DemoClient.prototype.helloScalarError = function (success, err) {
                 this.transport(this.endPoint, "HelloScalarError", [], success, err);
             };

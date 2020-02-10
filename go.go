@@ -30,7 +30,7 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 		}
 		t += v.StructType.Name
 	case v.Map != nil:
-		t += `map[` + v.Map.KeyType + `]` + v.Map.Value.goType(aliases, packageName)
+		t += `map[` + v.Map.KeyGoType + `]` + v.Map.Value.goType(aliases, packageName)
 	case v.Scalar != nil:
 		// TODO this is a hack to retrieve string types
 		if packageName != v.Scalar.Package {
@@ -54,7 +54,7 @@ func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
 	}
 	switch true {
 	case v.Map != nil:
-		e += "map[" + v.Map.KeyType + "]" + v.Map.Value.emptyLiteral(aliases)
+		e += "map[" + v.Map.KeyGoType + "]" + v.Map.Value.emptyLiteral(aliases)
 	case len(v.GoScalarType) > 0:
 		switch v.GoScalarType {
 		case "string":
