@@ -16,11 +16,11 @@ builds:
       - amd64
 
 # .goreleaser.yml
-archive:
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
 
 brew:
   # Reporitory to push the tap to.
