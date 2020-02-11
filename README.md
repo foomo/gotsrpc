@@ -1,5 +1,7 @@
 # Go / TypeScript and Go / Go RPC
 
+[![Build Status](https://travis-ci.org/foomo/gotsrpc.svg?branch=master)](https://travis-ci.org/foomo/gotsrpc)
+
 ## Installation
 
 From source to /usr/local/bin/gotsrpc:
