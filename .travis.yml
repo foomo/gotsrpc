@@ -1,9 +1,6 @@
 language: go
 go:
-  - 1.12.5
-
-env:
-- GO111MODULE=on
+  - 1.13.7
 
 cache:
   directories:
