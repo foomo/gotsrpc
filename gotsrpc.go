@@ -4,17 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/foomo/gotsrpc/config"
-	"github.com/pkg/errors"
-	"github.com/ugorji/go/codec"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"net/http"
+	"os"
 	"path"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/foomo/gotsrpc/config"
+	"github.com/pkg/errors"
+	"github.com/ugorji/go/codec"
 )
 
 const contextStatsKey = "gotsrpcStats"
@@ -97,12 +99,15 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	}
 }
 
-func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map[string]*ast.Package, error) {
+func parserExcludeFiles(info os.FileInfo) bool {
+	return !strings.HasSuffix(info.Name(), "_test.go")
+}
 
+func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map[string]*ast.Package, error) {
 	if gomod.Name != "" && strings.HasPrefix(packageName, gomod.Name) {
 		fset := token.NewFileSet()
 		dir := strings.Replace(packageName, gomod.Name, gomod.Path, 1)
-		return parser.ParseDir(fset, dir, nil, parser.AllErrors)
+		return parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
 	}
 
 	errorStrings := map[string]string{}
@@ -114,7 +119,7 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 		} else {
 			dir = path.Join(goPath, "src", packageName)
 		}
-		pkgs, err := parser.ParseDir(fset, dir, nil, parser.AllErrors)
+		pkgs, err := parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
 		if err == nil {
 			return pkgs, nil
 		}
