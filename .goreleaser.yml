@@ -22,12 +22,11 @@ archives:
       - goos: windows
         format: zip
 
-brew:
+brews:
   # Reporitory to push the tap to.
-  github:
-    owner: foomo
-    name: homebrew-gotsrpc
-
-  caveats: "gotsrpc gotsrpc.yml"
-  homepage: "https://github.com/foomo/gotsrpc"
-  description: "CLI utility to generate go and typescript RPC calls easily"
+  - github:
+      owner: foomo
+      name: homebrew-gotsrpc
+    caveats: "gotsrpc gotsrpc.yml"
+    homepage: "https://github.com/foomo/gotsrpc"
+    description: "CLI utility to generate go and typescript RPC calls easily"
