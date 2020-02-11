@@ -14,10 +14,6 @@ builds:
       - linux
     goarch:
       - amd64
-      
-before:
-  hooks:
-    - go mod tidy      
 
 # .goreleaser.yml
 archives:
