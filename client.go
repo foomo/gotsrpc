@@ -76,7 +76,7 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 // CallClient calls a method on the remove service
 func (c *bufferedClient) Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
 	// Marshall args
-	b := new(bytes.Buffer)
+	b := &bytes.Buffer{}
 
 	// If no arguments are set, remove
 	if len(args) > 0 {
@@ -88,7 +88,6 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 	// Create request
 	// Create post url
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
-	// Post
 
 	request, errRequest := newRequest(postURL, c.handle.contentType, b, c.headers.Clone())
 	if errRequest != nil {
@@ -110,13 +109,10 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 
-	var errDecode error
 	responseHandle := getHandlerForContentType(resp.Header.Get("Content-Type")).handle
-	errDecode = codec.NewDecoder(resp.Body, responseHandle).Decode(reply)
-
-	// Unmarshal reply
-	if errDecode != nil {
-		return errors.Wrap(errDecode, "could not decode response from client")
+	if err := codec.NewDecoder(resp.Body, responseHandle).Decode(reply); err != nil {
+		return errors.Wrap(err, "could not decode response from client")
 	}
+
 	return err
 }
