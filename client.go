@@ -3,7 +3,6 @@ package gotsrpc
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -39,8 +38,11 @@ func NewClientWithHttpClient(client *http.Client) Client {
 	}
 }
 
-func newRequest(url string, contentType string, reader io.Reader, headers http.Header) (r *http.Request, err error) {
-	request, errRequest := http.NewRequest("POST", url, reader)
+func newRequest(url string, contentType string, buffer *bytes.Buffer, headers http.Header) (r *http.Request, err error) {
+	if buffer == nil {
+		buffer = &bytes.Buffer{}
+	}
+	request, errRequest := http.NewRequest("POST", url, buffer)
 	if errRequest != nil {
 		return nil, errors.Wrap(errRequest, "could not create a request")
 	}
@@ -76,15 +78,17 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 func (c *bufferedClient) Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
 	// Marshall args
 	b := new(bytes.Buffer)
-	errEncode := codec.NewEncoder(b, c.handle.handle).Encode(args)
-	if errEncode != nil {
-		return errors.Wrap(errEncode, "could not encode argument")
+
+	// If no arguments are set, remove
+	if len(args) > 0 {
+		if err := codec.NewEncoder(b, c.handle.handle).Encode(args); err != nil {
+			return errors.Wrap(err, "could not encode argument")
+		}
 	}
 
 	// Create request
 	// Create post url
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
-	// Post
 
 	request, errRequest := newRequest(postURL, c.handle.contentType, b, c.headers.Clone())
 	if errRequest != nil {
@@ -95,10 +99,10 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 	if errDo != nil {
 		return errors.Wrap(errDo, "could not execute request")
 	}
+	defer resp.Body.Close()
 
 	// Check status
 	if resp.StatusCode != http.StatusOK {
-		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
@@ -106,13 +110,10 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 		return fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
 
-	var errDecode error
 	responseHandle := getHandlerForContentType(resp.Header.Get("Content-Type")).handle
-	errDecode = codec.NewDecoder(resp.Body, responseHandle).Decode(reply)
-
-	// Unmarshal reply
-	if errDecode != nil {
-		return errors.Wrap(errDecode, "could not decode response from client")
+	if err := codec.NewDecoder(resp.Body, responseHandle).Decode(reply); err != nil {
+		return errors.Wrap(err, "could not decode response from client")
 	}
+
 	return err
 }
