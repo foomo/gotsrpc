@@ -3,9 +3,9 @@ package gotsrpc
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
@@ -39,7 +39,7 @@ func NewClientWithHttpClient(client *http.Client) Client {
 	}
 }
 
-func newRequest(url string, contentType string, reader io.Reader, headers http.Header) (r *http.Request, err error) {
+func newRequest(url string, contentType string, reader *bytes.Buffer, headers http.Header) (r *http.Request, err error) {
 	request, errRequest := http.NewRequest("POST", url, reader)
 	if errRequest != nil {
 		return nil, errors.Wrap(errRequest, "could not create a request")
@@ -48,6 +48,7 @@ func newRequest(url string, contentType string, reader io.Reader, headers http.H
 		request.Header = headers
 	}
 	request.Header.Set("Content-Type", contentType)
+	request.Header.Set("Content-Length", strconv.Itoa(reader.Len()))
 	request.Header.Set("Accept", contentType)
 	request.Header.Set(HeaderServiceToService, "true")
 
@@ -76,9 +77,12 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 func (c *bufferedClient) Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
 	// Marshall args
 	b := new(bytes.Buffer)
-	errEncode := codec.NewEncoder(b, c.handle.handle).Encode(args)
-	if errEncode != nil {
-		return errors.Wrap(errEncode, "could not encode argument")
+
+	// If no arguments are set, remove
+	if len(args) > 0 {
+		if err := codec.NewEncoder(b, c.handle.handle).Encode(args); err != nil {
+			return errors.Wrap(err, "could not encode argument")
+		}
 	}
 
 	// Create request
@@ -95,10 +99,10 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 	if errDo != nil {
 		return errors.Wrap(errDo, "could not execute request")
 	}
+	defer resp.Body.Close()
 
 	// Check status
 	if resp.StatusCode != http.StatusOK {
-		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
