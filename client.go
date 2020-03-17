@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
@@ -39,8 +38,11 @@ func NewClientWithHttpClient(client *http.Client) Client {
 	}
 }
 
-func newRequest(url string, contentType string, reader *bytes.Buffer, headers http.Header) (r *http.Request, err error) {
-	request, errRequest := http.NewRequest("POST", url, reader)
+func newRequest(url string, contentType string, buffer *bytes.Buffer, headers http.Header) (r *http.Request, err error) {
+	if buffer == nil {
+		buffer = &bytes.Buffer{}
+	}
+	request, errRequest := http.NewRequest("POST", url, buffer)
 	if errRequest != nil {
 		return nil, errors.Wrap(errRequest, "could not create a request")
 	}
@@ -48,7 +50,6 @@ func newRequest(url string, contentType string, reader *bytes.Buffer, headers ht
 		request.Header = headers
 	}
 	request.Header.Set("Content-Type", contentType)
-	request.Header.Set("Content-Length", strconv.Itoa(reader.Len()))
 	request.Header.Set("Accept", contentType)
 	request.Header.Set(HeaderServiceToService, "true")
 
@@ -76,7 +77,7 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 // CallClient calls a method on the remove service
 func (c *bufferedClient) Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
 	// Marshall args
-	b := &bytes.Buffer{}
+	b := new(bytes.Buffer)
 
 	// If no arguments are set, remove
 	if len(args) > 0 {

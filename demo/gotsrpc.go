@@ -3,6 +3,8 @@
 package demo
 
 import (
+	io "io"
+	ioutil "io/ioutil"
 	http "net/http"
 	time "time"
 
@@ -46,6 +48,7 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
+	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
 
 	var args []interface{}
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
@@ -116,6 +119,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
+	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
 
 	var args []interface{}
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)

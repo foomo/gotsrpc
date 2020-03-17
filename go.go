@@ -174,9 +174,10 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 	aliases := map[string]string{
 		"time":                     "time",
 		"net/http":                 "http",
+		"io":                       "io",
+		"io/ioutil":                "ioutil",
 		"github.com/foomo/gotsrpc": "gotsrpc",
 	}
-
 	for _, service := range services {
 		// Check if we should render this service as ts rpc
 		// Note: remove once there's a separate gorcp generator
@@ -236,6 +237,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return
 	        }
+			defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body 
 		`)
 		needsArgs := false
 		for _, method := range service.Methods {
@@ -432,7 +434,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
         }
 
         func New` + interfaceName + `(url string, endpoint string) *` + clientName + ` {
-			return New` + interfaceName + `WithClient(url, "` + service.Endpoint + `", nil) 
+			return New` + interfaceName + `WithClient(url, endpoint, nil) 
         }
 
         func New` + interfaceName + `WithClient(url string, endpoint string, client *net_http.Client) *` + clientName + ` {
