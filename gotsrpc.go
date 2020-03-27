@@ -88,7 +88,6 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	writer.Header().Set("Content-Type", clientHandle.contentType)
 
 	if errEncode := codec.NewEncoder(writer, clientHandle.handle).Encode(response); errEncode != nil {
-		fmt.Println(errEncode)
 		http.Error(w, "could not encode data to accepted format", http.StatusInternalServerError)
 		return
 	}
