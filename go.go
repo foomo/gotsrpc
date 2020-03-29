@@ -290,20 +290,21 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 					callArgs = append(callArgs, argName)
 					skipArgI++
 				}
-				g.l("var (")
-				for _, argDecl := range argsDecls {
-					g.l(argDecl)
+				if len(args) > 0 {
+					g.l("var (")
+					for _, argDecl := range argsDecls {
+						g.l(argDecl)
+					}
+					g.l(")")
+					g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
+					g.l("err := gotsrpc.LoadArgs(&args, callStats, r)")
+					g.l("if err != nil {")
+					g.ind(1)
+					g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
+					g.l("return")
+					g.ind(-1)
+					g.l("}")
 				}
-				g.l(")")
-				g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
-				g.l("err := gotsrpc.LoadArgs(&args, callStats, r)")
-				g.l("if err != nil {")
-				g.ind(1)
-				g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
-				g.l("return")
-				g.ind(-1)
-				g.l("}")
-
 			}
 			returnValueNames := []string{}
 			for retI, retField := range method.Return {
