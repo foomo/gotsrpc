@@ -12,19 +12,7 @@ demo: generate
 
 .PHONY: install
 install:
-	GOBIN=/usr/local/bin go install cmd/gotsrpc/gotsrpc.go
-
-.PHONY: build
-build: goreleaser
-	goreleaser  --skip-publish --skip-validate
-
-.PHONY: release
-release: goreleaser
-	goreleaser --rm-dist
-
-.PHONY: goreleaser
-goreleaser:
-	@go get github.com/goreleaser/goreleaser && go install github.com/goreleaser/goreleaser
+	go install cmd/gotsrpc/gotsrpc.go
 
 .PHONY: test
 test:

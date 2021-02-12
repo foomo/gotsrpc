@@ -8,9 +8,14 @@ cache:
   - $HOME/gopath/pkg/mod
 
 script:
-  - make test
-  - if [[ -n "${TRAVIS_TAG}" ]]; then
-    make release;
-    fi
+  - go test -v ./...
+  - curl -sfL https://git.io/goreleaser | sh -s -- check
 
-
+# calls goreleaser
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    tags: true
+    condition: $TRAVIS_OS_NAME = linux
