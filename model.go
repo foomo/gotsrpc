@@ -52,9 +52,10 @@ type Field struct {
 }
 
 type Service struct {
-	Name     string
-	Methods  ServiceMethods
-	Endpoint string
+	Name        string
+	Methods     ServiceMethods
+	Endpoint    string
+	IsInterface bool
 }
 
 type ServiceMethods []*Method

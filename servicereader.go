@@ -69,6 +69,7 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 					ident := typeSpec.Name
 					trace("that is an interface named", ident.Name)
 					if service, ok := findService(ident.Name); ok {
+						service.IsInterface = true
 
 						if iSpec, ok := typeSpec.Type.(*ast.InterfaceType); ok {
 							for _, fieldDecl := range iSpec.Methods.List {

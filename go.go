@@ -197,15 +197,20 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			continue
 		}
 
+		servicePointer := "*"
+		if service.IsInterface {
+			servicePointer = ""
+		}
+
 		proxyName := service.Name + "GoTSRPCProxy"
 		g.l(`
         type ` + proxyName + ` struct {
 	        EndPoint string
 			allowOrigin []string
-	        service  *` + service.Name + `
+	        service  ` + servicePointer + service.Name + `
         }
 
-        func NewDefault` + proxyName + `(service *` + service.Name + `, allowOrigin []string) *` + proxyName + ` {
+        func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `, allowOrigin []string) *` + proxyName + ` {
 	        return &` + proxyName + `{
 		        EndPoint: "` + service.Endpoint + `",
 				allowOrigin : allowOrigin,
@@ -214,7 +219,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
         }
 
 
-        func New` + proxyName + `(service *` + service.Name + `, endpoint string, allowOrigin []string) *` + proxyName + ` {
+        func New` + proxyName + `(service ` + servicePointer + service.Name + `, endpoint string, allowOrigin []string) *` + proxyName + ` {
 	        return &` + proxyName + `{
 		        EndPoint: endpoint,
 				allowOrigin : allowOrigin,
