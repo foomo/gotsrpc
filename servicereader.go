@@ -29,8 +29,7 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 	fileImports := getFileImports(file, packageName)
 
 	for _, decl := range file.Decls {
-		if reflect.ValueOf(decl).Type().String() == "*ast.FuncDecl" {
-			funcDecl := decl.(*ast.FuncDecl)
+		if funcDecl, ok := decl.(*ast.FuncDecl); ok {
 			if funcDecl.Recv != nil {
 				trace("that is a method named", funcDecl.Name)
 				if len(funcDecl.Recv.List) == 1 {
@@ -60,6 +59,36 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 				}
 			} else {
 				trace("no receiver for", funcDecl.Name)
+			}
+		} else if genDecl, ok := decl.(*ast.GenDecl); ok {
+			if genDecl.Tok != token.TYPE {
+				continue
+			}
+			for _, spec := range genDecl.Specs {
+				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
+					ident := typeSpec.Name
+					trace("that is an interface named", ident.Name)
+					if service, ok := findService(ident.Name); ok {
+
+						if iSpec, ok := typeSpec.Type.(*ast.InterfaceType); ok {
+							for _, fieldDecl := range iSpec.Methods.List {
+								if funcDecl, ok := fieldDecl.Type.(*ast.FuncType); ok {
+									if len(fieldDecl.Names) == 0 {
+										continue
+									}
+									mname := fieldDecl.Names[0]
+									trace(" on sth:", mname.Name)
+									//fmt.Println("interface:", ident.Name, "method:", mname.Name)
+									service.Methods = append(service.Methods, &Method{
+										Name:   mname.Name,
+										Args:   readFields(funcDecl.Params, fileImports),
+										Return: readFields(funcDecl.Results, fileImports),
+									})
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
