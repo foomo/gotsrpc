@@ -10,6 +10,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/ugorji/go/codec v1.1.7
 	github.com/valyala/gorpc v0.0.0-20160519171614-908281bef774
+	golang.org/x/mod v0.1.1-0.20191105210325-c90efee705ee
 	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
 	golang.org/x/tools v0.0.0-20200211045251-2de505fc5306
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect

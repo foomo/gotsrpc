@@ -113,7 +113,15 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 	for _, goPath := range goPaths {
 		fset := token.NewFileSet()
 		var dir string
-		if strings.HasSuffix(goPath, "vendor") {
+		if gomod.ModFile != nil {
+			for _, req := range gomod.ModFile.Require {
+				if req.Syntax.Token[0] == packageName {
+					packageName = req.Mod.String()
+					break
+				}
+			}
+			dir = path.Join(goPath, "pkg", "mod", packageName)
+		} else if strings.HasSuffix(goPath, "vendor") {
 			dir = path.Join(goPath, packageName)
 		} else {
 			dir = path.Join(goPath, "src", packageName)

@@ -3,10 +3,13 @@ package config
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
+
+	"golang.org/x/mod/modfile"
+	"gopkg.in/yaml.v2"
 )
 
 type PHPTarget struct {
@@ -75,8 +78,9 @@ const (
 )
 
 type Namespace struct {
-	Name string
-	Path string
+	Name    string        `yaml:"name"`
+	Path    string        `yaml:"path"`
+	ModFile *modfile.File `yaml:"-"`
 }
 
 type Config struct {
@@ -103,6 +107,16 @@ func LoadConfigFile(file string) (conf *Config, err error) {
 			return nil, err
 		}
 		conf.Module.Path = absPath
+
+		if data, err := ioutil.ReadFile(path.Join(absPath, "go.mod")); err != nil && !os.IsNotExist(err) {
+			return nil, err
+		} else if err == nil {
+			modFile, err := modfile.Parse(path.Join(absPath, "go.mod"), data, nil)
+			if err != nil {
+				return nil, err
+			}
+			conf.Module.ModFile = modFile
+		}
 	}
 	return conf, nil
 }
