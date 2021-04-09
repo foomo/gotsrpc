@@ -100,6 +100,17 @@ type (
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
+	DemoAnyRequest struct {
+		Any     github_com_foomo_gotsrpc_demo_nested.Any
+		AnyList []github_com_foomo_gotsrpc_demo_nested.Any
+		AnyMap  map[string]github_com_foomo_gotsrpc_demo_nested.Any
+	}
+	DemoAnyResponse struct {
+		RetAny_0 github_com_foomo_gotsrpc_demo_nested.Any
+		RetAny_1 []github_com_foomo_gotsrpc_demo_nested.Any
+		RetAny_2 map[string]github_com_foomo_gotsrpc_demo_nested.Any
+	}
+
 	DemoExtractAddressRequest struct {
 		Person *Person
 	}
@@ -165,6 +176,8 @@ type (
 )
 
 func init() {
+	gob.Register(DemoAnyRequest{})
+	gob.Register(DemoAnyResponse{})
 	gob.Register(DemoExtractAddressRequest{})
 	gob.Register(DemoExtractAddressResponse{})
 	gob.Register(DemoGiveMeAScalarRequest{})
@@ -223,6 +236,10 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 	funcName := funcNameParts[len(funcNameParts)-1]
 
 	switch funcName {
+	case "DemoAnyRequest":
+		req := request.(DemoAnyRequest)
+		retAny_0, retAny_1, retAny_2 := p.service.Any(req.Any, req.AnyList, req.AnyMap)
+		response = DemoAnyResponse{RetAny_0: retAny_0, RetAny_1: retAny_1, RetAny_2: retAny_2}
 	case "DemoExtractAddressRequest":
 		req := request.(DemoExtractAddressRequest)
 		addr, e := p.service.ExtractAddress(req.Person)

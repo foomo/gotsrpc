@@ -7,18 +7,18 @@ import (
 	"reflect"
 	"strings"
 
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 var ReaderTrace = false
 
-func readStructs(pkg *ast.Package, packageName string) (structs map[string]*Struct, scalarTypes map[string]*Scalar, err error) {
+func readStructs(pkg *ast.Package, packageName string) (structs map[string]*Struct, scalars map[string]*Scalar, err error) {
 	structs = map[string]*Struct{}
 	trace("reading files in package", packageName)
-	scalarTypes = map[string]*Scalar{}
+	scalars = map[string]*Scalar{}
 	errorTypes := map[string]bool{}
 	for _, file := range pkg.Files {
-		err = extractTypes(file, packageName, structs, scalarTypes)
+		err = extractTypes(file, packageName, structs, scalars)
 		if err != nil {
 			return
 		}
@@ -103,6 +103,8 @@ func extractJSONInfo(tag string) *JSONInfo {
 
 func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 	switch ident.Name {
+	case "interface":
+		return ScalarTypeInterface
 	case "string":
 		return ScalarTypeString
 	case "bool":
@@ -355,7 +357,7 @@ func extractErrorTypes(file *ast.File, packageName string, errorTypes map[string
 	return
 }
 
-func extractTypes(file *ast.File, packageName string, structs map[string]*Struct, scalarTypes map[string]*Scalar) error {
+func extractTypes(file *ast.File, packageName string, structs map[string]*Struct, scalars map[string]*Scalar) error {
 	fileImports := getFileImports(file, packageName)
 	for name, obj := range file.Scope.Objects {
 		if obj.Kind == ast.Typ && obj.Decl != nil {
@@ -375,10 +377,17 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 					structType := typeSpec.Type.(*ast.StructType)
 					trace("StructType", obj.Name)
 					structs[structName].Fields = readFieldList(structType.Fields.List, fileImports)
+				case "*ast.InterfaceType":
+					trace("Interface", obj.Name)
+					scalars[structName] = &Scalar{
+						Name:    structName,
+						Package: packageName,
+						Type:    ScalarTypeInterface,
+					}
 				case "*ast.Ident":
 					trace("Scalar", obj.Name)
 					scalarIdent := typeSpec.Type.(*ast.Ident)
-					scalarTypes[structName] = &Scalar{
+					scalars[structName] = &Scalar{
 						Name:    structName,
 						Package: packageName,
 						Type:    getScalarFromAstIdent(scalarIdent),

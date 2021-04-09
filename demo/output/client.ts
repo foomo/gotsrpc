@@ -36,6 +36,9 @@ module GoTSRPC.Demo {
 	export class DemoClient {
 		static defaultInst = new DemoClient;
 		constructor(public endPoint:string = "/service/demo", public transport = GoTSRPC.call) {  }
+		any(any:any, anyList:any[], anyMap:{[index:string]:any}, success:(ret:any, ret_1:any[], ret_2:{[index:string]:any}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
+		}
 		extractAddress(person:GoTSRPC.Demo.Person, success:(addr:GoTSRPC.Demo.Address, e:GoTSRPC.Demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "ExtractAddress", [person], success, err);
 		}

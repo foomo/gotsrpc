@@ -3,11 +3,12 @@ package gotsrpc
 type ScalarType string
 
 const (
-	ScalarTypeString ScalarType = "string"
-	ScalarTypeByte   ScalarType = "byte"
-	ScalarTypeNumber ScalarType = "number"
-	ScalarTypeBool   ScalarType = "bool"
-	ScalarTypeNone   ScalarType = ""
+	ScalarTypeString    ScalarType = "string"
+	ScalarTypeInterface ScalarType = "any"
+	ScalarTypeByte      ScalarType = "byte"
+	ScalarTypeNumber    ScalarType = "number"
+	ScalarTypeBool      ScalarType = "bool"
+	ScalarTypeNone      ScalarType = ""
 )
 
 type JSONInfo struct {

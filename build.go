@@ -114,7 +114,7 @@ func Build(conf *config.Config, goPath string) {
 			goPaths = append(goPaths, vendorDirectory)
 		}
 
-		services, structs, scalarTypes, constants, err := Read(goPaths, conf.Module, longPackageName, target.Services)
+		pkgName, services, structs, scalars, constants, err := Read(goPaths, conf.Module, packageName, target.Services)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "\t an error occured while trying to understand your code: ", err)
@@ -123,7 +123,7 @@ func Build(conf *config.Config, goPath string) {
 
 		if target.Out != "" {
 
-			ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalarTypes, structs, target)
+			ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalars, structs, target)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 				os.Exit(3)
@@ -142,7 +142,7 @@ func Build(conf *config.Config, goPath string) {
 				os.Exit(3)
 			}
 
-			err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constants, scalarTypes, mappedTypeScript)
+			err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constants, scalars, mappedTypeScript)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
 				os.Exit(4)

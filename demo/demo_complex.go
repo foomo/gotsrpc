@@ -1,6 +1,7 @@
 package demo
 
 import nstd "github.com/foomo/gotsrpc/demo/nested"
+
 //go:generate codecgen -o values.generated.go demo_complex.go
 
 type Address struct {
@@ -32,7 +33,6 @@ type Person struct {
 	DNA        []byte
 }
 
-
 func (d *Demo) ExtractAddress(person *Person) (addr *Address, e *Err) {
 	if person == nil {
 		return nil, nil
@@ -53,6 +53,10 @@ func (d *Demo) MapCrap() (crap map[string][]int) {
 
 func (d *Demo) Nest() []*nstd.Nested {
 	return nil
+}
+
+func (d *Demo) Any(any nstd.Any, anyList []nstd.Any, anyMap map[string]nstd.Any) (nstd.Any, []nstd.Any, map[string]nstd.Any) {
+	return nil, nil, nil
 }
 
 func (d *Demo) GiveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {

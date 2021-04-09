@@ -11,6 +11,9 @@ export class FooClient {
 }
 export class DemoClient {
 	constructor(public endPoint:string = "/service/demo", public transport:(endPoint:string, method:string, args:any[], success:any, err:any) => void) {  }
+	any(any:any, anyList:any[], anyMap:{[index:string]:any}, success:(ret:any, ret_1:any[], ret_2:{[index:string]:any}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
+	}
 	extractAddress(person:github_com_foomo_gotsrpc_demo.Person, success:(addr:github_com_foomo_gotsrpc_demo.Address, e:github_com_foomo_gotsrpc_demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "ExtractAddress", [person], success, err);
 	}

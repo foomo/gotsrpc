@@ -64,6 +64,17 @@ func (tsc *DemoGoRPCClient) Stop() {
 	tsc.Client.Stop()
 }
 
+func (tsc *DemoGoRPCClient) Any(any github_com_foomo_gotsrpc_demo_nested.Any, anyList []github_com_foomo_gotsrpc_demo_nested.Any, anyMap map[string]github_com_foomo_gotsrpc_demo_nested.Any) (retAny_0 github_com_foomo_gotsrpc_demo_nested.Any, retAny_1 []github_com_foomo_gotsrpc_demo_nested.Any, retAny_2 map[string]github_com_foomo_gotsrpc_demo_nested.Any, clientErr error) {
+	req := DemoAnyRequest{Any: any, AnyList: anyList, AnyMap: anyMap}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(DemoAnyResponse)
+	return response.RetAny_0, response.RetAny_1, response.RetAny_2, nil
+}
+
 func (tsc *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
 	req := DemoExtractAddressRequest{Person: person}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)

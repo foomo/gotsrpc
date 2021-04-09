@@ -9,6 +9,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc"
+	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
 )
 
 type FooGoTSRPCProxy struct {
@@ -130,6 +131,25 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		callStats.Service = "Demo"
 	}
 	switch funcName {
+	case "Any":
+		var (
+			arg_any     github_com_foomo_gotsrpc_demo_nested.Any
+			arg_anyList []github_com_foomo_gotsrpc_demo_nested.Any
+			arg_anyMap  map[string]github_com_foomo_gotsrpc_demo_nested.Any
+		)
+		args = []interface{}{&arg_any, &arg_anyList, &arg_anyMap}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		anyRet, anyRet_1, anyRet_2 := p.service.Any(arg_any, arg_anyList, arg_anyMap)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{anyRet, anyRet_1, anyRet_2}, callStats, r, w)
+		return
 	case "ExtractAddress":
 		var (
 			arg_person *Person

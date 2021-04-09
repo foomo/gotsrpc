@@ -2,6 +2,9 @@ package nested
 
 type Nested struct {
 	Name              string
+	Any               Any
+	AnyMap            map[string]Any
+	AnyList           []Any
 	SuperNestedString struct {
 		Ha int64
 	}
@@ -10,6 +13,7 @@ type Nested struct {
 	}
 }
 
+type Any interface{}
 type Amount int
 type True bool
 

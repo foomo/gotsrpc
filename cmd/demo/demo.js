@@ -51,6 +51,9 @@ var GoTSRPC;
                 this.endPoint = endPoint;
                 this.transport = transport;
             }
+            DemoClient.prototype.any = function (any, anyList, anyMap, success, err) {
+                this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
+            };
             DemoClient.prototype.extractAddress = function (person, success, err) {
                 this.transport(this.endPoint, "ExtractAddress", [person], success, err);
             };

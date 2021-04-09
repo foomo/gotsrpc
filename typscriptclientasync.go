@@ -8,7 +8,7 @@ import (
 	"github.com/foomo/gotsrpc/config"
 )
 
-func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, structs map[string]*Struct, ts *code) error {
+func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
 	clientName := service.Name + "Client"
 
 	ts.l("export class " + clientName + " {")
@@ -48,7 +48,7 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 				ts.app(", ")
 			}
 			ts.app(arg.tsName() + ":")
-			arg.Value.tsType(mappings, scalarTypes, structs, ts)
+			arg.Value.tsType(mappings, scalars, structs, ts)
 			callArgs = append(callArgs, arg.Name)
 			argCount++
 		}
@@ -85,7 +85,7 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 			}
 
 			innerReturnTypeTS.app(strconv.Itoa(index) + ":")
-			retField.Value.tsType(mappings, scalarTypes, structs, innerReturnTypeTS)
+			retField.Value.tsType(mappings, scalars, structs, innerReturnTypeTS)
 
 			if index == len(method.Return)-1 && retField.Value.IsError {
 				throwLastError = true
@@ -94,14 +94,14 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 			} else {
 				if index == 0 {
 					firstReturnTypeTS := newCode("	")
-					retField.Value.tsType(mappings, scalarTypes, structs, firstReturnTypeTS)
+					retField.Value.tsType(mappings, scalars, structs, firstReturnTypeTS)
 					firstReturnType = firstReturnTypeTS.string()
 					//firstReturnFieldName = retArgName
 				}
 				countReturns++
 				returnTypeTS.app(retArgName + ":")
 				responseObject += responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]"
-				retField.Value.tsType(mappings, scalarTypes, structs, returnTypeTS)
+				retField.Value.tsType(mappings, scalars, structs, returnTypeTS)
 			}
 			responseObjectPrefix = ", "
 		}

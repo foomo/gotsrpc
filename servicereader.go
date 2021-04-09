@@ -292,7 +292,6 @@ func Read(
 					return
 				}
 				constants[structPackage] = loadConstants(pkg)
-
 			}
 		}
 	}
@@ -443,10 +442,10 @@ func typesPending(structs map[string]*Struct, scalars map[string]*Scalar, missin
 	return false
 }
 
-func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]*Struct, scalarTypes map[string]*Scalar) bool {
+func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) bool {
 	needsWork := func(fullName string) bool {
 		strct, strctOK := structs[fullName]
-		scalar, scalarOK := scalarTypes[fullName]
+		scalar, scalarOK := scalars[fullName]
 		if !strctOK && !scalarOK {
 			// hey there is more todo
 			missingTypes[fullName] = true
