@@ -495,6 +495,11 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			continue
 		}
 
+		servicePointer := "*"
+		if service.IsInterface {
+			servicePointer = ""
+		}
+
 		proxyName := service.Name + "GoRPCProxy"
 		// Types
 		g.l(`type (`)
@@ -502,7 +507,7 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		g.l(`
         ` + proxyName + ` struct {
         	server *gorpc.Server
-	        service  *` + service.Name + `
+	        service  ` + servicePointer + service.Name + `
 	        callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
         }
 		`)
@@ -537,7 +542,7 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		g.l(`}`)
 		// Constructor
 		g.l(`
-        func New` + proxyName + `(addr string, service *` + service.Name + `, tlsConfig *tls.Config) *` + proxyName + ` {
+        func New` + proxyName + `(addr string, service ` + servicePointer + service.Name + `, tlsConfig *tls.Config) *` + proxyName + ` {
         	proxy :=  &` + proxyName + `{
 		        service:  service,
 	        }
