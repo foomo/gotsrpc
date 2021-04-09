@@ -82,6 +82,20 @@ var GoTSRPC;
             return DemoClient;
         }());
         Demo.DemoClient = DemoClient;
+        var BarClient = /** @class */ (function () {
+            function BarClient(endPoint, transport) {
+                if (endPoint === void 0) { endPoint = "/service/bar"; }
+                if (transport === void 0) { transport = GoTSRPC.call; }
+                this.endPoint = endPoint;
+                this.transport = transport;
+            }
+            BarClient.prototype.hello = function (number, success, err) {
+                this.transport(this.endPoint, "Hello", [number], success, err);
+            };
+            BarClient.defaultInst = new BarClient;
+            return BarClient;
+        }());
+        Demo.BarClient = BarClient;
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
 })(GoTSRPC || (GoTSRPC = {}));
 /// <reference path="output/demo.ts"/>

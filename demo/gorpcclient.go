@@ -161,3 +161,36 @@ func (tsc *DemoGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarIn
 	response := rpcCallRes.(DemoTestScalarInPlaceResponse)
 	return response.RetTestScalarInPlace_0, nil
 }
+
+type BarGoRPCClient struct {
+	Client *gorpc.Client
+}
+
+func NewBarGoRPCClient(addr string, tlsConfig *tls.Config) *BarGoRPCClient {
+	client := &BarGoRPCClient{}
+	if tlsConfig == nil {
+		client.Client = gorpc.NewTCPClient(addr)
+	} else {
+		client.Client = gorpc.NewTLSClient(addr, tlsConfig)
+	}
+	return client
+}
+
+func (tsc *BarGoRPCClient) Start() {
+	tsc.Client.Start()
+}
+
+func (tsc *BarGoRPCClient) Stop() {
+	tsc.Client.Stop()
+}
+
+func (tsc *BarGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+	req := BarHelloRequest{Number: number}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(BarHelloResponse)
+	return response.RetHello_0, nil
+}

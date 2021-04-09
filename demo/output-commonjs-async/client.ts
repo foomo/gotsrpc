@@ -35,9 +35,10 @@ export class DemoClient {
 		return response[0]
 	}
 	async helloInterface(anything:any, anythingMap:{[index:string]:any}, anythingSlice:any[]):Promise<void> {
-		let response = await this.transport<void>("HelloInterface", [anything, anythingMap, anythingSlice])
-		let responseObject = {};
-		return responseObject;
+		await this.transport<void>("HelloInterface", [anything, anythingMap, anythingSlice])
+	}
+	async helloNumberMaps(intMap:{[index:number]:string}):Promise<{[index:number]:string}> {
+		return (await this.transport<{0:{[index:number]:string}}>("HelloNumberMaps", [intMap]))[0]
 	}
 	async helloScalarError():Promise<string> {
 		return (await this.transport<{0:string}>("HelloScalarError", []))[0]
@@ -45,10 +46,19 @@ export class DemoClient {
 	async mapCrap():Promise<{[index:string]:number[]}> {
 		return (await this.transport<{0:{[index:string]:number[]}}>("MapCrap", []))[0]
 	}
-	async nest():Promise<github_com_foomo_gotsrpc_demo_nested.Nested> {
-		return (await this.transport<{0:github_com_foomo_gotsrpc_demo_nested.Nested}>("Nest", []))[0]
+	async nest():Promise<github_com_foomo_gotsrpc_demo_nested.Nested[]> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_demo_nested.Nested[]}>("Nest", []))[0]
 	}
 	async testScalarInPlace():Promise<string> {
 		return (await this.transport<{0:string}>("TestScalarInPlace", []))[0]
+	}
+}
+export class BarClient {
+	public static defaultEndpoint = "/service/bar";
+	constructor(
+		public transport:<T>(method: string, data?: any[]) => Promise<T>
+	) {}
+	async hello(number:number):Promise<number> {
+		return (await this.transport<{0:number}>("Hello", [number]))[0]
 	}
 }

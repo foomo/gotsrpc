@@ -39,3 +39,9 @@ export class DemoClient {
 		this.transport(this.endPoint, "TestScalarInPlace", [], success, err);
 	}
 }
+export class BarClient {
+	constructor(public endPoint:string = "/service/bar", public transport:(endPoint:string, method:string, args:any[], success:any, err:any) => void) {  }
+	hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "Hello", [number], success, err);
+	}
+}

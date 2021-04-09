@@ -8,14 +8,17 @@ targets:
   demo:
     services:
       /service/foo: Foo
+      /service/bar: Bar
       /service/demo: Demo
     package: github.com/foomo/gotsrpc/demo
     out: demo/output-commonjs/client.ts
     gorpc:
       - Foo
+      - Bar
       - Demo
     tsrpc:
       - Foo
+      - Bar
       - Demo
 
 mappings:

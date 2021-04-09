@@ -136,3 +136,35 @@ func (tsc *HTTPDemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 Sc
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "TestScalarInPlace", args, reply)
 	return
 }
+
+type BarGoTSRPCClient interface {
+	Hello(number int64) (retHello_0 int, clientErr error)
+}
+
+type HTTPBarGoTSRPCClient struct {
+	URL      string
+	EndPoint string
+	Client   gotsrpc.Client
+}
+
+func NewDefaultBarGoTSRPCClient(url string) *HTTPBarGoTSRPCClient {
+	return NewBarGoTSRPCClient(url, "/service/bar")
+}
+
+func NewBarGoTSRPCClient(url string, endpoint string) *HTTPBarGoTSRPCClient {
+	return NewBarGoTSRPCClientWithClient(url, endpoint, nil)
+}
+
+func NewBarGoTSRPCClientWithClient(url string, endpoint string, client *net_http.Client) *HTTPBarGoTSRPCClient {
+	return &HTTPBarGoTSRPCClient{
+		URL:      url,
+		EndPoint: endpoint,
+		Client:   gotsrpc.NewClientWithHttpClient(client),
+	}
+}
+func (tsc *HTTPBarGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+	args := []interface{}{number}
+	reply := []interface{}{&retHello_0}
+	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Hello", args, reply)
+	return
+}

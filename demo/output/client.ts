@@ -64,4 +64,11 @@ module GoTSRPC.Demo {
 			this.transport(this.endPoint, "TestScalarInPlace", [], success, err);
 		}
 	}
+	export class BarClient {
+		static defaultInst = new BarClient;
+		constructor(public endPoint:string = "/service/bar", public transport = GoTSRPC.call) {  }
+		hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "Hello", [number], success, err);
+		}
+	}
 }
