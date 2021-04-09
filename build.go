@@ -78,10 +78,9 @@ func Build(conf *config.Config, goPath string) {
 
 	for name, target := range conf.Targets {
 
-		longPackageName := target.Package
-		longPackageNameParts := strings.Split(longPackageName, "/")
+		packageName := target.Package
 		outputPath := getPathForTarget(conf.Module, goPath, target)
-		fmt.Fprintf(os.Stderr, "building target %s (%s -> %s)\n", name, longPackageName, outputPath)
+		fmt.Fprintf(os.Stderr, "building target %s (%s -> %s)\n", name, packageName, outputPath)
 
 		goRPCProxiesFilename := path.Join(outputPath, "gorpc.go")
 		goRPCClientsFilename := path.Join(outputPath, "gorpcclient.go")
@@ -107,7 +106,6 @@ func Build(conf *config.Config, goPath string) {
 		}
 		vendorDirectory := path.Join(workDirectory, "vendor")
 
-		packageName := longPackageNameParts[len(longPackageNameParts)-1]
 		goPaths := []string{goPath, runtime.GOROOT()}
 
 		if _, err := os.Stat(vendorDirectory); !os.IsNotExist(err) {
@@ -176,14 +174,14 @@ func Build(conf *config.Config, goPath string) {
 			}
 		}
 		if len(target.TSRPC) > 0 {
-			goTSRPCProxiesCode, goerr := RenderGoTSRPCProxies(services, longPackageName, packageName, target)
+			goTSRPCProxiesCode, goerr := RenderGoTSRPCProxies(services, packageName, pkgName, target)
 			if goerr != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc proxies code in target", name, goerr)
 				os.Exit(4)
 			}
 			formatAndWrite(goTSRPCProxiesCode, goTSRPCProxiesFilename)
 
-			goTSRPCClientsCode, goerr := RenderGoTSRPCClients(services, longPackageName, packageName, target)
+			goTSRPCClientsCode, goerr := RenderGoTSRPCClients(services, packageName, pkgName, target)
 			if goerr != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc clients code in target", name, goerr)
 				os.Exit(4)
@@ -192,14 +190,14 @@ func Build(conf *config.Config, goPath string) {
 		}
 
 		if len(target.GoRPC) > 0 {
-			goRPCProxiesCode, goerr := RenderGoRPCProxies(services, longPackageName, packageName, target)
+			goRPCProxiesCode, goerr := RenderGoRPCProxies(services, packageName, pkgName, target)
 			if goerr != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate go rpc proxies code in target", name, goerr)
 				os.Exit(4)
 			}
 			formatAndWrite(goRPCProxiesCode, goRPCProxiesFilename)
 
-			goRPCClientsCode, goerr := RenderGoRPCClients(services, longPackageName, packageName, target)
+			goRPCClientsCode, goerr := RenderGoRPCClients(services, packageName, pkgName, target)
 			if goerr != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate go rpc clients code in target", name, goerr)
 				os.Exit(4)

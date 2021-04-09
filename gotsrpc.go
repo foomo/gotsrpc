@@ -159,6 +159,12 @@ func parsePackage(goPaths []string, gomod config.Namespace, packageName string) 
 		return nil, errors.New("invalid package name given")
 	}
 	strippedPackageName := packageNameParts[len(packageNameParts)-1]
+	if len(pkgs) == 1 {
+		for _, v := range pkgs {
+			strippedPackageName = v.Name
+			break
+		}
+	}
 	var foundPackages []string
 	sortedGoPaths := make([]string, len(goPaths))
 	for iGoPath := range goPaths {
