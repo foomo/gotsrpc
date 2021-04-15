@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -118,6 +119,17 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 				if req.Syntax.Token[0] == packageName {
 					packageName = req.Mod.String()
 					break
+				}
+			}
+			for _, rep := range gomod.ModFile.Replace {
+				if strings.HasPrefix(packageName, rep.Old.String()) {
+					if strings.HasPrefix(rep.New.String(), ".") || strings.HasPrefix(rep.New.String(), "/") {
+						dir := strings.Replace(packageName, rep.Old.String(), filepath.Join(gomod.Path, rep.New.String()), 1)
+						return parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
+					} else {
+						packageName = rep.New.String()
+						break
+					}
 				}
 			}
 			dir = path.Join(goPath, "pkg", "mod", packageName)
