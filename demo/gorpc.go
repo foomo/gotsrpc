@@ -300,11 +300,22 @@ type (
 	BarHelloResponse struct {
 		RetHello_0 int
 	}
+
+	BarRepeatRequest struct {
+		One string
+		Two string
+	}
+	BarRepeatResponse struct {
+		Three bool
+		Four  bool
+	}
 )
 
 func init() {
 	gob.Register(BarHelloRequest{})
 	gob.Register(BarHelloResponse{})
+	gob.Register(BarRepeatRequest{})
+	gob.Register(BarRepeatResponse{})
 }
 
 func NewBarGoRPCProxy(addr string, service Bar, tlsConfig *tls.Config) *BarGoRPCProxy {
@@ -349,6 +360,10 @@ func (p *BarGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 		req := request.(BarHelloRequest)
 		retHello_0 := p.service.Hello(req.Number)
 		response = BarHelloResponse{RetHello_0: retHello_0}
+	case "BarRepeatRequest":
+		req := request.(BarRepeatRequest)
+		three, four := p.service.Repeat(req.One, req.Two)
+		response = BarRepeatResponse{Three: three, Four: four}
 	default:
 		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
 	}

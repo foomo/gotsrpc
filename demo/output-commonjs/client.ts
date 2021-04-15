@@ -47,4 +47,7 @@ export class BarClient {
 	hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "Hello", [number], success, err);
 	}
+	repeat(one:string, two:string, success:(three:boolean, four:boolean) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "Repeat", [one, two], success, err);
+	}
 }

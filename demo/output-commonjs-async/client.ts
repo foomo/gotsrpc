@@ -66,4 +66,9 @@ export class BarClient {
 	async hello(number:number):Promise<number> {
 		return (await this.transport<{0:number}>("Hello", [number]))[0]
 	}
+	async repeat(one:string, two:string):Promise<{three:boolean; four:boolean}> {
+		let response = await this.transport<{0:boolean; 1:boolean}>("Repeat", [one, two])
+		let responseObject = {three : response[0], four : response[1]};
+		return responseObject;
+	}
 }

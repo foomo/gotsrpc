@@ -331,6 +331,24 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
 		return
+	case "Repeat":
+		var (
+			arg_one string
+			arg_two string
+		)
+		args = []interface{}{&arg_one, &arg_two}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		repeatThree, repeatFour := p.service.Repeat(arg_one, arg_two)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{repeatThree, repeatFour}, callStats, r, w)
+		return
 	default:
 		gotsrpc.ClearStats(r)
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)

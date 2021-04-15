@@ -147,6 +147,7 @@ func (tsc *HTTPDemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 Sc
 
 type BarGoTSRPCClient interface {
 	Hello(number int64) (retHello_0 int, clientErr error)
+	Repeat(one string, two string) (three bool, four bool, clientErr error)
 }
 
 type HTTPBarGoTSRPCClient struct {
@@ -174,5 +175,12 @@ func (tsc *HTTPBarGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr 
 	args := []interface{}{number}
 	reply := []interface{}{&retHello_0}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Hello", args, reply)
+	return
+}
+
+func (tsc *HTTPBarGoTSRPCClient) Repeat(one string, two string) (three bool, four bool, clientErr error) {
+	args := []interface{}{one, two}
+	reply := []interface{}{&three, &four}
+	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Repeat", args, reply)
 	return
 }

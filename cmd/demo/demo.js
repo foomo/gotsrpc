@@ -95,6 +95,9 @@ var GoTSRPC;
             BarClient.prototype.hello = function (number, success, err) {
                 this.transport(this.endPoint, "Hello", [number], success, err);
             };
+            BarClient.prototype.repeat = function (one, two, success, err) {
+                this.transport(this.endPoint, "Repeat", [one, two], success, err);
+            };
             BarClient.defaultInst = new BarClient;
             return BarClient;
         }());

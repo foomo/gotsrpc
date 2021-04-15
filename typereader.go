@@ -291,10 +291,13 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 	}
 }
 
-func readField(astField *ast.Field, fileImports fileImportSpecMap) (name string, v *Value, jsonInfo *JSONInfo) {
-	name = ""
-	if len(astField.Names) > 0 {
-		name = astField.Names[0].Name
+func readField(astField *ast.Field, fileImports fileImportSpecMap) (names []string, v *Value, jsonInfo *JSONInfo) {
+	if len(astField.Names) == 0 {
+		names = append(names, "")
+	} else {
+		for _, name := range astField.Names {
+			names = append(names, name.Name)
+		}
 	}
 	v = &Value{}
 	v.loadExpr(astField.Type, fileImports)
@@ -307,22 +310,23 @@ func readField(astField *ast.Field, fileImports fileImportSpecMap) (name string,
 func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (fields []*Field) {
 	fields = []*Field{}
 	for _, field := range fieldList {
-		name, value, jsonInfo := readField(field, fileImports)
-		if len(name) == 0 {
-			trace("i do not understand this one", field, name, value, jsonInfo)
+		names, value, jsonInfo := readField(field, fileImports)
+		if len(names) == 0 {
+			trace("i do not understand this one", field, names, value, jsonInfo)
 			continue
 		}
-		// this is not unicode proof
-		if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
-			continue
-		}
-
 		if value != nil {
-			fields = append(fields, &Field{
-				Name:     name,
-				Value:    value,
-				JSONInfo: jsonInfo,
-			})
+			for _, name := range names {
+				// this is not unicode proof
+				if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
+					continue
+				}
+				fields = append(fields, &Field{
+					Name:     name,
+					Value:    value,
+					JSONInfo: jsonInfo,
+				})
+			}
 		}
 	}
 	return

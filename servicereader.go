@@ -157,11 +157,13 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	}
 
 	for _, param := range fieldList.List {
-		name, value, _ := readField(param, fileImports)
-		fields = append(fields, &Field{
-			Name:  name,
-			Value: value,
-		})
+		names, value, _ := readField(param, fileImports)
+		for _, name := range names {
+			fields = append(fields, &Field{
+				Name:  name,
+				Value: value,
+			})
+		}
 	}
 	trace("done reading fields")
 	return
