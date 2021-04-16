@@ -311,12 +311,12 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 	fields = []*Field{}
 	for _, field := range fieldList {
 		names, value, jsonInfo := readField(field, fileImports)
-		if len(names) == 0 {
-			trace("i do not understand this one", field, names, value, jsonInfo)
-			continue
-		}
 		if value != nil {
 			for _, name := range names {
+				if len(name) == 0 {
+					trace("i do not understand this one", field, names, value, jsonInfo)
+					continue
+				}
 				// this is not unicode proof
 				if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
 					continue
