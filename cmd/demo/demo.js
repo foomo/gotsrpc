@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint:disable */
 var GoTSRPC;
 (function (GoTSRPC) {
     GoTSRPC.call = function (endPoint, method, args, success, err) {

@@ -314,5 +314,5 @@ func RenderTypeScriptServices(moduleKind config.ModuleKind, tsClientFlavor confi
 }
 
 func getTSHeaderComment() string {
-	return "/* tslint:disable */\n"
+	return "/* eslint:disable */\n"
 }

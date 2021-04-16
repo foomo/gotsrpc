@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint:disable */
 module GoTSRPC {
 export const call = (endPoint:string, method:string, args:any[], success:any, err:any) => {
         var request = new XMLHttpRequest();
