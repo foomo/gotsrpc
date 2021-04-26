@@ -331,6 +331,25 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
 		return
+	case "Inheritance":
+		var (
+			arg_inner  Inner
+			arg_nested OuterNested
+			arg_inline OuterInline
+		)
+		args = []interface{}{&arg_inner, &arg_nested, &arg_inline}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		inheritanceRet, inheritanceRet_1, inheritanceRet_2 := p.service.Inheritance(arg_inner, arg_nested, arg_inline)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{inheritanceRet, inheritanceRet_1, inheritanceRet_2}, callStats, r, w)
+		return
 	case "Repeat":
 		var (
 			arg_one string

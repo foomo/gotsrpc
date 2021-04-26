@@ -13,6 +13,7 @@ const (
 
 type JSONInfo struct {
 	Name            string
+	Inline          bool
 	OmitEmpty       bool
 	ForceStringType bool
 	Ignore          bool

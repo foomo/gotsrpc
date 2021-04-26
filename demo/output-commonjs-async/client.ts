@@ -66,6 +66,11 @@ export class BarClient {
 	async hello(number:number):Promise<number> {
 		return (await this.transport<{0:number}>("Hello", [number]))[0]
 	}
+	async inheritance(inner:github_com_foomo_gotsrpc_demo.Inner, nested:github_com_foomo_gotsrpc_demo.OuterNested, inline:github_com_foomo_gotsrpc_demo.OuterInline):Promise<{ret:github_com_foomo_gotsrpc_demo.Inner; ret_1:github_com_foomo_gotsrpc_demo.OuterNested; ret_2:github_com_foomo_gotsrpc_demo.OuterInline}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_demo.Inner; 1:github_com_foomo_gotsrpc_demo.OuterNested; 2:github_com_foomo_gotsrpc_demo.OuterInline}>("Inheritance", [inner, nested, inline])
+		let responseObject = {ret : response[0], ret_1 : response[1], ret_2 : response[2]};
+		return responseObject;
+	}
 	async repeat(one:string, two:string):Promise<{three:boolean; four:boolean}> {
 		let response = await this.transport<{0:boolean; 1:boolean}>("Repeat", [one, two])
 		let responseObject = {three : response[0], four : response[1]};

@@ -301,6 +301,17 @@ type (
 		RetHello_0 int
 	}
 
+	BarInheritanceRequest struct {
+		Inner  Inner
+		Nested OuterNested
+		Inline OuterInline
+	}
+	BarInheritanceResponse struct {
+		RetInheritance_0 Inner
+		RetInheritance_1 OuterNested
+		RetInheritance_2 OuterInline
+	}
+
 	BarRepeatRequest struct {
 		One string
 		Two string
@@ -314,6 +325,8 @@ type (
 func init() {
 	gob.Register(BarHelloRequest{})
 	gob.Register(BarHelloResponse{})
+	gob.Register(BarInheritanceRequest{})
+	gob.Register(BarInheritanceResponse{})
 	gob.Register(BarRepeatRequest{})
 	gob.Register(BarRepeatResponse{})
 }
@@ -360,6 +373,10 @@ func (p *BarGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 		req := request.(BarHelloRequest)
 		retHello_0 := p.service.Hello(req.Number)
 		response = BarHelloResponse{RetHello_0: retHello_0}
+	case "BarInheritanceRequest":
+		req := request.(BarInheritanceRequest)
+		retInheritance_0, retInheritance_1, retInheritance_2 := p.service.Inheritance(req.Inner, req.Nested, req.Inline)
+		response = BarInheritanceResponse{RetInheritance_0: retInheritance_0, RetInheritance_1: retInheritance_1, RetInheritance_2: retInheritance_2}
 	case "BarRepeatRequest":
 		req := request.(BarRepeatRequest)
 		three, four := p.service.Repeat(req.One, req.Two)

@@ -67,8 +67,9 @@ func extractJSONInfo(tag string) *JSONInfo {
 	jsonTagParts := strings.Split(jsonTagString, ",")
 
 	name := ""
-	ignore := false
 	omit := false
+	inline := false
+	ignore := false
 	forceStringType := false
 	cleanParts := []string{}
 	for _, jsonTagPart := range jsonTagParts {
@@ -87,6 +88,8 @@ func extractJSONInfo(tag string) *JSONInfo {
 			name = cleanParts[0]
 		}
 		switch cleanParts[1] {
+		case "inline":
+			inline = true
 		case "omitempty":
 			omit = true
 		case "string":
@@ -95,6 +98,7 @@ func extractJSONInfo(tag string) *JSONInfo {
 	}
 	return &JSONInfo{
 		Name:            name,
+		Inline:          inline,
 		OmitEmpty:       omit,
 		ForceStringType: forceStringType,
 		Ignore:          ignore,
@@ -314,8 +318,17 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 		if value != nil {
 			for _, name := range names {
 				if len(name) == 0 {
-					trace("i do not understand this one", field, names, value, jsonInfo)
-					continue
+					if jsonInfo != nil && jsonInfo.Inline {
+						identType := field.Type.(*ast.Ident)
+						trace("Inline IdentType", identType.Name)
+						typeSpec := identType.Obj.Decl.(*ast.TypeSpec)
+						structType := typeSpec.Type.(*ast.StructType)
+						fields = append(fields, readFieldList(structType.Fields.List, fileImports)...)
+						continue
+					} else {
+						trace("i do not understand this one", field, names, value, jsonInfo)
+						continue
+					}
 				}
 				// this is not unicode proof
 				if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {

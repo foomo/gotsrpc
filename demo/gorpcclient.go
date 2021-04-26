@@ -206,6 +206,17 @@ func (tsc *BarGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error)
 	return response.RetHello_0, nil
 }
 
+func (tsc *BarGoRPCClient) Inheritance(inner Inner, nested OuterNested, inline OuterInline) (retInheritance_0 Inner, retInheritance_1 OuterNested, retInheritance_2 OuterInline, clientErr error) {
+	req := BarInheritanceRequest{Inner: inner, Nested: nested, Inline: inline}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(BarInheritanceResponse)
+	return response.RetInheritance_0, response.RetInheritance_1, response.RetInheritance_2, nil
+}
+
 func (tsc *BarGoRPCClient) Repeat(one string, two string) (three bool, four bool, clientErr error) {
 	req := BarRepeatRequest{One: one, Two: two}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)

@@ -16,6 +16,20 @@ module GoTSRPC.Demo {
 	export interface Err {
 		message:string;
 	}
+	// github.com/foomo/gotsrpc/demo.Inner
+	export interface Inner {
+		one:string;
+	}
+	// github.com/foomo/gotsrpc/demo.OuterInline
+	export interface OuterInline {
+		one:string;
+		two:string;
+	}
+	// github.com/foomo/gotsrpc/demo.OuterNested
+	export interface OuterNested {
+		inner:GoTSRPC.Demo.Inner;
+		two:string;
+	}
 	// github.com/foomo/gotsrpc/demo.Person
 	export interface Person {
 		Name:string;

@@ -73,6 +73,9 @@ module GoTSRPC.Demo {
 		hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "Hello", [number], success, err);
 		}
+		inheritance(inner:GoTSRPC.Demo.Inner, nested:GoTSRPC.Demo.OuterNested, inline:GoTSRPC.Demo.OuterInline, success:(ret:GoTSRPC.Demo.Inner, ret_1:GoTSRPC.Demo.OuterNested, ret_2:GoTSRPC.Demo.OuterInline) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "Inheritance", [inner, nested, inline], success, err);
+		}
 		repeat(one:string, two:string, success:(three:boolean, four:boolean) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "Repeat", [one, two], success, err);
 		}
