@@ -319,16 +319,18 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 			for _, name := range names {
 				if len(name) == 0 {
 					if jsonInfo != nil && jsonInfo.Inline {
-						identType := field.Type.(*ast.Ident)
-						trace("Inline IdentType", identType.Name)
-						typeSpec := identType.Obj.Decl.(*ast.TypeSpec)
-						structType := typeSpec.Type.(*ast.StructType)
-						fields = append(fields, readFieldList(structType.Fields.List, fileImports)...)
-						continue
-					} else {
-						trace("i do not understand this one", field, names, value, jsonInfo)
-						continue
+						if identType, ok := field.Type.(*ast.Ident); ok {
+							if typeSpec, ok := identType.Obj.Decl.(*ast.TypeSpec); ok {
+								if structType, ok := typeSpec.Type.(*ast.StructType); ok {
+									trace("Inline IdentType", identType.Name)
+									fields = append(fields, readFieldList(structType.Fields.List, fileImports)...)
+									continue
+								}
+							}
+						}
 					}
+					trace("i do not understand this one", field, names, value, jsonInfo)
+					continue
 				}
 				// this is not unicode proof
 				if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
