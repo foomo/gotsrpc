@@ -1,5 +1,13 @@
 package nested
 
+type CustomTypeNested string
+
+const (
+	CustomTypeNestedOne   CustomTypeNested = "one"
+	CustomTypeNestedTwo   CustomTypeNested = "two"
+	CustomTypeNestedThree CustomTypeNested = "three"
+)
+
 type Nested struct {
 	Name              string
 	Any               Any

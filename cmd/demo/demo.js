@@ -1,6 +1,38 @@
 /* eslint:disable */
 var GoTSRPC;
 (function (GoTSRPC) {
+    var Demo;
+    (function (Demo) {
+        // constants from github.com/foomo/gotsrpc/demo
+        Demo.GoConst = {
+            CustomTypeIntOne: 1,
+            CustomTypeIntThree: 3,
+            CustomTypeIntTwo: 2,
+            CustomTypeStringOne: "one",
+            CustomTypeStringThree: "three",
+            CustomTypeStringTwo: "two"
+        };
+    })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
+})(GoTSRPC || (GoTSRPC = {}));
+/* eslint:disable */
+var GoTSRPC;
+(function (GoTSRPC) {
+    var Demo;
+    (function (Demo) {
+        var Nested;
+        (function (Nested) {
+            // constants from github.com/foomo/gotsrpc/demo/nested
+            Nested.GoConst = {
+                CustomTypeNestedOne: "one",
+                CustomTypeNestedThree: "three",
+                CustomTypeNestedTwo: "two"
+            };
+        })(Nested = Demo.Nested || (Demo.Nested = {}));
+    })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
+})(GoTSRPC || (GoTSRPC = {}));
+/* eslint:disable */
+var GoTSRPC;
+(function (GoTSRPC) {
     GoTSRPC.call = function (endPoint, method, args, success, err) {
         var request = new XMLHttpRequest();
         request.withCredentials = true;
@@ -92,14 +124,8 @@ var GoTSRPC;
                 this.endPoint = endPoint;
                 this.transport = transport;
             }
-            BarClient.prototype.hello = function (number, success, err) {
-                this.transport(this.endPoint, "Hello", [number], success, err);
-            };
-            BarClient.prototype.inheritance = function (inner, nested, inline, success, err) {
-                this.transport(this.endPoint, "Inheritance", [inner, nested, inline], success, err);
-            };
-            BarClient.prototype.repeat = function (one, two, success, err) {
-                this.transport(this.endPoint, "Repeat", [one, two], success, err);
+            BarClient.prototype.customType = function (customTypeInt, customTypeString, CustomTypeStruct, success, err) {
+                this.transport(this.endPoint, "CustomType", [customTypeInt, customTypeString, CustomTypeStruct], success, err);
             };
             BarClient.defaultInst = new BarClient;
             return BarClient;

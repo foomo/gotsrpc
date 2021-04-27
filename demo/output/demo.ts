@@ -12,23 +12,29 @@ module GoTSRPC.Demo {
 		NestedPtr?:GoTSRPC.Demo.Nested.Nested;
 		NestedStruct:GoTSRPC.Demo.Nested.Nested;
 	}
+	// github.com/foomo/gotsrpc/demo.Bar
+	export type Bar = any
+	// github.com/foomo/gotsrpc/demo.Check
+	export interface Check {
+		Foo:string;
+	}
+	// github.com/foomo/gotsrpc/demo.CustomTypeFoo
+	export type CustomTypeFoo = string
+	// github.com/foomo/gotsrpc/demo.CustomTypeInt
+	export type CustomTypeInt = 1 | 2 | 3
+	// github.com/foomo/gotsrpc/demo.CustomTypeString
+	export type CustomTypeString = "one" | "two" | "three"
+	// github.com/foomo/gotsrpc/demo.CustomTypeStruct
+	export interface CustomTypeStruct {
+		CustomTypeFoo:GoTSRPC.Demo.CustomTypeFoo;
+		CustomTypeInt:GoTSRPC.Demo.CustomTypeInt;
+		CustomTypeString:GoTSRPC.Demo.CustomTypeString;
+		CustomTypeNested:GoTSRPC.Demo.Nested.CustomTypeNested;
+		Check:GoTSRPC.Demo.Check;
+	}
 	// github.com/foomo/gotsrpc/demo.Err
 	export interface Err {
 		message:string;
-	}
-	// github.com/foomo/gotsrpc/demo.Inner
-	export interface Inner {
-		one:string;
-	}
-	// github.com/foomo/gotsrpc/demo.OuterInline
-	export interface OuterInline {
-		one:string;
-		two:string;
-	}
-	// github.com/foomo/gotsrpc/demo.OuterNested
-	export interface OuterNested {
-		inner:GoTSRPC.Demo.Inner;
-		two:string;
 	}
 	// github.com/foomo/gotsrpc/demo.Person
 	export interface Person {
@@ -43,5 +49,18 @@ module GoTSRPC.Demo {
 			Bar:string;
 		};
 		DNA:string;
+	}
+	// github.com/foomo/gotsrpc/demo.ScalarError
+	export type ScalarError = string
+	// github.com/foomo/gotsrpc/demo.ScalarInPlace
+	export type ScalarInPlace = string
+	// constants from github.com/foomo/gotsrpc/demo
+	export const GoConst = {
+		CustomTypeIntOne : 1,
+		CustomTypeIntThree : 3,
+		CustomTypeIntTwo : 2,
+		CustomTypeStringOne : "one",
+		CustomTypeStringThree : "three",
+		CustomTypeStringTwo : "two",
 	}
 }

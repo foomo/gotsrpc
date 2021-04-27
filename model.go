@@ -106,3 +106,11 @@ type Scalar struct {
 	Package string
 	Type    ScalarType
 }
+
+func (st *Scalar) FullName() string {
+	fullName := st.Package + "." + st.Name
+	if len(fullName) == 0 {
+		fullName = st.Name
+	}
+	return fullName
+}

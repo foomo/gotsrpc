@@ -112,7 +112,7 @@ func Build(conf *config.Config, goPath string) {
 			goPaths = append(goPaths, vendorDirectory)
 		}
 
-		pkgName, services, structs, scalars, constants, err := Read(goPaths, conf.Module, packageName, target.Services)
+		pkgName, services, structs, scalars, constants, constantTypes, err := Read(goPaths, conf.Module, packageName, target.Services)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "\t an error occured while trying to understand your code: ", err)
@@ -140,7 +140,7 @@ func Build(conf *config.Config, goPath string) {
 				os.Exit(3)
 			}
 
-			err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constants, scalars, mappedTypeScript)
+			err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constants, constantTypes, scalars, mappedTypeScript)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
 				os.Exit(4)

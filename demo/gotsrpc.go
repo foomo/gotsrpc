@@ -314,59 +314,24 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		callStats.Service = "Bar"
 	}
 	switch funcName {
-	case "Hello":
+	case "CustomType":
 		var (
-			arg_number int64
+			arg_customTypeInt    CustomTypeInt
+			arg_customTypeString CustomTypeString
+			arg_CustomTypeStruct CustomTypeStruct
 		)
-		args = []interface{}{&arg_number}
+		args = []interface{}{&arg_customTypeInt, &arg_customTypeString, &arg_CustomTypeStruct}
 		err := gotsrpc.LoadArgs(&args, callStats, r)
 		if err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
-		helloRet := p.service.Hello(arg_number)
+		customTypeRet, customTypeRet_1, customTypeRet_2 := p.service.CustomType(arg_customTypeInt, arg_customTypeString, arg_CustomTypeStruct)
 		if callStats != nil {
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
-		gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
-		return
-	case "Inheritance":
-		var (
-			arg_inner  Inner
-			arg_nested OuterNested
-			arg_inline OuterInline
-		)
-		args = []interface{}{&arg_inner, &arg_nested, &arg_inline}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		executionStart := time.Now()
-		inheritanceRet, inheritanceRet_1, inheritanceRet_2 := p.service.Inheritance(arg_inner, arg_nested, arg_inline)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
-		gotsrpc.Reply([]interface{}{inheritanceRet, inheritanceRet_1, inheritanceRet_2}, callStats, r, w)
-		return
-	case "Repeat":
-		var (
-			arg_one string
-			arg_two string
-		)
-		args = []interface{}{&arg_one, &arg_two}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		executionStart := time.Now()
-		repeatThree, repeatFour := p.service.Repeat(arg_one, arg_two)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
-		gotsrpc.Reply([]interface{}{repeatThree, repeatFour}, callStats, r, w)
+		gotsrpc.Reply([]interface{}{customTypeRet, customTypeRet_1, customTypeRet_2}, callStats, r, w)
 		return
 	default:
 		gotsrpc.ClearStats(r)

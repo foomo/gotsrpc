@@ -17,19 +17,18 @@ export class DemoClient {
 	constructor(
 		public transport:<T>(method: string, data?: any[]) => Promise<T>
 	) {}
-	async any(any:any, anyList:any[], anyMap:{[index:string]:any}):Promise<{ret:any; ret_1:any[]; ret_2:{[index:string]:any}}> {
-		let response = await this.transport<{0:any; 1:any[]; 2:{[index:string]:any}}>("Any", [any, anyList, anyMap])
+	async any(any:github_com_foomo_gotsrpc_demo_nested.Any, anyList:github_com_foomo_gotsrpc_demo_nested.Any[], anyMap:{[index:string]:github_com_foomo_gotsrpc_demo_nested.Any}):Promise<{ret:github_com_foomo_gotsrpc_demo_nested.Any; ret_1:github_com_foomo_gotsrpc_demo_nested.Any[]; ret_2:{[index:string]:github_com_foomo_gotsrpc_demo_nested.Any}}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_demo_nested.Any; 1:github_com_foomo_gotsrpc_demo_nested.Any[]; 2:{[index:string]:github_com_foomo_gotsrpc_demo_nested.Any}}>("Any", [any, anyList, anyMap])
 		let responseObject = {ret : response[0], ret_1 : response[1], ret_2 : response[2]};
 		return responseObject;
 	}
-	async extractAddress(person:github_com_foomo_gotsrpc_demo.Person):Promise<github_com_foomo_gotsrpc_demo.Address> {
+	async extractAddress(person:github_com_foomo_gotsrpc_demo.Person):Promise<{addr:github_com_foomo_gotsrpc_demo.Address; e:github_com_foomo_gotsrpc_demo.Err}> {
 		let response = await this.transport<{0:github_com_foomo_gotsrpc_demo.Address; 1:github_com_foomo_gotsrpc_demo.Err}>("ExtractAddress", [person])
-		let err = response[1];
-		if(err) { throw err }
-		return response[0]
+		let responseObject = {addr : response[0], e : response[1]};
+		return responseObject;
 	}
-	async giveMeAScalar():Promise<{amount:number; wahr:boolean; hier:string}> {
-		let response = await this.transport<{0:number; 1:boolean; 2:string}>("GiveMeAScalar", [])
+	async giveMeAScalar():Promise<{amount:github_com_foomo_gotsrpc_demo_nested.Amount; wahr:github_com_foomo_gotsrpc_demo_nested.True; hier:github_com_foomo_gotsrpc_demo.ScalarInPlace}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_demo_nested.Amount; 1:github_com_foomo_gotsrpc_demo_nested.True; 2:github_com_foomo_gotsrpc_demo.ScalarInPlace}>("GiveMeAScalar", [])
 		let responseObject = {amount : response[0], wahr : response[1], hier : response[2]};
 		return responseObject;
 	}
@@ -45,8 +44,8 @@ export class DemoClient {
 	async helloNumberMaps(intMap:{[index:number]:string}):Promise<{[index:number]:string}> {
 		return (await this.transport<{0:{[index:number]:string}}>("HelloNumberMaps", [intMap]))[0]
 	}
-	async helloScalarError():Promise<string> {
-		return (await this.transport<{0:string}>("HelloScalarError", []))[0]
+	async helloScalarError():Promise<github_com_foomo_gotsrpc_demo.ScalarError> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_demo.ScalarError}>("HelloScalarError", []))[0]
 	}
 	async mapCrap():Promise<{[index:string]:number[]}> {
 		return (await this.transport<{0:{[index:string]:number[]}}>("MapCrap", []))[0]
@@ -54,8 +53,8 @@ export class DemoClient {
 	async nest():Promise<github_com_foomo_gotsrpc_demo_nested.Nested[]> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_demo_nested.Nested[]}>("Nest", []))[0]
 	}
-	async testScalarInPlace():Promise<string> {
-		return (await this.transport<{0:string}>("TestScalarInPlace", []))[0]
+	async testScalarInPlace():Promise<github_com_foomo_gotsrpc_demo.ScalarInPlace> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_demo.ScalarInPlace}>("TestScalarInPlace", []))[0]
 	}
 }
 export class BarClient {
@@ -63,17 +62,9 @@ export class BarClient {
 	constructor(
 		public transport:<T>(method: string, data?: any[]) => Promise<T>
 	) {}
-	async hello(number:number):Promise<number> {
-		return (await this.transport<{0:number}>("Hello", [number]))[0]
-	}
-	async inheritance(inner:github_com_foomo_gotsrpc_demo.Inner, nested:github_com_foomo_gotsrpc_demo.OuterNested, inline:github_com_foomo_gotsrpc_demo.OuterInline):Promise<{ret:github_com_foomo_gotsrpc_demo.Inner; ret_1:github_com_foomo_gotsrpc_demo.OuterNested; ret_2:github_com_foomo_gotsrpc_demo.OuterInline}> {
-		let response = await this.transport<{0:github_com_foomo_gotsrpc_demo.Inner; 1:github_com_foomo_gotsrpc_demo.OuterNested; 2:github_com_foomo_gotsrpc_demo.OuterInline}>("Inheritance", [inner, nested, inline])
+	async customType(customTypeInt:github_com_foomo_gotsrpc_demo.CustomTypeInt, customTypeString:github_com_foomo_gotsrpc_demo.CustomTypeString, CustomTypeStruct:github_com_foomo_gotsrpc_demo.CustomTypeStruct):Promise<{ret:github_com_foomo_gotsrpc_demo.CustomTypeInt; ret_1:github_com_foomo_gotsrpc_demo.CustomTypeString; ret_2:github_com_foomo_gotsrpc_demo.CustomTypeStruct}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_demo.CustomTypeInt; 1:github_com_foomo_gotsrpc_demo.CustomTypeString; 2:github_com_foomo_gotsrpc_demo.CustomTypeStruct}>("CustomType", [customTypeInt, customTypeString, CustomTypeStruct])
 		let responseObject = {ret : response[0], ret_1 : response[1], ret_2 : response[2]};
-		return responseObject;
-	}
-	async repeat(one:string, two:string):Promise<{three:boolean; four:boolean}> {
-		let response = await this.transport<{0:boolean; 1:boolean}>("Repeat", [one, two])
-		let responseObject = {three : response[0], four : response[1]};
 		return responseObject;
 	}
 }

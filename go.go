@@ -8,11 +8,13 @@ import (
 )
 
 func (v *Value) isHTTPResponseWriter() bool {
-	return v.StructType != nil && v.StructType.Name == "ResponseWriter" && v.StructType.Package == "net/http"
+	return (v.StructType != nil && v.StructType.Name == "ResponseWriter" && v.StructType.Package == "net/http") ||
+		(v.Scalar != nil && v.Scalar.Name == "ResponseWriter" && v.Scalar.Package == "net/http")
 }
 
 func (v *Value) isHTTPRequest() bool {
-	return v.IsPtr && v.StructType != nil && v.StructType.Name == "Request" && v.StructType.Package == "net/http"
+	return (v.IsPtr && v.StructType != nil && v.StructType.Name == "Request" && v.StructType.Package == "net/http") ||
+		(v.IsPtr && v.Scalar != nil && v.Scalar.Name == "Request" && v.Scalar.Package == "net/http")
 }
 
 func (v *Value) goType(aliases map[string]string, packageName string) (t string) {
@@ -32,11 +34,10 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 	case v.Map != nil:
 		t += `map[` + v.Map.KeyGoType + `]` + v.Map.Value.goType(aliases, packageName)
 	case v.Scalar != nil:
-		// TODO this is a hack to retrieve string types
-		if packageName != v.Scalar.Package {
+		if packageName != v.Scalar.Package && aliases[v.Scalar.Package] != "" {
 			t += aliases[v.Scalar.Package] + "."
 		}
-		t += v.Scalar.Name[len(v.Scalar.Package)+1:]
+		t += v.Scalar.Name
 	case v.IsInterface:
 		t += "interface{}"
 	default:
@@ -109,6 +110,12 @@ func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
 			e += alias + "."
 		}
 		e += v.StructType.Name + "{}"
+	case v.Scalar != nil:
+		alias := aliases[v.Scalar.Package]
+		if alias != "" {
+			e += alias + "."
+		}
+		e += v.Scalar.Name + "{}"
 	case v.IsInterface:
 		e += "interface{}{}"
 	}
@@ -164,6 +171,8 @@ func extractImports(fields []*Field, fullPackageName string, aliases map[string]
 			extractImport(f.Value.StructType.Package)
 		} else if f.Value.Array != nil && f.Value.Array.Value.StructType != nil {
 			extractImport(f.Value.Array.Value.StructType.Package)
+		} else if f.Value.Array != nil && f.Value.Array.Value.Scalar != nil {
+			extractImport(f.Value.Array.Value.Scalar.Package)
 		} else if f.Value.Scalar != nil {
 			extractImport(f.Value.Scalar.Package)
 		}

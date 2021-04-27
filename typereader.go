@@ -123,9 +123,10 @@ func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 		if ident.Obj != nil && ident.Obj.Decl != nil && reflect.ValueOf(ident.Obj.Decl).Type().String() == "*ast.TypeSpec" {
 			typeSpec := ident.Obj.Decl.(*ast.TypeSpec)
 			if reflect.ValueOf(typeSpec.Type).Type().String() == "*ast.Ident" {
-				return getScalarFromAstIdent(typeSpec.Type.(*ast.Ident))
+				return ScalarType(ident.Name) //getScalarFromAstIdent(typeSpec.Type.(*ast.Ident))
 			}
-
+		} else if ident.Obj == nil {
+			return ScalarType(ident.Name)
 		}
 		return ScalarTypeNone
 	}
@@ -140,29 +141,23 @@ func getTypesFromAstType(ident *ast.Ident) (structType string, scalarType Scalar
 	return
 }
 
-func readAstType(v *Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap) {
+func readAstType(v *Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap, packageName string) {
 	structType, scalarType := getTypesFromAstType(fieldIdent)
 	v.ScalarType = scalarType
 	if len(structType) > 0 {
 		v.StructType = &StructType{
 			Name:    structType,
-			Package: fileImports.getPackagePath(""),
+			Package: fileImports.getPackagePath(packageName),
+		}
+	} else if fieldIdent.Name[:1] == strings.ToUpper(fieldIdent.Name[:1]) {
+		v.Scalar = &Scalar{
+			Package: fileImports.getPackagePath(packageName),
+			Name:    fieldIdent.Name,
+			Type:    scalarType,
 		}
 	} else {
 		v.GoScalarType = fieldIdent.Name
-		if fieldIdent.Obj != nil && fieldIdent.Obj.Decl != nil && reflect.ValueOf(fieldIdent.Obj.Decl).Type().String() == "*ast.TypeSpec" {
-			//typeSpec := fieldIdent.Obj.Decl.(*ast.TypeSpec)
-			//fmt.Println("-------------------------------------->", fieldIdent.Name, reflect.ValueOf(typeSpec.Type).Type())
-			v.Scalar = &Scalar{
-				Package: fileImports.getPackagePath(""),
-				Name:    fieldIdent.Name,
-				Type:    scalarType,
-			}
-			//jsonDump(v)
-		}
-
 	}
-	//
 }
 
 func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpecMap) {
@@ -170,7 +165,7 @@ func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpe
 	switch reflect.ValueOf(starExpr.X).Type().String() {
 	case "*ast.Ident":
 		ident := starExpr.X.(*ast.Ident)
-		readAstType(v, ident, fileImports)
+		readAstType(v, ident, fileImports, "")
 	case "*ast.StructType":
 		// nested anonymous
 		readAstStructType(v, starExpr.X.(*ast.StructType), fileImports)
@@ -222,7 +217,8 @@ func readAstSelectorExpr(v *Value, selectorExpr *ast.SelectorExpr, fileImports f
 		// that could be the package name
 		//selectorIdent := selectorExpr.X.(*ast.Ident)
 		// fmt.Println(selectorExpr, selectorExpr.X.(*ast.Ident))
-		readAstType(v, selectorExpr.X.(*ast.Ident), fileImports)
+		//readAstType(v, selectorExpr.X.(*ast.Ident), fileImports)
+		readAstType(v, selectorExpr.Sel, fileImports, selectorExpr.X.(*ast.Ident).Name)
 		if v.StructType != nil {
 			v.StructType.Package = fileImports.getPackagePath(v.StructType.Name)
 			v.StructType.Name = selectorExpr.Sel.Name
@@ -256,7 +252,7 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
 			v.Array.Value.loadExpr(fieldArray.Elt.(*ast.ArrayType), fileImports)
 		case "*ast.Ident":
-			readAstType(v.Array.Value, fieldArray.Elt.(*ast.Ident), fileImports)
+			readAstType(v.Array.Value, fieldArray.Elt.(*ast.Ident), fileImports, "")
 		case "*ast.StarExpr":
 			readAstStarExpr(v.Array.Value, fieldArray.Elt.(*ast.StarExpr), fileImports)
 		case "*ast.MapType":
@@ -275,7 +271,7 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 		}
 	case "*ast.Ident":
 		fieldIdent := expr.(*ast.Ident)
-		readAstType(v, fieldIdent, fileImports)
+		readAstType(v, fieldIdent, fileImports, "")
 	case "*ast.StarExpr":
 		// a pointer on sth
 		readAstStarExpr(v, expr.(*ast.StarExpr), fileImports)

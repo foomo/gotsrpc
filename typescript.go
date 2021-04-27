@@ -35,6 +35,15 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			ts.app("[]")
 		}
 	case v.Scalar != nil:
+		if v.Scalar.Package != "" {
+			mapping, ok := mappings[v.Scalar.Package]
+			var tsModule string
+			if ok {
+				tsModule = mapping.TypeScriptModule
+			}
+			ts.app(tsModule + "." + tsTypeFromScalarType(v.ScalarType))
+			return
+		}
 		ts.app(tsTypeFromScalarType(v.Scalar.Type))
 	case v.StructType != nil:
 		if v.StructType.Package != "" {
@@ -138,6 +147,7 @@ func renderTypescriptStructsToPackages(
 	structs map[string]*Struct,
 	mappings config.TypeScriptMappings,
 	constants map[string]map[string]*ast.BasicLit,
+	constantTypes map[string]map[string]interface{},
 	scalarTypes map[string]*Scalar,
 	mappedTypeScript map[string]map[string]*code,
 ) (err error) {
@@ -163,6 +173,33 @@ func renderTypescriptStructsToPackages(
 		err = renderTypescriptStruct(str, mappings, scalarTypes, structs, packageCodeMap[str.Name])
 		if err != nil {
 			return
+		}
+	}
+
+	for packageName, packageConstantTypes := range constantTypes {
+		if len(packageConstantTypes) > 0 {
+			packageCodeMap, ok := codeMap[packageName]
+			if !ok {
+				err = errors.New("missing code mapping for go package : " + packageName + " => you have to add a mapping from this go package to a TypeScript module in your build-config.yml in the mappings section")
+				return
+			}
+			for packageConstantTypeName, packageConstantTypeValues := range packageConstantTypes {
+				packageCodeMap[packageConstantTypeName] = newCode("	")
+				if !(moduleKind == config.ModuleKindCommonJS) {
+					packageCodeMap[packageConstantTypeName].ind(1)
+				}
+				packageCodeMap[packageConstantTypeName].l("// " + packageName + "." + packageConstantTypeName)
+
+				if packageConstantTypeValuesList, ok := packageConstantTypeValues.([]*ast.BasicLit); ok {
+					var values []string
+					for _, packageConstantTypeValue := range packageConstantTypeValuesList {
+						values = append(values, packageConstantTypeValue.Value)
+					}
+					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + strings.Join(values, " | "))
+				} else if packageConstantTypeValuesString, ok := packageConstantTypeValues.(string); ok {
+					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + packageConstantTypeValuesString)
+				}
+			}
 		}
 	}
 	ensureCodeInPackage := func(goPackage string) {

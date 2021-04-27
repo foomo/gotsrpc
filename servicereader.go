@@ -225,6 +225,73 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 		}
 	}
 	return constants
+}
+
+func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
+	constants := map[string]interface{}{}
+	for _, file := range pkg.Files {
+		for _, decl := range file.Decls {
+			if reflect.ValueOf(decl).Type().String() == "*ast.GenDecl" {
+				genDecl := decl.(*ast.GenDecl)
+				switch genDecl.Tok {
+				case token.TYPE:
+					trace("got a type", genDecl.Specs)
+					for _, spec := range genDecl.Specs {
+						if reflect.ValueOf(spec).Type().String() == "*ast.TypeSpec" {
+							spec := spec.(*ast.TypeSpec)
+							if _, ok := constants[spec.Name.Name]; ok {
+								continue
+							}
+							switch reflect.ValueOf(spec.Type).Type().String() {
+							case "*ast.InterfaceType":
+								constants[spec.Name.Name] = "any"
+							case "*ast.Ident":
+								specIdent := spec.Type.(*ast.Ident)
+								switch specIdent.Name {
+								case "byte":
+									constants[spec.Name.Name] = "any"
+								case "string":
+									constants[spec.Name.Name] = "string"
+								case "bool":
+									constants[spec.Name.Name] = "boolean"
+								case "float", "float32", "float64",
+									"int", "int8", "int16", "int32", "int64",
+									"uint", "uint8", "uint16", "uint32", "uint64":
+									constants[spec.Name.Name] = "number"
+								default:
+									trace("unhandled type", reflect.ValueOf(spec.Type).Type().String())
+								}
+							default:
+								trace("ignoring type", reflect.ValueOf(spec.Type).Type().String())
+							}
+						}
+					}
+				case token.CONST:
+					trace("got a const", genDecl.Specs)
+					for _, spec := range genDecl.Specs {
+						if reflect.ValueOf(spec).Type().String() == "*ast.ValueSpec" {
+							spec := spec.(*ast.ValueSpec)
+							if specType, ok := spec.Type.(*ast.Ident); ok {
+								for _, val := range spec.Values {
+									if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
+										firstValueLit := val.(*ast.BasicLit)
+										var values []*ast.BasicLit
+										if value, ok := constants[specType.Name]; ok {
+											if v, ok := value.([]*ast.BasicLit); ok {
+												values = v
+											}
+										}
+										constants[specType.Name] = append(values, firstValueLit)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return constants
 
 }
 
@@ -239,6 +306,7 @@ func Read(
 	structs map[string]*Struct,
 	scalars map[string]*Scalar,
 	constants map[string]map[string]*ast.BasicLit,
+	constantTypes map[string]map[string]interface{},
 	err error,
 ) {
 	if len(serviceMap) == 0 {
@@ -294,6 +362,22 @@ func Read(
 					return
 				}
 				constants[structPackage] = loadConstants(pkg)
+			}
+		}
+	}
+	constantTypes = map[string]map[string]interface{}{}
+	for _, structDef := range structs {
+		if structDef != nil {
+			structPackage := structDef.Package
+			_, ok := constantTypes[structPackage]
+			if !ok {
+				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
+				pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage)
+				if constPkgErr != nil {
+					err = constPkgErr
+					return
+				}
+				constantTypes[structPackage] = loadConstantTypes(pkg)
 			}
 		}
 	}
@@ -375,7 +459,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 					}
 				}
 				trace("found scalars in", goPaths, packageName)
-				for scalarName, scalar := range parsedPackageScalars {
+				for scalarName, scalar := range packageScalars {
 					trace("	scalar", scalarName, scalar)
 				}
 				traceData(parsedPackageScalars)
@@ -469,6 +553,12 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 			fieldStructType = field.Value.Array.Value.StructType
 		} else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
 			fieldStructType = field.Value.Map.Value.StructType
+		} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
+			return false
+		} else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
+			return false
+		} else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
+			return false
 		}
 		if fieldStructType != nil {
 			if needsWork(fieldStructType.FullName()) {
@@ -563,7 +653,12 @@ func collectScalarTypes(fields []*Field, scalarTypes map[string]bool) {
 			if len(scalarType.Package) == 0 {
 				fullName = scalarType.Name
 			}
-			scalarTypes[fullName] = true
+			switch fullName {
+			case "error", "net/http.Request", "net/http.ResponseWriter":
+				continue
+			default:
+				scalarTypes[fullName] = true
+			}
 		}
 	}
 }

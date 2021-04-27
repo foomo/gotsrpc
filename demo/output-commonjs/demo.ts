@@ -14,23 +14,29 @@ export interface Address {
 	NestedPtr?:github_com_foomo_gotsrpc_demo_nested.Nested;
 	NestedStruct:github_com_foomo_gotsrpc_demo_nested.Nested;
 }
+// github.com/foomo/gotsrpc/demo.Bar
+export type Bar = any
+// github.com/foomo/gotsrpc/demo.Check
+export interface Check {
+	Foo:string;
+}
+// github.com/foomo/gotsrpc/demo.CustomTypeFoo
+export type CustomTypeFoo = string
+// github.com/foomo/gotsrpc/demo.CustomTypeInt
+export type CustomTypeInt = 1 | 2 | 3
+// github.com/foomo/gotsrpc/demo.CustomTypeString
+export type CustomTypeString = "one" | "two" | "three"
+// github.com/foomo/gotsrpc/demo.CustomTypeStruct
+export interface CustomTypeStruct {
+	CustomTypeFoo:github_com_foomo_gotsrpc_demo.CustomTypeFoo;
+	CustomTypeInt:github_com_foomo_gotsrpc_demo.CustomTypeInt;
+	CustomTypeString:github_com_foomo_gotsrpc_demo.CustomTypeString;
+	CustomTypeNested:github_com_foomo_gotsrpc_demo_nested.CustomTypeNested;
+	Check:github_com_foomo_gotsrpc_demo.Check;
+}
 // github.com/foomo/gotsrpc/demo.Err
 export interface Err {
 	message:string;
-}
-// github.com/foomo/gotsrpc/demo.Inner
-export interface Inner {
-	one:string;
-}
-// github.com/foomo/gotsrpc/demo.OuterInline
-export interface OuterInline {
-	one:string;
-	two:string;
-}
-// github.com/foomo/gotsrpc/demo.OuterNested
-export interface OuterNested {
-	inner:github_com_foomo_gotsrpc_demo.Inner;
-	two:string;
 }
 // github.com/foomo/gotsrpc/demo.Person
 export interface Person {
@@ -45,5 +51,18 @@ export interface Person {
 		Bar:string;
 	};
 	DNA:string;
+}
+// github.com/foomo/gotsrpc/demo.ScalarError
+export type ScalarError = string
+// github.com/foomo/gotsrpc/demo.ScalarInPlace
+export type ScalarInPlace = string
+// constants from github.com/foomo/gotsrpc/demo
+export const GoConst = {
+	CustomTypeIntOne : 1,
+	CustomTypeIntThree : 3,
+	CustomTypeIntTwo : 2,
+	CustomTypeStringOne : "one",
+	CustomTypeStringThree : "three",
+	CustomTypeStringTwo : "two",
 }
 // end of common js

@@ -36,13 +36,13 @@ module GoTSRPC.Demo {
 	export class DemoClient {
 		static defaultInst = new DemoClient;
 		constructor(public endPoint:string = "/service/demo", public transport = GoTSRPC.call) {  }
-		any(any:any, anyList:any[], anyMap:{[index:string]:any}, success:(ret:any, ret_1:any[], ret_2:{[index:string]:any}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		any(any:GoTSRPC.Demo.Nested.Any, anyList:GoTSRPC.Demo.Nested.Any[], anyMap:{[index:string]:GoTSRPC.Demo.Nested.Any}, success:(ret:GoTSRPC.Demo.Nested.Any, ret_1:GoTSRPC.Demo.Nested.Any[], ret_2:{[index:string]:GoTSRPC.Demo.Nested.Any}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
 		}
 		extractAddress(person:GoTSRPC.Demo.Person, success:(addr:GoTSRPC.Demo.Address, e:GoTSRPC.Demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "ExtractAddress", [person], success, err);
 		}
-		giveMeAScalar(success:(amount:number, wahr:boolean, hier:string) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		giveMeAScalar(success:(amount:GoTSRPC.Demo.Nested.Amount, wahr:GoTSRPC.Demo.Nested.True, hier:GoTSRPC.Demo.ScalarInPlace) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "GiveMeAScalar", [], success, err);
 		}
 		hello(name:string, success:(ret:string, ret_1:GoTSRPC.Demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
@@ -54,7 +54,7 @@ module GoTSRPC.Demo {
 		helloNumberMaps(intMap:{[index:number]:string}, success:(floatMap:{[index:number]:string}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "HelloNumberMaps", [intMap], success, err);
 		}
-		helloScalarError(success:(err:string) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		helloScalarError(success:(err:GoTSRPC.Demo.ScalarError) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "HelloScalarError", [], success, err);
 		}
 		mapCrap(success:(crap:{[index:string]:number[]}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
@@ -63,21 +63,15 @@ module GoTSRPC.Demo {
 		nest(success:(ret:GoTSRPC.Demo.Nested.Nested[]) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "Nest", [], success, err);
 		}
-		testScalarInPlace(success:(ret:string) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		testScalarInPlace(success:(ret:GoTSRPC.Demo.ScalarInPlace) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "TestScalarInPlace", [], success, err);
 		}
 	}
 	export class BarClient {
 		static defaultInst = new BarClient;
 		constructor(public endPoint:string = "/service/bar", public transport = GoTSRPC.call) {  }
-		hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Hello", [number], success, err);
-		}
-		inheritance(inner:GoTSRPC.Demo.Inner, nested:GoTSRPC.Demo.OuterNested, inline:GoTSRPC.Demo.OuterInline, success:(ret:GoTSRPC.Demo.Inner, ret_1:GoTSRPC.Demo.OuterNested, ret_2:GoTSRPC.Demo.OuterInline) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Inheritance", [inner, nested, inline], success, err);
-		}
-		repeat(one:string, two:string, success:(three:boolean, four:boolean) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Repeat", [one, two], success, err);
+		customType(customTypeInt:GoTSRPC.Demo.CustomTypeInt, customTypeString:GoTSRPC.Demo.CustomTypeString, CustomTypeStruct:GoTSRPC.Demo.CustomTypeStruct, success:(ret:GoTSRPC.Demo.CustomTypeInt, ret_1:GoTSRPC.Demo.CustomTypeString, ret_2:GoTSRPC.Demo.CustomTypeStruct) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "CustomType", [customTypeInt, customTypeString, CustomTypeStruct], success, err);
 		}
 	}
 }
