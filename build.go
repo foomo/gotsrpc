@@ -204,17 +204,6 @@ func Build(conf *config.Config, goPath string) {
 			}
 			formatAndWrite(goRPCClientsCode, goRPCClientsFilename)
 		}
-
-		if len(target.PHPRPC) > 0 {
-			phpRPCClientsCode, goerr := RenderPHPRPCClients(services, target)
-			if goerr != nil {
-				fmt.Fprintln(os.Stderr, "	could not generate php rpc clients code in target", name, goerr)
-				os.Exit(4)
-			}
-			for filename, code := range phpRPCClientsCode {
-				updateCode(filename, code)
-			}
-		}
 	}
 
 	for goPackage, mappedStructsMap := range mappedTypeScript {

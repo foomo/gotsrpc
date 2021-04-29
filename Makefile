@@ -23,3 +23,12 @@ install.debug:
 test:
 	go test -v ./...
 
+build:
+	goreleaser build --snapshot --rm-dist
+
+build.debug:
+	rm -f bin/gotsrpc
+	go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
+
+debug.demo: build.debug
+	 dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec bin/gotsrpc demo/config.yml
