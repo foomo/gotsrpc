@@ -12,7 +12,7 @@ script:
   - curl -sfL https://git.io/goreleaser | sh -s -- check
   - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
   - if [[ -n "${TRAVIS_TAG}" ]]; then
-    make release;
+    .bin/goreleaser --rm-dist;
     fi
 
 

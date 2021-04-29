@@ -18,10 +18,6 @@ install:
 build:
 	goreleaser --skip-publish --skip-validate
 
-.PHONY: release
-release:
-	goreleaser --rm-dist
-
 .PHONY: test
 test:
 	go test -v ./...
