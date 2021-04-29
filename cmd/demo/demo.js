@@ -3,15 +3,13 @@ var GoTSRPC;
 (function (GoTSRPC) {
     var Demo;
     (function (Demo) {
-        // constants from github.com/foomo/gotsrpc/demo
-        Demo.GoConst = {
-            CustomTypeIntOne: 1,
-            CustomTypeIntThree: 3,
-            CustomTypeIntTwo: 2,
-            CustomTypeStringOne: "one",
-            CustomTypeStringThree: "three",
-            CustomTypeStringTwo: "two"
-        };
+        // github.com/foomo/gotsrpc/demo.CustomTypeString
+        var CustomTypeString;
+        (function (CustomTypeString) {
+            CustomTypeString["one"] = "one";
+            CustomTypeString["two"] = "two";
+            CustomTypeString["three"] = "three";
+        })(CustomTypeString = Demo.CustomTypeString || (Demo.CustomTypeString = {}));
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
 })(GoTSRPC || (GoTSRPC = {}));
 /* eslint:disable */
@@ -21,12 +19,13 @@ var GoTSRPC;
     (function (Demo) {
         var Nested;
         (function (Nested) {
-            // constants from github.com/foomo/gotsrpc/demo/nested
-            Nested.GoConst = {
-                CustomTypeNestedOne: "one",
-                CustomTypeNestedThree: "three",
-                CustomTypeNestedTwo: "two"
-            };
+            // github.com/foomo/gotsrpc/demo/nested.CustomTypeNested
+            var CustomTypeNested;
+            (function (CustomTypeNested) {
+                CustomTypeNested["one"] = "one";
+                CustomTypeNested["two"] = "two";
+                CustomTypeNested["three"] = "three";
+            })(CustomTypeNested = Nested.CustomTypeNested || (Nested.CustomTypeNested = {}));
         })(Nested = Demo.Nested || (Demo.Nested = {}));
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
 })(GoTSRPC || (GoTSRPC = {}));

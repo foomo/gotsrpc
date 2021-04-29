@@ -23,7 +23,11 @@ module GoTSRPC.Demo {
 	// github.com/foomo/gotsrpc/demo.CustomTypeInt
 	export type CustomTypeInt = 1 | 2 | 3
 	// github.com/foomo/gotsrpc/demo.CustomTypeString
-	export type CustomTypeString = "one" | "two" | "three"
+	export enum CustomTypeString {
+		one = "one",
+		two = "two",
+		three = "three",
+	}
 	// github.com/foomo/gotsrpc/demo.CustomTypeStruct
 	export interface CustomTypeStruct {
 		CustomTypeFoo:GoTSRPC.Demo.CustomTypeFoo;
@@ -54,13 +58,4 @@ module GoTSRPC.Demo {
 	export type ScalarError = string
 	// github.com/foomo/gotsrpc/demo.ScalarInPlace
 	export type ScalarInPlace = string
-	// constants from github.com/foomo/gotsrpc/demo
-	export const GoConst = {
-		CustomTypeIntOne : 1,
-		CustomTypeIntThree : 3,
-		CustomTypeIntTwo : 2,
-		CustomTypeStringOne : "one",
-		CustomTypeStringThree : "three",
-		CustomTypeStringTwo : "two",
-	}
 }

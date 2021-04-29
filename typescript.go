@@ -2,15 +2,11 @@ package gotsrpc
 
 import (
 	"errors"
-	"fmt"
 	"go/ast"
-	"sort"
 	"strings"
 
 	"github.com/foomo/gotsrpc/config"
 )
-
-const goConstPseudoPackage = "__goConstants"
 
 // @todo refactor this is wrong
 var SkipGoTSRPC = false
@@ -146,7 +142,6 @@ func renderTypescriptStructsToPackages(
 	moduleKind config.ModuleKind,
 	structs map[string]*Struct,
 	mappings config.TypeScriptMappings,
-	constants map[string]map[string]*ast.BasicLit,
 	constantTypes map[string]map[string]interface{},
 	scalarTypes map[string]*Scalar,
 	mappedTypeScript map[string]map[string]*code,
@@ -191,11 +186,19 @@ func renderTypescriptStructsToPackages(
 				packageCodeMap[packageConstantTypeName].l("// " + packageName + "." + packageConstantTypeName)
 
 				if packageConstantTypeValuesList, ok := packageConstantTypeValues.([]*ast.BasicLit); ok {
-					var values []string
-					for _, packageConstantTypeValue := range packageConstantTypeValuesList {
-						values = append(values, packageConstantTypeValue.Value)
+					if strings.HasPrefix(packageConstantTypeValuesList[0].Value, "\"") {
+						packageCodeMap[packageConstantTypeName].l("export enum " + packageConstantTypeName + " {").ind(1)
+						for _, packageConstantTypeValue := range packageConstantTypeValuesList {
+							packageCodeMap[packageConstantTypeName].l(strings.Replace(packageConstantTypeValue.Value, "\"", "", -1) + " = " + packageConstantTypeValue.Value + ",")
+						}
+						packageCodeMap[packageConstantTypeName].ind(-1).l("}")
+					} else {
+						var values []string
+						for _, packageConstantTypeValue := range packageConstantTypeValuesList {
+							values = append(values, packageConstantTypeValue.Value)
+						}
+						packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + strings.Join(values, " | "))
 					}
-					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + strings.Join(values, " | "))
 				} else if packageConstantTypeValuesString, ok := packageConstantTypeValues.(string); ok {
 					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + packageConstantTypeValuesString)
 				}
@@ -213,38 +216,6 @@ func renderTypescriptStructsToPackages(
 		for structName, structCode := range codeMap[mapping.GoPackage] {
 			ensureCodeInPackage(mapping.GoPackage)
 			mappedTypeScript[mapping.GoPackage][structName] = structCode
-		}
-	}
-	for packageName, packageConstants := range constants {
-		if len(packageConstants) > 0 {
-			ensureCodeInPackage(packageName)
-			_, done := mappedTypeScript[packageName][goConstPseudoPackage]
-			if done {
-				continue
-			}
-			constCode := newCode("	")
-			if moduleKind != config.ModuleKindCommonJS {
-				constCode.ind(1)
-			}
-			constCode.l("// constants from " + packageName).l("export const GoConst = {").ind(1)
-			// constCode.l()
-			mappedTypeScript[packageName][goConstPseudoPackage] = constCode
-			constPrefixParts := split(packageName, []string{"/", ".", "-"})
-			constPrefix := ""
-			for _, constPrefixPart := range constPrefixParts {
-				constPrefix += ucFirst(constPrefixPart)
-			}
-			constNames := []string{}
-			for constName := range packageConstants {
-				constNames = append(constNames, constName)
-			}
-			sort.Strings(constNames)
-			for _, constName := range constNames {
-				basicLit := packageConstants[constName]
-				constCode.l(fmt.Sprint(constName, " : ", basicLit.Value, ","))
-			}
-			constCode.ind(-1).l("}")
-
 		}
 	}
 	return nil

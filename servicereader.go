@@ -193,42 +193,8 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 	return
 }
 
-func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
-	constants := map[string]*ast.BasicLit{}
-	for _, file := range pkg.Files {
-		for _, decl := range file.Decls {
-			if reflect.ValueOf(decl).Type().String() == "*ast.GenDecl" {
-				genDecl := decl.(*ast.GenDecl)
-				if genDecl.Tok == token.CONST {
-					trace("got a const", genDecl.Specs)
-					for _, spec := range genDecl.Specs {
-						if "*ast.ValueSpec" == reflect.ValueOf(spec).Type().String() {
-							spec := spec.(*ast.ValueSpec)
-							for _, val := range spec.Values {
-								if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
-									firstValueLit := val.(*ast.BasicLit)
-									constName := spec.Names[0].String()
-									for indexRune, r := range constName {
-										if indexRune == 0 {
-											if string(r) == strings.ToUpper(string(r)) {
-												constants[constName] = firstValueLit
-											}
-											break
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	return constants
-}
-
 func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
-	constants := map[string]interface{}{}
+	constantTypes := map[string]interface{}{}
 	for _, file := range pkg.Files {
 		for _, decl := range file.Decls {
 			if reflect.ValueOf(decl).Type().String() == "*ast.GenDecl" {
@@ -239,25 +205,25 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 					for _, spec := range genDecl.Specs {
 						if reflect.ValueOf(spec).Type().String() == "*ast.TypeSpec" {
 							spec := spec.(*ast.TypeSpec)
-							if _, ok := constants[spec.Name.Name]; ok {
+							if _, ok := constantTypes[spec.Name.Name]; ok {
 								continue
 							}
 							switch reflect.ValueOf(spec.Type).Type().String() {
 							case "*ast.InterfaceType":
-								constants[spec.Name.Name] = "any"
+								constantTypes[spec.Name.Name] = "any"
 							case "*ast.Ident":
 								specIdent := spec.Type.(*ast.Ident)
 								switch specIdent.Name {
 								case "byte":
-									constants[spec.Name.Name] = "any"
+									constantTypes[spec.Name.Name] = "any"
 								case "string":
-									constants[spec.Name.Name] = "string"
+									constantTypes[spec.Name.Name] = "string"
 								case "bool":
-									constants[spec.Name.Name] = "boolean"
+									constantTypes[spec.Name.Name] = "boolean"
 								case "float", "float32", "float64",
 									"int", "int8", "int16", "int32", "int64",
 									"uint", "uint8", "uint16", "uint32", "uint64":
-									constants[spec.Name.Name] = "number"
+									constantTypes[spec.Name.Name] = "number"
 								default:
 									trace("unhandled type", reflect.ValueOf(spec.Type).Type().String())
 								}
@@ -276,12 +242,12 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 									if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
 										firstValueLit := val.(*ast.BasicLit)
 										var values []*ast.BasicLit
-										if value, ok := constants[specType.Name]; ok {
+										if value, ok := constantTypes[specType.Name]; ok {
 											if v, ok := value.([]*ast.BasicLit); ok {
 												values = v
 											}
 										}
-										constants[specType.Name] = append(values, firstValueLit)
+										constantTypes[specType.Name] = append(values, firstValueLit)
 									}
 								}
 							}
@@ -291,7 +257,7 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 			}
 		}
 	}
-	return constants
+	return constantTypes
 
 }
 
@@ -305,7 +271,6 @@ func Read(
 	services ServiceList,
 	structs map[string]*Struct,
 	scalars map[string]*Scalar,
-	constants map[string]map[string]*ast.BasicLit,
 	constantTypes map[string]map[string]interface{},
 	err error,
 ) {
@@ -349,22 +314,6 @@ func Read(
 	trace("---------------- found scalars -------------------")
 	traceData(scalars)
 	trace("---------------- /found scalars -------------------")
-	constants = map[string]map[string]*ast.BasicLit{}
-	for _, structDef := range structs {
-		if structDef != nil {
-			structPackage := structDef.Package
-			_, ok := constants[structPackage]
-			if !ok {
-				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
-				pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage)
-				if constPkgErr != nil {
-					err = constPkgErr
-					return
-				}
-				constants[structPackage] = loadConstants(pkg)
-			}
-		}
-	}
 	constantTypes = map[string]map[string]interface{}{}
 	for _, structDef := range structs {
 		if structDef != nil {
