@@ -24,7 +24,7 @@ release: goreleaser
 
 .PHONY: goreleaser
 goreleaser:
-	@go get github.com/goreleaser/goreleaser@v0.141.0
+	@go get github.com/goreleaser/goreleaser
 
 .PHONY: test
 test:
