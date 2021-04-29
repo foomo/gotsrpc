@@ -205,3 +205,36 @@ func (tsc *BarGoRPCClient) CustomType(customTypeInt CustomTypeInt, customTypeStr
 	response := rpcCallRes.(BarCustomTypeResponse)
 	return response.RetCustomType_0, response.RetCustomType_1, response.RetCustomType_2, nil
 }
+
+func (tsc *BarGoRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+	req := BarHelloRequest{Number: number}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(BarHelloResponse)
+	return response.RetHello_0, nil
+}
+
+func (tsc *BarGoRPCClient) Inheritance(inner Inner, nested OuterNested, inline OuterInline) (retInheritance_0 Inner, retInheritance_1 OuterNested, retInheritance_2 OuterInline, clientErr error) {
+	req := BarInheritanceRequest{Inner: inner, Nested: nested, Inline: inline}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(BarInheritanceResponse)
+	return response.RetInheritance_0, response.RetInheritance_1, response.RetInheritance_2, nil
+}
+
+func (tsc *BarGoRPCClient) Repeat(one string, two string) (three bool, four bool, clientErr error) {
+	req := BarRepeatRequest{One: one, Two: two}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(BarRepeatResponse)
+	return response.Three, response.Four, nil
+}

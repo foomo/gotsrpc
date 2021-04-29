@@ -47,4 +47,13 @@ export class BarClient {
 	customType(customTypeInt:github_com_foomo_gotsrpc_demo.CustomTypeInt, customTypeString:github_com_foomo_gotsrpc_demo.CustomTypeString, CustomTypeStruct:github_com_foomo_gotsrpc_demo.CustomTypeStruct, success:(ret:github_com_foomo_gotsrpc_demo.CustomTypeInt, ret_1:github_com_foomo_gotsrpc_demo.CustomTypeString, ret_2:github_com_foomo_gotsrpc_demo.CustomTypeStruct) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "CustomType", [customTypeInt, customTypeString, CustomTypeStruct], success, err);
 	}
+	hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "Hello", [number], success, err);
+	}
+	inheritance(inner:github_com_foomo_gotsrpc_demo.Inner, nested:github_com_foomo_gotsrpc_demo.OuterNested, inline:github_com_foomo_gotsrpc_demo.OuterInline, success:(ret:github_com_foomo_gotsrpc_demo.Inner, ret_1:github_com_foomo_gotsrpc_demo.OuterNested, ret_2:github_com_foomo_gotsrpc_demo.OuterInline) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "Inheritance", [inner, nested, inline], success, err);
+	}
+	repeat(one:string, two:string, success:(three:boolean, four:boolean) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "Repeat", [one, two], success, err);
+	}
 }

@@ -147,6 +147,9 @@ func (tsc *HTTPDemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 Sc
 
 type BarGoTSRPCClient interface {
 	CustomType(customTypeInt CustomTypeInt, customTypeString CustomTypeString, CustomTypeStruct CustomTypeStruct) (retCustomType_0 *CustomTypeInt, retCustomType_1 *CustomTypeString, retCustomType_2 CustomTypeStruct, clientErr error)
+	Hello(number int64) (retHello_0 int, clientErr error)
+	Inheritance(inner Inner, nested OuterNested, inline OuterInline) (retInheritance_0 Inner, retInheritance_1 OuterNested, retInheritance_2 OuterInline, clientErr error)
+	Repeat(one string, two string) (three bool, four bool, clientErr error)
 }
 
 type HTTPBarGoTSRPCClient struct {
@@ -174,5 +177,26 @@ func (tsc *HTTPBarGoTSRPCClient) CustomType(customTypeInt CustomTypeInt, customT
 	args := []interface{}{customTypeInt, customTypeString, CustomTypeStruct}
 	reply := []interface{}{&retCustomType_0, &retCustomType_1, &retCustomType_2}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "CustomType", args, reply)
+	return
+}
+
+func (tsc *HTTPBarGoTSRPCClient) Hello(number int64) (retHello_0 int, clientErr error) {
+	args := []interface{}{number}
+	reply := []interface{}{&retHello_0}
+	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Hello", args, reply)
+	return
+}
+
+func (tsc *HTTPBarGoTSRPCClient) Inheritance(inner Inner, nested OuterNested, inline OuterInline) (retInheritance_0 Inner, retInheritance_1 OuterNested, retInheritance_2 OuterInline, clientErr error) {
+	args := []interface{}{inner, nested, inline}
+	reply := []interface{}{&retInheritance_0, &retInheritance_1, &retInheritance_2}
+	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Inheritance", args, reply)
+	return
+}
+
+func (tsc *HTTPBarGoTSRPCClient) Repeat(one string, two string) (three bool, four bool, clientErr error) {
+	args := []interface{}{one, two}
+	reply := []interface{}{&three, &four}
+	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "Repeat", args, reply)
 	return
 }

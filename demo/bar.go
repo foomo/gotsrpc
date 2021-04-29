@@ -1,6 +1,8 @@
 package demo
 
 import (
+	"net/http"
+
 	"github.com/foomo/gotsrpc/demo/nested"
 )
 
@@ -17,9 +19,13 @@ const (
 )
 
 const (
-	CustomTypeStringOne   CustomTypeString = "one"
-	CustomTypeStringTwo   CustomTypeString = "two"
-	CustomTypeStringThree CustomTypeString = "three"
+	CustomTypeStringOne   CustomTypeString = "regular"
+	CustomTypeStringTwo   CustomTypeString = "camelCase"
+	CustomTypeStringThree CustomTypeString = "snake_case"
+	CustomTypeStringFour CustomTypeString = "slug-case"
+	CustomTypeStringFive CustomTypeString = "CONST_CASE"
+	CustomTypeStringSix CustomTypeString = "SLUG-CASE-UPPER"
+	CustomTypeStringSeven CustomTypeString = "dot.case"
 )
 
 type (
@@ -41,14 +47,11 @@ type (
 		CustomTypeNested nested.CustomTypeNested
 		Check            Check
 	}
-	//Check struct {
-	//	Foo string
-	//}
 )
 
 type Bar interface {
-	//Hello(w http.ResponseWriter, r *http.Request, number int64) int
-	//Repeat(one, two string) (three, four bool)
-	//Inheritance(inner Inner, nested OuterNested, inline OuterInline) (Inner, OuterNested, OuterInline)
+	Hello(w http.ResponseWriter, r *http.Request, number int64) int
+	Repeat(one, two string) (three, four bool)
+	Inheritance(inner Inner, nested OuterNested, inline OuterInline) (Inner, OuterNested, OuterInline)
 	CustomType(customTypeInt CustomTypeInt, customTypeString CustomTypeString, CustomTypeStruct CustomTypeStruct) (*CustomTypeInt, *CustomTypeString, CustomTypeStruct)
 }

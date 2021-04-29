@@ -8,9 +8,9 @@ export type Amount = number
 export type Any = any
 // github.com/foomo/gotsrpc/demo/nested.CustomTypeNested
 export enum CustomTypeNested {
-	one = "one",
-	two = "two",
-	three = "three",
+	One = "one",
+	Two = "two",
+	Three = "three",
 }
 // github.com/foomo/gotsrpc/demo/nested.Nested
 export interface Nested {

@@ -304,11 +304,44 @@ type (
 		RetCustomType_1 *CustomTypeString
 		RetCustomType_2 CustomTypeStruct
 	}
+
+	BarHelloRequest struct {
+		Number int64
+	}
+	BarHelloResponse struct {
+		RetHello_0 int
+	}
+
+	BarInheritanceRequest struct {
+		Inner  Inner
+		Nested OuterNested
+		Inline OuterInline
+	}
+	BarInheritanceResponse struct {
+		RetInheritance_0 Inner
+		RetInheritance_1 OuterNested
+		RetInheritance_2 OuterInline
+	}
+
+	BarRepeatRequest struct {
+		One string
+		Two string
+	}
+	BarRepeatResponse struct {
+		Three bool
+		Four  bool
+	}
 )
 
 func init() {
 	gob.Register(BarCustomTypeRequest{})
 	gob.Register(BarCustomTypeResponse{})
+	gob.Register(BarHelloRequest{})
+	gob.Register(BarHelloResponse{})
+	gob.Register(BarInheritanceRequest{})
+	gob.Register(BarInheritanceResponse{})
+	gob.Register(BarRepeatRequest{})
+	gob.Register(BarRepeatResponse{})
 }
 
 func NewBarGoRPCProxy(addr string, service Bar, tlsConfig *tls.Config) *BarGoRPCProxy {
@@ -353,6 +386,18 @@ func (p *BarGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 		req := request.(BarCustomTypeRequest)
 		retCustomType_0, retCustomType_1, retCustomType_2 := p.service.CustomType(req.CustomTypeInt, req.CustomTypeString, req.CustomTypeStruct)
 		response = BarCustomTypeResponse{RetCustomType_0: retCustomType_0, RetCustomType_1: retCustomType_1, RetCustomType_2: retCustomType_2}
+	case "BarHelloRequest":
+		req := request.(BarHelloRequest)
+		retHello_0 := p.service.Hello(nil, nil, req.Number)
+		response = BarHelloResponse{RetHello_0: retHello_0}
+	case "BarInheritanceRequest":
+		req := request.(BarInheritanceRequest)
+		retInheritance_0, retInheritance_1, retInheritance_2 := p.service.Inheritance(req.Inner, req.Nested, req.Inline)
+		response = BarInheritanceResponse{RetInheritance_0: retInheritance_0, RetInheritance_1: retInheritance_1, RetInheritance_2: retInheritance_2}
+	case "BarRepeatRequest":
+		req := request.(BarRepeatRequest)
+		three, four := p.service.Repeat(req.One, req.Two)
+		response = BarRepeatResponse{Three: three, Four: four}
 	default:
 		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
 	}

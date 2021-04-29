@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/foomo/gotsrpc/config"
+"github.com/iancoleman/strcase"
 )
 
 // @todo refactor this is wrong
@@ -189,7 +190,9 @@ func renderTypescriptStructsToPackages(
 					if strings.HasPrefix(packageConstantTypeValuesList[0].Value, "\"") {
 						packageCodeMap[packageConstantTypeName].l("export enum " + packageConstantTypeName + " {").ind(1)
 						for _, packageConstantTypeValue := range packageConstantTypeValuesList {
-							packageCodeMap[packageConstantTypeName].l(strings.Replace(packageConstantTypeValue.Value, "\"", "", -1) + " = " + packageConstantTypeValue.Value + ",")
+							enum := strings.Replace(packageConstantTypeValue.Value, "\"", "", -1)
+							enum = strcase.ToCamel(strcase.ToSnake(enum))
+							packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValue.Value + ",")
 						}
 						packageCodeMap[packageConstantTypeName].ind(-1).l("}")
 					} else {

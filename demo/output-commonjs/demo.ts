@@ -26,9 +26,13 @@ export type CustomTypeFoo = string
 export type CustomTypeInt = 1 | 2 | 3
 // github.com/foomo/gotsrpc/demo.CustomTypeString
 export enum CustomTypeString {
-	one = "one",
-	two = "two",
-	three = "three",
+	Regular = "regular",
+	CamelCase = "camelCase",
+	SnakeCase = "snake_case",
+	SlugCase = "slug-case",
+	ConstCase = "CONST_CASE",
+	SlugCase = "SLUG-CASE",
+	DotCase = "dot.case",
 }
 // github.com/foomo/gotsrpc/demo.CustomTypeStruct
 export interface CustomTypeStruct {
@@ -41,6 +45,20 @@ export interface CustomTypeStruct {
 // github.com/foomo/gotsrpc/demo.Err
 export interface Err {
 	message:string;
+}
+// github.com/foomo/gotsrpc/demo.Inner
+export interface Inner {
+	one:string;
+}
+// github.com/foomo/gotsrpc/demo.OuterInline
+export interface OuterInline {
+	one:string;
+	two:string;
+}
+// github.com/foomo/gotsrpc/demo.OuterNested
+export interface OuterNested {
+	inner:github_com_foomo_gotsrpc_demo.Inner;
+	two:string;
 }
 // github.com/foomo/gotsrpc/demo.Person
 export interface Person {

@@ -6,9 +6,13 @@ var GoTSRPC;
         // github.com/foomo/gotsrpc/demo.CustomTypeString
         var CustomTypeString;
         (function (CustomTypeString) {
-            CustomTypeString["one"] = "one";
-            CustomTypeString["two"] = "two";
-            CustomTypeString["three"] = "three";
+            CustomTypeString["Regular"] = "regular";
+            CustomTypeString["CamelCase"] = "camelCase";
+            CustomTypeString["SnakeCase"] = "snake_case";
+            CustomTypeString["SlugCase"] = "slug-case";
+            CustomTypeString["ConstCase"] = "CONST_CASE";
+            CustomTypeString["SlugCase"] = "SLUG-CASE";
+            CustomTypeString["DotCase"] = "dot.case";
         })(CustomTypeString = Demo.CustomTypeString || (Demo.CustomTypeString = {}));
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
 })(GoTSRPC || (GoTSRPC = {}));
@@ -22,9 +26,9 @@ var GoTSRPC;
             // github.com/foomo/gotsrpc/demo/nested.CustomTypeNested
             var CustomTypeNested;
             (function (CustomTypeNested) {
-                CustomTypeNested["one"] = "one";
-                CustomTypeNested["two"] = "two";
-                CustomTypeNested["three"] = "three";
+                CustomTypeNested["One"] = "one";
+                CustomTypeNested["Two"] = "two";
+                CustomTypeNested["Three"] = "three";
             })(CustomTypeNested = Nested.CustomTypeNested || (Nested.CustomTypeNested = {}));
         })(Nested = Demo.Nested || (Demo.Nested = {}));
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
@@ -125,6 +129,15 @@ var GoTSRPC;
             }
             BarClient.prototype.customType = function (customTypeInt, customTypeString, CustomTypeStruct, success, err) {
                 this.transport(this.endPoint, "CustomType", [customTypeInt, customTypeString, CustomTypeStruct], success, err);
+            };
+            BarClient.prototype.hello = function (number, success, err) {
+                this.transport(this.endPoint, "Hello", [number], success, err);
+            };
+            BarClient.prototype.inheritance = function (inner, nested, inline, success, err) {
+                this.transport(this.endPoint, "Inheritance", [inner, nested, inline], success, err);
+            };
+            BarClient.prototype.repeat = function (one, two, success, err) {
+                this.transport(this.endPoint, "Repeat", [one, two], success, err);
             };
             BarClient.defaultInst = new BarClient;
             return BarClient;
