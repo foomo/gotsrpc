@@ -11,7 +11,7 @@ var GoTSRPC;
             CustomTypeString["SnakeCase"] = "snake_case";
             CustomTypeString["SlugCase"] = "slug-case";
             CustomTypeString["ConstCase"] = "CONST_CASE";
-            CustomTypeString["SlugCase"] = "SLUG-CASE";
+            CustomTypeString["SlugCaseUpper"] = "SLUG-CASE-UPPER";
             CustomTypeString["DotCase"] = "dot.case";
         })(CustomTypeString = Demo.CustomTypeString || (Demo.CustomTypeString = {}));
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));

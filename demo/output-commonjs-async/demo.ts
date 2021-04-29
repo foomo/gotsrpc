@@ -16,6 +16,8 @@ export interface Address {
 }
 // github.com/foomo/gotsrpc/demo.Bar
 export type Bar = any
+// github.com/foomo/gotsrpc/demo.BarGoTSRPCClient
+export type BarGoTSRPCClient = any
 // github.com/foomo/gotsrpc/demo.Check
 export interface Check {
 	Foo:string;
@@ -31,7 +33,7 @@ export enum CustomTypeString {
 	SnakeCase = "snake_case",
 	SlugCase = "slug-case",
 	ConstCase = "CONST_CASE",
-	SlugCase = "SLUG-CASE",
+	SlugCaseUpper = "SLUG-CASE-UPPER",
 	DotCase = "dot.case",
 }
 // github.com/foomo/gotsrpc/demo.CustomTypeStruct
@@ -42,10 +44,14 @@ export interface CustomTypeStruct {
 	CustomTypeNested:github_com_foomo_gotsrpc_demo_nested.CustomTypeNested;
 	Check:github_com_foomo_gotsrpc_demo.Check;
 }
+// github.com/foomo/gotsrpc/demo.DemoGoTSRPCClient
+export type DemoGoTSRPCClient = any
 // github.com/foomo/gotsrpc/demo.Err
 export interface Err {
 	message:string;
 }
+// github.com/foomo/gotsrpc/demo.FooGoTSRPCClient
+export type FooGoTSRPCClient = any
 // github.com/foomo/gotsrpc/demo.Inner
 export interface Inner {
 	one:string;

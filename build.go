@@ -82,10 +82,10 @@ func Build(conf *config.Config, goPath string) {
 		outputPath := getPathForTarget(conf.Module, goPath, target)
 		fmt.Fprintf(os.Stderr, "building target %s (%s -> %s)\n", name, packageName, outputPath)
 
-		goRPCProxiesFilename := path.Join(outputPath, "gorpc.go")
-		goRPCClientsFilename := path.Join(outputPath, "gorpcclient.go")
-		goTSRPCProxiesFilename := path.Join(outputPath, "gotsrpc.go")
-		goTSRPCClientsFilename := path.Join(outputPath, "gotsrpcclient.go")
+		goRPCProxiesFilename := path.Join(outputPath, "gorpc_gen.go")
+		goRPCClientsFilename := path.Join(outputPath, "gorpcclient_gen.go")
+		goTSRPCProxiesFilename := path.Join(outputPath, "gotsrpc_gen.go")
+		goTSRPCClientsFilename := path.Join(outputPath, "gotsrpcclient_gen.go")
 
 		remove := func(filename string) {
 			_, err := os.Stat(filename)
