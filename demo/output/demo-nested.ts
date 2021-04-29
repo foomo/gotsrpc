@@ -7,8 +7,8 @@ module GoTSRPC.Demo.Nested {
 	// github.com/foomo/gotsrpc/demo/nested.CustomTypeNested
 	export enum CustomTypeNested {
 		One = "one",
-		Two = "two",
 		Three = "three",
+		Two = "two",
 	}
 	// github.com/foomo/gotsrpc/demo/nested.Nested
 	export interface Nested {

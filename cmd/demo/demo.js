@@ -3,16 +3,23 @@ var GoTSRPC;
 (function (GoTSRPC) {
     var Demo;
     (function (Demo) {
+        // github.com/foomo/gotsrpc/demo.CustomTypeInt
+        var CustomTypeInt;
+        (function (CustomTypeInt) {
+            CustomTypeInt[CustomTypeInt["One"] = 1] = "One";
+            CustomTypeInt[CustomTypeInt["Three"] = 3] = "Three";
+            CustomTypeInt[CustomTypeInt["Two"] = 2] = "Two";
+        })(CustomTypeInt = Demo.CustomTypeInt || (Demo.CustomTypeInt = {}));
         // github.com/foomo/gotsrpc/demo.CustomTypeString
         var CustomTypeString;
         (function (CustomTypeString) {
-            CustomTypeString["Regular"] = "regular";
-            CustomTypeString["CamelCase"] = "camelCase";
-            CustomTypeString["SnakeCase"] = "snake_case";
-            CustomTypeString["SlugCase"] = "slug-case";
-            CustomTypeString["ConstCase"] = "CONST_CASE";
-            CustomTypeString["SlugCaseUpper"] = "SLUG-CASE-UPPER";
-            CustomTypeString["DotCase"] = "dot.case";
+            CustomTypeString["Five"] = "CONST_CASE";
+            CustomTypeString["Four"] = "slug-case";
+            CustomTypeString["One"] = "regular";
+            CustomTypeString["Seven"] = "dot.case";
+            CustomTypeString["Six"] = "SLUG-CASE-UPPER";
+            CustomTypeString["Three"] = "snake_case";
+            CustomTypeString["Two"] = "camelCase";
         })(CustomTypeString = Demo.CustomTypeString || (Demo.CustomTypeString = {}));
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));
 })(GoTSRPC || (GoTSRPC = {}));
@@ -27,8 +34,8 @@ var GoTSRPC;
             var CustomTypeNested;
             (function (CustomTypeNested) {
                 CustomTypeNested["One"] = "one";
-                CustomTypeNested["Two"] = "two";
                 CustomTypeNested["Three"] = "three";
+                CustomTypeNested["Two"] = "two";
             })(CustomTypeNested = Nested.CustomTypeNested || (Nested.CustomTypeNested = {}));
         })(Nested = Demo.Nested || (Demo.Nested = {}));
     })(Demo = GoTSRPC.Demo || (GoTSRPC.Demo = {}));

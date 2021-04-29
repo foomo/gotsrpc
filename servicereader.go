@@ -240,14 +240,12 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 							if specType, ok := spec.Type.(*ast.Ident); ok {
 								for _, val := range spec.Values {
 									if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
-										firstValueLit := val.(*ast.BasicLit)
-										var values []*ast.BasicLit
-										if value, ok := constantTypes[specType.Name]; ok {
-											if v, ok := value.([]*ast.BasicLit); ok {
-												values = v
-											}
+										if _, ok := constantTypes[specType.Name]; !ok {
+											constantTypes[specType.Name] = map[string]*ast.BasicLit{}
+										} else if _, ok := constantTypes[specType.Name].(map[string]*ast.BasicLit); !ok {
+											constantTypes[specType.Name] = map[string]*ast.BasicLit{}
 										}
-										constantTypes[specType.Name] = append(values, firstValueLit)
+										constantTypes[specType.Name].(map[string]*ast.BasicLit)[spec.Names[0].Name] = val.(*ast.BasicLit)
 									}
 								}
 							}

@@ -3,10 +3,11 @@ package gotsrpc
 import (
 	"errors"
 	"go/ast"
+	"sort"
 	"strings"
 
 	"github.com/foomo/gotsrpc/config"
-"github.com/iancoleman/strcase"
+	"github.com/iancoleman/strcase"
 )
 
 // @todo refactor this is wrong
@@ -186,22 +187,19 @@ func renderTypescriptStructsToPackages(
 				}
 				packageCodeMap[packageConstantTypeName].l("// " + packageName + "." + packageConstantTypeName)
 
-				if packageConstantTypeValuesList, ok := packageConstantTypeValues.([]*ast.BasicLit); ok {
-					if strings.HasPrefix(packageConstantTypeValuesList[0].Value, "\"") {
+				if packageConstantTypeValuesList, ok := packageConstantTypeValues.(map[string]*ast.BasicLit); ok {
+					keys := make([]string, 0, len(packageConstantTypeValuesList))
+					for k := range packageConstantTypeValuesList {
+						keys = append(keys, k)
+					}
+					sort.Strings(keys)
 						packageCodeMap[packageConstantTypeName].l("export enum " + packageConstantTypeName + " {").ind(1)
-						for _, packageConstantTypeValue := range packageConstantTypeValuesList {
-							enum := strings.Replace(packageConstantTypeValue.Value, "\"", "", -1)
-							enum = strcase.ToCamel(strcase.ToSnake(enum))
-							packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValue.Value + ",")
+						for _, k := range keys {
+							enum := strings.TrimPrefix(strcase.ToCamel(k), packageConstantTypeName)
+							packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValuesList[k].Value + ",")
 						}
 						packageCodeMap[packageConstantTypeName].ind(-1).l("}")
-					} else {
-						var values []string
-						for _, packageConstantTypeValue := range packageConstantTypeValuesList {
-							values = append(values, packageConstantTypeValue.Value)
-						}
-						packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + strings.Join(values, " | "))
-					}
+
 				} else if packageConstantTypeValuesString, ok := packageConstantTypeValues.(string); ok {
 					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + packageConstantTypeValuesString)
 				}
