@@ -10,8 +10,8 @@ import (
 	strings "strings"
 	time "time"
 
-	gotsrpc "github.com/foomo/gotsrpc"
-	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
+	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_demo_nested "github.com/foomo/gotsrpc/v2/demo/nested"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -84,7 +84,7 @@ func (p *FooGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 	if p.callStatsHandler != nil {
 		p.callStatsHandler(&gotsrpc.CallStats{
 			Func:      funcName,
-			Package:   "github.com/foomo/gotsrpc/demo",
+			Package:   "github.com/foomo/gotsrpc/v2/demo",
 			Service:   "Foo",
 			Execution: time.Since(start),
 		})
@@ -101,14 +101,14 @@ type (
 	}
 
 	DemoAnyRequest struct {
-		Any     github_com_foomo_gotsrpc_demo_nested.Any
-		AnyList []github_com_foomo_gotsrpc_demo_nested.Any
-		AnyMap  map[string]github_com_foomo_gotsrpc_demo_nested.Any
+		Any     github_com_foomo_gotsrpc_v2_demo_nested.Any
+		AnyList []github_com_foomo_gotsrpc_v2_demo_nested.Any
+		AnyMap  map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any
 	}
 	DemoAnyResponse struct {
-		RetAny_0 github_com_foomo_gotsrpc_demo_nested.Any
-		RetAny_1 []github_com_foomo_gotsrpc_demo_nested.Any
-		RetAny_2 map[string]github_com_foomo_gotsrpc_demo_nested.Any
+		RetAny_0 github_com_foomo_gotsrpc_v2_demo_nested.Any
+		RetAny_1 []github_com_foomo_gotsrpc_v2_demo_nested.Any
+		RetAny_2 map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any
 	}
 
 	DemoExtractAddressRequest struct {
@@ -122,8 +122,8 @@ type (
 	DemoGiveMeAScalarRequest struct {
 	}
 	DemoGiveMeAScalarResponse struct {
-		Amount github_com_foomo_gotsrpc_demo_nested.Amount
-		Wahr   github_com_foomo_gotsrpc_demo_nested.True
+		Amount github_com_foomo_gotsrpc_v2_demo_nested.Amount
+		Wahr   github_com_foomo_gotsrpc_v2_demo_nested.True
 		Hier   ScalarInPlace
 	}
 
@@ -165,7 +165,7 @@ type (
 	DemoNestRequest struct {
 	}
 	DemoNestResponse struct {
-		RetNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested
+		RetNest_0 []*github_com_foomo_gotsrpc_v2_demo_nested.Nested
 	}
 
 	DemoTestScalarInPlaceRequest struct {
@@ -278,7 +278,7 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 	if p.callStatsHandler != nil {
 		p.callStatsHandler(&gotsrpc.CallStats{
 			Func:      funcName,
-			Package:   "github.com/foomo/gotsrpc/demo",
+			Package:   "github.com/foomo/gotsrpc/v2/demo",
 			Service:   "Demo",
 			Execution: time.Since(start),
 		})
@@ -292,6 +292,15 @@ type (
 		server           *gorpc.Server
 		service          Bar
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
+	}
+
+	BarCustomErrorRequest struct {
+		One CustomError
+		Two *CustomError
+	}
+	BarCustomErrorResponse struct {
+		Three CustomError
+		Four  *CustomError
 	}
 
 	BarCustomTypeRequest struct {
@@ -334,6 +343,8 @@ type (
 )
 
 func init() {
+	gob.Register(BarCustomErrorRequest{})
+	gob.Register(BarCustomErrorResponse{})
 	gob.Register(BarCustomTypeRequest{})
 	gob.Register(BarCustomTypeResponse{})
 	gob.Register(BarHelloRequest{})
@@ -382,6 +393,10 @@ func (p *BarGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 	funcName := funcNameParts[len(funcNameParts)-1]
 
 	switch funcName {
+	case "BarCustomErrorRequest":
+		req := request.(BarCustomErrorRequest)
+		three, four := p.service.CustomError(req.One, req.Two)
+		response = BarCustomErrorResponse{Three: three, Four: four}
 	case "BarCustomTypeRequest":
 		req := request.(BarCustomTypeRequest)
 		retCustomType_0, retCustomType_1, retCustomType_2 := p.service.CustomType(req.CustomTypeInt, req.CustomTypeString, req.CustomTypeStruct)
@@ -405,7 +420,7 @@ func (p *BarGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 	if p.callStatsHandler != nil {
 		p.callStatsHandler(&gotsrpc.CallStats{
 			Func:      funcName,
-			Package:   "github.com/foomo/gotsrpc/demo",
+			Package:   "github.com/foomo/gotsrpc/v2/demo",
 			Service:   "Bar",
 			Execution: time.Since(start),
 		})

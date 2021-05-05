@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/foomo/gotsrpc/config"
+	"github.com/foomo/gotsrpc/v2/config"
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
 )

@@ -5,7 +5,7 @@ package demo
 import (
 	tls "crypto/tls"
 
-	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
+	github_com_foomo_gotsrpc_v2_demo_nested "github.com/foomo/gotsrpc/v2/demo/nested"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -64,7 +64,7 @@ func (tsc *DemoGoRPCClient) Stop() {
 	tsc.Client.Stop()
 }
 
-func (tsc *DemoGoRPCClient) Any(any github_com_foomo_gotsrpc_demo_nested.Any, anyList []github_com_foomo_gotsrpc_demo_nested.Any, anyMap map[string]github_com_foomo_gotsrpc_demo_nested.Any) (retAny_0 github_com_foomo_gotsrpc_demo_nested.Any, retAny_1 []github_com_foomo_gotsrpc_demo_nested.Any, retAny_2 map[string]github_com_foomo_gotsrpc_demo_nested.Any, clientErr error) {
+func (tsc *DemoGoRPCClient) Any(any github_com_foomo_gotsrpc_v2_demo_nested.Any, anyList []github_com_foomo_gotsrpc_v2_demo_nested.Any, anyMap map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any) (retAny_0 github_com_foomo_gotsrpc_v2_demo_nested.Any, retAny_1 []github_com_foomo_gotsrpc_v2_demo_nested.Any, retAny_2 map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any, clientErr error) {
 	req := DemoAnyRequest{Any: any, AnyList: anyList, AnyMap: anyMap}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
 	if rpcCallErr != nil {
@@ -86,7 +86,7 @@ func (tsc *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Er
 	return response.Addr, response.E, nil
 }
 
-func (tsc *DemoGoRPCClient) GiveMeAScalar() (amount github_com_foomo_gotsrpc_demo_nested.Amount, wahr github_com_foomo_gotsrpc_demo_nested.True, hier ScalarInPlace, clientErr error) {
+func (tsc *DemoGoRPCClient) GiveMeAScalar() (amount github_com_foomo_gotsrpc_v2_demo_nested.Amount, wahr github_com_foomo_gotsrpc_v2_demo_nested.True, hier ScalarInPlace, clientErr error) {
 	req := DemoGiveMeAScalarRequest{}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
 	if rpcCallErr != nil {
@@ -151,7 +151,7 @@ func (tsc *DemoGoRPCClient) MapCrap() (crap map[string][]int, clientErr error) {
 	return response.Crap, nil
 }
 
-func (tsc *DemoGoRPCClient) Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error) {
+func (tsc *DemoGoRPCClient) Nest() (retNest_0 []*github_com_foomo_gotsrpc_v2_demo_nested.Nested, clientErr error) {
 	req := DemoNestRequest{}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
 	if rpcCallErr != nil {
@@ -193,6 +193,17 @@ func (tsc *BarGoRPCClient) Start() {
 
 func (tsc *BarGoRPCClient) Stop() {
 	tsc.Client.Stop()
+}
+
+func (tsc *BarGoRPCClient) CustomError(one CustomError, two *CustomError) (three CustomError, four *CustomError, clientErr error) {
+	req := BarCustomErrorRequest{One: one, Two: two}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(BarCustomErrorResponse)
+	return response.Three, response.Four, nil
 }
 
 func (tsc *BarGoRPCClient) CustomType(customTypeInt CustomTypeInt, customTypeString CustomTypeString, CustomTypeStruct CustomTypeStruct) (retCustomType_0 *CustomTypeInt, retCustomType_1 *CustomTypeString, retCustomType_2 CustomTypeStruct, clientErr error) {

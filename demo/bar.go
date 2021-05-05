@@ -3,7 +3,7 @@ package demo
 import (
 	"net/http"
 
-	"github.com/foomo/gotsrpc/demo/nested"
+	"github.com/foomo/gotsrpc/v2/demo/nested"
 )
 
 type (
@@ -49,9 +49,28 @@ type (
 	}
 )
 
+type CustomError string
+
+const (
+	CustomErrorDemo CustomError = "demo"
+)
+
+var (
+	ErrCustomDemo = NewCustomError(CustomErrorDemo)
+)
+
+func NewCustomError(e CustomError) *CustomError {
+	return &e
+}
+
+func (e *CustomError) Error() string {
+	return string(*e)
+}
+
 type Bar interface {
 	Hello(w http.ResponseWriter, r *http.Request, number int64) int
 	Repeat(one, two string) (three, four bool)
 	Inheritance(inner Inner, nested OuterNested, inline OuterInline) (Inner, OuterNested, OuterInline)
 	CustomType(customTypeInt CustomTypeInt, customTypeString CustomTypeString, CustomTypeStruct CustomTypeStruct) (*CustomTypeInt, *CustomTypeString, CustomTypeStruct)
+	CustomError(one CustomError, two *CustomError) (three CustomError, four *CustomError)
 }

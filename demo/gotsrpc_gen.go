@@ -8,40 +8,31 @@ import (
 	http "net/http"
 	time "time"
 
-	gotsrpc "github.com/foomo/gotsrpc"
-	github_com_foomo_gotsrpc_demo_nested "github.com/foomo/gotsrpc/demo/nested"
+	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_demo_nested "github.com/foomo/gotsrpc/v2/demo/nested"
 )
 
 type FooGoTSRPCProxy struct {
-	EndPoint    string
-	allowOrigin []string
-	service     *Foo
+	EndPoint string
+	service  *Foo
 }
 
-func NewDefaultFooGoTSRPCProxy(service *Foo, allowOrigin []string) *FooGoTSRPCProxy {
+func NewDefaultFooGoTSRPCProxy(service *Foo) *FooGoTSRPCProxy {
 	return &FooGoTSRPCProxy{
-		EndPoint:    "/service/foo",
-		allowOrigin: allowOrigin,
-		service:     service,
+		EndPoint: "/service/foo",
+		service:  service,
 	}
 }
 
-func NewFooGoTSRPCProxy(service *Foo, endpoint string, allowOrigin []string) *FooGoTSRPCProxy {
+func NewFooGoTSRPCProxy(service *Foo, endpoint string) *FooGoTSRPCProxy {
 	return &FooGoTSRPCProxy{
-		EndPoint:    endpoint,
-		allowOrigin: allowOrigin,
-		service:     service,
+		EndPoint: endpoint,
+		service:  service,
 	}
 }
 
 // ServeHTTP exposes your service
 func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	for _, origin := range p.allowOrigin {
-		// todo we have to compare this with the referer ... and only send one
-		w.Header().Add("Access-Control-Allow-Origin", origin)
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	if r.Method != http.MethodPost {
 		if r.Method == http.MethodOptions {
 			return
@@ -56,7 +47,7 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	callStats := gotsrpc.GetStatsForRequest(r)
 	if callStats != nil {
 		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/demo"
+		callStats.Package = "github.com/foomo/gotsrpc/v2/demo"
 		callStats.Service = "Foo"
 	}
 	switch funcName {
@@ -84,35 +75,26 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type DemoGoTSRPCProxy struct {
-	EndPoint    string
-	allowOrigin []string
-	service     *Demo
+	EndPoint string
+	service  *Demo
 }
 
-func NewDefaultDemoGoTSRPCProxy(service *Demo, allowOrigin []string) *DemoGoTSRPCProxy {
+func NewDefaultDemoGoTSRPCProxy(service *Demo) *DemoGoTSRPCProxy {
 	return &DemoGoTSRPCProxy{
-		EndPoint:    "/service/demo",
-		allowOrigin: allowOrigin,
-		service:     service,
+		EndPoint: "/service/demo",
+		service:  service,
 	}
 }
 
-func NewDemoGoTSRPCProxy(service *Demo, endpoint string, allowOrigin []string) *DemoGoTSRPCProxy {
+func NewDemoGoTSRPCProxy(service *Demo, endpoint string) *DemoGoTSRPCProxy {
 	return &DemoGoTSRPCProxy{
-		EndPoint:    endpoint,
-		allowOrigin: allowOrigin,
-		service:     service,
+		EndPoint: endpoint,
+		service:  service,
 	}
 }
 
 // ServeHTTP exposes your service
 func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	for _, origin := range p.allowOrigin {
-		// todo we have to compare this with the referer ... and only send one
-		w.Header().Add("Access-Control-Allow-Origin", origin)
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	if r.Method != http.MethodPost {
 		if r.Method == http.MethodOptions {
 			return
@@ -127,15 +109,15 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	callStats := gotsrpc.GetStatsForRequest(r)
 	if callStats != nil {
 		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/demo"
+		callStats.Package = "github.com/foomo/gotsrpc/v2/demo"
 		callStats.Service = "Demo"
 	}
 	switch funcName {
 	case "Any":
 		var (
-			arg_any     github_com_foomo_gotsrpc_demo_nested.Any
-			arg_anyList []github_com_foomo_gotsrpc_demo_nested.Any
-			arg_anyMap  map[string]github_com_foomo_gotsrpc_demo_nested.Any
+			arg_any     github_com_foomo_gotsrpc_v2_demo_nested.Any
+			arg_anyList []github_com_foomo_gotsrpc_v2_demo_nested.Any
+			arg_anyMap  map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any
 		)
 		args = []interface{}{&arg_any, &arg_anyList, &arg_anyMap}
 		err := gotsrpc.LoadArgs(&args, callStats, r)
@@ -267,35 +249,26 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type BarGoTSRPCProxy struct {
-	EndPoint    string
-	allowOrigin []string
-	service     Bar
+	EndPoint string
+	service  Bar
 }
 
-func NewDefaultBarGoTSRPCProxy(service Bar, allowOrigin []string) *BarGoTSRPCProxy {
+func NewDefaultBarGoTSRPCProxy(service Bar) *BarGoTSRPCProxy {
 	return &BarGoTSRPCProxy{
-		EndPoint:    "/service/bar",
-		allowOrigin: allowOrigin,
-		service:     service,
+		EndPoint: "/service/bar",
+		service:  service,
 	}
 }
 
-func NewBarGoTSRPCProxy(service Bar, endpoint string, allowOrigin []string) *BarGoTSRPCProxy {
+func NewBarGoTSRPCProxy(service Bar, endpoint string) *BarGoTSRPCProxy {
 	return &BarGoTSRPCProxy{
-		EndPoint:    endpoint,
-		allowOrigin: allowOrigin,
-		service:     service,
+		EndPoint: endpoint,
+		service:  service,
 	}
 }
 
 // ServeHTTP exposes your service
 func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	for _, origin := range p.allowOrigin {
-		// todo we have to compare this with the referer ... and only send one
-		w.Header().Add("Access-Control-Allow-Origin", origin)
-	}
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	if r.Method != http.MethodPost {
 		if r.Method == http.MethodOptions {
 			return
@@ -310,10 +283,28 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	callStats := gotsrpc.GetStatsForRequest(r)
 	if callStats != nil {
 		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/demo"
+		callStats.Package = "github.com/foomo/gotsrpc/v2/demo"
 		callStats.Service = "Bar"
 	}
 	switch funcName {
+	case "CustomError":
+		var (
+			arg_one CustomError
+			arg_two *CustomError
+		)
+		args = []interface{}{&arg_one, &arg_two}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		customErrorThree, customErrorFour := p.service.CustomError(arg_one, arg_two)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{customErrorThree, customErrorFour}, callStats, r, w)
+		return
 	case "CustomType":
 		var (
 			arg_customTypeInt    CustomTypeInt

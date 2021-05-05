@@ -1,6 +1,6 @@
 package demo
 
-import nstd "github.com/foomo/gotsrpc/demo/nested"
+import nstd "github.com/foomo/gotsrpc/v2/demo/nested"
 
 //go:generate codecgen -o values.generated.go demo_complex.go
 

@@ -6,8 +6,8 @@ import (
 	"go/build"
 	"os"
 
-	"github.com/foomo/gotsrpc"
-	"github.com/foomo/gotsrpc/config"
+	"github.com/foomo/gotsrpc/v2"
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 var (

@@ -1,6 +1,6 @@
 ---
 module:
-  name: github.com/foomo/gotsrpc
+  name: github.com/foomo/gotsrpc/v2
   path: ../
 
 targets:
@@ -10,7 +10,7 @@ targets:
       /service/foo: Foo
       /service/bar: Bar
       /service/demo: Demo
-    package: github.com/foomo/gotsrpc/demo
+    package: github.com/foomo/gotsrpc/v2/demo
     out: demo/output/client.ts
     gorpc:
     - Foo
@@ -22,10 +22,10 @@ targets:
     - Demo
 
 mappings:
-  github.com/foomo/gotsrpc/demo:
+  github.com/foomo/gotsrpc/v2/demo:
     module: GoTSRPC.Demo
     out: demo/output/demo.ts
-  github.com/foomo/gotsrpc/demo/nested:
+  github.com/foomo/gotsrpc/v2/demo/nested:
     module: GoTSRPC.Demo.Nested
     out: demo/output/demo-nested.ts
 ...

@@ -3,7 +3,7 @@ package prometheus
 import (
 	"net/http"
 
-	"github.com/foomo/gotsrpc"
+	"github.com/foomo/gotsrpc/v2"
 	p "github.com/prometheus/client_golang/prometheus"
 )
 

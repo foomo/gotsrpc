@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/foomo/gotsrpc/config"
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 func (v *Value) isHTTPResponseWriter() bool {
@@ -185,7 +185,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		"net/http":                 "http",
 		"io":                       "io",
 		"io/ioutil":                "ioutil",
-		"github.com/foomo/gotsrpc": "gotsrpc",
+		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 	}
 	for _, service := range services {
 		// Check if we should render this service as ts rpc
@@ -215,35 +215,26 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		g.l(`
         type ` + proxyName + ` struct {
 	        EndPoint string
-			allowOrigin []string
 	        service  ` + servicePointer + service.Name + `
         }
 
-        func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `, allowOrigin []string) *` + proxyName + ` {
+        func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `) *` + proxyName + ` {
 	        return &` + proxyName + `{
 		        EndPoint: "` + service.Endpoint + `",
-				allowOrigin : allowOrigin,
 		        service:  service,
 	        }
         }
 
 
-        func New` + proxyName + `(service ` + servicePointer + service.Name + `, endpoint string, allowOrigin []string) *` + proxyName + ` {
+        func New` + proxyName + `(service ` + servicePointer + service.Name + `, endpoint string) *` + proxyName + ` {
 	        return &` + proxyName + `{
 		        EndPoint: endpoint,
-				allowOrigin : allowOrigin,
 		        service:  service,
 	        }
         }
 
         // ServeHTTP exposes your service
         func (p *` + proxyName + `) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-			for _, origin := range p.allowOrigin {
-				// todo we have to compare this with the referer ... and only send one
-				w.Header().Add("Access-Control-Allow-Origin", origin)
-			}
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
 	        if r.Method != http.MethodPost {
 				if r.Method == http.MethodOptions {
 					return
@@ -399,7 +390,7 @@ func (ms *goMethod) renderSignature() string {
 
 func renderTSRPCServiceClients(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
-		"github.com/foomo/gotsrpc": "gotsrpc",
+		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 		"net/http":                 "net_http",
 	}
 
@@ -483,7 +474,7 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		"crypto/tls":               "tls",
 		"encoding/gob":             "gob",
 		"github.com/valyala/gorpc": "gorpc",
-		"github.com/foomo/gotsrpc": "gotsrpc",
+		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 	}
 
 	for _, service := range services {

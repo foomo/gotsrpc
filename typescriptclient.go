@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/foomo/gotsrpc/config"
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, service *Service, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {

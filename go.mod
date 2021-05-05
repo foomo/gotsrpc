@@ -1,4 +1,4 @@
-module github.com/foomo/gotsrpc
+module github.com/foomo/gotsrpc/v2
 
 go 1.15
 

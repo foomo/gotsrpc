@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/foomo/gotsrpc/config"
+	"github.com/foomo/gotsrpc/v2/config"
 	"github.com/iancoleman/strcase"
 )
 

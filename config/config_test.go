@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const sampleConf = `---
@@ -12,7 +13,7 @@ targets:
   demo:
     services:
       /service/demo: Service
-    package: github.com/foomo/gotsrpc/demo
+    package: github.com/foomo/gotsrpc/v2/demo
     module: My.Service
     modulekind: commonjs
     out: /tmp/my-service.ts 
@@ -20,7 +21,7 @@ mappings:
   foo/bar:
     module: Sample.Module
     out: path/to/ts
-  github.com/foomo/gotsrpc:
+  github.com/foomo/gotsrpc/v2:
     module: Sample.Module.RPC
     out: path/to/other/folder
 
@@ -53,7 +54,7 @@ func TestLoadConfig(t *testing.T) {
 	if demoTarget.Out != "/tmp/my-service.ts" {
 		t.Fatal("demo target out is wrong")
 	}
-	if demoTarget.Package != "github.com/foomo/gotsrpc/demo" {
+	if demoTarget.Package != "github.com/foomo/gotsrpc/v2/demo" {
 		t.Fatal("wrong target package")
 	}
 	if demoTarget.TypeScriptModule != "My.Service" {
@@ -74,7 +75,7 @@ targets:
   demo:
     services:
       /service/demo: Service
-    package: github.com/foomo/gotsrpc/demo
+    package: github.com/foomo/gotsrpc/v2/demo
     module: My.Service
     modulekind: commonjs
     out: /tmp/my-service.ts 
@@ -82,7 +83,7 @@ mappings:
   foo/bar:
     module: Sample.Module
     out: path/to/ts
-  github.com/foomo/gotsrpc:
+  github.com/foomo/gotsrpc/v2:
     module: Sample.Module.RPC
     out: path/to/other/folder
 

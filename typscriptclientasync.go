@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/foomo/gotsrpc/config"
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {

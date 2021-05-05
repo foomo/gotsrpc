@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/foomo/gotsrpc/config"
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 func (sl ServiceList) Len() int           { return len(sl) }

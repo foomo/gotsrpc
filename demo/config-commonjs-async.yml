@@ -1,6 +1,6 @@
 ---
 module:
-  name: github.com/foomo/gotsrpc
+  name: github.com/foomo/gotsrpc/v2
   path: ../
 
 modulekind: commonjs
@@ -11,7 +11,7 @@ targets:
       /service/foo: Foo
       /service/bar: Bar
       /service/demo: Demo
-    package: github.com/foomo/gotsrpc/demo
+    package: github.com/foomo/gotsrpc/v2/demo
     out: demo/output-commonjs-async/client.ts
     gorpc:
       - Foo
@@ -23,8 +23,8 @@ targets:
       - Demo
 
 mappings:
-  github.com/foomo/gotsrpc/demo:
+  github.com/foomo/gotsrpc/v2/demo:
     out: demo/output-commonjs-async/demo.ts
-  github.com/foomo/gotsrpc/demo/nested:
+  github.com/foomo/gotsrpc/v2/demo/nested:
     out: demo/output-commonjs-async/demo-nested.ts
 ...

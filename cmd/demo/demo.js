@@ -3,14 +3,19 @@ var GoTSRPC;
 (function (GoTSRPC) {
     var Demo;
     (function (Demo) {
-        // github.com/foomo/gotsrpc/demo.CustomTypeInt
+        // github.com/foomo/gotsrpc/v2/demo.CustomError
+        var CustomError;
+        (function (CustomError) {
+            CustomError["Demo"] = "demo";
+        })(CustomError = Demo.CustomError || (Demo.CustomError = {}));
+        // github.com/foomo/gotsrpc/v2/demo.CustomTypeInt
         var CustomTypeInt;
         (function (CustomTypeInt) {
             CustomTypeInt[CustomTypeInt["One"] = 1] = "One";
             CustomTypeInt[CustomTypeInt["Three"] = 3] = "Three";
             CustomTypeInt[CustomTypeInt["Two"] = 2] = "Two";
         })(CustomTypeInt = Demo.CustomTypeInt || (Demo.CustomTypeInt = {}));
-        // github.com/foomo/gotsrpc/demo.CustomTypeString
+        // github.com/foomo/gotsrpc/v2/demo.CustomTypeString
         var CustomTypeString;
         (function (CustomTypeString) {
             CustomTypeString["Five"] = "CONST_CASE";
@@ -30,7 +35,7 @@ var GoTSRPC;
     (function (Demo) {
         var Nested;
         (function (Nested) {
-            // github.com/foomo/gotsrpc/demo/nested.CustomTypeNested
+            // github.com/foomo/gotsrpc/v2/demo/nested.CustomTypeNested
             var CustomTypeNested;
             (function (CustomTypeNested) {
                 CustomTypeNested["One"] = "one";
@@ -134,6 +139,9 @@ var GoTSRPC;
                 this.endPoint = endPoint;
                 this.transport = transport;
             }
+            BarClient.prototype.customError = function (one, two, success, err) {
+                this.transport(this.endPoint, "CustomError", [one, two], success, err);
+            };
             BarClient.prototype.customType = function (customTypeInt, customTypeString, CustomTypeStruct, success, err) {
                 this.transport(this.endPoint, "CustomType", [customTypeInt, customTypeString, CustomTypeStruct], success, err);
             };

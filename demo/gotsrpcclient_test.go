@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/foomo/gotsrpc/demo/nested"
+	"github.com/foomo/gotsrpc/v2/demo/nested"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,7 +33,7 @@ var (
 )
 
 func setup() {
-	server = httptest.NewServer(NewDefaultDemoGoTSRPCProxy(&Demo{}, []string{}))
+	server = httptest.NewServer(NewDefaultDemoGoTSRPCProxy(&Demo{}))
 	serverUrl, _ := url.Parse(server.URL)
 	client = NewDefaultDemoGoTSRPCClient(serverUrl.String())
 }

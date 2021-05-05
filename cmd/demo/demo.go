@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/foomo/gotsrpc/demo"
+	"github.com/foomo/gotsrpc/v2/demo"
 )
 
 type Demo struct {
