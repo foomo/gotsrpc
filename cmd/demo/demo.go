@@ -40,7 +40,7 @@ func serveFile(name string, w http.ResponseWriter) {
 
 func main() {
 	d := &Demo{
-		proxy: demo.NewDefaultDemoGoTSRPCProxy(&demo.Demo{}, []string{}),
+		proxy: demo.NewDefaultDemoGoTSRPCProxy(&demo.Demo{}),
 	}
 	fmt.Println("starting a demo server on http://127.0.0.1:8080 - open it and take a look at the console")
 	cmd := exec.Command("open", "http://127.0.0.1:8080")
