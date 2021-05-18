@@ -6,8 +6,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/foomo/gotsrpc/v2/config"
 	"github.com/iancoleman/strcase"
+
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 // @todo refactor this is wrong
@@ -24,9 +25,9 @@ func (f *Field) tsName() string {
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) {
 	switch true {
 	case v.Map != nil:
-		ts.app("{[index:" + v.Map.KeyType + "]:")
+		ts.app("Record<" + v.Map.KeyType + ", ")
 		v.Map.Value.tsType(mappings, scalars, structs, ts)
-		ts.app("}")
+		ts.app(">")
 	case v.Array != nil:
 		v.Array.Value.tsType(mappings, scalars, structs, ts)
 		if v.Array.Value.ScalarType != ScalarTypeByte {
@@ -193,12 +194,12 @@ func renderTypescriptStructsToPackages(
 						keys = append(keys, k)
 					}
 					sort.Strings(keys)
-						packageCodeMap[packageConstantTypeName].l("export enum " + packageConstantTypeName + " {").ind(1)
-						for _, k := range keys {
-							enum := strings.TrimPrefix(strcase.ToCamel(k), packageConstantTypeName)
-							packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValuesList[k].Value + ",")
-						}
-						packageCodeMap[packageConstantTypeName].ind(-1).l("}")
+					packageCodeMap[packageConstantTypeName].l("export enum " + packageConstantTypeName + " {").ind(1)
+					for _, k := range keys {
+						enum := strings.TrimPrefix(strcase.ToCamel(k), packageConstantTypeName)
+						packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValuesList[k].Value + ",")
+					}
+					packageCodeMap[packageConstantTypeName].ind(-1).l("}")
 
 				} else if packageConstantTypeValuesString, ok := packageConstantTypeValues.(string); ok {
 					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + packageConstantTypeValuesString)

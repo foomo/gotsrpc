@@ -7,10 +7,10 @@ export interface Address {
 	city?:string;
 	signs?:string[];
 	PeoplePtr:github_com_foomo_gotsrpc_v2_demo.Person[];
-	ArrayOfMaps:{[index:string]:boolean}[];
+	ArrayOfMaps:Record<string, boolean>[];
 	ArrayArrayAddress:github_com_foomo_gotsrpc_v2_demo.Address[][];
 	People:github_com_foomo_gotsrpc_v2_demo.Person[];
-	MapCrap:{[index:string]:{[index:number]:boolean}};
+	MapCrap:Record<string, Record<number, boolean>>;
 	NestedPtr?:github_com_foomo_gotsrpc_v2_demo_nested.Nested;
 	NestedStruct:github_com_foomo_gotsrpc_v2_demo_nested.Nested;
 }
@@ -73,7 +73,7 @@ export interface Person {
 	Name:string;
 	address?:github_com_foomo_gotsrpc_v2_demo.Address;
 	AddressStruct:github_com_foomo_gotsrpc_v2_demo.Address;
-	Addresses:{[index:string]:github_com_foomo_gotsrpc_v2_demo.Address};
+	Addresses:Record<string, github_com_foomo_gotsrpc_v2_demo.Address>;
 	InlinePtr?:{
 		Foo:boolean;
 	};

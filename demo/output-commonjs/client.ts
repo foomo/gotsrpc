@@ -11,7 +11,7 @@ export class FooClient {
 }
 export class DemoClient {
 	constructor(public endPoint:string = "/service/demo", public transport:(endPoint:string, method:string, args:any[], success:any, err:any) => void) {  }
-	any(any:github_com_foomo_gotsrpc_v2_demo_nested.Any, anyList:github_com_foomo_gotsrpc_v2_demo_nested.Any[], anyMap:{[index:string]:github_com_foomo_gotsrpc_v2_demo_nested.Any}, success:(ret:github_com_foomo_gotsrpc_v2_demo_nested.Any, ret_1:github_com_foomo_gotsrpc_v2_demo_nested.Any[], ret_2:{[index:string]:github_com_foomo_gotsrpc_v2_demo_nested.Any}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+	any(any:github_com_foomo_gotsrpc_v2_demo_nested.Any, anyList:github_com_foomo_gotsrpc_v2_demo_nested.Any[], anyMap:Record<string, github_com_foomo_gotsrpc_v2_demo_nested.Any>, success:(ret:github_com_foomo_gotsrpc_v2_demo_nested.Any, ret_1:github_com_foomo_gotsrpc_v2_demo_nested.Any[], ret_2:Record<string, github_com_foomo_gotsrpc_v2_demo_nested.Any>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
 	}
 	extractAddress(person:github_com_foomo_gotsrpc_v2_demo.Person, success:(addr:github_com_foomo_gotsrpc_v2_demo.Address, e:github_com_foomo_gotsrpc_v2_demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
@@ -23,16 +23,16 @@ export class DemoClient {
 	hello(name:string, success:(ret:string, ret_1:github_com_foomo_gotsrpc_v2_demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "Hello", [name], success, err);
 	}
-	helloInterface(anything:any, anythingMap:{[index:string]:any}, anythingSlice:any[], success:() => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+	helloInterface(anything:any, anythingMap:Record<string, any>, anythingSlice:any[], success:() => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
 	}
-	helloNumberMaps(intMap:{[index:number]:string}, success:(floatMap:{[index:number]:string}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+	helloNumberMaps(intMap:Record<number, string>, success:(floatMap:Record<number, string>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "HelloNumberMaps", [intMap], success, err);
 	}
 	helloScalarError(success:(err:github_com_foomo_gotsrpc_v2_demo.ScalarError) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "HelloScalarError", [], success, err);
 	}
-	mapCrap(success:(crap:{[index:string]:number[]}) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+	mapCrap(success:(crap:Record<string, number[]>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "MapCrap", [], success, err);
 	}
 	nest(success:(ret:github_com_foomo_gotsrpc_v2_demo_nested.Nested[]) => void, err:(request:XMLHttpRequest, e?:Error) => void) {

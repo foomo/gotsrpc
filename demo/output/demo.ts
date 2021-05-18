@@ -5,10 +5,10 @@ module GoTSRPC.Demo {
 		city?:string;
 		signs?:string[];
 		PeoplePtr:GoTSRPC.Demo.Person[];
-		ArrayOfMaps:{[index:string]:boolean}[];
+		ArrayOfMaps:Record<string, boolean>[];
 		ArrayArrayAddress:GoTSRPC.Demo.Address[][];
 		People:GoTSRPC.Demo.Person[];
-		MapCrap:{[index:string]:{[index:number]:boolean}};
+		MapCrap:Record<string, Record<number, boolean>>;
 		NestedPtr?:GoTSRPC.Demo.Nested.Nested;
 		NestedStruct:GoTSRPC.Demo.Nested.Nested;
 	}
@@ -71,7 +71,7 @@ module GoTSRPC.Demo {
 		Name:string;
 		address?:GoTSRPC.Demo.Address;
 		AddressStruct:GoTSRPC.Demo.Address;
-		Addresses:{[index:string]:GoTSRPC.Demo.Address};
+		Addresses:Record<string, GoTSRPC.Demo.Address>;
 		InlinePtr?:{
 			Foo:boolean;
 		};

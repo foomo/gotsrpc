@@ -14,7 +14,7 @@ module GoTSRPC.Demo.Nested {
 	export interface Nested {
 		Name:string;
 		Any:any;
-		AnyMap:{[index:string]:any};
+		AnyMap:Record<string, any>;
 		AnyList:any[];
 		SuperNestedString:{
 			Ha:number;
