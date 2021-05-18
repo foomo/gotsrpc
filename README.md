@@ -7,7 +7,7 @@
 From source to /usr/local/bin/gotsrpc:
 
 ```bash
-go get github.com/foomo/gotsrpc
+go get github.com/foomo/gotsrpc/v2
 cd $GOPATH/src/github.com/foomo/gotsrpc
 make install
 ```
@@ -47,7 +47,7 @@ targets:
     services:
       /service/foo: Foo
       /service/demo: Demo
-    package: github.com/foomo/gotsrpc/demo
+    package: github.com/foomo/gotsrpc/v2/demo
     out: /tmp/test.ts
     gorpc:
       - Foo
@@ -57,9 +57,9 @@ targets:
       - Demo
 
 mappings:
-  github.com/foomo/gotsrpc/demo:
+  github.com/foomo/gotsrpc/v2/demo:
     out: /tmp/test-files-demo.ts
-  github.com/foomo/gotsrpc/demo/nested:
+  github.com/foomo/gotsrpc/v2/demo/nested:
     out: /tmp/test-files-demo-nested.ts
 ...
 ```
@@ -115,7 +115,7 @@ targets:
     services:
       /service/foo: Foo
       /service/demo: Demo
-    package: github.com/foomo/gotsrpc/demo
+    package: github.com/foomo/gotsrpc/v2/demo
     out: /tmp/test.ts
     gorpc:
       - Foo
@@ -125,10 +125,10 @@ targets:
       - Demo
 
 mappings:
-  github.com/foomo/gotsrpc/demo:
+  github.com/foomo/gotsrpc/v2/demo:
     module: GoTSRPC.Demo
     out: /tmp/test-files-demo.ts
-  github.com/foomo/gotsrpc/demo/nested:
+  github.com/foomo/gotsrpc/v2/demo/nested:
     module: GoTSRPC.Demo.Nested
     out: /tmp/test-files-demo-nested.ts
 ...
