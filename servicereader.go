@@ -328,6 +328,21 @@ func Read(
 			}
 		}
 	}
+	for _, scalarDef := range scalars {
+		if scalarDef != nil {
+			scalarPackage := scalarDef.Package
+			_, ok := constantTypes[scalarPackage]
+			if !ok {
+				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
+				pkg, constPkgErr := parsePackage(goPaths, gomod, scalarPackage)
+				if constPkgErr != nil {
+					err = constPkgErr
+					return
+				}
+				constantTypes[scalarPackage] = loadConstantTypes(pkg)
+			}
+		}
+	}
 
 	// fix arg and return field lists
 	for _, service := range services {
