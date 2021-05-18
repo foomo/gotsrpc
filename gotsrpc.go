@@ -15,9 +15,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2/config"
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
+
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 const contextStatsKey = "gotsrpcStats"
@@ -112,27 +113,30 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 
 	errorStrings := map[string]string{}
 	for _, goPath := range goPaths {
-		fset := token.NewFileSet()
 		var dir string
+		fset := token.NewFileSet()
 		if gomod.ModFile != nil {
-			for _, req := range gomod.ModFile.Require {
-				if req.Syntax.Token[0] == packageName {
-					packageName = req.Mod.String()
+			for _, rep := range gomod.ModFile.Replace {
+				if strings.HasPrefix(packageName, rep.Old.Path) {
+					if strings.HasPrefix(rep.New.String(), ".") || strings.HasPrefix(rep.New.Path, "/") {
+						trace("replacing package with local dir", packageName, rep.Old.String(), rep.New.String())
+						dir = strings.Replace(packageName, rep.Old.Path, filepath.Join(gomod.Path, rep.New.Path), 1)
+					} else {
+						trace("replacing package", packageName, rep.Old.String(), rep.New.String())
+						dir = strings.TrimSuffix(path.Join(goPath, "pkg", "mod", rep.New.String(), strings.TrimPrefix(packageName, rep.Old.Path)), "/")
+					}
 					break
 				}
 			}
-			for _, rep := range gomod.ModFile.Replace {
-				if strings.HasPrefix(packageName, rep.Old.String()) {
-					if strings.HasPrefix(rep.New.String(), ".") || strings.HasPrefix(rep.New.String(), "/") {
-						dir := strings.Replace(packageName, rep.Old.String(), filepath.Join(gomod.Path, rep.New.String()), 1)
-						return parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
-					} else {
-						packageName = rep.New.String()
+			if dir == "" {
+				for _, req := range gomod.ModFile.Require {
+					if strings.HasPrefix(packageName, req.Mod.Path) {
+						trace("resolving mod package", packageName, req.Mod.String())
+						dir = strings.TrimSuffix(path.Join(goPath, "pkg", "mod", req.Mod.String(), strings.TrimPrefix(packageName, req.Mod.Path)), "/")
 						break
 					}
 				}
 			}
-			dir = path.Join(goPath, "pkg", "mod", packageName)
 		} else if strings.HasSuffix(goPath, "vendor") {
 			dir = path.Join(goPath, packageName)
 		} else {
