@@ -181,10 +181,10 @@ func extractImports(fields []*Field, fullPackageName string, aliases map[string]
 
 func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
-		"time":                     "time",
-		"net/http":                 "http",
-		"io":                       "io",
-		"io/ioutil":                "ioutil",
+		"time":                        "time",
+		"net/http":                    "http",
+		"io":                          "io",
+		"io/ioutil":                   "ioutil",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 	}
 	for _, service := range services {
@@ -244,16 +244,6 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 	        }
 			defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body 
 		`)
-		needsArgs := false
-		for _, method := range service.Methods {
-			if len(method.Args) > 0 {
-				needsArgs = true
-				break
-			}
-		}
-		if needsArgs {
-			g.l(`var args []interface{}`)
-		}
 
 		g.l("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
 		g.l("callStats := gotsrpc.GetStatsForRequest(r)")
@@ -275,18 +265,16 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			callArgs := []string{}
 			isSessionRequest := false
 			if len(method.Args) > 0 {
-
 				args := []string{}
 				argsDecls := []string{}
 
 				skipArgI := 0
 
-				nonHTTPReleatedArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
+				nonHTTPRelatedArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
 
-				isSessionRequest = len(method.Args)-len(nonHTTPReleatedArgs) == 2
+				isSessionRequest = len(method.Args)-len(nonHTTPRelatedArgs) == 2
 
-				for _, arg := range nonHTTPReleatedArgs {
-
+				for _, arg := range nonHTTPRelatedArgs {
 					argName := "arg_" + arg.Name //strconv.Itoa(argI)
 
 					//argsDecls = append(argsDecls, argName+" := "+arg.Value.emptyLiteral(aliases))
@@ -301,7 +289,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 						g.l(argDecl)
 					}
 					g.l(")")
-					g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
+					g.l("args := []interface{}{" + strings.Join(args, ", ") + "}")
 					g.l("err := gotsrpc.LoadArgs(&args, callStats, r)")
 					g.l("if err != nil {")
 					g.ind(1)
@@ -391,7 +379,7 @@ func (ms *goMethod) renderSignature() string {
 func renderTSRPCServiceClients(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
-		"net/http":                 "net_http",
+		"net/http":                    "net_http",
 	}
 
 	for _, service := range services {
@@ -467,13 +455,13 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 
 func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
-		"fmt":                      "fmt",
-		"time":                     "time",
-		"strings":                  "strings",
-		"reflect":                  "reflect",
-		"crypto/tls":               "tls",
-		"encoding/gob":             "gob",
-		"github.com/valyala/gorpc": "gorpc",
+		"fmt":                         "fmt",
+		"time":                        "time",
+		"strings":                     "strings",
+		"reflect":                     "reflect",
+		"crypto/tls":                  "tls",
+		"encoding/gob":                "gob",
+		"github.com/valyala/gorpc":    "gorpc",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 	}
 
