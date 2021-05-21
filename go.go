@@ -311,11 +311,12 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 				returnValueNames = append(returnValueNames, lcfirst(method.Name)+ucfirst(retArgName))
 			}
 			g.l("executionStart := time.Now()")
+			if isSessionRequest {
+				g.l("rw := gotsrpc.ResponseWriter{ResponseWriter: w}")
+				callArgs = append([]string{"&rw", "r"}, callArgs...)
+			}
 			if len(returnValueNames) > 0 {
 				g.app(strings.Join(returnValueNames, ", ") + " := ")
-			}
-			if isSessionRequest {
-				callArgs = append([]string{"w", "r"}, callArgs...)
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
@@ -323,7 +324,13 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			g.l("if callStats != nil {")
 			g.ind(1).l("callStats.Execution = time.Now().Sub(executionStart)").ind(-1)
 			g.l("}")
+			if isSessionRequest {
+				g.l("if rw.Status() == http.StatusOK {").ind(1)
+			}
 			g.l("gotsrpc.Reply([]interface{}{" + strings.Join(returnValueNames, ", ") + "}, callStats, r, w)")
+			if isSessionRequest {
+				g.ind(-1).l("}")
+			}
 			g.l("return")
 			g.ind(-1)
 		}

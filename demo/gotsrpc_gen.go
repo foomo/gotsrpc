@@ -332,11 +332,14 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		executionStart := time.Now()
-		helloRet := p.service.Hello(w, r, arg_number)
+		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
+		helloRet := p.service.Hello(&rw, r, arg_number)
 		if callStats != nil {
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
-		gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
+		if rw.Status() == http.StatusOK {
+			gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
+		}
 		return
 	case "Inheritance":
 		var (

@@ -28,18 +28,15 @@ func GetCalledFunc(r *http.Request, endPoint string) string {
 }
 
 func ErrorFuncNotFound(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusNotFound)
-	w.Write([]byte("method not found"))
+	http.Error(w, "method not found", http.StatusNotFound)
 }
 
 func ErrorCouldNotLoadArgs(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write([]byte("could not load args"))
+	http.Error(w, "could not load args", http.StatusBadRequest)
 }
 
 func ErrorMethodNotAllowed(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusMethodNotAllowed)
-	w.Write([]byte("you gotta POST"))
+	http.Error(w, "you gotta POST", http.StatusMethodNotAllowed)
 }
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
