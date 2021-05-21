@@ -2,6 +2,7 @@ package gotsrpc
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -20,7 +21,7 @@ const (
 var _ Client = &bufferedClient{}
 
 type Client interface {
-	Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
+	Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
 	SetClientEncoding(encoding ClientEncoding)
 	SetTransportHttpClient(client *http.Client)
 	SetDefaultHeaders(headers http.Header)
@@ -38,11 +39,11 @@ func NewClientWithHttpClient(client *http.Client) Client {
 	}
 }
 
-func newRequest(url string, contentType string, buffer *bytes.Buffer, headers http.Header) (r *http.Request, err error) {
+func newRequest(ctx context.Context, url string, contentType string, buffer *bytes.Buffer, headers http.Header) (r *http.Request, err error) {
 	if buffer == nil {
 		buffer = &bytes.Buffer{}
 	}
-	request, errRequest := http.NewRequest("POST", url, buffer)
+	request, errRequest := http.NewRequestWithContext(ctx, "POST", url, buffer)
 	if errRequest != nil {
 		return nil, errors.Wrap(errRequest, "could not create a request")
 	}
@@ -75,7 +76,7 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 }
 
 // CallClient calls a method on the remove service
-func (c *bufferedClient) Call(url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
+func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
 	// Marshall args
 	b := new(bytes.Buffer)
 
@@ -90,7 +91,7 @@ func (c *bufferedClient) Call(url string, endpoint string, method string, args [
 	// Create post url
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
 
-	request, errRequest := newRequest(postURL, c.handle.contentType, b, c.headers.Clone())
+	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, c.headers.Clone())
 	if errRequest != nil {
 		return errRequest
 	}

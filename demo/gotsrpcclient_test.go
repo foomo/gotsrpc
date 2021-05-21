@@ -1,6 +1,7 @@
 package demo
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"net/http/httptest"
@@ -9,8 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2/demo/nested"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/foomo/gotsrpc/v2/demo/nested"
 )
 
 func init() {
@@ -45,8 +47,9 @@ func teardown() {
 func TestDefault(t *testing.T) {
 	setup()
 	defer teardown()
+	ctx := context.Background()
 
-	resp, errServer, errClient := client.Hello("stefan")
+	resp, errServer, errClient := client.Hello(ctx, "stefan")
 	assert.NoError(t, errClient)
 	assert.Nil(t, errServer)
 	fmt.Println(resp)
@@ -55,8 +58,10 @@ func TestDefault(t *testing.T) {
 func TestHelloNumberMaps(t *testing.T) {
 	setup()
 	defer teardown()
+	ctx := context.Background()
+
 	intMap := map[int]string{1: "one", 2: "two", 3: "three"}
-	floatMap, errClient := client.HelloNumberMaps(intMap)
+	floatMap, errClient := client.HelloNumberMaps(ctx, intMap)
 	assert.NoError(t, errClient)
 	for f, fstr := range floatMap {
 		i := int(f)
@@ -67,11 +72,12 @@ func TestHelloNumberMaps(t *testing.T) {
 func benchmarkRequests(b *testing.B, count int) {
 	setup()
 	defer teardown()
+	ctx := context.Background()
 
 	person := GeneratePerson(count)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		client.ExtractAddress(person)
+		client.ExtractAddress(ctx, person)
 	}
 }
 
