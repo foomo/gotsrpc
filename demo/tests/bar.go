@@ -6,7 +6,7 @@ import (
 	"github.com/foomo/gotsrpc/v2/demo"
 )
 
-type Bar struct {}
+type Bar struct{}
 
 func (b Bar) Hello(w http.ResponseWriter, r *http.Request, number int64) int {
 	return int(number)
@@ -28,4 +28,8 @@ func (b Bar) CustomType(customTypeInt demo.CustomTypeInt, customTypeString demo.
 
 func (b Bar) CustomError(one demo.CustomError, two *demo.CustomError) (three demo.CustomError, four *demo.CustomError) {
 	return one, two
+}
+
+func (b Bar) AttributeMapping() (ret demo.AttributeMapping) {
+	return ret
 }

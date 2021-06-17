@@ -147,6 +147,7 @@ func (tsc *HTTPDemoGoTSRPCClient) TestScalarInPlace(ctx go_context.Context) (ret
 }
 
 type BarGoTSRPCClient interface {
+	AttributeMapping(ctx go_context.Context) (retAttributeMapping_0 AttributeMapping, clientErr error)
 	CustomError(ctx go_context.Context, one CustomError, two *CustomError) (three CustomError, four *CustomError, clientErr error)
 	CustomType(ctx go_context.Context, customTypeInt CustomTypeInt, customTypeString CustomTypeString, CustomTypeStruct CustomTypeStruct) (retCustomType_0 *CustomTypeInt, retCustomType_1 *CustomTypeString, retCustomType_2 CustomTypeStruct, clientErr error)
 	Hello(ctx go_context.Context, number int64) (retHello_0 int, clientErr error)
@@ -175,6 +176,13 @@ func NewBarGoTSRPCClientWithClient(url string, endpoint string, client *go_net_h
 		Client:   gotsrpc.NewClientWithHttpClient(client),
 	}
 }
+func (tsc *HTTPBarGoTSRPCClient) AttributeMapping(ctx go_context.Context) (retAttributeMapping_0 AttributeMapping, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&retAttributeMapping_0}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "AttributeMapping", args, reply)
+	return
+}
+
 func (tsc *HTTPBarGoTSRPCClient) CustomError(ctx go_context.Context, one CustomError, two *CustomError) (three CustomError, four *CustomError, clientErr error) {
 	args := []interface{}{one, two}
 	reply := []interface{}{&three, &four}

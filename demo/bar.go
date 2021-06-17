@@ -12,6 +12,15 @@ type (
 	CustomTypeFoo    string
 )
 
+type (
+	AttributeID         string
+	AttributeMapping    map[AttributeID]*AttributeDefinition
+	AttributeDefinition struct {
+		Key   string
+		Value string
+	}
+)
+
 const (
 	CustomTypeIntOne   CustomTypeInt = 1
 	CustomTypeIntTwo   CustomTypeInt = 2
@@ -22,9 +31,9 @@ const (
 	CustomTypeStringOne   CustomTypeString = "regular"
 	CustomTypeStringTwo   CustomTypeString = "camelCase"
 	CustomTypeStringThree CustomTypeString = "snake_case"
-	CustomTypeStringFour CustomTypeString = "slug-case"
-	CustomTypeStringFive CustomTypeString = "CONST_CASE"
-	CustomTypeStringSix CustomTypeString = "SLUG-CASE-UPPER"
+	CustomTypeStringFour  CustomTypeString = "slug-case"
+	CustomTypeStringFive  CustomTypeString = "CONST_CASE"
+	CustomTypeStringSix   CustomTypeString = "SLUG-CASE-UPPER"
 	CustomTypeStringSeven CustomTypeString = "dot.case"
 )
 
@@ -73,4 +82,5 @@ type Bar interface {
 	Inheritance(inner Inner, nested OuterNested, inline OuterInline) (Inner, OuterNested, OuterInline)
 	CustomType(customTypeInt CustomTypeInt, customTypeString CustomTypeString, CustomTypeStruct CustomTypeStruct) (*CustomTypeInt, *CustomTypeString, CustomTypeStruct)
 	CustomError(one CustomError, two *CustomError) (three CustomError, four *CustomError)
+	AttributeMapping() AttributeMapping
 }

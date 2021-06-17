@@ -139,6 +139,9 @@ var GoTSRPC;
                 this.endPoint = endPoint;
                 this.transport = transport;
             }
+            BarClient.prototype.attributeMapping = function (success, err) {
+                this.transport(this.endPoint, "AttributeMapping", [], success, err);
+            };
             BarClient.prototype.customError = function (one, two, success, err) {
                 this.transport(this.endPoint, "CustomError", [one, two], success, err);
             };

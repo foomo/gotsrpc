@@ -127,17 +127,17 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		return nil
 	}
 	ts.l("// " + str.FullName())
-	ts.l("export interface " + str.Name + " {").ind(1)
 	switch {
 	case str.Map != nil:
-		ts.app("[index:" + str.Map.KeyType + "]:")
+		ts.app("export type " + str.Name + " = Record<" + str.Map.KeyType + ",")
 		str.Map.Value.tsType(mappings, scalars, structs, ts)
-		ts.app(";")
+		ts.app(">")
 		ts.nl()
 	default:
+		ts.l("export interface " + str.Name + " {").ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
+		ts.ind(-1).l("}")
 	}
-	ts.ind(-1).l("}")
 	return nil
 }
 

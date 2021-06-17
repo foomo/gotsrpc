@@ -284,6 +284,14 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		callStats.Service = "Bar"
 	}
 	switch funcName {
+	case "AttributeMapping":
+		executionStart := time.Now()
+		attributeMappingRet := p.service.AttributeMapping()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{attributeMappingRet}, callStats, r, w)
+		return
 	case "CustomError":
 		var (
 			arg_one CustomError

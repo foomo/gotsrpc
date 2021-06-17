@@ -294,6 +294,12 @@ type (
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
+	BarAttributeMappingRequest struct {
+	}
+	BarAttributeMappingResponse struct {
+		RetAttributeMapping_0 AttributeMapping
+	}
+
 	BarCustomErrorRequest struct {
 		One CustomError
 		Two *CustomError
@@ -343,6 +349,8 @@ type (
 )
 
 func init() {
+	gob.Register(BarAttributeMappingRequest{})
+	gob.Register(BarAttributeMappingResponse{})
 	gob.Register(BarCustomErrorRequest{})
 	gob.Register(BarCustomErrorResponse{})
 	gob.Register(BarCustomTypeRequest{})
@@ -393,6 +401,9 @@ func (p *BarGoRPCProxy) handler(clientAddr string, request interface{}) (respons
 	funcName := funcNameParts[len(funcNameParts)-1]
 
 	switch funcName {
+	case "BarAttributeMappingRequest":
+		retAttributeMapping_0 := p.service.AttributeMapping()
+		response = BarAttributeMappingResponse{RetAttributeMapping_0: retAttributeMapping_0}
 	case "BarCustomErrorRequest":
 		req := request.(BarCustomErrorRequest)
 		three, four := p.service.CustomError(req.One, req.Two)

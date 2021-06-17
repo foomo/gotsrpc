@@ -62,6 +62,9 @@ export class BarClient {
 	constructor(
 		public transport:<T>(method: string, data?: any[]) => Promise<T>
 	) {}
+	async attributeMapping():Promise<github_com_foomo_gotsrpc_v2_demo.AttributeMapping> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.AttributeMapping}>("AttributeMapping", []))[0]
+	}
 	async customError(one:github_com_foomo_gotsrpc_v2_demo.CustomError, two:github_com_foomo_gotsrpc_v2_demo.CustomError):Promise<{three:github_com_foomo_gotsrpc_v2_demo.CustomError; four:github_com_foomo_gotsrpc_v2_demo.CustomError}> {
 		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.CustomError; 1:github_com_foomo_gotsrpc_v2_demo.CustomError}>("CustomError", [one, two])
 		let responseObject = {three : response[0], four : response[1]};

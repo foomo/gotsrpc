@@ -44,6 +44,9 @@ export class DemoClient {
 }
 export class BarClient {
 	constructor(public endPoint:string = "/service/bar", public transport:(endPoint:string, method:string, args:any[], success:any, err:any) => void) {  }
+	attributeMapping(success:(ret:github_com_foomo_gotsrpc_v2_demo.AttributeMapping) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		this.transport(this.endPoint, "AttributeMapping", [], success, err);
+	}
 	customError(one:github_com_foomo_gotsrpc_v2_demo.CustomError, two:github_com_foomo_gotsrpc_v2_demo.CustomError, success:(three:github_com_foomo_gotsrpc_v2_demo.CustomError, four:github_com_foomo_gotsrpc_v2_demo.CustomError) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 		this.transport(this.endPoint, "CustomError", [one, two], success, err);
 	}

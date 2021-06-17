@@ -70,6 +70,9 @@ module GoTSRPC.Demo {
 	export class BarClient {
 		static defaultInst = new BarClient;
 		constructor(public endPoint:string = "/service/bar", public transport = GoTSRPC.call) {  }
+		attributeMapping(success:(ret:GoTSRPC.Demo.AttributeMapping) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "AttributeMapping", [], success, err);
+		}
 		customError(one:GoTSRPC.Demo.CustomError, two:GoTSRPC.Demo.CustomError, success:(three:GoTSRPC.Demo.CustomError, four:GoTSRPC.Demo.CustomError) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "CustomError", [one, two], success, err);
 		}

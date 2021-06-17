@@ -195,6 +195,17 @@ func (tsc *BarGoRPCClient) Stop() {
 	tsc.Client.Stop()
 }
 
+func (tsc *BarGoRPCClient) AttributeMapping() (retAttributeMapping_0 AttributeMapping, clientErr error) {
+	req := BarAttributeMappingRequest{}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(BarAttributeMappingResponse)
+	return response.RetAttributeMapping_0, nil
+}
+
 func (tsc *BarGoRPCClient) CustomError(one CustomError, two *CustomError) (three CustomError, four *CustomError, clientErr error) {
 	req := BarCustomErrorRequest{One: one, Two: two}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)

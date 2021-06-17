@@ -537,6 +537,15 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 			}
 		}
 	}
+	if s.Map != nil {
+		if s.Map.Value != nil {
+			if s.Map.Value.StructType != nil {
+				if needsWork(s.Map.Value.StructType.FullName()) {
+					return false
+				}
+			}
+		}
+	}
 	return !needsWork(s.FullName())
 }
 

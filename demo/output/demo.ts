@@ -12,6 +12,15 @@ module GoTSRPC.Demo {
 		NestedPtr?:GoTSRPC.Demo.Nested.Nested;
 		NestedStruct:GoTSRPC.Demo.Nested.Nested;
 	}
+	// github.com/foomo/gotsrpc/v2/demo.AttributeDefinition
+	export interface AttributeDefinition {
+		Key:string;
+		Value:string;
+	}
+	// github.com/foomo/gotsrpc/v2/demo.AttributeID
+	export type AttributeID = string
+	// github.com/foomo/gotsrpc/v2/demo.AttributeMapping
+	export type AttributeMapping = Record<AttributeID,GoTSRPC.Demo.AttributeDefinition>
 	// github.com/foomo/gotsrpc/v2/demo.Bar
 	export type Bar = any
 	// github.com/foomo/gotsrpc/v2/demo.Check
