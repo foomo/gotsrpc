@@ -8,6 +8,7 @@ import (
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
 	github_com_foomo_gotsrpc_v2_demo_nested "github.com/foomo/gotsrpc/v2/demo/nested"
+	"github.com/pkg/errors"
 )
 
 type FooGoTSRPCClient interface {
@@ -39,6 +40,9 @@ func (tsc *HTTPFooGoTSRPCClient) Hello(ctx go_context.Context, number int64) (re
 	args := []interface{}{number}
 	reply := []interface{}{&retHello_0}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Hello", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.FooGoTSRPCProxy Hello")
+	}
 	return
 }
 
@@ -80,6 +84,9 @@ func (tsc *HTTPDemoGoTSRPCClient) Any(ctx go_context.Context, any github_com_foo
 	args := []interface{}{any, anyList, anyMap}
 	reply := []interface{}{&retAny_0, &retAny_1, &retAny_2}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Any", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy Any")
+	}
 	return
 }
 
@@ -87,6 +94,9 @@ func (tsc *HTTPDemoGoTSRPCClient) ExtractAddress(ctx go_context.Context, person 
 	args := []interface{}{person}
 	reply := []interface{}{&addr, &e}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ExtractAddress", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy ExtractAddress")
+	}
 	return
 }
 
@@ -94,6 +104,9 @@ func (tsc *HTTPDemoGoTSRPCClient) GiveMeAScalar(ctx go_context.Context) (amount 
 	args := []interface{}{}
 	reply := []interface{}{&amount, &wahr, &hier}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "GiveMeAScalar", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy GiveMeAScalar")
+	}
 	return
 }
 
@@ -101,6 +114,9 @@ func (tsc *HTTPDemoGoTSRPCClient) Hello(ctx go_context.Context, name string) (re
 	args := []interface{}{name}
 	reply := []interface{}{&retHello_0, &retHello_1}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Hello", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy Hello")
+	}
 	return
 }
 
@@ -108,6 +124,9 @@ func (tsc *HTTPDemoGoTSRPCClient) HelloInterface(ctx go_context.Context, anythin
 	args := []interface{}{anything, anythingMap, anythingSlice}
 	reply := []interface{}{}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "HelloInterface", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy HelloInterface")
+	}
 	return
 }
 
@@ -115,6 +134,9 @@ func (tsc *HTTPDemoGoTSRPCClient) HelloNumberMaps(ctx go_context.Context, intMap
 	args := []interface{}{intMap}
 	reply := []interface{}{&floatMap}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "HelloNumberMaps", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy HelloNumberMaps")
+	}
 	return
 }
 
@@ -122,6 +144,9 @@ func (tsc *HTTPDemoGoTSRPCClient) HelloScalarError(ctx go_context.Context) (err 
 	args := []interface{}{}
 	reply := []interface{}{&err}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "HelloScalarError", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy HelloScalarError")
+	}
 	return
 }
 
@@ -129,6 +154,9 @@ func (tsc *HTTPDemoGoTSRPCClient) MapCrap(ctx go_context.Context) (crap map[stri
 	args := []interface{}{}
 	reply := []interface{}{&crap}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapCrap", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy MapCrap")
+	}
 	return
 }
 
@@ -136,6 +164,9 @@ func (tsc *HTTPDemoGoTSRPCClient) Nest(ctx go_context.Context) (retNest_0 []*git
 	args := []interface{}{}
 	reply := []interface{}{&retNest_0}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Nest", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy Nest")
+	}
 	return
 }
 
@@ -143,6 +174,9 @@ func (tsc *HTTPDemoGoTSRPCClient) TestScalarInPlace(ctx go_context.Context) (ret
 	args := []interface{}{}
 	reply := []interface{}{&retTestScalarInPlace_0}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TestScalarInPlace", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy TestScalarInPlace")
+	}
 	return
 }
 
@@ -180,6 +214,9 @@ func (tsc *HTTPBarGoTSRPCClient) AttributeMapping(ctx go_context.Context) (retAt
 	args := []interface{}{}
 	reply := []interface{}{&retAttributeMapping_0}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "AttributeMapping", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.BarGoTSRPCProxy AttributeMapping")
+	}
 	return
 }
 
@@ -187,6 +224,9 @@ func (tsc *HTTPBarGoTSRPCClient) CustomError(ctx go_context.Context, one CustomE
 	args := []interface{}{one, two}
 	reply := []interface{}{&three, &four}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CustomError", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.BarGoTSRPCProxy CustomError")
+	}
 	return
 }
 
@@ -194,6 +234,9 @@ func (tsc *HTTPBarGoTSRPCClient) CustomType(ctx go_context.Context, customTypeIn
 	args := []interface{}{customTypeInt, customTypeString, CustomTypeStruct}
 	reply := []interface{}{&retCustomType_0, &retCustomType_1, &retCustomType_2}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CustomType", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.BarGoTSRPCProxy CustomType")
+	}
 	return
 }
 
@@ -201,6 +244,9 @@ func (tsc *HTTPBarGoTSRPCClient) Hello(ctx go_context.Context, number int64) (re
 	args := []interface{}{number}
 	reply := []interface{}{&retHello_0}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Hello", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.BarGoTSRPCProxy Hello")
+	}
 	return
 }
 
@@ -208,6 +254,9 @@ func (tsc *HTTPBarGoTSRPCClient) Inheritance(ctx go_context.Context, inner Inner
 	args := []interface{}{inner, nested, inline}
 	reply := []interface{}{&retInheritance_0, &retInheritance_1, &retInheritance_2}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Inheritance", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.BarGoTSRPCProxy Inheritance")
+	}
 	return
 }
 
@@ -215,5 +264,8 @@ func (tsc *HTTPBarGoTSRPCClient) Repeat(ctx go_context.Context, one string, two 
 	args := []interface{}{one, two}
 	reply := []interface{}{&three, &four}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Repeat", args, reply)
+	if clientErr != nil {
+		clientErr = errors.WithMessage(clientErr, "failed to call demo.BarGoTSRPCProxy Repeat")
+	}
 	return
 }
