@@ -108,7 +108,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		if err != nil {
 			return err
 		}
-		return fmt.Errorf("%s: %s", resp.Status, string(body))
+		return fmt.Errorf("[%d] %s", resp.StatusCode, string(body))
 	}
 
 	responseHandle := getHandlerForContentType(resp.Header.Get("Content-Type")).handle
