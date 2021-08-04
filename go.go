@@ -386,6 +386,7 @@ func (ms *goMethod) renderSignature() string {
 
 func renderTSRPCServiceClients(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
 	aliases := map[string]string{
+		"github.com/pkg/errors":       "pkg_errors",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 		"net/http":                    "go_net_http",
 		"context":                     "go_context",
@@ -455,7 +456,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 			g.l(`reply := []interface{}{` + strings.Join(ms.rets, ", ") + `}`)
 			g.l(`clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", args, reply)`)
 			g.l(`if clientErr != nil {`)
-			g.ind(1).l(`clientErr = errors.WithMessage(clientErr, "failed to call `+packageName+`.`+service.Name+`GoTSRPCProxy `+method.Name+`")`).ind(-1)
+			g.ind(1).l(`clientErr = pkg_errors.WithMessage(clientErr, "failed to call ` + packageName + `.` + service.Name + `GoTSRPCProxy ` + method.Name + `")`).ind(-1)
 			g.l(`}`)
 			g.l(`return`)
 			g.l(`}`)
