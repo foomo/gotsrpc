@@ -11,7 +11,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.2.1
 	github.com/stretchr/testify v1.7.0
-	github.com/ugorji/go/codec v1.1.7
+	github.com/ugorji/go/codec v1.2.6
 	github.com/valyala/gorpc v0.0.0-20160519171614-908281bef774
 	golang.org/x/mod v0.4.0
 	golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d // indirect

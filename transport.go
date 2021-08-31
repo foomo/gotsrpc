@@ -2,6 +2,7 @@ package gotsrpc
 
 import (
 	"net/http"
+	"reflect"
 
 	"github.com/ugorji/go/codec"
 )
@@ -25,6 +26,8 @@ var msgpackClientHandle = &clientHandle{
 
 func init() {
 	mh := new(codec.MsgpackHandle)
+	// use map[string]interface{} instead of map[interface{}]interface{}
+	mh.MapType = reflect.TypeOf(map[string]interface{}(nil))
 	msgpackClientHandle.handle = mh
 	// attempting to set promoted field in literal will cause a compiler error
 	mh.RawToString = true
