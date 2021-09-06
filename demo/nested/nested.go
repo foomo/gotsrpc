@@ -26,3 +26,5 @@ type Amount int
 type True bool
 
 const ItIsTrue True = true
+
+type JustAnotherStingType string

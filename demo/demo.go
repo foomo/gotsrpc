@@ -1,8 +1,16 @@
 package demo
 
+import "github.com/foomo/gotsrpc/v2/demo/nested"
+
 type Err struct {
 	Message string `json:"message"`
 }
+
+type LocalKey string
+
+type MapWithLocalStuff map[LocalKey]int
+
+type MapOfOtherStuff map[nested.JustAnotherStingType]int
 
 func (e *Err) Error() string {
 	return e.Message
@@ -41,6 +49,36 @@ func (d *Demo) HelloNumberMaps(intMap map[int]string) (floatMap map[float64]stri
 
 func (d *Demo) HelloScalarError() (err *ScalarError) {
 	return
+}
+
+func (d *Demo) HelloMapType() (otherStuff MapOfOtherStuff) {
+	return MapOfOtherStuff{
+		nested.JustAnotherStingType("foo"): 1,
+	}
+}
+
+func (d *Demo) HelloLocalMapType() (localStuff MapWithLocalStuff) {
+	return MapWithLocalStuff{
+		"foo": 1,
+	}
+}
+
+type RemoteScalarsStrings []nested.JustAnotherStingType
+
+type RemoteScalarStruct struct {
+	Foo RemoteScalarsStrings
+	Bar RemoteScalarsStrings
+}
+
+func (d *Demo) ArrayOfRemoteScalars() (arrayOfRemoteScalars RemoteScalarsStrings) {
+	return []nested.JustAnotherStingType{"foo", "bar"}
+}
+
+func (d *Demo) ArrayOfRemoteScalarsInAStruct() (strct RemoteScalarStruct) {
+	return RemoteScalarStruct{
+		Foo: RemoteScalarsStrings{"Foo"},
+		Bar: RemoteScalarsStrings{"Bar"},
+	}
 }
 
 func (d *Demo) nothingInNothinOut() {
