@@ -12,6 +12,10 @@ import (
 	github_com_foomo_gotsrpc_v2_demo_nested "github.com/foomo/gotsrpc/v2/demo/nested"
 )
 
+const (
+	FooGoTSRPCProxyHello = "Hello"
+)
+
 type FooGoTSRPCProxy struct {
 	EndPoint string
 	service  *Foo
@@ -50,7 +54,7 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		callStats.Service = "Foo"
 	}
 	switch funcName {
-	case "Hello":
+	case FooGoTSRPCProxyHello:
 		var (
 			arg_number int64
 		)
@@ -72,6 +76,23 @@ func (p *FooGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
 	}
 }
+
+const (
+	DemoGoTSRPCProxyAny                           = "Any"
+	DemoGoTSRPCProxyArrayOfRemoteScalars          = "ArrayOfRemoteScalars"
+	DemoGoTSRPCProxyArrayOfRemoteScalarsInAStruct = "ArrayOfRemoteScalarsInAStruct"
+	DemoGoTSRPCProxyExtractAddress                = "ExtractAddress"
+	DemoGoTSRPCProxyGiveMeAScalar                 = "GiveMeAScalar"
+	DemoGoTSRPCProxyHello                         = "Hello"
+	DemoGoTSRPCProxyHelloInterface                = "HelloInterface"
+	DemoGoTSRPCProxyHelloLocalMapType             = "HelloLocalMapType"
+	DemoGoTSRPCProxyHelloMapType                  = "HelloMapType"
+	DemoGoTSRPCProxyHelloNumberMaps               = "HelloNumberMaps"
+	DemoGoTSRPCProxyHelloScalarError              = "HelloScalarError"
+	DemoGoTSRPCProxyMapCrap                       = "MapCrap"
+	DemoGoTSRPCProxyNest                          = "Nest"
+	DemoGoTSRPCProxyTestScalarInPlace             = "TestScalarInPlace"
+)
 
 type DemoGoTSRPCProxy struct {
 	EndPoint string
@@ -111,7 +132,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		callStats.Service = "Demo"
 	}
 	switch funcName {
-	case "Any":
+	case DemoGoTSRPCProxyAny:
 		var (
 			arg_any     github_com_foomo_gotsrpc_v2_demo_nested.Any
 			arg_anyList []github_com_foomo_gotsrpc_v2_demo_nested.Any
@@ -130,7 +151,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{anyRet, anyRet_1, anyRet_2}, callStats, r, w)
 		return
-	case "ArrayOfRemoteScalars":
+	case DemoGoTSRPCProxyArrayOfRemoteScalars:
 		executionStart := time.Now()
 		arrayOfRemoteScalarsArrayOfRemoteScalars := p.service.ArrayOfRemoteScalars()
 		if callStats != nil {
@@ -138,7 +159,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{arrayOfRemoteScalarsArrayOfRemoteScalars}, callStats, r, w)
 		return
-	case "ArrayOfRemoteScalarsInAStruct":
+	case DemoGoTSRPCProxyArrayOfRemoteScalarsInAStruct:
 		executionStart := time.Now()
 		arrayOfRemoteScalarsInAStructStrct := p.service.ArrayOfRemoteScalarsInAStruct()
 		if callStats != nil {
@@ -146,7 +167,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{arrayOfRemoteScalarsInAStructStrct}, callStats, r, w)
 		return
-	case "ExtractAddress":
+	case DemoGoTSRPCProxyExtractAddress:
 		var (
 			arg_person *Person
 		)
@@ -163,7 +184,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{extractAddressAddr, extractAddressE}, callStats, r, w)
 		return
-	case "GiveMeAScalar":
+	case DemoGoTSRPCProxyGiveMeAScalar:
 		executionStart := time.Now()
 		giveMeAScalarAmount, giveMeAScalarWahr, giveMeAScalarHier := p.service.GiveMeAScalar()
 		if callStats != nil {
@@ -171,7 +192,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{giveMeAScalarAmount, giveMeAScalarWahr, giveMeAScalarHier}, callStats, r, w)
 		return
-	case "Hello":
+	case DemoGoTSRPCProxyHello:
 		var (
 			arg_name string
 		)
@@ -188,7 +209,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{helloRet, helloRet_1}, callStats, r, w)
 		return
-	case "HelloInterface":
+	case DemoGoTSRPCProxyHelloInterface:
 		var (
 			arg_anything      interface{}
 			arg_anythingMap   map[string]interface{}
@@ -207,7 +228,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{}, callStats, r, w)
 		return
-	case "HelloLocalMapType":
+	case DemoGoTSRPCProxyHelloLocalMapType:
 		executionStart := time.Now()
 		helloLocalMapTypeLocalStuff := p.service.HelloLocalMapType()
 		if callStats != nil {
@@ -215,7 +236,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{helloLocalMapTypeLocalStuff}, callStats, r, w)
 		return
-	case "HelloMapType":
+	case DemoGoTSRPCProxyHelloMapType:
 		executionStart := time.Now()
 		helloMapTypeOtherStuff := p.service.HelloMapType()
 		if callStats != nil {
@@ -223,7 +244,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{helloMapTypeOtherStuff}, callStats, r, w)
 		return
-	case "HelloNumberMaps":
+	case DemoGoTSRPCProxyHelloNumberMaps:
 		var (
 			arg_intMap map[int]string
 		)
@@ -240,7 +261,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{helloNumberMapsFloatMap}, callStats, r, w)
 		return
-	case "HelloScalarError":
+	case DemoGoTSRPCProxyHelloScalarError:
 		executionStart := time.Now()
 		helloScalarErrorErr := p.service.HelloScalarError()
 		if callStats != nil {
@@ -248,7 +269,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{helloScalarErrorErr}, callStats, r, w)
 		return
-	case "MapCrap":
+	case DemoGoTSRPCProxyMapCrap:
 		executionStart := time.Now()
 		mapCrapCrap := p.service.MapCrap()
 		if callStats != nil {
@@ -256,7 +277,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{mapCrapCrap}, callStats, r, w)
 		return
-	case "Nest":
+	case DemoGoTSRPCProxyNest:
 		executionStart := time.Now()
 		nestRet := p.service.Nest()
 		if callStats != nil {
@@ -264,7 +285,7 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{nestRet}, callStats, r, w)
 		return
-	case "TestScalarInPlace":
+	case DemoGoTSRPCProxyTestScalarInPlace:
 		executionStart := time.Now()
 		testScalarInPlaceRet := p.service.TestScalarInPlace()
 		if callStats != nil {
@@ -277,6 +298,15 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
 	}
 }
+
+const (
+	BarGoTSRPCProxyAttributeMapping = "AttributeMapping"
+	BarGoTSRPCProxyCustomError      = "CustomError"
+	BarGoTSRPCProxyCustomType       = "CustomType"
+	BarGoTSRPCProxyHello            = "Hello"
+	BarGoTSRPCProxyInheritance      = "Inheritance"
+	BarGoTSRPCProxyRepeat           = "Repeat"
+)
 
 type BarGoTSRPCProxy struct {
 	EndPoint string
@@ -316,7 +346,7 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		callStats.Service = "Bar"
 	}
 	switch funcName {
-	case "AttributeMapping":
+	case BarGoTSRPCProxyAttributeMapping:
 		executionStart := time.Now()
 		attributeMappingRet := p.service.AttributeMapping()
 		if callStats != nil {
@@ -324,7 +354,7 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{attributeMappingRet}, callStats, r, w)
 		return
-	case "CustomError":
+	case BarGoTSRPCProxyCustomError:
 		var (
 			arg_one CustomError
 			arg_two *CustomError
@@ -342,7 +372,7 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{customErrorThree, customErrorFour}, callStats, r, w)
 		return
-	case "CustomType":
+	case BarGoTSRPCProxyCustomType:
 		var (
 			arg_customTypeInt    CustomTypeInt
 			arg_customTypeString CustomTypeString
@@ -361,7 +391,7 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{customTypeRet, customTypeRet_1, customTypeRet_2}, callStats, r, w)
 		return
-	case "Hello":
+	case BarGoTSRPCProxyHello:
 		var (
 			arg_number int64
 		)
@@ -381,7 +411,7 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			gotsrpc.Reply([]interface{}{helloRet}, callStats, r, w)
 		}
 		return
-	case "Inheritance":
+	case BarGoTSRPCProxyInheritance:
 		var (
 			arg_inner  Inner
 			arg_nested OuterNested
@@ -400,7 +430,7 @@ func (p *BarGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{inheritanceRet, inheritanceRet_1, inheritanceRet_2}, callStats, r, w)
 		return
-	case "Repeat":
+	case BarGoTSRPCProxyRepeat:
 		var (
 			arg_one string
 			arg_two string

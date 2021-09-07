@@ -212,6 +212,13 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		}
 
 		proxyName := service.Name + "GoTSRPCProxy"
+
+		g.l("const (")
+		for _, method := range service.Methods {
+			g.l(proxyName + method.Name + " = \"" + method.Name + "\"")
+		}
+		g.l(")")
+
 		g.l(`
         type ` + proxyName + ` struct {
 	        EndPoint string
@@ -260,7 +267,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 
 		for _, method := range service.Methods {
 			// a case for each method
-			g.l("case \"" + method.Name + "\":")
+			g.l("case " + proxyName + method.Name + ":")
 			g.ind(1)
 			callArgs := []string{}
 			isSessionRequest := false
