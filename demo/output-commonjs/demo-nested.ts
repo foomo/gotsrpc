@@ -12,11 +12,13 @@ export enum CustomTypeNested {
 	Three = "three",
 	Two = "two",
 }
+// github.com/foomo/gotsrpc/v2/demo/nested.JustAnotherStingType
+export type JustAnotherStingType = string
 // github.com/foomo/gotsrpc/v2/demo/nested.Nested
 export interface Nested {
 	Name:string;
 	Any:any;
-	AnyMap:Record<string, any>;
+	AnyMap:Record<string,any>;
 	AnyList:any[];
 	SuperNestedString:{
 		Ha:number;

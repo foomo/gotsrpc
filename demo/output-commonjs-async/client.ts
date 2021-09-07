@@ -17,10 +17,16 @@ export class DemoClient {
 	constructor(
 		public transport:<T>(method: string, data?: any[]) => Promise<T>
 	) {}
-	async any(any:github_com_foomo_gotsrpc_v2_demo_nested.Any, anyList:github_com_foomo_gotsrpc_v2_demo_nested.Any[], anyMap:Record<string, github_com_foomo_gotsrpc_v2_demo_nested.Any>):Promise<{ret:github_com_foomo_gotsrpc_v2_demo_nested.Any; ret_1:github_com_foomo_gotsrpc_v2_demo_nested.Any[]; ret_2:Record<string, github_com_foomo_gotsrpc_v2_demo_nested.Any>}> {
-		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo_nested.Any; 1:github_com_foomo_gotsrpc_v2_demo_nested.Any[]; 2:Record<string, github_com_foomo_gotsrpc_v2_demo_nested.Any>}>("Any", [any, anyList, anyMap])
+	async any(any:github_com_foomo_gotsrpc_v2_demo_nested.Any, anyList:github_com_foomo_gotsrpc_v2_demo_nested.Any[], anyMap:Record<string,github_com_foomo_gotsrpc_v2_demo_nested.Any>):Promise<{ret:github_com_foomo_gotsrpc_v2_demo_nested.Any; ret_1:github_com_foomo_gotsrpc_v2_demo_nested.Any[]; ret_2:Record<string,github_com_foomo_gotsrpc_v2_demo_nested.Any>}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo_nested.Any; 1:github_com_foomo_gotsrpc_v2_demo_nested.Any[]; 2:Record<string,github_com_foomo_gotsrpc_v2_demo_nested.Any>}>("Any", [any, anyList, anyMap])
 		let responseObject = {ret : response[0], ret_1 : response[1], ret_2 : response[2]};
 		return responseObject;
+	}
+	async arrayOfRemoteScalars():Promise<github_com_foomo_gotsrpc_v2_demo_nested.JustAnotherStingType> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo_nested.JustAnotherStingType}>("ArrayOfRemoteScalars", []))[0]
+	}
+	async arrayOfRemoteScalarsInAStruct():Promise<github_com_foomo_gotsrpc_v2_demo.RemoteScalarStruct> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.RemoteScalarStruct}>("ArrayOfRemoteScalarsInAStruct", []))[0]
 	}
 	async extractAddress(person:github_com_foomo_gotsrpc_v2_demo.Person):Promise<{addr:github_com_foomo_gotsrpc_v2_demo.Address; e:github_com_foomo_gotsrpc_v2_demo.Err}> {
 		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.Address; 1:github_com_foomo_gotsrpc_v2_demo.Err}>("ExtractAddress", [person])
@@ -38,17 +44,23 @@ export class DemoClient {
 		if(err) { throw err }
 		return response[0]
 	}
-	async helloInterface(anything:any, anythingMap:Record<string, any>, anythingSlice:any[]):Promise<void> {
+	async helloInterface(anything:any, anythingMap:Record<string,any>, anythingSlice:any[]):Promise<void> {
 		await this.transport<void>("HelloInterface", [anything, anythingMap, anythingSlice])
 	}
-	async helloNumberMaps(intMap:Record<number, string>):Promise<Record<number, string>> {
-		return (await this.transport<{0:Record<number, string>}>("HelloNumberMaps", [intMap]))[0]
+	async helloLocalMapType():Promise<github_com_foomo_gotsrpc_v2_demo.MapWithLocalStuff> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.MapWithLocalStuff}>("HelloLocalMapType", []))[0]
+	}
+	async helloMapType():Promise<github_com_foomo_gotsrpc_v2_demo.MapOfOtherStuff> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.MapOfOtherStuff}>("HelloMapType", []))[0]
+	}
+	async helloNumberMaps(intMap:Record<number,string>):Promise<Record<number,string>> {
+		return (await this.transport<{0:Record<number,string>}>("HelloNumberMaps", [intMap]))[0]
 	}
 	async helloScalarError():Promise<github_com_foomo_gotsrpc_v2_demo.ScalarError> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.ScalarError}>("HelloScalarError", []))[0]
 	}
-	async mapCrap():Promise<Record<string, number[]>> {
-		return (await this.transport<{0:Record<string, number[]>}>("MapCrap", []))[0]
+	async mapCrap():Promise<Record<string,number[]>> {
+		return (await this.transport<{0:Record<string,number[]>}>("MapCrap", []))[0]
 	}
 	async nest():Promise<github_com_foomo_gotsrpc_v2_demo_nested.Nested[]> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo_nested.Nested[]}>("Nest", []))[0]

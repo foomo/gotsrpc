@@ -7,7 +7,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"gopkg.in/yaml.v2"
 )
 
@@ -187,16 +186,9 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 		m.KeyType = string(scalarType)
 		m.KeyGoType = mapType.Key.(*ast.Ident).Name
 	case "*ast.SelectorExpr":
-		selector := mapType.Key.(*ast.SelectorExpr)
-
-		_, scalarType := getTypesFromAstType(selector.Sel)
-		m.KeyGoType = string(scalarType)
-
-		m.KeyGoType = selector.Sel.Name
-		spew.Dump(m)
-		//		fmt.Println("package", selector.X, "ident", selector.Sel)
+		m.Key = &Value{}
+		readAstSelectorExpr(m.Key, mapType.Key.(*ast.SelectorExpr), fileImports)
 	default:
-		spew.Dump(mapType.Key)
 		// todo: implement support for "*ast.Scalar" type (sca)
 		// this is important for scalar types in map keys
 		// Example:
@@ -215,8 +207,6 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 		//		})
 		//	})
 		//})
-
-		fmt.Println("--------------------------->", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
 	}
 	// value
 	m.Value.loadExpr(mapType.Value, fileImports)

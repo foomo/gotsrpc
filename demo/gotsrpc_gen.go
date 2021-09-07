@@ -130,6 +130,22 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{anyRet, anyRet_1, anyRet_2}, callStats, r, w)
 		return
+	case "ArrayOfRemoteScalars":
+		executionStart := time.Now()
+		arrayOfRemoteScalarsArrayOfRemoteScalars := p.service.ArrayOfRemoteScalars()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{arrayOfRemoteScalarsArrayOfRemoteScalars}, callStats, r, w)
+		return
+	case "ArrayOfRemoteScalarsInAStruct":
+		executionStart := time.Now()
+		arrayOfRemoteScalarsInAStructStrct := p.service.ArrayOfRemoteScalarsInAStruct()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{arrayOfRemoteScalarsInAStructStrct}, callStats, r, w)
+		return
 	case "ExtractAddress":
 		var (
 			arg_person *Person
@@ -190,6 +206,22 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
 		gotsrpc.Reply([]interface{}{}, callStats, r, w)
+		return
+	case "HelloLocalMapType":
+		executionStart := time.Now()
+		helloLocalMapTypeLocalStuff := p.service.HelloLocalMapType()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{helloLocalMapTypeLocalStuff}, callStats, r, w)
+		return
+	case "HelloMapType":
+		executionStart := time.Now()
+		helloMapTypeOtherStuff := p.service.HelloMapType()
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{helloMapTypeOtherStuff}, callStats, r, w)
 		return
 	case "HelloNumberMaps":
 		var (

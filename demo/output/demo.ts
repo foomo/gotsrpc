@@ -5,10 +5,10 @@ module GoTSRPC.Demo {
 		city?:string;
 		signs?:string[];
 		PeoplePtr:GoTSRPC.Demo.Person[];
-		ArrayOfMaps:Record<string, boolean>[];
+		ArrayOfMaps:Record<string,boolean>[];
 		ArrayArrayAddress:GoTSRPC.Demo.Address[][];
 		People:GoTSRPC.Demo.Person[];
-		MapCrap:Record<string, Record<number, boolean>>;
+		MapCrap:Record<string,Record<number,boolean>>;
 		NestedPtr?:GoTSRPC.Demo.Nested.Nested;
 		NestedStruct:GoTSRPC.Demo.Nested.Nested;
 	}
@@ -65,6 +65,12 @@ module GoTSRPC.Demo {
 	export interface Inner {
 		one:string;
 	}
+	// github.com/foomo/gotsrpc/v2/demo.LocalKey
+	export type LocalKey = string
+	// github.com/foomo/gotsrpc/v2/demo.MapOfOtherStuff
+	export type MapOfOtherStuff = Record<GoTSRPC.Demo.Nested.JustAnotherStingType,number>
+	// github.com/foomo/gotsrpc/v2/demo.MapWithLocalStuff
+	export type MapWithLocalStuff = Record<LocalKey,number>
 	// github.com/foomo/gotsrpc/v2/demo.OuterInline
 	export interface OuterInline {
 		one:string;
@@ -80,7 +86,7 @@ module GoTSRPC.Demo {
 		Name:string;
 		address?:GoTSRPC.Demo.Address;
 		AddressStruct:GoTSRPC.Demo.Address;
-		Addresses:Record<string, GoTSRPC.Demo.Address>;
+		Addresses:Record<string,GoTSRPC.Demo.Address>;
 		InlinePtr?:{
 			Foo:boolean;
 		};
@@ -88,6 +94,11 @@ module GoTSRPC.Demo {
 			Bar:string;
 		};
 		DNA:string;
+	}
+	// github.com/foomo/gotsrpc/v2/demo.RemoteScalarStruct
+	export interface RemoteScalarStruct {
+		Foo:GoTSRPC.Demo.Nested.JustAnotherStingType;
+		Bar:GoTSRPC.Demo.Nested.JustAnotherStingType;
 	}
 	// github.com/foomo/gotsrpc/v2/demo.ScalarError
 	export type ScalarError = string

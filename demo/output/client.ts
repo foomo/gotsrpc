@@ -36,8 +36,14 @@ module GoTSRPC.Demo {
 	export class DemoClient {
 		static defaultInst = new DemoClient;
 		constructor(public endPoint:string = "/service/demo", public transport = GoTSRPC.call) {  }
-		any(any:GoTSRPC.Demo.Nested.Any, anyList:GoTSRPC.Demo.Nested.Any[], anyMap:Record<string, GoTSRPC.Demo.Nested.Any>, success:(ret:GoTSRPC.Demo.Nested.Any, ret_1:GoTSRPC.Demo.Nested.Any[], ret_2:Record<string, GoTSRPC.Demo.Nested.Any>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		any(any:GoTSRPC.Demo.Nested.Any, anyList:GoTSRPC.Demo.Nested.Any[], anyMap:Record<string,GoTSRPC.Demo.Nested.Any>, success:(ret:GoTSRPC.Demo.Nested.Any, ret_1:GoTSRPC.Demo.Nested.Any[], ret_2:Record<string,GoTSRPC.Demo.Nested.Any>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
+		}
+		arrayOfRemoteScalars(success:(arrayOfRemoteScalars:GoTSRPC.Demo.Nested.JustAnotherStingType) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "ArrayOfRemoteScalars", [], success, err);
+		}
+		arrayOfRemoteScalarsInAStruct(success:(strct:GoTSRPC.Demo.RemoteScalarStruct) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "ArrayOfRemoteScalarsInAStruct", [], success, err);
 		}
 		extractAddress(person:GoTSRPC.Demo.Person, success:(addr:GoTSRPC.Demo.Address, e:GoTSRPC.Demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "ExtractAddress", [person], success, err);
@@ -48,16 +54,22 @@ module GoTSRPC.Demo {
 		hello(name:string, success:(ret:string, ret_1:GoTSRPC.Demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "Hello", [name], success, err);
 		}
-		helloInterface(anything:any, anythingMap:Record<string, any>, anythingSlice:any[], success:() => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		helloInterface(anything:any, anythingMap:Record<string,any>, anythingSlice:any[], success:() => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
 		}
-		helloNumberMaps(intMap:Record<number, string>, success:(floatMap:Record<number, string>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		helloLocalMapType(success:(localStuff:GoTSRPC.Demo.MapWithLocalStuff) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "HelloLocalMapType", [], success, err);
+		}
+		helloMapType(success:(otherStuff:GoTSRPC.Demo.MapOfOtherStuff) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+			this.transport(this.endPoint, "HelloMapType", [], success, err);
+		}
+		helloNumberMaps(intMap:Record<number,string>, success:(floatMap:Record<number,string>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "HelloNumberMaps", [intMap], success, err);
 		}
 		helloScalarError(success:(err:GoTSRPC.Demo.ScalarError) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "HelloScalarError", [], success, err);
 		}
-		mapCrap(success:(crap:Record<string, number[]>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
+		mapCrap(success:(crap:Record<string,number[]>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
 			this.transport(this.endPoint, "MapCrap", [], success, err);
 		}
 		nest(success:(ret:GoTSRPC.Demo.Nested.Nested[]) => void, err:(request:XMLHttpRequest, e?:Error) => void) {

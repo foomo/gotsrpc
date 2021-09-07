@@ -7,10 +7,10 @@ export interface Address {
 	city?:string;
 	signs?:string[];
 	PeoplePtr:github_com_foomo_gotsrpc_v2_demo.Person[];
-	ArrayOfMaps:Record<string, boolean>[];
+	ArrayOfMaps:Record<string,boolean>[];
 	ArrayArrayAddress:github_com_foomo_gotsrpc_v2_demo.Address[][];
 	People:github_com_foomo_gotsrpc_v2_demo.Person[];
-	MapCrap:Record<string, Record<number, boolean>>;
+	MapCrap:Record<string,Record<number,boolean>>;
 	NestedPtr?:github_com_foomo_gotsrpc_v2_demo_nested.Nested;
 	NestedStruct:github_com_foomo_gotsrpc_v2_demo_nested.Nested;
 }
@@ -67,6 +67,12 @@ export interface Err {
 export interface Inner {
 	one:string;
 }
+// github.com/foomo/gotsrpc/v2/demo.LocalKey
+export type LocalKey = string
+// github.com/foomo/gotsrpc/v2/demo.MapOfOtherStuff
+export type MapOfOtherStuff = Record<github_com_foomo_gotsrpc_v2_demo_nested.JustAnotherStingType,number>
+// github.com/foomo/gotsrpc/v2/demo.MapWithLocalStuff
+export type MapWithLocalStuff = Record<LocalKey,number>
 // github.com/foomo/gotsrpc/v2/demo.OuterInline
 export interface OuterInline {
 	one:string;
@@ -82,7 +88,7 @@ export interface Person {
 	Name:string;
 	address?:github_com_foomo_gotsrpc_v2_demo.Address;
 	AddressStruct:github_com_foomo_gotsrpc_v2_demo.Address;
-	Addresses:Record<string, github_com_foomo_gotsrpc_v2_demo.Address>;
+	Addresses:Record<string,github_com_foomo_gotsrpc_v2_demo.Address>;
 	InlinePtr?:{
 		Foo:boolean;
 	};
@@ -90,6 +96,11 @@ export interface Person {
 		Bar:string;
 	};
 	DNA:string;
+}
+// github.com/foomo/gotsrpc/v2/demo.RemoteScalarStruct
+export interface RemoteScalarStruct {
+	Foo:github_com_foomo_gotsrpc_v2_demo_nested.JustAnotherStingType;
+	Bar:github_com_foomo_gotsrpc_v2_demo_nested.JustAnotherStingType;
 }
 // github.com/foomo/gotsrpc/v2/demo.ScalarError
 export type ScalarError = string

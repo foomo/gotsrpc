@@ -111,6 +111,18 @@ type (
 		RetAny_2 map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any
 	}
 
+	DemoArrayOfRemoteScalarsRequest struct {
+	}
+	DemoArrayOfRemoteScalarsResponse struct {
+		ArrayOfRemoteScalars RemoteScalarsStrings
+	}
+
+	DemoArrayOfRemoteScalarsInAStructRequest struct {
+	}
+	DemoArrayOfRemoteScalarsInAStructResponse struct {
+		Strct RemoteScalarStruct
+	}
+
 	DemoExtractAddressRequest struct {
 		Person *Person
 	}
@@ -141,6 +153,18 @@ type (
 		AnythingSlice []interface{}
 	}
 	DemoHelloInterfaceResponse struct {
+	}
+
+	DemoHelloLocalMapTypeRequest struct {
+	}
+	DemoHelloLocalMapTypeResponse struct {
+		LocalStuff MapWithLocalStuff
+	}
+
+	DemoHelloMapTypeRequest struct {
+	}
+	DemoHelloMapTypeResponse struct {
+		OtherStuff MapOfOtherStuff
 	}
 
 	DemoHelloNumberMapsRequest struct {
@@ -178,6 +202,10 @@ type (
 func init() {
 	gob.Register(DemoAnyRequest{})
 	gob.Register(DemoAnyResponse{})
+	gob.Register(DemoArrayOfRemoteScalarsRequest{})
+	gob.Register(DemoArrayOfRemoteScalarsResponse{})
+	gob.Register(DemoArrayOfRemoteScalarsInAStructRequest{})
+	gob.Register(DemoArrayOfRemoteScalarsInAStructResponse{})
 	gob.Register(DemoExtractAddressRequest{})
 	gob.Register(DemoExtractAddressResponse{})
 	gob.Register(DemoGiveMeAScalarRequest{})
@@ -186,6 +214,10 @@ func init() {
 	gob.Register(DemoHelloResponse{})
 	gob.Register(DemoHelloInterfaceRequest{})
 	gob.Register(DemoHelloInterfaceResponse{})
+	gob.Register(DemoHelloLocalMapTypeRequest{})
+	gob.Register(DemoHelloLocalMapTypeResponse{})
+	gob.Register(DemoHelloMapTypeRequest{})
+	gob.Register(DemoHelloMapTypeResponse{})
 	gob.Register(DemoHelloNumberMapsRequest{})
 	gob.Register(DemoHelloNumberMapsResponse{})
 	gob.Register(DemoHelloScalarErrorRequest{})
@@ -240,6 +272,12 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 		req := request.(DemoAnyRequest)
 		retAny_0, retAny_1, retAny_2 := p.service.Any(req.Any, req.AnyList, req.AnyMap)
 		response = DemoAnyResponse{RetAny_0: retAny_0, RetAny_1: retAny_1, RetAny_2: retAny_2}
+	case "DemoArrayOfRemoteScalarsRequest":
+		arrayOfRemoteScalars := p.service.ArrayOfRemoteScalars()
+		response = DemoArrayOfRemoteScalarsResponse{ArrayOfRemoteScalars: arrayOfRemoteScalars}
+	case "DemoArrayOfRemoteScalarsInAStructRequest":
+		strct := p.service.ArrayOfRemoteScalarsInAStruct()
+		response = DemoArrayOfRemoteScalarsInAStructResponse{Strct: strct}
 	case "DemoExtractAddressRequest":
 		req := request.(DemoExtractAddressRequest)
 		addr, e := p.service.ExtractAddress(req.Person)
@@ -255,6 +293,12 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 		req := request.(DemoHelloInterfaceRequest)
 		p.service.HelloInterface(req.Anything, req.AnythingMap, req.AnythingSlice)
 		response = DemoHelloInterfaceResponse{}
+	case "DemoHelloLocalMapTypeRequest":
+		localStuff := p.service.HelloLocalMapType()
+		response = DemoHelloLocalMapTypeResponse{LocalStuff: localStuff}
+	case "DemoHelloMapTypeRequest":
+		otherStuff := p.service.HelloMapType()
+		response = DemoHelloMapTypeResponse{OtherStuff: otherStuff}
 	case "DemoHelloNumberMapsRequest":
 		req := request.(DemoHelloNumberMapsRequest)
 		floatMap := p.service.HelloNumberMaps(req.IntMap)

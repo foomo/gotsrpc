@@ -25,7 +25,13 @@ func (f *Field) tsName() string {
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) {
 	switch true {
 	case v.Map != nil:
-		ts.app("Record<" + v.Map.KeyType + ", ")
+		ts.app("Record<")
+		if v.Map.Key != nil {
+			v.Map.Key.tsType(mappings, scalars, structs, ts)
+		} else {
+			ts.app(v.Map.KeyType)
+		}
+		ts.app(",")
 		v.Map.Value.tsType(mappings, scalars, structs, ts)
 		ts.app(">")
 	case v.Array != nil:
@@ -69,11 +75,15 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 					}
 					ts.app(tsModule + "." + hiddenStruct.Array.Value.StructType.Name + "[]")
 					return
-				}
-				if hiddenStruct.Array.Value.StructType == nil {
-					if hiddenStruct.Array.Value.GoScalarType == "byte" { // this fixes types like primitive.ID [12]byte
-						ts.app(tsTypeFromScalarType(hiddenStruct.Array.Value.ScalarType))
+				} else if hiddenStruct.Array.Value.Scalar != nil {
+					var tsModule string
+					if value, ok := mappings[hiddenStruct.Array.Value.Scalar.Package]; ok {
+						tsModule = value.TypeScriptModule
 					}
+					ts.app(tsModule + "." + tsTypeFromScalarType(hiddenStruct.Array.Value.Scalar.Type))
+					return
+				} else if hiddenStruct.Array.Value.GoScalarType == "byte" { // this fixes types like primitive.ID [12]byte
+					ts.app(tsTypeFromScalarType(hiddenStruct.Array.Value.ScalarType))
 					return
 				}
 			}
@@ -129,7 +139,13 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 	ts.l("// " + str.FullName())
 	switch {
 	case str.Map != nil:
-		ts.app("export type " + str.Name + " = Record<" + str.Map.KeyType + ",")
+		ts.app("export type " + str.Name + " = Record<")
+		if str.Map.Key != nil {
+			str.Map.Key.tsType(mappings, scalars, structs, ts)
+		} else {
+			ts.app(str.Map.KeyType)
+		}
+		ts.app(",")
 		str.Map.Value.tsType(mappings, scalars, structs, ts)
 		ts.app(">")
 		ts.nl()

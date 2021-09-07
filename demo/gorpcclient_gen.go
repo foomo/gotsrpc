@@ -75,6 +75,28 @@ func (tsc *DemoGoRPCClient) Any(any github_com_foomo_gotsrpc_v2_demo_nested.Any,
 	return response.RetAny_0, response.RetAny_1, response.RetAny_2, nil
 }
 
+func (tsc *DemoGoRPCClient) ArrayOfRemoteScalars() (arrayOfRemoteScalars RemoteScalarsStrings, clientErr error) {
+	req := DemoArrayOfRemoteScalarsRequest{}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(DemoArrayOfRemoteScalarsResponse)
+	return response.ArrayOfRemoteScalars, nil
+}
+
+func (tsc *DemoGoRPCClient) ArrayOfRemoteScalarsInAStruct() (strct RemoteScalarStruct, clientErr error) {
+	req := DemoArrayOfRemoteScalarsInAStructRequest{}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(DemoArrayOfRemoteScalarsInAStructResponse)
+	return response.Strct, nil
+}
+
 func (tsc *DemoGoRPCClient) ExtractAddress(person *Person) (addr *Address, e *Err, clientErr error) {
 	req := DemoExtractAddressRequest{Person: person}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
@@ -116,6 +138,28 @@ func (tsc *DemoGoRPCClient) HelloInterface(anything interface{}, anythingMap map
 		return
 	}
 	return nil
+}
+
+func (tsc *DemoGoRPCClient) HelloLocalMapType() (localStuff MapWithLocalStuff, clientErr error) {
+	req := DemoHelloLocalMapTypeRequest{}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(DemoHelloLocalMapTypeResponse)
+	return response.LocalStuff, nil
+}
+
+func (tsc *DemoGoRPCClient) HelloMapType() (otherStuff MapOfOtherStuff, clientErr error) {
+	req := DemoHelloMapTypeRequest{}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(DemoHelloMapTypeResponse)
+	return response.OtherStuff, nil
 }
 
 func (tsc *DemoGoRPCClient) HelloNumberMaps(intMap map[int]string) (floatMap map[float64]string, clientErr error) {

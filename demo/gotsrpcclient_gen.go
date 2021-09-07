@@ -48,10 +48,14 @@ func (tsc *HTTPFooGoTSRPCClient) Hello(ctx go_context.Context, number int64) (re
 
 type DemoGoTSRPCClient interface {
 	Any(ctx go_context.Context, any github_com_foomo_gotsrpc_v2_demo_nested.Any, anyList []github_com_foomo_gotsrpc_v2_demo_nested.Any, anyMap map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any) (retAny_0 github_com_foomo_gotsrpc_v2_demo_nested.Any, retAny_1 []github_com_foomo_gotsrpc_v2_demo_nested.Any, retAny_2 map[string]github_com_foomo_gotsrpc_v2_demo_nested.Any, clientErr error)
+	ArrayOfRemoteScalars(ctx go_context.Context) (arrayOfRemoteScalars RemoteScalarsStrings, clientErr error)
+	ArrayOfRemoteScalarsInAStruct(ctx go_context.Context) (strct RemoteScalarStruct, clientErr error)
 	ExtractAddress(ctx go_context.Context, person *Person) (addr *Address, e *Err, clientErr error)
 	GiveMeAScalar(ctx go_context.Context) (amount github_com_foomo_gotsrpc_v2_demo_nested.Amount, wahr github_com_foomo_gotsrpc_v2_demo_nested.True, hier ScalarInPlace, clientErr error)
 	Hello(ctx go_context.Context, name string) (retHello_0 string, retHello_1 *Err, clientErr error)
 	HelloInterface(ctx go_context.Context, anything interface{}, anythingMap map[string]interface{}, anythingSlice []interface{}) (clientErr error)
+	HelloLocalMapType(ctx go_context.Context) (localStuff MapWithLocalStuff, clientErr error)
+	HelloMapType(ctx go_context.Context) (otherStuff MapOfOtherStuff, clientErr error)
 	HelloNumberMaps(ctx go_context.Context, intMap map[int]string) (floatMap map[float64]string, clientErr error)
 	HelloScalarError(ctx go_context.Context) (err *ScalarError, clientErr error)
 	MapCrap(ctx go_context.Context) (crap map[string][]int, clientErr error)
@@ -86,6 +90,26 @@ func (tsc *HTTPDemoGoTSRPCClient) Any(ctx go_context.Context, any github_com_foo
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Any", args, reply)
 	if clientErr != nil {
 		clientErr = pkg_errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy Any")
+	}
+	return
+}
+
+func (tsc *HTTPDemoGoTSRPCClient) ArrayOfRemoteScalars(ctx go_context.Context) (arrayOfRemoteScalars RemoteScalarsStrings, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&arrayOfRemoteScalars}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ArrayOfRemoteScalars", args, reply)
+	if clientErr != nil {
+		clientErr = pkg_errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy ArrayOfRemoteScalars")
+	}
+	return
+}
+
+func (tsc *HTTPDemoGoTSRPCClient) ArrayOfRemoteScalarsInAStruct(ctx go_context.Context) (strct RemoteScalarStruct, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&strct}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ArrayOfRemoteScalarsInAStruct", args, reply)
+	if clientErr != nil {
+		clientErr = pkg_errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy ArrayOfRemoteScalarsInAStruct")
 	}
 	return
 }
@@ -126,6 +150,26 @@ func (tsc *HTTPDemoGoTSRPCClient) HelloInterface(ctx go_context.Context, anythin
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "HelloInterface", args, reply)
 	if clientErr != nil {
 		clientErr = pkg_errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy HelloInterface")
+	}
+	return
+}
+
+func (tsc *HTTPDemoGoTSRPCClient) HelloLocalMapType(ctx go_context.Context) (localStuff MapWithLocalStuff, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&localStuff}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "HelloLocalMapType", args, reply)
+	if clientErr != nil {
+		clientErr = pkg_errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy HelloLocalMapType")
+	}
+	return
+}
+
+func (tsc *HTTPDemoGoTSRPCClient) HelloMapType(ctx go_context.Context) (otherStuff MapOfOtherStuff, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&otherStuff}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "HelloMapType", args, reply)
+	if clientErr != nil {
+		clientErr = pkg_errors.WithMessage(clientErr, "failed to call demo.DemoGoTSRPCProxy HelloMapType")
 	}
 	return
 }

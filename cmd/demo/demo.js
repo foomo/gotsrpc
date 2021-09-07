@@ -101,6 +101,12 @@ var GoTSRPC;
             DemoClient.prototype.any = function (any, anyList, anyMap, success, err) {
                 this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
             };
+            DemoClient.prototype.arrayOfRemoteScalars = function (success, err) {
+                this.transport(this.endPoint, "ArrayOfRemoteScalars", [], success, err);
+            };
+            DemoClient.prototype.arrayOfRemoteScalarsInAStruct = function (success, err) {
+                this.transport(this.endPoint, "ArrayOfRemoteScalarsInAStruct", [], success, err);
+            };
             DemoClient.prototype.extractAddress = function (person, success, err) {
                 this.transport(this.endPoint, "ExtractAddress", [person], success, err);
             };
@@ -112,6 +118,12 @@ var GoTSRPC;
             };
             DemoClient.prototype.helloInterface = function (anything, anythingMap, anythingSlice, success, err) {
                 this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
+            };
+            DemoClient.prototype.helloLocalMapType = function (success, err) {
+                this.transport(this.endPoint, "HelloLocalMapType", [], success, err);
+            };
+            DemoClient.prototype.helloMapType = function (success, err) {
+                this.transport(this.endPoint, "HelloMapType", [], success, err);
             };
             DemoClient.prototype.helloNumberMaps = function (intMap, success, err) {
                 this.transport(this.endPoint, "HelloNumberMaps", [intMap], success, err);
