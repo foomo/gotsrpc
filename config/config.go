@@ -45,8 +45,8 @@ func (t *Target) IsTSRPC(service string) bool {
 type Mapping struct {
 	GoPackage        string   `yaml:"-"`
 	Out              string   `yaml:"out"`
-	Types            []string `yaml:"types"`
-	Constants        []string `yaml:"constants"`
+	Structs          []string `yaml:"structs"`
+	Scalars          []string `yaml:"scalars"`
 	TypeScriptModule string   `yaml:"module"`
 }
 

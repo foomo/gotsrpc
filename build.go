@@ -79,14 +79,14 @@ func Build(conf *config.Config, goPath string) {
 
 	missingTypes := map[string]bool{}
 	for _, mapping := range conf.Mappings {
-		for _, include := range mapping.Types {
+		for _, include := range mapping.Structs {
 			missingTypes[include] = true
 		}
 	}
 
 	missingConstants := map[string]bool{}
 	for _, mapping := range conf.Mappings {
-		for _, include := range mapping.Constants {
+		for _, include := range mapping.Scalars {
 			missingConstants[include] = true
 		}
 	}
