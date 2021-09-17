@@ -264,6 +264,8 @@ func Read(
 	gomod config.Namespace,
 	packageName string,
 	serviceMap map[string]string,
+	missingTypes map[string]bool,
+	missingConstants map[string]bool,
 ) (
 	pkgName string,
 	services ServiceList,
@@ -287,7 +289,6 @@ func Read(
 		return
 	}
 
-	missingTypes := map[string]bool{}
 	for _, s := range services {
 		for _, m := range s.Methods {
 			collectStructTypes(m.Return, missingTypes)
@@ -312,11 +313,11 @@ func Read(
 	trace("---------------- found scalars -------------------")
 	traceData(scalars)
 	trace("---------------- /found scalars -------------------")
-	constantTypes = map[string]map[string]interface{}{}
+	allConstantTypes := map[string]map[string]interface{}{}
 	for _, structDef := range structs {
 		if structDef != nil {
 			structPackage := structDef.Package
-			_, ok := constantTypes[structPackage]
+			_, ok := allConstantTypes[structPackage]
 			if !ok {
 				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
 				pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage)
@@ -324,14 +325,14 @@ func Read(
 					err = constPkgErr
 					return
 				}
-				constantTypes[structPackage] = loadConstantTypes(pkg)
+				allConstantTypes[structPackage] = loadConstantTypes(pkg)
 			}
 		}
 	}
 	for _, scalarDef := range scalars {
 		if scalarDef != nil {
 			scalarPackage := scalarDef.Package
-			_, ok := constantTypes[scalarPackage]
+			_, ok := allConstantTypes[scalarPackage]
 			if !ok {
 				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
 				pkg, constPkgErr := parsePackage(goPaths, gomod, scalarPackage)
@@ -339,8 +340,38 @@ func Read(
 					err = constPkgErr
 					return
 				}
-				constantTypes[scalarPackage] = loadConstantTypes(pkg)
+				allConstantTypes[scalarPackage] = loadConstantTypes(pkg)
 			}
+		}
+	}
+
+	flatStructs := map[string]bool{}
+	for _, s := range structs {
+		loadFlatStructs(s, flatStructs)
+	}
+
+	constantTypes = map[string]map[string]interface{}{}
+	for constantTypePackage, constantType := range allConstantTypes {
+		for constantTypeName, constantTypeVales := range constantType {
+			fullName := constantTypePackage + "." + constantTypeName
+			_, scalarOK := scalars[fullName]
+			_, structOK := flatStructs[fullName]
+			_, constantsOK := missingConstants[fullName]
+
+			if scalarOK || structOK || constantsOK {
+				missingConstants[fullName] = false
+				if _, ok := constantTypes[constantTypePackage]; !ok {
+					constantTypes[constantTypePackage] = map[string]interface{}{}
+				}
+				constantTypes[constantTypePackage][constantTypeName] = constantTypeVales
+			}
+		}
+	}
+
+	for missingConstant, missing := range missingConstants {
+		if missing {
+			err = errors.New("could not resolve constant: " + missingConstant)
+			return
 		}
 	}
 
@@ -355,9 +386,41 @@ func Read(
 	return
 }
 
+func loadFlatStructs(s *Struct, flatStructs map[string]bool) {
+	if s.Map != nil {
+		if s.Map.Key != nil {
+			loadFlatStructsValue(s.Map.Key, flatStructs)
+		}
+		if s.Map.Value != nil && s.Map.Value.Scalar != nil {
+			loadFlatStructsValue(s.Map.Value, flatStructs)
+		}
+	}
+	if s.Fields != nil {
+		for _, field := range s.Fields {
+			loadFlatStructsValue(field.Value, flatStructs)
+		}
+	}
+	flatStructs[s.FullName()] = true
+}
+
+func loadFlatStructsValue(s *Value, flatStructs map[string]bool) {
+	if s.Map != nil {
+		if s.Map.Key != nil {
+			loadFlatStructsValue(s.Map.Key, flatStructs)
+		}
+		if s.Map.Value != nil && s.Map.Value.Scalar != nil {
+			loadFlatStructsValue(s.Map.Value, flatStructs)
+		}
+	}
+	if s.Struct != nil {
+		loadFlatStructs(s.Struct, flatStructs)
+	}
+	if s.Scalar != nil {
+		flatStructs[s.Scalar.FullName()] = true
+	}
+}
 func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[string]*Scalar) {
 	for _, f := range fields {
-
 		if f.Value.StructType != nil {
 			// do we have that struct or is it a hidden scalar
 			name := f.Value.StructType.FullName()
@@ -600,35 +663,40 @@ func getStructTypeForField(value *Value) *StructType {
 	return strType
 }
 
-func getScalarForField(value *Value) *Scalar {
+func getScalarForField(value *Value) []*Scalar {
 	//field.Value.StructType
-	var scalarType *Scalar
+	var scalarTypes []*Scalar
 	switch true {
 	case value.Scalar != nil:
-		scalarType = value.Scalar
+		scalarTypes = append(scalarTypes, value.Scalar)
 		//case field.Value.ArrayType
 	case value.Map != nil:
-		scalarType = getScalarForField(value.Map.Value)
+		if value.Map.Key != nil {
+			if v := getScalarForField(value.Map.Key); v != nil {
+				scalarTypes = append(scalarTypes, v...)
+			}
+		}
+		scalarTypes = append(scalarTypes, getScalarForField(value.Map.Value)...)
 	case value.Array != nil:
-		scalarType = getScalarForField(value.Array.Value)
+		scalarTypes = append(scalarTypes, getScalarForField(value.Array.Value)...)
 	}
-	return scalarType
+	return scalarTypes
 }
 
 func collectScalarTypes(fields []*Field, scalarTypes map[string]bool) {
 	for _, field := range fields {
-
-		scalarType := getScalarForField(field.Value)
-		if scalarType != nil {
-			fullName := scalarType.Package + "." + scalarType.Name
-			if len(scalarType.Package) == 0 {
-				fullName = scalarType.Name
-			}
-			switch fullName {
-			case "error", "net/http.Request", "net/http.ResponseWriter":
-				continue
-			default:
-				scalarTypes[fullName] = true
+		for _, scalarType := range getScalarForField(field.Value) {
+			if scalarType != nil {
+				fullName := scalarType.Package + "." + scalarType.Name
+				if len(scalarType.Package) == 0 {
+					fullName = scalarType.Name
+				}
+				switch fullName {
+				case "error", "net/http.Request", "net/http.ResponseWriter":
+					continue
+				default:
+					scalarTypes[fullName] = true
+				}
 			}
 		}
 	}

@@ -12,8 +12,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/foomo/gotsrpc/v2/config"
 	"golang.org/x/tools/imports"
+
+	"github.com/foomo/gotsrpc/v2/config"
 )
 
 func deriveCommonJSMapping(conf *config.Config) {
@@ -76,6 +77,20 @@ func Build(conf *config.Config, goPath string) {
 	}
 	sort.Strings(names)
 
+	missingTypes := map[string]bool{}
+	for _, mapping := range conf.Mappings {
+		for _, include := range mapping.Types {
+			missingTypes[include] = true
+		}
+	}
+
+	missingConstants := map[string]bool{}
+	for _, mapping := range conf.Mappings {
+		for _, include := range mapping.Constants {
+			missingConstants[include] = true
+		}
+	}
+
 	for name, target := range conf.Targets {
 
 		packageName := target.Package
@@ -112,8 +127,7 @@ func Build(conf *config.Config, goPath string) {
 			goPaths = append(goPaths, vendorDirectory)
 		}
 
-		pkgName, services, structs, scalars, constantTypes, err := Read(goPaths, conf.Module, packageName, target.Services)
-
+		pkgName, services, structs, scalars, constantTypes, err := Read(goPaths, conf.Module, packageName, target.Services, missingTypes, missingConstants)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "\t an error occured while trying to understand your code: ", err)
 			os.Exit(2)

@@ -22,9 +22,7 @@ export interface AttributeDefinition {
 // github.com/foomo/gotsrpc/v2/demo.AttributeID
 export type AttributeID = string
 // github.com/foomo/gotsrpc/v2/demo.AttributeMapping
-export type AttributeMapping = Record<AttributeID,github_com_foomo_gotsrpc_v2_demo.AttributeDefinition>
-// github.com/foomo/gotsrpc/v2/demo.Bar
-export type Bar = any
+export type AttributeMapping = Record<github_com_foomo_gotsrpc_v2_demo.AttributeID,github_com_foomo_gotsrpc_v2_demo.AttributeDefinition>
 // github.com/foomo/gotsrpc/v2/demo.Check
 export interface Check {
 	Foo:string;
@@ -72,7 +70,7 @@ export type LocalKey = string
 // github.com/foomo/gotsrpc/v2/demo.MapOfOtherStuff
 export type MapOfOtherStuff = Record<github_com_foomo_gotsrpc_v2_demo_nested.JustAnotherStingType,number>
 // github.com/foomo/gotsrpc/v2/demo.MapWithLocalStuff
-export type MapWithLocalStuff = Record<LocalKey,number>
+export type MapWithLocalStuff = Record<github_com_foomo_gotsrpc_v2_demo.LocalKey,number>
 // github.com/foomo/gotsrpc/v2/demo.OuterInline
 export interface OuterInline {
 	one:string;

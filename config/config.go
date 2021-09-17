@@ -13,12 +13,12 @@ import (
 )
 
 type Target struct {
-	Package          string                `yaml:"package"`
-	Services         map[string]string     `yaml:"services"`
-	TypeScriptModule string                `yaml:"module"`
-	Out              string                `yaml:"out"`
-	GoRPC            []string              `yaml:"gorpc"`
-	TSRPC            []string              `yaml:"tsrpc"`
+	Package          string            `yaml:"package"`
+	Services         map[string]string `yaml:"services"`
+	TypeScriptModule string            `yaml:"module"`
+	Out              string            `yaml:"out"`
+	GoRPC            []string          `yaml:"gorpc"`
+	TSRPC            []string          `yaml:"tsrpc"`
 }
 
 func (t *Target) IsGoRPC(service string) bool {
@@ -43,9 +43,11 @@ func (t *Target) IsTSRPC(service string) bool {
 }
 
 type Mapping struct {
-	GoPackage        string `yaml:"-"`
-	Out              string `yaml:"out"`
-	TypeScriptModule string `yaml:"module"`
+	GoPackage        string   `yaml:"-"`
+	Out              string   `yaml:"out"`
+	Types            []string `yaml:"types"`
+	Constants        []string `yaml:"constants"`
+	TypeScriptModule string   `yaml:"module"`
 }
 
 type TypeScriptMappings map[string]*Mapping

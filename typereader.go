@@ -185,6 +185,8 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 		_, scalarType := getTypesFromAstType(mapType.Key.(*ast.Ident))
 		m.KeyType = string(scalarType)
 		m.KeyGoType = mapType.Key.(*ast.Ident).Name
+		m.Key = &Value{}
+		readAstType(m.Key, mapType.Key.(*ast.Ident), fileImports, "")
 	case "*ast.SelectorExpr":
 		m.Key = &Value{}
 		readAstSelectorExpr(m.Key, mapType.Key.(*ast.SelectorExpr), fileImports)

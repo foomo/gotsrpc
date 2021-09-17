@@ -20,9 +20,7 @@ module GoTSRPC.Demo {
 	// github.com/foomo/gotsrpc/v2/demo.AttributeID
 	export type AttributeID = string
 	// github.com/foomo/gotsrpc/v2/demo.AttributeMapping
-	export type AttributeMapping = Record<AttributeID,GoTSRPC.Demo.AttributeDefinition>
-	// github.com/foomo/gotsrpc/v2/demo.Bar
-	export type Bar = any
+	export type AttributeMapping = Record<GoTSRPC.Demo.AttributeID,GoTSRPC.Demo.AttributeDefinition>
 	// github.com/foomo/gotsrpc/v2/demo.Check
 	export interface Check {
 		Foo:string;
@@ -70,7 +68,7 @@ module GoTSRPC.Demo {
 	// github.com/foomo/gotsrpc/v2/demo.MapOfOtherStuff
 	export type MapOfOtherStuff = Record<GoTSRPC.Demo.Nested.JustAnotherStingType,number>
 	// github.com/foomo/gotsrpc/v2/demo.MapWithLocalStuff
-	export type MapWithLocalStuff = Record<LocalKey,number>
+	export type MapWithLocalStuff = Record<GoTSRPC.Demo.LocalKey,number>
 	// github.com/foomo/gotsrpc/v2/demo.OuterInline
 	export interface OuterInline {
 		one:string;
