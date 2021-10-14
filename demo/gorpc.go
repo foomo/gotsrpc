@@ -173,6 +173,12 @@ type (
 	DemoTestScalarInPlaceResponse struct {
 		RetTestScalarInPlace_0 ScalarInPlace
 	}
+
+	DemoTypeAliasesRequest struct {
+		Mss *MapSubStruct
+	}
+	DemoTypeAliasesResponse struct {
+	}
 )
 
 func init() {
@@ -196,6 +202,8 @@ func init() {
 	gob.Register(DemoNestResponse{})
 	gob.Register(DemoTestScalarInPlaceRequest{})
 	gob.Register(DemoTestScalarInPlaceResponse{})
+	gob.Register(DemoTypeAliasesRequest{})
+	gob.Register(DemoTypeAliasesResponse{})
 }
 
 func NewDemoGoRPCProxy(addr string, service *Demo, tlsConfig *tls.Config) *DemoGoRPCProxy {
@@ -271,6 +279,10 @@ func (p *DemoGoRPCProxy) handler(clientAddr string, request interface{}) (respon
 	case "DemoTestScalarInPlaceRequest":
 		retTestScalarInPlace_0 := p.service.TestScalarInPlace()
 		response = DemoTestScalarInPlaceResponse{RetTestScalarInPlace_0: retTestScalarInPlace_0}
+	case "DemoTypeAliasesRequest":
+		req := request.(DemoTypeAliasesRequest)
+		p.service.TypeAliases(req.Mss)
+		response = DemoTypeAliasesResponse{}
 	default:
 		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
 	}

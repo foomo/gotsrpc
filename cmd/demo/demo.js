@@ -81,6 +81,9 @@ var GoTSRPC;
             DemoClient.prototype.testScalarInPlace = function (success, err) {
                 this.transport(this.endPoint, "TestScalarInPlace", [], success, err);
             };
+            DemoClient.prototype.typeAliases = function (mss, success, err) {
+                this.transport(this.endPoint, "TypeAliases", [mss], success, err);
+            };
             DemoClient.defaultInst = new DemoClient;
             return DemoClient;
         }());

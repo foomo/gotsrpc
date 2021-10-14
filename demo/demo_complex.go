@@ -63,3 +63,20 @@ func (d *Demo) GiveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarI
 	//func (s *Service) giveMeAScalar() (amount nstd.Amount, wahr nstd.True, hier ScalarInPlace) {
 	return nstd.Amount(10), nstd.ItIsTrue, ScalarInPlace("hier")
 }
+
+func (d *Demo) TypeAliases(mss *MapSubStruct) {
+
+}
+
+type SubStruct struct {
+	Name string `json:"name"`
+}
+
+type MapSubStruct []SubStruct
+
+type TypedStructService struct {
+}
+
+func (d *TypedStructService) SubMapInterface(p Person) (data *MapSubStruct) {
+	return nil
+}

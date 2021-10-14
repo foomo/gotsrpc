@@ -173,6 +173,16 @@ func (tsc *DemoGoRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 ScalarIn
 	return response.RetTestScalarInPlace_0, nil
 }
 
+func (tsc *DemoGoRPCClient) TypeAliases(mss *MapSubStruct) (clientErr error) {
+	req := DemoTypeAliasesRequest{Mss: mss}
+	_, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	return nil
+}
+
 type BarGoRPCClient struct {
 	Client *gorpc.Client
 }

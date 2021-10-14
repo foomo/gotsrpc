@@ -260,6 +260,23 @@ func (p *DemoGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		gotsrpc.Reply([]interface{}{testScalarInPlaceRet}, callStats, r, w)
 		return
+	case "TypeAliases":
+		var (
+			arg_mss *MapSubStruct
+		)
+		args = []interface{}{&arg_mss}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		p.service.TypeAliases(arg_mss)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{}, callStats, r, w)
+		return
 	default:
 		gotsrpc.ClearStats(r)
 		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)

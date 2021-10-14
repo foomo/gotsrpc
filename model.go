@@ -19,8 +19,9 @@ type JSONInfo struct {
 }
 
 type StructType struct {
-	Name    string
-	Package string
+	Name     string
+	Package  string
+	SubValue *Value
 }
 
 type Value struct {

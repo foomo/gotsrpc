@@ -1,0 +1,24 @@
+---
+module:
+  name: github.com/foomo/gotsrpc
+  path: ../
+
+targets:
+  demo:
+    module: GoTSRPC.Demo
+    services:
+      /service/demo: TypedStructService
+    package: github.com/foomo/gotsrpc/demo
+    out: demo/output/client.ts
+    tsrpc:
+    - TypedStructService
+
+
+mappings:
+  github.com/foomo/gotsrpc/demo:
+    module: GoTSRPC.Demo
+    out: demo/output/demo.ts
+  github.com/foomo/gotsrpc/demo/nested:
+    module: GoTSRPC.Demo.Nested
+    out: demo/output/demo-nested.ts
+...

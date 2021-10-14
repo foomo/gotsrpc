@@ -10,7 +10,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var ReaderTrace = false
+var (
+	ReaderTrace       = false
+	LoadedExpressions = map[ast.Expr]bool{}
+)
 
 func readStructs(pkg *ast.Package, packageName string) (structs map[string]*Struct, scalars map[string]*Scalar, err error) {
 	structs = map[string]*Struct{}
@@ -34,9 +37,6 @@ func readStructs(pkg *ast.Package, packageName string) (structs map[string]*Stru
 			structType.IsError = true
 		}
 	}
-	//jsonDump(errorTypes)
-	//jsonDump(scalarTypes)
-	//jsonDump(structs)
 	return
 }
 
@@ -144,9 +144,16 @@ func readAstType(v *Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap)
 			Name:    structType,
 			Package: fileImports.getPackagePath(""),
 		}
+		if typeSpec := getTypeSpec(fieldIdent); typeSpec != nil {
+			if expr, ok := typeSpec.Type.(ast.Expr); ok {
+				v.StructType.SubValue = &Value{}
+				v.StructType.SubValue.loadExpr(expr, fileImports)
+			}
+
+		}
 	} else {
 		v.GoScalarType = fieldIdent.Name
-		if fieldIdent.Obj != nil && fieldIdent.Obj.Decl != nil && reflect.ValueOf(fieldIdent.Obj.Decl).Type().String() == "*ast.TypeSpec" {
+		if getTypeSpec(fieldIdent) != nil {
 			//typeSpec := fieldIdent.Obj.Decl.(*ast.TypeSpec)
 			//fmt.Println("-------------------------------------->", fieldIdent.Name, reflect.ValueOf(typeSpec.Type).Type())
 			v.Scalar = &Scalar{
@@ -158,7 +165,17 @@ func readAstType(v *Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap)
 		}
 
 	}
+
 	//
+}
+
+func getTypeSpec(fieldIdent *ast.Ident) *ast.TypeSpec {
+	if fieldIdent.Obj == nil ||
+		fieldIdent.Obj.Decl == nil ||
+		reflect.ValueOf(fieldIdent.Obj.Decl).Type().String() != "*ast.TypeSpec" {
+		return nil
+	}
+	return fieldIdent.Obj.Decl.(*ast.TypeSpec)
 }
 
 func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpecMap) {
@@ -187,6 +204,7 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 		m.KeyType = string(scalarType)
 		m.KeyGoType = mapType.Key.(*ast.Ident).Name
 	default:
+
 		// todo: implement support for "*ast.Scalar" type (sca)
 		// this is important for scalar types in map keys
 		// Example:
@@ -241,6 +259,10 @@ func readAstInterfaceType(v *Value, interfaceType *ast.InterfaceType, fileImport
 }
 
 func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
+	if ok := LoadedExpressions[expr]; ok {
+		return
+	}
+	LoadedExpressions[expr] = true
 
 	switch reflect.ValueOf(expr).Type().String() {
 	case "*ast.ArrayType":
@@ -289,6 +311,7 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 	default:
 		trace("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())
 	}
+
 }
 
 func readField(astField *ast.Field, fileImports fileImportSpecMap) (names []string, v *Value, jsonInfo *JSONInfo) {

@@ -52,6 +52,7 @@ type DemoGoTSRPCClient interface {
 	MapCrap() (crap map[string][]int, clientErr error)
 	Nest() (retNest_0 []*github_com_foomo_gotsrpc_demo_nested.Nested, clientErr error)
 	TestScalarInPlace() (retTestScalarInPlace_0 ScalarInPlace, clientErr error)
+	TypeAliases(mss *MapSubStruct) (clientErr error)
 }
 
 type HTTPDemoGoTSRPCClient struct {
@@ -142,6 +143,13 @@ func (tsc *HTTPDemoGoTSRPCClient) TestScalarInPlace() (retTestScalarInPlace_0 Sc
 	args := []interface{}{}
 	reply := []interface{}{&retTestScalarInPlace_0}
 	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "TestScalarInPlace", args, reply)
+	return
+}
+
+func (tsc *HTTPDemoGoTSRPCClient) TypeAliases(mss *MapSubStruct) (clientErr error) {
+	args := []interface{}{mss}
+	reply := []interface{}{}
+	clientErr = tsc.Client.Call(tsc.URL, tsc.EndPoint, "TypeAliases", args, reply)
 	return
 }
 

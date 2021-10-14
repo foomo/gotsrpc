@@ -270,11 +270,11 @@ func Read(
 
 	structs = map[string]*Struct{}
 	scalars = map[string]*Scalar{}
-
 	collectErr := collectTypes(goPaths, gomod, missingTypes, structs, scalars)
 	if collectErr != nil {
 		err = errors.New("error while collecting structs: " + collectErr.Error())
 	}
+
 	trace("---------------- found structs -------------------")
 	traceData(structs)
 	trace("---------------- /found structs -------------------")
@@ -524,19 +524,21 @@ func getTypesInPackage(
 	return structs, scalars, nil
 }
 
-func getStructTypeForField(value *Value) *StructType {
+func getStructTypesForField(value *Value) []*StructType {
+	if value == nil {
+		return []*StructType{}
+	}
 	//field.Value.StructType
-	var strType *StructType
 	switch true {
 	case value.StructType != nil:
-		strType = value.StructType
 		//case field.Value.ArrayType
+		return append(getStructTypesForField(value.StructType.SubValue), value.StructType)
 	case value.Map != nil:
-		strType = getStructTypeForField(value.Map.Value)
+		return getStructTypesForField(value.Map.Value)
 	case value.Array != nil:
-		strType = getStructTypeForField(value.Array.Value)
+		return getStructTypesForField(value.Array.Value)
 	}
-	return strType
+	return nil
 }
 
 func getScalarForField(value *Value) *Scalar {
@@ -569,12 +571,13 @@ func collectScalarTypes(fields []*Field, scalarTypes map[string]bool) {
 }
 
 func collectStructTypes(fields []*Field, structTypes map[string]bool) {
+
 	for _, field := range fields {
-		strType := getStructTypeForField(field.Value)
-		if strType != nil {
-			fullName := strType.Package + "." + strType.Name
-			if len(strType.Package) == 0 {
-				fullName = strType.Name
+		types := getStructTypesForField(field.Value)
+		for _, t := range types {
+			fullName := t.Package + "." + t.Name
+			if len(t.Package) == 0 {
+				fullName = t.Name
 			}
 			switch fullName {
 			case "error", "net/http.Request", "net/http.ResponseWriter":

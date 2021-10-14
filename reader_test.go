@@ -1,25 +1,28 @@
 package gotsrpc
 
 import (
-	"github.com/foomo/gotsrpc/config"
+	"fmt"
+	"go/build"
 	"os"
 	"testing"
+
+	"github.com/foomo/gotsrpc/config"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func getTestServiceList(t *testing.T) ServiceList {
-	// ReaderTrace = true
-	serviceMap := map[string]string{
-		"/demo": "Demo",
+func TestServiceList(t *testing.T) {
+	c, err := config.LoadConfigFile("demo/config-substruct.yml")
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	packageName := "github.com/foomo/gotsrpc/demo"
+	target := c.Targets["demo"]
 
-	pkg, parseErr := parsePackage([]string{os.Getenv("GOPATH")}, config.Namespace{}, packageName)
+	pkg, parseErr := parsePackage([]string{os.Getenv("GOPATH"), build.Default.GOPATH}, c.Module, target.Package)
 	assert.NoError(t, parseErr)
 
-	services, err := readServicesInPackage(pkg, packageName, serviceMap)
+	services, err := readServicesInPackage(pkg, target.Package, target.Services)
 	assert.NoError(t, err)
 
 	missingTypes := map[string]bool{}
@@ -31,5 +34,5 @@ func getTestServiceList(t *testing.T) ServiceList {
 			collectScalarTypes(m.Args, missingTypes)
 		}
 	}
-	return services
+	fmt.Println(missingTypes)
 }
