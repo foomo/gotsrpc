@@ -175,9 +175,16 @@ func Build(conf *config.Config, goPath string) {
 					os.Stderr,
 					"	goimports does not like the generated code: ",
 					errProcessImports,
-					", this is the code: ",
-					code,
 				)
+			
+				// write code into file for debugging
+				writeErr := ioutil.WriteFile(filename, []byte(code), 0644)
+				if writeErr != nil {
+					fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
+					os.Exit(5)
+				}
+				fmt.Fprintln(os.Stderr, "wrote code for debugging into file", filename)
+				
 				os.Exit(5)
 			}
 
