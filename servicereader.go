@@ -167,7 +167,6 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	}
 	trace("done reading fields")
 	return
-
 }
 
 func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services ServiceList, err error) {
@@ -182,7 +181,14 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 			Endpoint: endpoint,
 		})
 	}
-	for _, file := range pkg.Files {
+	pkgFiles := make([]string, 0, len(pkg.Files))
+	for k := range pkg.Files {
+		pkgFiles = append(pkgFiles, k)
+	}
+	sort.Strings(pkgFiles)
+
+	for _, k := range pkgFiles {
+		file := pkg.Files[k]
 		err = readServiceFile(file, packageName, services)
 		if err != nil {
 			return

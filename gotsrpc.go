@@ -101,11 +101,12 @@ func parserExcludeFiles(info os.FileInfo) bool {
 	return !strings.HasSuffix(info.Name(), "_test.go")
 }
 
-func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map[string]*ast.Package, error) {
+func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map[string]*ast.Package, *token.FileSet, error) {
 	if gomod.Name != "" && strings.HasPrefix(packageName, gomod.Name) {
 		fset := token.NewFileSet()
 		dir := strings.Replace(packageName, gomod.Name, gomod.Path, 1)
-		return parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
+		pkgs, err := parser.ParseDir(fset, dir, parserExcludeFiles, parser.DeclarationErrors|parser.AllErrors)
+		return pkgs, fset, err
 	}
 
 	errorStrings := map[string]string{}
@@ -141,11 +142,11 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 		}
 		pkgs, err := parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
 		if err == nil {
-			return pkgs, nil
+			return pkgs, fset, nil
 		}
 		errorStrings[dir] = err.Error()
 	}
-	return nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
+	return nil, nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
 }
 
 type byLen []string
@@ -163,7 +164,7 @@ func (a byLen) Swap(i, j int) {
 }
 
 func parsePackage(goPaths []string, gomod config.Namespace, packageName string) (pkg *ast.Package, err error) {
-	pkgs, err := parseDir(goPaths, gomod, packageName)
+	pkgs, fset, err := parseDir(goPaths, gomod, packageName)
 	if err != nil {
 		return nil, errors.New("could not parse package " + packageName + ": " + err.Error())
 	}
@@ -185,6 +186,9 @@ func parsePackage(goPaths []string, gomod config.Namespace, packageName string) 
 	}
 	sort.Sort(byLen(sortedGoPaths))
 
+	var parsedPkg *ast.Package
+
+Loop:
 	for pkgName, pkg := range pkgs {
 		// fmt.Println("---------------------> got", pkgName, "looking for", packageName, strippedPackageName)
 		// fmt.Println(goPaths)
@@ -196,7 +200,8 @@ func parsePackage(goPaths []string, gomod config.Namespace, packageName string) 
 		// 	}
 		// }
 		if pkgName == strippedPackageName {
-			return pkg, nil
+			parsedPkg = pkg
+			break
 		}
 
 		for pkgFile := range pkg.Files {
@@ -211,7 +216,8 @@ func parsePackage(goPaths []string, gomod config.Namespace, packageName string) 
 						// fmt.Println(">>>>>>", strings.Join(parts, "/"))
 						// fmt.Println("==========>", pkgFile, prefix)
 						if strings.Join(parts, "/") == packageName {
-							return pkg, nil
+							parsedPkg = pkg
+							break Loop
 						}
 					}
 				}
@@ -220,5 +226,12 @@ func parsePackage(goPaths []string, gomod config.Namespace, packageName string) 
 
 		foundPackages = append(foundPackages, pkgName)
 	}
-	return nil, errors.New("package \"" + packageName + "\" not found in " + strings.Join(foundPackages, ", ") + " looking in go paths" + strings.Join(goPaths, ", "))
+
+	if parsedPkg == nil {
+		return nil, errors.New("package \"" + packageName + "\" not found in " + strings.Join(foundPackages, ", ") + " looking in go paths" + strings.Join(goPaths, ", "))
+	}
+
+	// create new package with resolved objects
+	resolvedPkg, _ := ast.NewPackage(fset, parsedPkg.Files, nil, nil) // ignore error
+	return resolvedPkg, nil
 }

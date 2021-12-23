@@ -71,7 +71,7 @@ func Build(conf *config.Config, goPath string) {
 	mappedTypeScript := map[string]map[string]*code{}
 
 	// preserve alphabetic order
-	names := []string{}
+	var names []string
 	for name := range conf.Targets {
 		names = append(names, name)
 	}
@@ -91,7 +91,8 @@ func Build(conf *config.Config, goPath string) {
 		}
 	}
 
-	for name, target := range conf.Targets {
+	for _, name := range names {
+		target := conf.Targets[name]
 
 		packageName := target.Package
 		outputPath := getPathForTarget(conf.Module, goPath, target)
