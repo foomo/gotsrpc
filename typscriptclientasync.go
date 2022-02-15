@@ -113,7 +113,7 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 					retField.Value.tsType(mappings, scalars, structs, firstReturnTypeTS)
 					firstReturnType = firstReturnTypeTS.string()
 					if isNilable {
-						firstReturnType += "|null"
+						firstReturnType += "|undefined"
 					}
 					//firstReturnFieldName = retArgName
 				}
