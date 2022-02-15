@@ -121,7 +121,10 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 			continue
 		}
 		ts.app(f.tsName())
-		if f.Value.IsPtr || (f.JSONInfo != nil && f.JSONInfo.OmitEmpty) {
+		if f.Value.IsPtr ||
+			f.Value.Map != nil ||
+			f.Value.Array != nil ||
+			(f.JSONInfo != nil && f.JSONInfo.OmitEmpty) {
 			ts.app("?")
 		}
 		ts.app(":")
@@ -240,10 +243,10 @@ func renderTypescriptStructsToPackages(
 }
 
 func split(str string, seps []string) []string {
-	res := []string{}
+	var res []string
 	strs := []string{str}
 	for _, sep := range seps {
-		nextStrs := []string{}
+		var nextStrs []string
 		for _, str := range strs {
 			for _, part := range strings.Split(str, sep) {
 				nextStrs = append(nextStrs, part)
