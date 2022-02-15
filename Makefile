@@ -23,6 +23,10 @@ install.debug:
 test:
 	go test -v ./...
 
+.PHONY: outdated
+outdated:
+	go list -u -m -json all | go-mod-outdated -update -direct
+
 build:
 	goreleaser build --snapshot --rm-dist
 
