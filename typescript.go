@@ -34,11 +34,16 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 		ts.app(",")
 		v.Map.Value.tsType(mappings, scalars, structs, ts)
 		ts.app(">")
+		ts.app("|null")
 	case v.Array != nil:
+		if v.Array.Value.ScalarType != ScalarTypeByte {
+			ts.app("Array<")
+		}
 		v.Array.Value.tsType(mappings, scalars, structs, ts)
 		if v.Array.Value.ScalarType != ScalarTypeByte {
-			ts.app("[]")
+			ts.app(">")
 		}
+		ts.app("|null")
 	case v.Scalar != nil:
 		if v.Scalar.Package != "" {
 			mapping, ok := mappings[v.Scalar.Package]
@@ -89,6 +94,9 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			}
 
 			ts.app(tsModule + "." + v.StructType.Name)
+			if v.IsPtr {
+				ts.app("|null")
+			}
 			return
 		}
 		ts.app(v.StructType.Name)
@@ -97,10 +105,19 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 		ts.l("{").ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalars, structs, ts)
 		ts.ind(-1).app("}")
+		if v.IsPtr {
+			ts.app("|null")
+		}
 	case len(v.ScalarType) > 0:
 		ts.app(tsTypeFromScalarType(v.ScalarType))
+		if v.IsPtr {
+			ts.app("|null")
+		}
 	default:
 		ts.app("any")
+		if v.IsPtr {
+			ts.app("|null")
+		}
 	}
 	return
 }
@@ -121,10 +138,7 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 			continue
 		}
 		ts.app(f.tsName())
-		if f.Value.IsPtr ||
-			f.Value.Map != nil ||
-			f.Value.Array != nil ||
-			(f.JSONInfo != nil && f.JSONInfo.OmitEmpty) {
+		if f.JSONInfo != nil && f.JSONInfo.OmitEmpty {
 			ts.app("?")
 		}
 		ts.app(":")

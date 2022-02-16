@@ -48,14 +48,14 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 				ts.app(", ")
 			}
 			ts.app(arg.tsName())
+			ts.app(":")
+			arg.Value.tsType(mappings, scalars, structs, ts)
 			if arg.Value.IsPtr ||
 				arg.Value.Map != nil ||
 				arg.Value.Array != nil ||
 				(arg.JSONInfo != nil && arg.JSONInfo.OmitEmpty) {
-				ts.app("?")
+				ts.app("|null")
 			}
-			ts.app(":")
-			arg.Value.tsType(mappings, scalars, structs, ts)
 			callArgs = append(callArgs, arg.Name)
 			argCount++
 		}
@@ -97,11 +97,11 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 			}
 
 			innerReturnTypeTS.app(strconv.Itoa(index))
-			if isNilable {
-				innerReturnTypeTS.app("?")
-			}
 			innerReturnTypeTS.app(":")
 			retField.Value.tsType(mappings, scalars, structs, innerReturnTypeTS)
+			if isNilable {
+				innerReturnTypeTS.app("|null")
+			}
 
 			if index == len(method.Return)-1 && retField.Value.IsError {
 				throwLastError = true
@@ -113,18 +113,18 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 					retField.Value.tsType(mappings, scalars, structs, firstReturnTypeTS)
 					firstReturnType = firstReturnTypeTS.string()
 					if isNilable {
-						firstReturnType += "|undefined"
+						firstReturnType += "|null"
 					}
 					//firstReturnFieldName = retArgName
 				}
 				countReturns++
 				returnTypeTS.app(retArgName)
-				if isNilable {
-					returnTypeTS.app("?")
-				}
 				returnTypeTS.app(":")
 				responseObject += responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]"
 				retField.Value.tsType(mappings, scalars, structs, returnTypeTS)
+				if isNilable {
+					returnTypeTS.app("|null")
+				}
 			}
 			responseObjectPrefix = ", "
 		}
