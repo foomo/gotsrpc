@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ESNext",
+		"lib": ["es5", "es6", "dom"],
+		"strictNullChecks": true,
+		"noImplicitAny": false,
+		"strict": true,
+	}
+}

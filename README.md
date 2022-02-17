@@ -33,8 +33,6 @@ Will generate client and server side go and TypeScript code. Have fun!
 
 ## Configuration Examples
 
-[demo/config.yml](demo/config-commonjs.yml)
-
 ```yaml
 targets:
   demo:
