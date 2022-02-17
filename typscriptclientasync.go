@@ -49,13 +49,7 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 			}
 			ts.app(arg.tsName())
 			ts.app(":")
-			arg.Value.tsType(mappings, scalars, structs, ts)
-			if arg.Value.IsPtr ||
-				arg.Value.Map != nil ||
-				arg.Value.Array != nil ||
-				(arg.JSONInfo != nil && arg.JSONInfo.OmitEmpty) {
-				ts.app("|null")
-			}
+			arg.Value.tsType(mappings, scalars, structs, ts, arg.JSONInfo)
 			callArgs = append(callArgs, arg.Name)
 			argCount++
 		}
@@ -80,11 +74,6 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 			countInnerReturns++
 			retArgName := retField.tsName()
 
-			isNilable := retField.Value.IsPtr ||
-				retField.Value.Array != nil ||
-				retField.Value.Map != nil ||
-				(retField.JSONInfo != nil && retField.JSONInfo.OmitEmpty)
-
 			if len(retArgName) == 0 {
 				retArgName = "ret"
 				if index > 0 {
@@ -98,33 +87,22 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 
 			innerReturnTypeTS.app(strconv.Itoa(index))
 			innerReturnTypeTS.app(":")
-			retField.Value.tsType(mappings, scalars, structs, innerReturnTypeTS)
-			if isNilable {
-				innerReturnTypeTS.app("|null")
-			}
+			retField.Value.tsType(mappings, scalars, structs, innerReturnTypeTS, retField.JSONInfo)
 
 			if index == len(method.Return)-1 && retField.Value.IsError {
 				throwLastError = true
-				//lastErrorName = retArgName
 				errIndex = index
 			} else {
 				if index == 0 {
 					firstReturnTypeTS := newCode("	")
-					retField.Value.tsType(mappings, scalars, structs, firstReturnTypeTS)
+					retField.Value.tsType(mappings, scalars, structs, firstReturnTypeTS, retField.JSONInfo)
 					firstReturnType = firstReturnTypeTS.string()
-					if isNilable {
-						firstReturnType += "|null"
-					}
-					//firstReturnFieldName = retArgName
 				}
 				countReturns++
 				returnTypeTS.app(retArgName)
 				returnTypeTS.app(":")
 				responseObject += responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]"
-				retField.Value.tsType(mappings, scalars, structs, returnTypeTS)
-				if isNilable {
-					returnTypeTS.app("|null")
-				}
+				retField.Value.tsType(mappings, scalars, structs, returnTypeTS, retField.JSONInfo)
 			}
 			responseObjectPrefix = ", "
 		}

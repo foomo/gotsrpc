@@ -25,6 +25,7 @@ type StructType struct {
 }
 
 type Value struct {
+	JSONInfo     *JSONInfo   `json:",omitempty"`
 	IsError      bool        `json:",omitempty"`
 	IsInterface  bool        `json:",omitempty"`
 	Scalar       *Scalar     `json:",omitempty"`

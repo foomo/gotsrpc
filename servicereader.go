@@ -262,7 +262,6 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 		}
 	}
 	return constantTypes
-
 }
 
 func Read(
@@ -323,30 +322,26 @@ func Read(
 	for _, structDef := range structs {
 		if structDef != nil {
 			structPackage := structDef.Package
-			_, ok := allConstantTypes[structPackage]
-			if !ok {
-				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
-				pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage)
-				if constPkgErr != nil {
+			if _, ok := allConstantTypes[structPackage]; !ok {
+				if pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage); constPkgErr != nil {
 					err = constPkgErr
 					return
+				} else {
+					allConstantTypes[structPackage] = loadConstantTypes(pkg)
 				}
-				allConstantTypes[structPackage] = loadConstantTypes(pkg)
 			}
 		}
 	}
 	for _, scalarDef := range scalars {
 		if scalarDef != nil {
 			scalarPackage := scalarDef.Package
-			_, ok := allConstantTypes[scalarPackage]
-			if !ok {
-				// fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", structPackage)
-				pkg, constPkgErr := parsePackage(goPaths, gomod, scalarPackage)
-				if constPkgErr != nil {
+			if _, ok := allConstantTypes[scalarPackage]; !ok {
+				if pkg, constPkgErr := parsePackage(goPaths, gomod, scalarPackage); constPkgErr != nil {
 					err = constPkgErr
 					return
+				} else {
+					allConstantTypes[scalarPackage] = loadConstantTypes(pkg)
 				}
-				allConstantTypes[scalarPackage] = loadConstantTypes(pkg)
 			}
 		}
 	}
@@ -448,7 +443,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 	scannedPackageStructs := map[string]map[string]*Struct{}
 	scannedPackageScalars := map[string]map[string]*Scalar{}
 	missingTypeNames := func() []string {
-		missing := []string{}
+		var missing []string
 		for name, isMissing := range missingTypes {
 			if isMissing {
 				missing = append(missing, name)
@@ -576,8 +571,7 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 		return false
 	}
 	for _, field := range s.Fields {
-		var fieldStructType *StructType
-		fieldStructType = nil
+		var fieldStructType *StructType = nil
 		if field.Value.StructType != nil {
 			fieldStructType = field.Value.StructType
 		} else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
@@ -597,21 +591,25 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 			}
 		}
 	}
-	if s.Array != nil {
-		if s.Array.Value != nil {
-			if s.Array.Value.StructType != nil {
-				if needsWork(s.Array.Value.StructType.FullName()) {
-					return false
-				}
+	if s.Array != nil && s.Array.Value != nil {
+		if s.Array.Value.StructType != nil {
+			if needsWork(s.Array.Value.StructType.FullName()) {
+				return false
+			}
+		} else if s.Array.Value.Scalar != nil {
+			if needsWork(s.Array.Value.Scalar.FullName()) {
+				return false
 			}
 		}
 	}
-	if s.Map != nil {
-		if s.Map.Value != nil {
-			if s.Map.Value.StructType != nil {
-				if needsWork(s.Map.Value.StructType.FullName()) {
-					return false
-				}
+	if s.Map != nil && s.Map.Value != nil {
+		if s.Map.Value.StructType != nil {
+			if needsWork(s.Map.Value.StructType.FullName()) {
+				return false
+			}
+		} else if s.Map.Value.Scalar != nil {
+			if needsWork(s.Map.Value.Scalar.FullName()) {
+				return false
 			}
 		}
 	}

@@ -22,24 +22,24 @@ func (f *Field) tsName() string {
 	return n
 }
 
-func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) {
-	switch true {
+func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
+	switch {
 	case v.Map != nil:
 		ts.app("Record<")
 		if v.Map.Key != nil {
-			v.Map.Key.tsType(mappings, scalars, structs, ts)
+			v.Map.Key.tsType(mappings, scalars, structs, ts, nil)
 		} else {
 			ts.app(v.Map.KeyType)
 		}
 		ts.app(",")
-		v.Map.Value.tsType(mappings, scalars, structs, ts)
+		v.Map.Value.tsType(mappings, scalars, structs, ts, nil)
 		ts.app(">")
 		ts.app("|null")
 	case v.Array != nil:
 		if v.Array.Value.ScalarType != ScalarTypeByte {
 			ts.app("Array<")
 		}
-		v.Array.Value.tsType(mappings, scalars, structs, ts)
+		v.Array.Value.tsType(mappings, scalars, structs, ts, nil)
 		if v.Array.Value.ScalarType != ScalarTypeByte {
 			ts.app(">")
 		}
@@ -52,6 +52,9 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 				tsModule = mapping.TypeScriptModule
 			}
 			ts.app(tsModule + "." + tsTypeFromScalarType(v.ScalarType))
+			if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
+				ts.app("|null")
+			}
 			return
 		}
 		ts.app(tsTypeFromScalarType(v.Scalar.Type))
@@ -62,39 +65,11 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			if ok {
 				tsModule = mapping.TypeScriptModule
 			}
-			scalarName := v.StructType.FullName()
-			// is it a hidden scalar ?!
-			hiddenScalar, ok := scalars[scalarName]
-			if ok {
-				ts.app(tsTypeFromScalarType(hiddenScalar.Type))
-				return
-			}
-
-			hiddenStruct, okHiddenStruct := structs[scalarName]
-			if okHiddenStruct && hiddenStruct.Array != nil {
-				if hiddenStruct.Array.Value.StructType != nil {
-					hiddenMapping, hiddenMappingOK := mappings[hiddenStruct.Array.Value.StructType.Package]
-					var tsModule string
-					if hiddenMappingOK {
-						tsModule = hiddenMapping.TypeScriptModule
-					}
-					ts.app(tsModule + "." + hiddenStruct.Array.Value.StructType.Name + "[]")
-					return
-				} else if hiddenStruct.Array.Value.Scalar != nil {
-					var tsModule string
-					if value, ok := mappings[hiddenStruct.Array.Value.Scalar.Package]; ok {
-						tsModule = value.TypeScriptModule
-					}
-					ts.app(tsModule + "." + tsTypeFromScalarType(hiddenStruct.Array.Value.Scalar.Type))
-					return
-				} else if hiddenStruct.Array.Value.GoScalarType == "byte" { // this fixes types like primitive.ID [12]byte
-					ts.app(tsTypeFromScalarType(hiddenStruct.Array.Value.ScalarType))
-					return
-				}
-			}
-
 			ts.app(tsModule + "." + v.StructType.Name)
-			if v.IsPtr {
+			hiddenStruct, isHiddenStruct := structs[v.StructType.FullName()]
+			if isHiddenStruct && (hiddenStruct.Array != nil || hiddenStruct.Map != nil) && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
+				ts.app("|null")
+			} else if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 				ts.app("|null")
 			}
 			return
@@ -105,19 +80,16 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 		ts.l("{").ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalars, structs, ts)
 		ts.ind(-1).app("}")
-		if v.IsPtr {
+		if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 			ts.app("|null")
 		}
 	case len(v.ScalarType) > 0:
 		ts.app(tsTypeFromScalarType(v.ScalarType))
-		if v.IsPtr {
+		if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 			ts.app("|null")
 		}
 	default:
 		ts.app("any")
-		if v.IsPtr {
-			ts.app("|null")
-		}
 	}
 	return
 }
@@ -142,28 +114,29 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 			ts.app("?")
 		}
 		ts.app(":")
-		f.Value.tsType(mappings, scalars, structs, ts)
+		f.Value.tsType(mappings, scalars, structs, ts, f.JSONInfo)
 		ts.app(";")
 		ts.nl()
 	}
 }
 
 func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
-	if str.Array != nil {
-		// skipping array type
-		return nil
-	}
 	ts.l("// " + str.FullName())
 	switch {
+	case str.Array != nil:
+		ts.app("export type " + str.Name + " = Array<")
+		str.Array.Value.tsType(mappings, scalars, structs, ts, nil)
+		ts.app(">")
+		ts.nl()
 	case str.Map != nil:
 		ts.app("export type " + str.Name + " = Record<")
 		if str.Map.Key != nil {
-			str.Map.Key.tsType(mappings, scalars, structs, ts)
+			str.Map.Key.tsType(mappings, scalars, structs, ts, nil)
 		} else {
 			ts.app(str.Map.KeyType)
 		}
 		ts.app(",")
-		str.Map.Value.tsType(mappings, scalars, structs, ts)
+		str.Map.Value.tsType(mappings, scalars, structs, ts, nil)
 		ts.app(">")
 		ts.nl()
 	default:

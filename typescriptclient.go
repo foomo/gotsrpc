@@ -28,9 +28,8 @@ func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, serv
 	for _, method := range service.Methods {
 
 		ts.app(lcfirst(method.Name) + "(")
-		// actual args
-		//args := []string{}
-		callArgs := []string{}
+
+		var callArgs []string
 
 		argOffset := 0
 		for index, arg := range method.Args {
@@ -54,7 +53,7 @@ func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, serv
 				ts.app(", ")
 			}
 			ts.app(arg.tsName() + ":")
-			arg.Value.tsType(mappings, scalars, structs, ts)
+			arg.Value.tsType(mappings, scalars, structs, ts, arg.JSONInfo)
 			callArgs = append(callArgs, arg.Name)
 			argCount++
 		}
@@ -76,7 +75,7 @@ func renderTypescriptClient(skipGoTSRPC bool, moduleKind config.ModuleKind, serv
 				ts.app(", ")
 			}
 			ts.app(retArgName + ":")
-			retField.Value.tsType(mappings, scalars, structs, ts)
+			retField.Value.tsType(mappings, scalars, structs, ts, retField.JSONInfo)
 		}
 
 		ts.app(") => void")
