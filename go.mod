@@ -10,7 +10,6 @@ require (
 	github.com/prometheus/client_golang v1.12.1
 	github.com/stretchr/testify v1.7.0
 	github.com/ugorji/go/codec v1.2.6
-	github.com/valyala/gorpc v0.0.0-20160519171614-908281bef774
 	golang.org/x/mod v0.5.1
 	golang.org/x/tools v0.1.9
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect

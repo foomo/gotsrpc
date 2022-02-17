@@ -2,7 +2,9 @@ package gotsrpc
 
 import (
 	"errors"
+	"fmt"
 	"go/ast"
+	"os"
 	"sort"
 	"strings"
 
@@ -17,6 +19,9 @@ func (f *Field) tsName(camelCase bool) string {
 		n = strcase.ToLowerCamel(n)
 	}
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
+		if camelCase && f.JSONInfo.Name != n && strcase.ToLowerCamel(f.JSONInfo.Name) == n {
+			fmt.Fprintf(os.Stderr, "WARN: json struct field annotation for `%s` does not match the camelCase pattern (expected: `%s`, got: `%s`)\n", f.Name, n, f.JSONInfo.Name)
+		}
 		n = f.JSONInfo.Name
 	}
 	return n
