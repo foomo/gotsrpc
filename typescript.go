@@ -11,8 +11,11 @@ import (
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-func (f *Field) tsName() string {
+func (f *Field) tsName(camelCase bool) string {
 	n := f.Name
+	if camelCase {
+		n = strcase.ToLowerCamel(n)
+	}
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
 		n = f.JSONInfo.Name
 	}
@@ -106,7 +109,7 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 		if f.JSONInfo != nil && f.JSONInfo.Ignore {
 			continue
 		}
-		ts.app(f.tsName())
+		ts.app(f.tsName(true))
 		if f.JSONInfo != nil && f.JSONInfo.OmitEmpty {
 			ts.app("?")
 		}
@@ -260,7 +263,7 @@ func RenderTypeScriptServices(services ServiceList, mappings config.TypeScriptMa
 		if !target.IsTSRPC(service.Name) {
 			continue
 		}
-		err = renderTypescriptClientAsync(service, mappings, scalars, structs, ts)
+		err = renderTypescriptClient(service, mappings, scalars, structs, ts)
 		if err != nil {
 			return
 		}

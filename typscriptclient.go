@@ -8,7 +8,7 @@ import (
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
+func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
 	clientName := service.Name + "Client"
 
 	ts.l("export class " + clientName + " {")
@@ -47,7 +47,7 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 			if index > argOffset {
 				ts.app(", ")
 			}
-			ts.app(arg.tsName())
+			ts.app(arg.tsName(false))
 			ts.app(":")
 			arg.Value.tsType(mappings, scalars, structs, ts, arg.JSONInfo)
 			callArgs = append(callArgs, arg.Name)
@@ -63,7 +63,6 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 		innerReturnTypeTS := newCode("	")
 		innerReturnTypeTS.app("{")
 		firstReturnType := ""
-		//firstReturnFieldName := ""
 		countReturns := 0
 		countInnerReturns := 0
 		errIndex := 0
@@ -72,7 +71,7 @@ func renderTypescriptClientAsync(service *Service, mappings config.TypeScriptMap
 
 		for index, retField := range method.Return {
 			countInnerReturns++
-			retArgName := retField.tsName()
+			retArgName := retField.tsName(false)
 
 			if len(retArgName) == 0 {
 				retArgName = "ret"
