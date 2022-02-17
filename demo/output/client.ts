@@ -1,104 +1,104 @@
 /* eslint:disable */
-module GoTSRPC {
-export const call = (endPoint:string, method:string, args:any[], success:any, err:any) => {
-        var request = new XMLHttpRequest();
-        request.withCredentials = true;
-        request.open('POST', endPoint + "/" + encodeURIComponent(method), true);
-		// this causes problems, when the browser decides to do a cors OPTIONS request
-        // request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        request.send(JSON.stringify(args));
-        request.onload = function() {
-            if (request.status == 200) {
-				try {
-					var data = JSON.parse(request.responseText);
-				} catch(e) {
-	                err(request, e);
-				}
-				success.apply(null, data);
-            } else {
-                err(request);
-            }
-        };
-        request.onerror = function() {
-            err(request);
-        };
-    }
+// hello commonjs - we need some imports - sorted in alphabetical order, by go package
+import * as github_com_foomo_gotsrpc_v2_demo from './demo'; // demo/output/client.ts to demo/output/demo.ts
+import * as github_com_foomo_gotsrpc_v2_demo_nested from './demo-nested'; // demo/output/client.ts to demo/output/demo-nested.ts
 
-} // close
-module GoTSRPC.Demo {
-	export class FooClient {
-		static defaultInst = new FooClient;
-		constructor(public endPoint:string = "/service/foo", public transport = GoTSRPC.call) {  }
-		hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Hello", [number], success, err);
-		}
+export class FooClient {
+	public static defaultEndpoint = "/service/foo";
+	constructor(
+		public transport:<T>(method: string, data?: any[]) => Promise<T>
+	) {}
+	async hello(number:number):Promise<number> {
+		return (await this.transport<{0:number}>("Hello", [number]))[0]
 	}
-	export class DemoClient {
-		static defaultInst = new DemoClient;
-		constructor(public endPoint:string = "/service/demo", public transport = GoTSRPC.call) {  }
-		any(any:GoTSRPC.Demo.Nested.Any, anyList:GoTSRPC.Demo.Nested.Any[], anyMap:Record<string,GoTSRPC.Demo.Nested.Any>, success:(ret:GoTSRPC.Demo.Nested.Any, ret_1:GoTSRPC.Demo.Nested.Any[], ret_2:Record<string,GoTSRPC.Demo.Nested.Any>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Any", [any, anyList, anyMap], success, err);
-		}
-		arrayOfRemoteScalars(success:(arrayOfRemoteScalars:GoTSRPC.Demo.Nested.JustAnotherStingType) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "ArrayOfRemoteScalars", [], success, err);
-		}
-		arrayOfRemoteScalarsInAStruct(success:(strct:GoTSRPC.Demo.RemoteScalarStruct) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "ArrayOfRemoteScalarsInAStruct", [], success, err);
-		}
-		extractAddress(person:GoTSRPC.Demo.Person, success:(addr:GoTSRPC.Demo.Address, e:GoTSRPC.Demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "ExtractAddress", [person], success, err);
-		}
-		giveMeAScalar(success:(amount:GoTSRPC.Demo.Nested.Amount, wahr:GoTSRPC.Demo.Nested.True, hier:GoTSRPC.Demo.ScalarInPlace) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "GiveMeAScalar", [], success, err);
-		}
-		hello(name:string, success:(ret:string, ret_1:GoTSRPC.Demo.Err) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Hello", [name], success, err);
-		}
-		helloInterface(anything:any, anythingMap:Record<string,any>, anythingSlice:any[], success:() => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "HelloInterface", [anything, anythingMap, anythingSlice], success, err);
-		}
-		helloLocalMapType(success:(localStuff:GoTSRPC.Demo.MapWithLocalStuff) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "HelloLocalMapType", [], success, err);
-		}
-		helloMapType(success:(otherStuff:GoTSRPC.Demo.MapOfOtherStuff) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "HelloMapType", [], success, err);
-		}
-		helloNumberMaps(intMap:Record<number,string>, success:(floatMap:Record<number,string>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "HelloNumberMaps", [intMap], success, err);
-		}
-		helloScalarError(success:(err:GoTSRPC.Demo.ScalarError) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "HelloScalarError", [], success, err);
-		}
-		mapCrap(success:(crap:Record<string,number[]>) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "MapCrap", [], success, err);
-		}
-		nest(success:(ret:GoTSRPC.Demo.Nested.Nested[]) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Nest", [], success, err);
-		}
-		testScalarInPlace(success:(ret:GoTSRPC.Demo.ScalarInPlace) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "TestScalarInPlace", [], success, err);
-		}
+}
+export class DemoClient {
+	public static defaultEndpoint = "/service/demo";
+	constructor(
+		public transport:<T>(method: string, data?: any[]) => Promise<T>
+	) {}
+	async any(any:github_com_foomo_gotsrpc_v2_demo_nested.Any, anyList:Array<github_com_foomo_gotsrpc_v2_demo_nested.Any>|null, anyMap:Record<string,github_com_foomo_gotsrpc_v2_demo_nested.Any>|null):Promise<{ret:github_com_foomo_gotsrpc_v2_demo_nested.Any; ret_1:Array<github_com_foomo_gotsrpc_v2_demo_nested.Any>|null; ret_2:Record<string,github_com_foomo_gotsrpc_v2_demo_nested.Any>|null}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo_nested.Any; 1:Array<github_com_foomo_gotsrpc_v2_demo_nested.Any>|null; 2:Record<string,github_com_foomo_gotsrpc_v2_demo_nested.Any>|null}>("Any", [any, anyList, anyMap])
+		let responseObject = {ret : response[0], ret_1 : response[1], ret_2 : response[2]};
+		return responseObject;
 	}
-	export class BarClient {
-		static defaultInst = new BarClient;
-		constructor(public endPoint:string = "/service/bar", public transport = GoTSRPC.call) {  }
-		attributeMapping(success:(ret:GoTSRPC.Demo.AttributeMapping) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "AttributeMapping", [], success, err);
-		}
-		customError(one:GoTSRPC.Demo.CustomError, two:GoTSRPC.Demo.CustomError, success:(three:GoTSRPC.Demo.CustomError, four:GoTSRPC.Demo.CustomError) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "CustomError", [one, two], success, err);
-		}
-		customType(customTypeInt:GoTSRPC.Demo.CustomTypeInt, customTypeString:GoTSRPC.Demo.CustomTypeString, CustomTypeStruct:GoTSRPC.Demo.CustomTypeStruct, success:(ret:GoTSRPC.Demo.CustomTypeInt, ret_1:GoTSRPC.Demo.CustomTypeString, ret_2:GoTSRPC.Demo.CustomTypeStruct) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "CustomType", [customTypeInt, customTypeString, CustomTypeStruct], success, err);
-		}
-		hello(number:number, success:(ret:number) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Hello", [number], success, err);
-		}
-		inheritance(inner:GoTSRPC.Demo.Inner, nested:GoTSRPC.Demo.OuterNested, inline:GoTSRPC.Demo.OuterInline, success:(ret:GoTSRPC.Demo.Inner, ret_1:GoTSRPC.Demo.OuterNested, ret_2:GoTSRPC.Demo.OuterInline) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Inheritance", [inner, nested, inline], success, err);
-		}
-		repeat(one:string, two:string, success:(three:boolean, four:boolean) => void, err:(request:XMLHttpRequest, e?:Error) => void) {
-			this.transport(this.endPoint, "Repeat", [one, two], success, err);
-		}
+	async arrayOfRemoteScalars():Promise<github_com_foomo_gotsrpc_v2_demo.RemoteScalarsStrings|null> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.RemoteScalarsStrings|null}>("ArrayOfRemoteScalars", []))[0]
+	}
+	async arrayOfRemoteScalarsInAStruct():Promise<github_com_foomo_gotsrpc_v2_demo.RemoteScalarStruct> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.RemoteScalarStruct}>("ArrayOfRemoteScalarsInAStruct", []))[0]
+	}
+	async extractAddress(person:github_com_foomo_gotsrpc_v2_demo.Person|null):Promise<github_com_foomo_gotsrpc_v2_demo.Address|null> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.Address|null; 1:github_com_foomo_gotsrpc_v2_demo.Err|null}>("ExtractAddress", [person])
+		let err = response[1];
+		if(err) { throw err }
+		return response[0]
+	}
+	async giveMeAScalar():Promise<{amount:github_com_foomo_gotsrpc_v2_demo_nested.Amount; wahr:github_com_foomo_gotsrpc_v2_demo_nested.True; hier:github_com_foomo_gotsrpc_v2_demo.ScalarInPlace}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo_nested.Amount; 1:github_com_foomo_gotsrpc_v2_demo_nested.True; 2:github_com_foomo_gotsrpc_v2_demo.ScalarInPlace}>("GiveMeAScalar", [])
+		let responseObject = {amount : response[0], wahr : response[1], hier : response[2]};
+		return responseObject;
+	}
+	async hello(name:string):Promise<string> {
+		let response = await this.transport<{0:string; 1:github_com_foomo_gotsrpc_v2_demo.Err|null}>("Hello", [name])
+		let err = response[1];
+		if(err) { throw err }
+		return response[0]
+	}
+	async helloInterface(anything:any, anythingMap:Record<string,any>|null, anythingSlice:Array<any>|null):Promise<void> {
+		await this.transport<void>("HelloInterface", [anything, anythingMap, anythingSlice])
+	}
+	async helloLocalMapType():Promise<github_com_foomo_gotsrpc_v2_demo.MapWithLocalStuff|null> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.MapWithLocalStuff|null}>("HelloLocalMapType", []))[0]
+	}
+	async helloMapType():Promise<github_com_foomo_gotsrpc_v2_demo.MapOfOtherStuff|null> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.MapOfOtherStuff|null}>("HelloMapType", []))[0]
+	}
+	async helloNumberMaps(intMap:Record<number,string>|null):Promise<Record<number,string>|null> {
+		return (await this.transport<{0:Record<number,string>|null}>("HelloNumberMaps", [intMap]))[0]
+	}
+	async helloScalarError():Promise<github_com_foomo_gotsrpc_v2_demo.ScalarError|null> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.ScalarError|null}>("HelloScalarError", []))[0]
+	}
+	async mapCrap():Promise<Record<string,Array<number>|null>|null> {
+		return (await this.transport<{0:Record<string,Array<number>|null>|null}>("MapCrap", []))[0]
+	}
+	async nest():Promise<Array<github_com_foomo_gotsrpc_v2_demo_nested.Nested|null>|null> {
+		return (await this.transport<{0:Array<github_com_foomo_gotsrpc_v2_demo_nested.Nested|null>|null}>("Nest", []))[0]
+	}
+	async testScalarInPlace():Promise<github_com_foomo_gotsrpc_v2_demo.ScalarInPlace> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.ScalarInPlace}>("TestScalarInPlace", []))[0]
+	}
+}
+export class BarClient {
+	public static defaultEndpoint = "/service/bar";
+	constructor(
+		public transport:<T>(method: string, data?: any[]) => Promise<T>
+	) {}
+	async attributeMapping():Promise<github_com_foomo_gotsrpc_v2_demo.AttributeMapping|null> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.AttributeMapping|null}>("AttributeMapping", []))[0]
+	}
+	async customError(one:github_com_foomo_gotsrpc_v2_demo.CustomError, two:github_com_foomo_gotsrpc_v2_demo.CustomError|null):Promise<{three:github_com_foomo_gotsrpc_v2_demo.CustomError; four:github_com_foomo_gotsrpc_v2_demo.CustomError|null}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.CustomError; 1:github_com_foomo_gotsrpc_v2_demo.CustomError|null}>("CustomError", [one, two])
+		let responseObject = {three : response[0], four : response[1]};
+		return responseObject;
+	}
+	async customType(customTypeInt:github_com_foomo_gotsrpc_v2_demo.CustomTypeInt, customTypeString:github_com_foomo_gotsrpc_v2_demo.CustomTypeString, CustomTypeStruct:github_com_foomo_gotsrpc_v2_demo.CustomTypeStruct):Promise<{ret:github_com_foomo_gotsrpc_v2_demo.CustomTypeInt|null; ret_1:github_com_foomo_gotsrpc_v2_demo.CustomTypeString|null; ret_2:github_com_foomo_gotsrpc_v2_demo.CustomTypeStruct}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.CustomTypeInt|null; 1:github_com_foomo_gotsrpc_v2_demo.CustomTypeString|null; 2:github_com_foomo_gotsrpc_v2_demo.CustomTypeStruct}>("CustomType", [customTypeInt, customTypeString, CustomTypeStruct])
+		let responseObject = {ret : response[0], ret_1 : response[1], ret_2 : response[2]};
+		return responseObject;
+	}
+	async hello(number:number):Promise<number> {
+		return (await this.transport<{0:number}>("Hello", [number]))[0]
+	}
+	async inheritance(inner:github_com_foomo_gotsrpc_v2_demo.Inner, nested:github_com_foomo_gotsrpc_v2_demo.OuterNested, inline:github_com_foomo_gotsrpc_v2_demo.OuterInline):Promise<{ret:github_com_foomo_gotsrpc_v2_demo.Inner; ret_1:github_com_foomo_gotsrpc_v2_demo.OuterNested; ret_2:github_com_foomo_gotsrpc_v2_demo.OuterInline}> {
+		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_demo.Inner; 1:github_com_foomo_gotsrpc_v2_demo.OuterNested; 2:github_com_foomo_gotsrpc_v2_demo.OuterInline}>("Inheritance", [inner, nested, inline])
+		let responseObject = {ret : response[0], ret_1 : response[1], ret_2 : response[2]};
+		return responseObject;
+	}
+	async repeat(one:string, two:string):Promise<{three:boolean; four:boolean}> {
+		let response = await this.transport<{0:boolean; 1:boolean}>("Repeat", [one, two])
+		let responseObject = {three : response[0], four : response[1]};
+		return responseObject;
 	}
 }

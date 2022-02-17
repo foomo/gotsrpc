@@ -21,11 +21,9 @@ func usage() {
 }
 func main() {
 
-	flagSkipGotsprc := flag.Bool("skipgotsrpc", false, "if true, module GoTSRPC will not be generated")
 	flagDebug := flag.Bool("debug", false, "debug")
 
 	flag.Parse()
-	gotsrpc.SkipGoTSRPC = *flagSkipGotsprc
 	args := flag.Args()
 	if len(args) != 1 {
 		usage()

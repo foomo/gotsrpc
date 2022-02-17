@@ -11,9 +11,6 @@ import (
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-// @todo refactor this is wrong
-var SkipGoTSRPC = false
-
 func (f *Field) tsName() string {
 	n := f.Name
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
@@ -148,7 +145,6 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 }
 
 func renderTypescriptStructsToPackages(
-	moduleKind config.ModuleKind,
 	structs map[string]*Struct,
 	mappings config.TypeScriptMappings,
 	constantTypes map[string]map[string]interface{},
@@ -170,10 +166,6 @@ func renderTypescriptStructsToPackages(
 			return
 		}
 		packageCodeMap[str.Name] = newCode("	")
-		// fmt.Println("--------------------------->", moduleKind == config.ModuleKindCommonJS)
-		if !(moduleKind == config.ModuleKindCommonJS) {
-			packageCodeMap[str.Name].ind(1)
-		}
 		err = renderTypescriptStruct(str, mappings, scalarTypes, structs, packageCodeMap[str.Name])
 		if err != nil {
 			return
@@ -189,9 +181,6 @@ func renderTypescriptStructsToPackages(
 			}
 			for packageConstantTypeName, packageConstantTypeValues := range packageConstantTypes {
 				packageCodeMap[packageConstantTypeName] = newCode("	")
-				if !(moduleKind == config.ModuleKindCommonJS) {
-					packageCodeMap[packageConstantTypeName].ind(1)
-				}
 				packageCodeMap[packageConstantTypeName].l("// " + packageName + "." + packageConstantTypeName)
 
 				if packageConstantTypeValuesList, ok := packageConstantTypeValues.(map[string]*ast.BasicLit); ok {
@@ -263,67 +252,18 @@ func ucFirst(str string) string {
 	return constPrefix
 }
 
-func RenderTypeScriptServices(moduleKind config.ModuleKind, tsClientFlavor config.TSClientFlavor, services ServiceList, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, target *config.Target) (typeScript string, err error) {
+func RenderTypeScriptServices(services ServiceList, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, target *config.Target) (typeScript string, err error) {
 	ts := newCode("	")
-	if !SkipGoTSRPC && tsClientFlavor == "" {
-
-		if moduleKind != config.ModuleKindCommonJS {
-			ts.l(`module GoTSRPC {`)
-		}
-
-		ts.l(`export const call = (endPoint:string, method:string, args:any[], success:any, err:any) => {
-        var request = new XMLHttpRequest();
-        request.withCredentials = true;
-        request.open('POST', endPoint + "/" + encodeURIComponent(method), true);
-		// this causes problems, when the browser decides to do a cors OPTIONS request
-        // request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        request.send(JSON.stringify(args));
-        request.onload = function() {
-            if (request.status == 200) {
-				try {
-					var data = JSON.parse(request.responseText);
-				} catch(e) {
-	                err(request, e);
-				}
-				success.apply(null, data);
-            } else {
-                err(request);
-            }
-        };
-        request.onerror = function() {
-            err(request);
-        };
-    }
-`)
-
-	}
-	if config.ModuleKindCommonJS != moduleKind {
-		if !SkipGoTSRPC {
-			ts.l("} // close")
-		}
-		ts.l("module " + target.TypeScriptModule + " {")
-		ts.ind(1)
-	}
-
 	for _, service := range services {
 		// Check if we should render this service as ts rcp
 		// Note: remove once there's a separate gorcp generator
 		if !target.IsTSRPC(service.Name) {
 			continue
 		}
-		switch tsClientFlavor {
-		case config.TSClientFlavorAsync:
-			err = renderTypescriptClientAsync(service, mappings, scalars, structs, ts)
-		default:
-			err = renderTypescriptClient(SkipGoTSRPC, moduleKind, service, mappings, scalars, structs, ts)
-		}
+		err = renderTypescriptClientAsync(service, mappings, scalars, structs, ts)
 		if err != nil {
 			return
 		}
-	}
-	if config.ModuleKindCommonJS != moduleKind {
-		ts.ind(-1)
-		ts.l("}")
 	}
 	typeScript = ts.string()
 	return

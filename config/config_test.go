@@ -69,33 +69,6 @@ func TestLoadConfig(t *testing.T) {
 
 }
 
-const sampleConfInvalidClientFlavor = `---
-tsclientflavor: asynci
-targets:
-  demo:
-    services:
-      /service/demo: Service
-    package: github.com/foomo/gotsrpc/v2/demo
-    module: My.Service
-    modulekind: commonjs
-    out: /tmp/my-service.ts 
-mappings:
-  foo/bar:
-    module: Sample.Module
-    out: path/to/ts
-  github.com/foomo/gotsrpc/v2:
-    module: Sample.Module.RPC
-    out: path/to/other/folder
-
-`
-
-func TestLoadConfigInvalidClientFlavor(t *testing.T) {
-	_, err := loadConfig([]byte(sampleConfInvalidClientFlavor))
-	if err == nil {
-		t.Fatal("that config must be invalid")
-	}
-}
-
 func TestLoadConfigFile_GomodAbsolute(t *testing.T) {
 	config, err := LoadConfigFile("testdata/gomod.absolute.yml")
 	assert.NoError(t, err)

@@ -64,9 +64,7 @@ func getPathForTarget(gomod config.Namespace, goPath string, target *config.Targ
 
 func Build(conf *config.Config, goPath string) {
 
-	if conf.ModuleKind == config.ModuleKindCommonJS {
-		deriveCommonJSMapping(conf)
-	}
+	deriveCommonJSMapping(conf)
 
 	mappedTypeScript := map[string]map[string]*code{}
 
@@ -136,17 +134,15 @@ func Build(conf *config.Config, goPath string) {
 
 		if target.Out != "" {
 
-			ts, err := RenderTypeScriptServices(conf.ModuleKind, conf.TSClientFlavor, services, conf.Mappings, scalars, structs, target)
+			ts, err := RenderTypeScriptServices(services, conf.Mappings, scalars, structs, target)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 				os.Exit(3)
 			}
-			if conf.ModuleKind == config.ModuleKindCommonJS {
-				tsClientCode := newCode("	")
-				commonJSImports(conf, tsClientCode, target.Out)
-				tsClientCode.l("").l("")
-				ts = tsClientCode.string() + ts
-			}
+			tsClientCode := newCode("	")
+			commonJSImports(conf, tsClientCode, target.Out)
+			tsClientCode.l("").l("")
+			ts = tsClientCode.string() + ts
 
 			// fmt.Fprintln(os.Stdout, ts)
 			updateErr := updateCode(target.Out, getTSHeaderComment()+ts)
@@ -155,7 +151,7 @@ func Build(conf *config.Config, goPath string) {
 				os.Exit(3)
 			}
 
-			err = renderTypescriptStructsToPackages(conf.ModuleKind, structs, conf.Mappings, constantTypes, scalars, mappedTypeScript)
+			err = renderTypescriptStructsToPackages(structs, conf.Mappings, constantTypes, scalars, mappedTypeScript)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
 				os.Exit(4)
@@ -177,7 +173,7 @@ func Build(conf *config.Config, goPath string) {
 					"	goimports does not like the generated code: ",
 					errProcessImports,
 				)
-			
+
 				// write code into file for debugging
 				writeErr := ioutil.WriteFile(filename, []byte(code), 0644)
 				if writeErr != nil {
@@ -185,7 +181,7 @@ func Build(conf *config.Config, goPath string) {
 					os.Exit(5)
 				}
 				fmt.Fprintln(os.Stderr, "wrote code for debugging into file", filename)
-				
+
 				os.Exit(5)
 			}
 
@@ -238,12 +234,9 @@ func Build(conf *config.Config, goPath string) {
 		fmt.Fprintln(os.Stderr, "building structs for go package", goPackage, "to ts module", mapping.TypeScriptModule, "in file", mapping.Out)
 		moduleCode := newCode("	")
 		structIndent := -1
-		if conf.ModuleKind == config.ModuleKindCommonJS {
-			structIndent = -3
-			commonJSImports(conf, moduleCode, mapping.Out)
-		} else {
-			moduleCode.l("module " + mapping.TypeScriptModule + " {").ind(1)
-		}
+
+		structIndent = -3
+		commonJSImports(conf, moduleCode, mapping.Out)
 
 		var structNames []string
 
@@ -259,11 +252,7 @@ func Build(conf *config.Config, goPath string) {
 			}
 		}
 
-		if conf.ModuleKind == config.ModuleKindCommonJS {
-			moduleCode.l("// end of common js")
-		} else {
-			moduleCode.ind(-1).l("}")
-		}
+		moduleCode.l("// end of common js")
 		updateErr := updateCode(mapping.Out, getTSHeaderComment()+moduleCode.string())
 		if updateErr != nil {
 			fmt.Fprintln(os.Stderr, "	failed to update code in", mapping.Out, updateErr)

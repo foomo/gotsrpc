@@ -33,15 +33,9 @@ Will generate client and server side go and TypeScript code. Have fun!
 
 ## Configuration Examples
 
-### Standard Example
-
 [demo/config.yml](demo/config-commonjs.yml)
 
 ```yaml
-
-modulekind: commonjs
-# if you want an async api vs classic callbacks - here you are
-tsclientflavor: async
 targets:
   demo:
     services:
@@ -100,38 +94,6 @@ export async function test() {
 		console.error("something went wrong ...", e);
 	}
 }
-```
-
-
-### Oldschool Typescript
-
-[demo/config.yml](demo/config.yml)
-
-```yaml
-
-targets:
-  demo:
-    module: GoTSRPC.Demo
-    services:
-      /service/foo: Foo
-      /service/demo: Demo
-    package: github.com/foomo/gotsrpc/v2/demo
-    out: /tmp/test.ts
-    gorpc:
-      - Foo
-      - Demo
-    tsrpc:
-      - Foo
-      - Demo
-
-mappings:
-  github.com/foomo/gotsrpc/v2/demo:
-    module: GoTSRPC.Demo
-    out: /tmp/test-files-demo.ts
-  github.com/foomo/gotsrpc/v2/demo/nested:
-    module: GoTSRPC.Demo.Nested
-    out: /tmp/test-files-demo-nested.ts
-...
 ```
 
 ## GOModule Support

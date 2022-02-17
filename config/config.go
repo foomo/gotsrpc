@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -52,15 +51,6 @@ type Mapping struct {
 
 type TypeScriptMappings map[string]*Mapping
 
-type ModuleKind string
-type TSClientFlavor string
-
-const (
-	ModuleKindDefault   ModuleKind     = "default"
-	ModuleKindCommonJS  ModuleKind     = "commonjs"
-	TSClientFlavorAsync TSClientFlavor = "async"
-)
-
 type Namespace struct {
 	Name    string        `yaml:"name"`
 	Path    string        `yaml:"path"`
@@ -68,11 +58,9 @@ type Namespace struct {
 }
 
 type Config struct {
-	Module         Namespace
-	ModuleKind     ModuleKind
-	TSClientFlavor TSClientFlavor
-	Targets        map[string]*Target
-	Mappings       TypeScriptMappings
+	Module   Namespace
+	Targets  map[string]*Target
+	Mappings TypeScriptMappings
 }
 
 func LoadConfigFile(file string) (conf *Config, err error) {
@@ -105,8 +93,6 @@ func LoadConfigFile(file string) (conf *Config, err error) {
 	return conf, nil
 }
 
-var ErrInvalidTSClientFlavor = errors.New(fmt.Sprintln("unknown ts client flavor: must be empty or ", TSClientFlavorAsync))
-
 func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 	conf = &Config{}
 	yamlErr := yaml.Unmarshal(yamlBytes, conf)
@@ -114,23 +100,8 @@ func loadConfig(yamlBytes []byte) (conf *Config, err error) {
 		err = errors.New("could not parse yaml: " + yamlErr.Error())
 		return
 	}
-	switch conf.TSClientFlavor {
-	case "", TSClientFlavorAsync:
-	default:
-		err = ErrInvalidTSClientFlavor
-		return
-	}
-	switch conf.ModuleKind {
-	case ModuleKindCommonJS, ModuleKindDefault:
-	case "":
-		conf.ModuleKind = ModuleKindDefault
-	default:
-		err = errors.New(fmt.Sprintln("illegal module kind:", conf.ModuleKind, "must be in", ModuleKindDefault, ModuleKindCommonJS))
-		return
-	}
 	for goPackage, mapping := range conf.Mappings {
 		mapping.GoPackage = goPackage
 	}
-
 	return
 }
