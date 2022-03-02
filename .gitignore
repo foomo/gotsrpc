@@ -4,3 +4,4 @@ dist/
 .idea
 bin/
 tmp/
+**/node_modules/
