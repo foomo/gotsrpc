@@ -132,6 +132,14 @@ func Build(conf *config.Config, goPath string) {
 			os.Exit(2)
 		}
 
+		// collect all union structs
+		unions := map[string][]string{}
+		for _, s := range structs {
+			if len(s.Fields) == 0 && len(s.UnionFields) > 0 {
+				unions[s.Package] = append(unions[s.Package], s.Name)
+			}
+		}
+
 		if target.Out != "" {
 
 			ts, err := RenderTypeScriptServices(services, conf.Mappings, scalars, structs, target)
@@ -192,13 +200,14 @@ func Build(conf *config.Config, goPath string) {
 			}
 		}
 		if len(target.TSRPC) > 0 {
-			goTSRPCProxiesCode, goerr := RenderGoTSRPCProxies(services, packageName, pkgName, target)
+			goTSRPCProxiesCode, goerr := RenderGoTSRPCProxies(services, packageName, pkgName, target, unions)
 			if goerr != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc proxies code in target", name, goerr)
 				os.Exit(4)
 			}
 			formatAndWrite(goTSRPCProxiesCode, goTSRPCProxiesFilename)
-
+		}
+		if len(target.TSRPC) > 0 && !target.SkipTSRPCClient {
 			goTSRPCClientsCode, goerr := RenderGoTSRPCClients(services, packageName, pkgName, target)
 			if goerr != nil {
 				fmt.Fprintln(os.Stderr, "	could not generate go ts rpc clients code in target", name, goerr)

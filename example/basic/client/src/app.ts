@@ -5,7 +5,7 @@ import transport from "./transport.js";
 export const init = () => {
 	const client = new ServiceClient(transport("/service"));
 
-	client.string("hello world").then((res) => {
+	client.boolPtr(true).then((res) => {
 		console.log(res);
 	});
 };

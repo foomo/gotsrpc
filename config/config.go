@@ -18,6 +18,7 @@ type Target struct {
 	Out              string            `yaml:"out"`
 	GoRPC            []string          `yaml:"gorpc"`
 	TSRPC            []string          `yaml:"tsrpc"`
+	SkipTSRPCClient  bool              `yaml:"skipTSRPCClient"`
 }
 
 func (t *Target) IsGoRPC(service string) bool {

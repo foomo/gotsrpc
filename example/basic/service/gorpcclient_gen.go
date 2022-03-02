@@ -41,6 +41,17 @@ func (tsc *ServiceGoRPCClient) Bool(v bool) (retBool_0 bool, clientErr error) {
 	return response.RetBool_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) BoolPtr(v bool) (retBoolPtr_0 *bool, clientErr error) {
+	req := ServiceBoolPtrRequest{V: v}
+	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	response := rpcCallRes.(ServiceBoolPtrResponse)
+	return response.RetBoolPtr_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) BoolSlice(v []bool) (retBoolSlice_0 []bool, clientErr error) {
 	req := ServiceBoolSliceRequest{V: v}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)

@@ -29,8 +29,7 @@ export class ServiceClient {
 		return (await this.transport<{0:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null>|null}>("VariantG", [i1]))[0]
 	}
 	async variantH(i1:github_com_foomo_gotsrpc_v2_example_nullable_service.Base, i2:github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null, i3:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null>|null, i4:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Base>|null):Promise<{r1:github_com_foomo_gotsrpc_v2_example_nullable_service.Base; r2:github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null; r3:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null>|null; r4:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Base>|null}> {
-		let response = await this.transport<{0:github_com_foomo_gotsrpc_v2_example_nullable_service.Base; 1:github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null; 2:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null>|null; 3:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Base>|null}>("VariantH", [i1, i2, i3, i4])
-		let responseObject = {r1 : response[0], r2 : response[1], r3 : response[2], r4 : response[3]};
-		return responseObject;
+		const response = await this.transport<{0:github_com_foomo_gotsrpc_v2_example_nullable_service.Base; 1:github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null; 2:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Base|null>|null; 3:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Base>|null}>("VariantH", [i1, i2, i3, i4])
+		return {r1 : response[0], r2 : response[1], r3 : response[2], r4 : response[3]};
 	}
 }

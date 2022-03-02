@@ -28,6 +28,13 @@ type (
 		RetBool_0 bool
 	}
 
+	ServiceBoolPtrRequest struct {
+		V bool
+	}
+	ServiceBoolPtrResponse struct {
+		RetBoolPtr_0 *bool
+	}
+
 	ServiceBoolSliceRequest struct {
 		V []bool
 	}
@@ -438,6 +445,8 @@ type (
 func init() {
 	gob.Register(ServiceBoolRequest{})
 	gob.Register(ServiceBoolResponse{})
+	gob.Register(ServiceBoolPtrRequest{})
+	gob.Register(ServiceBoolPtrResponse{})
 	gob.Register(ServiceBoolSliceRequest{})
 	gob.Register(ServiceBoolSliceResponse{})
 	gob.Register(ServiceFloat32Request{})
@@ -598,6 +607,10 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		req := request.(ServiceBoolRequest)
 		retBool_0 := p.service.Bool(req.V)
 		response = ServiceBoolResponse{RetBool_0: retBool_0}
+	case "ServiceBoolPtrRequest":
+		req := request.(ServiceBoolPtrRequest)
+		retBoolPtr_0 := p.service.BoolPtr(req.V)
+		response = ServiceBoolPtrResponse{RetBoolPtr_0: retBoolPtr_0}
 	case "ServiceBoolSliceRequest":
 		req := request.(ServiceBoolSliceRequest)
 		retBoolSlice_0 := p.service.BoolSlice(req.V)

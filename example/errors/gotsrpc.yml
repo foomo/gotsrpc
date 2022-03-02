@@ -1,0 +1,23 @@
+module:
+  name: github.com/foomo/gotsrpc/v2/example/errors
+  path: ./
+
+targets:
+  frontend:
+    services:
+      /service/frontend: Service
+    package: github.com/foomo/gotsrpc/v2/example/errors/service/frontend
+    out: ./client/src/service-client.ts
+    skipTSRPCClient: true
+    tsrpc:
+      - Service
+  backend:
+    services:
+      /service/backend: Service
+    package: github.com/foomo/gotsrpc/v2/example/errors/service/backend
+    tsrpc:
+      - Service
+
+mappings:
+  github.com/foomo/gotsrpc/v2/example/errors/service/frontend:
+    out: ./client/src/service-vo.ts

@@ -570,27 +570,53 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 		}
 		return false
 	}
-	for _, field := range s.Fields {
-		var fieldStructType *StructType = nil
-		if field.Value.StructType != nil {
-			fieldStructType = field.Value.StructType
-		} else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
-			fieldStructType = field.Value.Array.Value.StructType
-		} else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
-			fieldStructType = field.Value.Map.Value.StructType
-		} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
-			return false
-		} else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
-			return false
-		} else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
-			return false
-		}
-		if fieldStructType != nil {
-			if needsWork(fieldStructType.FullName()) {
+	needWorksFields := func(fields []*Field) bool {
+		for _, field := range fields {
+			var fieldStructType *StructType = nil
+			if field.Value.StructType != nil {
+				fieldStructType = field.Value.StructType
+			} else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
+				fieldStructType = field.Value.Array.Value.StructType
+			} else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
+				fieldStructType = field.Value.Map.Value.StructType
+			} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
+				return false
+			} else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
+				return false
+			} else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
 				return false
 			}
+			if fieldStructType != nil {
+				if needsWork(fieldStructType.FullName()) {
+					return false
+				}
+			}
 		}
+		return true
 	}
+	if ok := needWorksFields(s.Fields); !ok {
+		return false
+	} else if ok := needWorksFields(s.InlineFields); !ok {
+		return false
+	} else if ok := needWorksFields(s.UnionFields); !ok {
+		return false
+	}
+	//// special handling of union only structs
+	//if len(s.Fields) == 0 {
+	//	for _, field := range s.UnionFields {
+	//		var fieldStructType *StructType = nil
+	//		if field.Value.StructType != nil {
+	//			fieldStructType = field.Value.StructType
+	//		} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
+	//			return false
+	//		}
+	//		if fieldStructType != nil {
+	//			if needsWork(fieldStructType.FullName()) {
+	//				return false
+	//			}
+	//		}
+	//	}
+	//}
 	if s.Array != nil && s.Array.Value != nil {
 		if s.Array.Value.StructType != nil {
 			if needsWork(s.Array.Value.StructType.FullName()) {

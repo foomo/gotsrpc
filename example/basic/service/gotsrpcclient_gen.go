@@ -12,6 +12,7 @@ import (
 
 type ServiceGoTSRPCClient interface {
 	Bool(ctx go_context.Context, v bool) (retBool_0 bool, clientErr error)
+	BoolPtr(ctx go_context.Context, v bool) (retBoolPtr_0 *bool, clientErr error)
 	BoolSlice(ctx go_context.Context, v []bool) (retBoolSlice_0 []bool, clientErr error)
 	Float32(ctx go_context.Context, v float32) (retFloat32_0 float32, clientErr error)
 	Float32Map(ctx go_context.Context, v map[float32]interface{}) (retFloat32Map_0 map[float32]interface{}, clientErr error)
@@ -99,6 +100,16 @@ func (tsc *HTTPServiceGoTSRPCClient) Bool(ctx go_context.Context, v bool) (retBo
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Bool", args, reply)
 	if clientErr != nil {
 		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy Bool")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) BoolPtr(ctx go_context.Context, v bool) (retBoolPtr_0 *bool, clientErr error) {
+	args := []interface{}{v}
+	reply := []interface{}{&retBoolPtr_0}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolPtr", args, reply)
+	if clientErr != nil {
+		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy BoolPtr")
 	}
 	return
 }

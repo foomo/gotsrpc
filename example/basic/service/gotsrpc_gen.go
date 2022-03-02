@@ -13,6 +13,7 @@ import (
 
 const (
 	ServiceGoTSRPCProxyBool                = "Bool"
+	ServiceGoTSRPCProxyBoolPtr             = "BoolPtr"
 	ServiceGoTSRPCProxyBoolSlice           = "BoolSlice"
 	ServiceGoTSRPCProxyFloat32             = "Float32"
 	ServiceGoTSRPCProxyFloat32Map          = "Float32Map"
@@ -79,10 +80,7 @@ type ServiceGoTSRPCProxy struct {
 }
 
 func NewDefaultServiceGoTSRPCProxy(service Service) *ServiceGoTSRPCProxy {
-	return &ServiceGoTSRPCProxy{
-		EndPoint: "/service",
-		service:  service,
-	}
+	return NewServiceGoTSRPCProxy(service, "/service")
 }
 
 func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCProxy {
@@ -127,6 +125,23 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			callStats.Execution = time.Now().Sub(executionStart)
 		}
 		gotsrpc.Reply([]interface{}{boolRet}, callStats, r, w)
+		return
+	case ServiceGoTSRPCProxyBoolPtr:
+		var (
+			arg_v bool
+		)
+		args := []interface{}{&arg_v}
+		err := gotsrpc.LoadArgs(&args, callStats, r)
+		if err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		boolPtrRet := p.service.BoolPtr(arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Now().Sub(executionStart)
+		}
+		gotsrpc.Reply([]interface{}{boolPtrRet}, callStats, r, w)
 		return
 	case ServiceGoTSRPCProxyBoolSlice:
 		var (

@@ -14,21 +14,23 @@ import (
 )
 
 func (f *Field) tsName(camelCase bool) string {
-	n := f.Name
+	name := f.Name
 	if camelCase {
-		n = strcase.ToLowerCamel(n)
+		name = strcase.ToLowerCamel(name)
 	}
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
-		if camelCase && f.JSONInfo.Name != n && strcase.ToLowerCamel(f.JSONInfo.Name) == n {
-			fmt.Fprintf(os.Stderr, "WARN: json struct field annotation for `%s` does not match the camelCase pattern (expected: `%s`, got: `%s`)\n", f.Name, n, f.JSONInfo.Name)
+		if camelCase && f.JSONInfo.Name != name && strcase.ToLowerCamel(f.JSONInfo.Name) == name {
+			fmt.Fprintf(os.Stderr, "WARN: json struct field annotation for `%s` does not match the camelCase pattern (expected: `%s`, got: `%s`)\n", f.Name, name, f.JSONInfo.Name)
 		}
-		n = f.JSONInfo.Name
+		name = f.JSONInfo.Name
 	}
-	return n
+	return name
 }
 
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
 	switch {
+	case jsonInfo != nil && len(jsonInfo.Type) > 0:
+		ts.app(jsonInfo.Type)
 	case v.Map != nil:
 		ts.app("Record<")
 		if v.Map.Key != nil {
@@ -39,7 +41,9 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 		ts.app(",")
 		v.Map.Value.tsType(mappings, scalars, structs, ts, nil)
 		ts.app(">")
-		ts.app("|null")
+		if jsonInfo == nil || !jsonInfo.OmitEmpty {
+			ts.app("|null")
+		}
 	case v.Array != nil:
 		if v.Array.Value.ScalarType != ScalarTypeByte {
 			ts.app("Array<")
@@ -48,7 +52,9 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 		if v.Array.Value.ScalarType != ScalarTypeByte {
 			ts.app(">")
 		}
-		ts.app("|null")
+		if jsonInfo == nil || !jsonInfo.OmitEmpty {
+			ts.app("|null")
+		}
 	case v.Scalar != nil:
 		if v.Scalar.Package != "" {
 			mapping, ok := mappings[v.Scalar.Package]
@@ -111,7 +117,9 @@ func tsTypeFromScalarType(scalarType ScalarType) string {
 
 func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) {
 	for _, f := range fields {
-		if f.JSONInfo != nil && f.JSONInfo.Ignore {
+		if len(f.Name) == 0 {
+			continue
+		} else if f.JSONInfo != nil && f.JSONInfo.Ignore {
 			continue
 		}
 		ts.app(f.tsName(true))
@@ -144,6 +152,62 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		str.Map.Value.tsType(mappings, scalars, structs, ts, nil)
 		ts.app(">")
 		ts.nl()
+	// special handling of inline only structs
+	case len(str.UnionFields) > 0:
+		if len(str.Fields) > 0 || len(str.InlineFields) > 0 {
+			return errors.New("no fields or inline fields are supported when using union")
+		}
+		switch {
+		case str.UnionFields[0].Value.StructType != nil:
+			ts.app("export type " + str.Name + " = ")
+			var isUndefined bool
+			for i, unionField := range str.UnionFields {
+				if i > 0 {
+					ts.app(" | ")
+				}
+				unionField.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+				if unionField.Value.IsPtr {
+					isUndefined = true
+				}
+			}
+			if isUndefined {
+				ts.app(" | undefined")
+			}
+			ts.nl()
+		case str.UnionFields[0].Value.Scalar != nil:
+			ts.app("export type " + str.Name + " = ")
+			for i, field := range str.UnionFields {
+				if i > 0 {
+					ts.app(" & ")
+				}
+				ts.app("(typeof ")
+				field.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+				ts.app(")")
+			}
+			ts.nl()
+		default:
+			return errors.New("could not resolve this union type")
+		}
+	case len(str.InlineFields) > 0:
+		ts.app("export interface " + str.Name + " extends ")
+		for i, inlineField := range str.InlineFields {
+			if i > 0 {
+				ts.app(", ")
+			}
+			if inlineField.Value.IsPtr {
+				ts.app("Partial<")
+			}
+			inlineField.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+			if inlineField.Value.IsPtr {
+				ts.app(">")
+			}
+			ts.app(" ")
+		}
+		ts.app("{")
+		ts.nl()
+		ts.ind(1)
+		renderStructFields(str.Fields, mappings, scalars, structs, ts)
+		ts.ind(-1).l("}")
 	default:
 		ts.l("export interface " + str.Name + " {").ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)

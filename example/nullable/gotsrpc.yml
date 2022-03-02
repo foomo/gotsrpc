@@ -3,7 +3,7 @@ module:
   path: ./
 
 targets:
-  basic:
+  nullable:
     services:
       /service: Service
     package: github.com/foomo/gotsrpc/v2/example/nullable/service

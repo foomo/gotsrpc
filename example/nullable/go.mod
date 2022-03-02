@@ -1,4 +1,4 @@
-module github.com/foomo/gotsrpc/v2/example/basic
+module github.com/foomo/gotsrpc/v2/example/nullable
 
 go 1.16
 

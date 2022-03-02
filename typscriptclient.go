@@ -55,9 +55,6 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 		}
 		ts.app("):")
 
-		throwLastError := false
-		//lastErrorName := ""
-
 		returnTypeTS := newCode("	")
 		returnTypeTS.app("{")
 		innerReturnTypeTS := newCode("	")
@@ -65,9 +62,8 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 		firstReturnType := ""
 		countReturns := 0
 		countInnerReturns := 0
-		errIndex := 0
 		responseObjectPrefix := ""
-		responseObject := "let responseObject = {"
+		responseObject := "return {"
 
 		for index, retField := range method.Return {
 			countInnerReturns++
@@ -88,21 +84,16 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 			innerReturnTypeTS.app(":")
 			retField.Value.tsType(mappings, scalars, structs, innerReturnTypeTS, retField.JSONInfo)
 
-			if index == len(method.Return)-1 && retField.Value.IsError {
-				throwLastError = true
-				errIndex = index
-			} else {
-				if index == 0 {
-					firstReturnTypeTS := newCode("	")
-					retField.Value.tsType(mappings, scalars, structs, firstReturnTypeTS, retField.JSONInfo)
-					firstReturnType = firstReturnTypeTS.string()
-				}
-				countReturns++
-				returnTypeTS.app(retArgName)
-				returnTypeTS.app(":")
-				responseObject += responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]"
-				retField.Value.tsType(mappings, scalars, structs, returnTypeTS, retField.JSONInfo)
+			if index == 0 {
+				firstReturnTypeTS := newCode("	")
+				retField.Value.tsType(mappings, scalars, structs, firstReturnTypeTS, retField.JSONInfo)
+				firstReturnType = firstReturnTypeTS.string()
 			}
+			countReturns++
+			returnTypeTS.app(retArgName)
+			returnTypeTS.app(":")
+			responseObject += responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]"
+			retField.Value.tsType(mappings, scalars, structs, returnTypeTS, retField.JSONInfo)
 			responseObjectPrefix = ", "
 		}
 		responseObject += "};"
@@ -125,30 +116,13 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 		}
 
 		call := "this.transport<" + innerCallTypeString + ">(\"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "])"
-		if throwLastError {
-			ts.l("let response = await " + call)
-
-			ts.l("let err = response[" + strconv.Itoa(errIndex) + "];")
-			//ts.l("delete response." + lastErrorName + ";")
-			ts.l("if(err) { throw err }")
-			if countReturns == 1 {
-				ts.l("return response[0]")
-			} else if countReturns == 0 {
-				//ts.l("return response;")
-			} else {
-				ts.l(responseObject)
-				ts.l("return responseObject;")
-			}
+		if countReturns == 0 {
+			ts.l("await " + call)
+		} else if countReturns == 1 {
+			ts.l("return (await " + call + ")[0]")
 		} else {
-			if countReturns == 0 {
-				ts.l("await " + call)
-			} else if countReturns == 1 {
-				ts.l("return (await " + call + ")[0]")
-			} else {
-				ts.l("let response = await " + call)
-				ts.l(responseObject)
-				ts.l("return responseObject;")
-			}
+			ts.l("const response = await " + call)
+			ts.l(responseObject)
 		}
 
 		ts.ind(-1)

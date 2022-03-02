@@ -12,11 +12,12 @@ const (
 )
 
 type JSONInfo struct {
-	Name            string
-	Inline          bool
-	OmitEmpty       bool
-	ForceStringType bool
-	Ignore          bool
+	Name      string
+	Type      string
+	Union     bool
+	Inline    bool
+	OmitEmpty bool
+	Ignore    bool
 }
 
 type StructType struct {
@@ -95,12 +96,14 @@ type Method struct {
 }
 
 type Struct struct {
-	IsError bool
-	Package string
-	Name    string
-	Fields  []*Field
-	Map     *Map
-	Array   *Array
+	IsError      bool
+	Package      string
+	Name         string
+	Fields       []*Field
+	UnionFields  []*Field
+	InlineFields []*Field
+	Map          *Map
+	Array        *Array
 }
 
 type Scalar struct {

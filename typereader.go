@@ -34,9 +34,6 @@ func readStructs(pkg *ast.Package, packageName string) (structs map[string]*Stru
 			structType.IsError = true
 		}
 	}
-	//jsonDump(errorTypes)
-	//jsonDump(scalarTypes)
-	//jsonDump(structs)
 	return
 }
 
@@ -67,41 +64,47 @@ func extractJSONInfo(tag string) *JSONInfo {
 	jsonTagParts := strings.Split(jsonTagString, ",")
 
 	name := ""
+	tsType := ""
 	omit := false
+	union := false
 	inline := false
 	ignore := false
-	forceStringType := false
-	cleanParts := []string{}
+	var cleanParts []string
 	for _, jsonTagPart := range jsonTagParts {
 		cleanParts = append(cleanParts, strings.TrimSpace(jsonTagPart))
 	}
-	switch len(cleanParts) {
-	case 1:
+	if len(cleanParts) > 0 {
 		switch cleanParts[0] {
+		case "":
+			// do nothing
 		case "-":
 			ignore = true
 		default:
 			name = cleanParts[0]
 		}
-	case 2:
-		if len(cleanParts[0]) > 0 {
-			name = cleanParts[0]
-		}
-		switch cleanParts[1] {
-		case "inline":
-			inline = true
-		case "omitempty":
-			omit = true
-		case "string":
-			forceStringType = true
+	}
+	if len(cleanParts) > 1 {
+		for _, cleanPart := range cleanParts[1:] {
+			switch {
+			case cleanPart == "union":
+				union = true
+			case cleanPart == "inline":
+				inline = true
+			case cleanPart == "omitempty":
+				omit = true
+			case strings.HasPrefix(cleanPart, "type:"):
+				tsType = strings.TrimPrefix(cleanPart, "type:")
+			}
 		}
 	}
+
 	return &JSONInfo{
-		Name:            name,
-		Inline:          inline,
-		OmitEmpty:       omit,
-		ForceStringType: forceStringType,
-		Ignore:          ignore,
+		Name:      name,
+		Type:      tsType,
+		Union:     union,
+		Inline:    inline,
+		OmitEmpty: omit,
+		Ignore:    ignore,
 	}
 }
 
@@ -157,6 +160,9 @@ func readAstType(v *Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap,
 		}
 	} else {
 		v.GoScalarType = fieldIdent.Name
+		if fieldIdent.Name == "error" {
+			v.IsError = true
+		}
 	}
 }
 
@@ -235,12 +241,11 @@ func readAstSelectorExpr(v *Value, selectorExpr *ast.SelectorExpr, fileImports f
 
 func readAstStructType(v *Value, structType *ast.StructType, fileImports fileImportSpecMap) {
 	v.Struct = &Struct{}
-	v.Struct.Fields = readFieldList(structType.Fields.List, fileImports)
+	v.Struct.Fields, v.Struct.InlineFields, v.Struct.UnionFields = readFieldList(structType.Fields.List, fileImports)
 }
 
 func readAstInterfaceType(v *Value, interfaceType *ast.InterfaceType, fileImports fileImportSpecMap) {
 	v.IsInterface = true
-
 }
 
 func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
@@ -310,29 +315,32 @@ func readField(astField *ast.Field, fileImports fileImportSpecMap) (names []stri
 	return
 }
 
-func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (fields []*Field) {
+func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (fields []*Field, inlineFields []*Field, unionFields []*Field) {
 	fields = []*Field{}
 	for _, field := range fieldList {
-		names, value, jsonInfo := readField(field, fileImports)
-		if value != nil {
+		if names, value, jsonInfo := readField(field, fileImports); value != nil {
 			for _, name := range names {
 				if len(name) == 0 {
-					if jsonInfo != nil && jsonInfo.Inline {
-						if identType, ok := field.Type.(*ast.Ident); ok {
-							if typeSpec, ok := identType.Obj.Decl.(*ast.TypeSpec); ok {
-								if structType, ok := typeSpec.Type.(*ast.StructType); ok {
-									trace("Inline IdentType", identType.Name)
-									fields = append(fields, readFieldList(structType.Fields.List, fileImports)...)
-									continue
-								}
-							}
-						}
+					if jsonInfo == nil {
+						trace("i do not understand this one", field, names, value, jsonInfo)
+						continue
+					} else if jsonInfo.Inline {
+						inlineFields = append(inlineFields, &Field{
+							Name:     name,
+							Value:    value,
+							JSONInfo: jsonInfo,
+						})
+						continue
 					}
-					trace("i do not understand this one", field, names, value, jsonInfo)
+				} else if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
+					// this is not unicode proof
 					continue
-				}
-				// this is not unicode proof
-				if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
+				} else if jsonInfo != nil && jsonInfo.Union {
+					unionFields = append(unionFields, &Field{
+						Name:     name,
+						Value:    value,
+						JSONInfo: jsonInfo,
+					})
 					continue
 				}
 				fields = append(fields, &Field{
@@ -394,7 +402,10 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 					}
 					structType := typeSpec.Type.(*ast.StructType)
 					trace("StructType", obj.Name)
-					structs[structName].Fields = readFieldList(structType.Fields.List, fileImports)
+					fields, inlineFields, unionFields := readFieldList(structType.Fields.List, fileImports)
+					structs[structName].Fields = fields
+					structs[structName].InlineFields = inlineFields
+					structs[structName].UnionFields = unionFields
 				case "*ast.InterfaceType":
 					trace("Interface", obj.Name)
 					scalars[structName] = &Scalar{

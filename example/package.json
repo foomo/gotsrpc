@@ -1,0 +1,8 @@
+{
+	"private": true,
+  "version": "0.1.0",
+  "name": "@foomo/gotsrpc-examples",
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  }
+}

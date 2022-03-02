@@ -28,10 +28,7 @@ type ServiceGoTSRPCProxy struct {
 }
 
 func NewDefaultServiceGoTSRPCProxy(service Service) *ServiceGoTSRPCProxy {
-	return &ServiceGoTSRPCProxy{
-		EndPoint: "/service",
-		service:  service,
-	}
+	return NewServiceGoTSRPCProxy(service, "/service")
 }
 
 func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCProxy {

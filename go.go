@@ -143,43 +143,49 @@ func strfirst(str string, strfunc func(string) string) string {
 	return res
 }
 
-func extractImports(fields []*Field, fullPackageName string, aliases map[string]string) {
-
+func extractImport(packageName string, fullPackageName string, aliases map[string]string) {
 	r := strings.NewReplacer(".", "_", "/", "_", "-", "_")
-
-	extractImport := func(packageName string) {
-		if packageName != fullPackageName {
-			alias, ok := aliases[packageName]
-			if !ok {
-				packageParts := strings.Split(packageName, "/")
-				beautifulAlias := packageParts[len(packageParts)-1]
-				uglyAlias := r.Replace(packageName)
-				alias = uglyAlias //beautifulAlias
-				for _, otherAlias := range aliases {
-					if otherAlias == beautifulAlias {
-						alias = uglyAlias
-						break
-					}
+	if packageName != fullPackageName {
+		alias, ok := aliases[packageName]
+		if !ok {
+			packageParts := strings.Split(packageName, "/")
+			beautifulAlias := packageParts[len(packageParts)-1]
+			uglyAlias := r.Replace(packageName)
+			alias = uglyAlias //beautifulAlias
+			for _, otherAlias := range aliases {
+				if otherAlias == beautifulAlias {
+					alias = uglyAlias
+					break
 				}
-				aliases[packageName] = alias
 			}
-		}
-	}
-
-	for _, f := range fields {
-		if f.Value.StructType != nil {
-			extractImport(f.Value.StructType.Package)
-		} else if f.Value.Array != nil && f.Value.Array.Value.StructType != nil {
-			extractImport(f.Value.Array.Value.StructType.Package)
-		} else if f.Value.Array != nil && f.Value.Array.Value.Scalar != nil {
-			extractImport(f.Value.Array.Value.Scalar.Package)
-		} else if f.Value.Scalar != nil {
-			extractImport(f.Value.Scalar.Package)
+			aliases[packageName] = alias
 		}
 	}
 }
 
-func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
+func extractImports(fields []*Field, fullPackageName string, aliases map[string]string) {
+	for _, f := range fields {
+		if f.Value.StructType != nil {
+			extractImport(f.Value.StructType.Package, fullPackageName, aliases)
+		} else if f.Value.Array != nil && f.Value.Array.Value.StructType != nil {
+			extractImport(f.Value.Array.Value.StructType.Package, fullPackageName, aliases)
+		} else if f.Value.Map != nil && f.Value.Map.Value.StructType != nil {
+			extractImport(f.Value.Map.Value.StructType.Package, fullPackageName, aliases)
+		} else if f.Value.Map != nil && f.Value.Map.Key.StructType != nil {
+			extractImport(f.Value.Map.Key.StructType.Package, fullPackageName, aliases)
+		} else if f.Value.Array != nil && f.Value.Array.Value.Scalar != nil {
+			extractImport(f.Value.Array.Value.Scalar.Package, fullPackageName, aliases)
+		} else if f.Value.Map != nil && f.Value.Map.Value.Scalar != nil {
+			extractImport(f.Value.Map.Value.Scalar.Package, fullPackageName, aliases)
+		} else if f.Value.Map != nil && f.Value.Map.Key.Scalar != nil {
+			extractImport(f.Value.Map.Key.Scalar.Package, fullPackageName, aliases)
+		} else if f.Value.Scalar != nil {
+			extractImport(f.Value.Scalar.Package, fullPackageName, aliases)
+		}
+	}
+}
+
+func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, packageName string, config *config.Target, unions map[string][]string, g *code) error {
 	aliases := map[string]string{
 		"time":                        "time",
 		"net/http":                    "http",
@@ -198,7 +204,14 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		}
 	}
 
+	for pkg := range unions {
+		extractImport(pkg, fullPackageName, aliases)
+	}
+
 	g.l(renderImports(aliases, packageName))
+
+	renderInit(unions, aliases, packageName, g)
+
 	for _, service := range services {
 		// Check if we should render this service as ts rcp
 		// Note: remove once there's a separate gorcp generator
@@ -226,12 +239,8 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
         }
 
         func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `) *` + proxyName + ` {
-	        return &` + proxyName + `{
-		        EndPoint: "` + service.Endpoint + `",
-		        service:  service,
-	        }
+	        return New` + proxyName + `(service, "` + service.Endpoint + `")
         }
-
 
         func New` + proxyName + `(service ` + servicePointer + service.Name + `, endpoint string) *` + proxyName + ` {
 	        return &` + proxyName + `{
@@ -306,7 +315,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 					g.l("}")
 				}
 			}
-			returnValueNames := []string{}
+			var returnValueNames []string
 			for retI, retField := range method.Return {
 				retArgName := retField.Name
 				if len(retArgName) == 0 {
@@ -327,7 +336,6 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
-
 			g.l("if callStats != nil {")
 			g.ind(1).l("callStats.Execution = time.Now().Sub(executionStart)").ind(-1)
 			g.l("}")
@@ -662,6 +670,7 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 	}
 
 	g.l(renderImports(aliases, packageName))
+
 	for _, service := range services {
 		if !config.IsGoRPC(service.Name) {
 			continue
@@ -738,9 +747,9 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 	return nil
 }
 
-func RenderGoTSRPCProxies(services ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
+func RenderGoTSRPCProxies(services ServiceList, longPackageName, packageName string, config *config.Target, unions map[string][]string) (gocode string, err error) {
 	g := newCode("	")
-	err = renderTSRPCServiceProxies(services, longPackageName, packageName, config, g)
+	err = renderTSRPCServiceProxies(services, longPackageName, packageName, config, unions, g)
 	if err != nil {
 		return
 	}
@@ -790,6 +799,25 @@ func goMethodArgsWithoutHTTPContextRelatedArgs(m *Method) (filteredArgs []*Field
 		filteredArgs = append(filteredArgs, arg)
 	}
 	return
+}
+
+func renderInit(unions map[string][]string, aliases map[string]string, packageName string, g *code) {
+	if len(unions) > 0 {
+		g.l("func init() {")
+		g.ind(1)
+		for pkg, us := range unions {
+			for _, name := range us {
+				var t string
+				if packageName != pkg && aliases[pkg] != "" {
+					t += aliases[pkg] + "."
+				}
+				t += name
+				g.l("gotsrpc.MustRegisterUnionExt(" + t + "{})")
+			}
+		}
+		g.ind(-1)
+		g.l("}")
+	}
 }
 
 func renderImports(aliases map[string]string, packageName string) string {

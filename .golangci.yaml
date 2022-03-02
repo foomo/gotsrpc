@@ -1,0 +1,56 @@
+# Minimum golangci-lint version required: v1.42.0
+run:
+  timeout: 3m
+  skip-dirs:
+    - tmp
+
+linters-settings:
+  gci:
+    local-prefixes: github.com/foomo/keel
+  revive:
+    rules:
+      - name: indent-error-flow
+        disabled: true
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+    disabled-tags:
+      - experimental
+      - opinionated
+    disabled-checks:
+      - ifElseChain
+    settings:
+      hugeParam:
+        sizeThreshold: 512
+
+linters:
+  enable:
+    - bodyclose
+    - exhaustive
+    - dogsled
+    - dupl
+    - exportloopref
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goprintffuncname
+    - gosec
+    - ifshort
+    - misspell
+    - nakedret
+    - noctx
+    - nolintlint
+    - prealloc
+    - revive
+    - promlinter
+    - rowserrcheck
+    - sqlclosecheck
+    - stylecheck
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - whitespace

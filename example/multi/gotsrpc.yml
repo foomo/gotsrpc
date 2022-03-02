@@ -1,0 +1,16 @@
+module:
+  name: github.com/foomo/gotsrpc/v2/example/multi
+  path: ./
+
+targets:
+  multi:
+    services:
+      /service: Service
+    package: github.com/foomo/gotsrpc/v2/example/multi/service
+    out: ./client/src/service-client.ts
+    tsrpc:
+      - Service
+
+mappings:
+  github.com/foomo/gotsrpc/v2/example/multi/service:
+    out: ./client/src/service-vo.ts

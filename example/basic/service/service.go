@@ -2,6 +2,7 @@ package service
 
 type Service interface {
 	Bool(v bool) bool
+	BoolPtr(v bool) *bool
 	Int(v int) int
 	Int32(v int32) int32
 	Int64(v int64) int64

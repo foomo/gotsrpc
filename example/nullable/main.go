@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2/example/basic/service"
+	"github.com/foomo/gotsrpc/v2/example/nullable/service"
 )
 
 func main() {

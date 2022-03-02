@@ -10,6 +10,9 @@ export class ServiceClient {
 	async bool(v:boolean):Promise<boolean> {
 		return (await this.transport<{0:boolean}>("Bool", [v]))[0]
 	}
+	async boolPtr(v:boolean):Promise<boolean|null> {
+		return (await this.transport<{0:boolean|null}>("BoolPtr", [v]))[0]
+	}
 	async boolSlice(v:Array<boolean>|null):Promise<Array<boolean>|null> {
 		return (await this.transport<{0:Array<boolean>|null}>("BoolSlice", [v]))[0]
 	}

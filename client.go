@@ -75,15 +75,15 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 	c.client = client
 }
 
-// CallClient calls a method on the remove service
-func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error) {
+// Call calls a method on the remove service
+func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) error {
 	// Marshall args
 	b := new(bytes.Buffer)
 
 	// If no arguments are set, remove
 	if len(args) > 0 {
 		if err := codec.NewEncoder(b, c.handle.handle).Encode(args); err != nil {
-			return errors.Wrap(err, "could not encode argument")
+			return NewClientError(errors.Wrap(err, "failed to encode arguments"))
 		}
 	}
 
@@ -93,28 +93,47 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 
 	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, c.headers.Clone())
 	if errRequest != nil {
-		return errRequest
+		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
 	}
 
 	resp, errDo := c.client.Do(request)
 	if errDo != nil {
-		return errors.Wrap(errDo, "could not execute request")
+		return NewClientError(errors.Wrap(errDo, "failed to send request"))
 	}
 	defer resp.Body.Close()
 
 	// Check status
 	if resp.StatusCode != http.StatusOK {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return err
+		body := "request failed"
+		if value, err := ioutil.ReadAll(resp.Body); err == nil {
+			body = string(value)
 		}
-		return fmt.Errorf("[%d] %s", resp.StatusCode, string(body))
+		return NewClientError(NewHTTPError(body, resp.StatusCode))
+	}
+
+	wrappedReply := make([]interface{}, len(reply))
+	for k, v := range reply {
+		if _, ok := v.(*error); ok {
+			var e *Error
+			wrappedReply[k] = e
+		} else {
+			wrappedReply[k] = v
+		}
 	}
 
 	responseHandle := getHandlerForContentType(resp.Header.Get("Content-Type")).handle
-	if err := codec.NewDecoder(resp.Body, responseHandle).Decode(reply); err != nil {
-		return errors.Wrap(err, "could not decode response from client")
+	if err := codec.NewDecoder(resp.Body, responseHandle).Decode(wrappedReply); err != nil {
+		return NewClientError(errors.Wrap(err, "failed to decode response"))
 	}
 
-	return err
+	// replace error
+	for k, v := range wrappedReply {
+		if x, ok := v.(*Error); ok && x != nil {
+			if y, ok := reply[k].(*error); ok {
+				*y = x
+			}
+		}
+	}
+
+	return nil
 }

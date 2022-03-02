@@ -6,6 +6,10 @@ func (h *Handler) Bool(v bool) bool {
 	return v
 }
 
+func (h *Handler) BoolPtr(v bool) *bool {
+	return &v
+}
+
 func (h *Handler) Int(v int) int {
 	return v
 }
