@@ -554,6 +554,28 @@ func typesPending(structs map[string]*Struct, scalars map[string]*Scalar, missin
 	return false
 }
 
+func needsWorkValue(value *Value, needsWork func(fullName string) bool) bool {
+	switch {
+	case value.Scalar != nil:
+		if needsWork(value.Scalar.FullName()) {
+			return true
+		}
+	case value.StructType != nil:
+		if needsWork(value.StructType.FullName()) {
+			return true
+		}
+	case value.Array != nil:
+		if needsWorkValue(value.Array.Value, needsWork) {
+			return true
+		}
+	case value.Map != nil:
+		if needsWorkValue(value.Map.Key, needsWork) || needsWorkValue(value.Map.Value, needsWork) {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) bool {
 	needsWork := func(fullName string) bool {
 		strct, strctOK := structs[fullName]
@@ -570,27 +592,32 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 		}
 		return false
 	}
+
 	needWorksFields := func(fields []*Field) bool {
 		for _, field := range fields {
-			var fieldStructType *StructType = nil
-			if field.Value.StructType != nil {
-				fieldStructType = field.Value.StructType
-			} else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
-				fieldStructType = field.Value.Array.Value.StructType
-			} else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
-				fieldStructType = field.Value.Map.Value.StructType
-			} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
-				return false
-			} else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
-				return false
-			} else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
+			if needsWorkValue(field.Value, needsWork) {
 				return false
 			}
-			if fieldStructType != nil {
-				if needsWork(fieldStructType.FullName()) {
-					return false
-				}
-			}
+
+			//var fieldStructType *StructType = nil
+			//if field.Value.StructType != nil {
+			//	fieldStructType = field.Value.StructType
+			//} else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
+			//	fieldStructType = field.Value.Array.Value.StructType
+			//} else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
+			//	fieldStructType = field.Value.Map.Value.StructType
+			//} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
+			//	return false
+			//} else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
+			//	return false
+			//} else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
+			//	return false
+			//}
+			//if fieldStructType != nil {
+			//	if needsWork(fieldStructType.FullName()) {
+			//		return false
+			//	}
+			//}
 		}
 		return true
 	}
