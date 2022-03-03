@@ -11,7 +11,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -87,16 +86,16 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 
 	writer.Header().Set("Content-Type", clientHandle.contentType)
 
-	// transform error type to sth that is transportable
-	for k, v := range response {
-		if e, ok := v.(error); ok {
-			if !reflect.ValueOf(e).IsNil() {
-				response[k] = NewError(e)
-			}
+	if clientHandle.beforeEncodeReply != nil {
+		if err := clientHandle.beforeEncodeReply(&response); err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err.Error())
+			http.Error(w, "could not encode data to accepted format", http.StatusInternalServerError)
+			return
 		}
 	}
 
-	if errEncode := codec.NewEncoder(writer, clientHandle.handle).Encode(response); errEncode != nil {
+	if err := codec.NewEncoder(writer, clientHandle.handle).Encode(response); err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, err.Error())
 		http.Error(w, "could not encode data to accepted format", http.StatusInternalServerError)
 		return
 	}

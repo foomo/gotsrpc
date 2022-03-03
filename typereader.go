@@ -42,6 +42,7 @@ func trace(args ...interface{}) {
 		fmt.Fprintln(os.Stderr, args...)
 	}
 }
+
 func traceData(args ...interface{}) {
 	if ReaderTrace {
 		for _, arg := range args {

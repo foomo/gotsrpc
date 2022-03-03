@@ -15,47 +15,55 @@ const (
 )
 
 type clientHandle struct {
-	handle      codec.Handle
-	contentType string
+	handle            codec.Handle
+	contentType       string
+	beforeEncodeReply func(*[]interface{}) error
+	beforeDecodeReply func([]interface{}) ([]interface{}, error)
+	afterDecodeReply  func(*[]interface{}, []interface{}) error
 }
 
 var msgpackClientHandle = &clientHandle{
-	handle:      &codec.MsgpackHandle{},
 	contentType: "application/msgpack; charset=utf-8",
+	handle:      &codec.MsgpackHandle{},
+	// transform error type to sth that is transportable
+	beforeEncodeReply: func(resp *[]interface{}) error {
+		for k, v := range *resp {
+			if e, ok := v.(error); ok {
+				if !reflect.ValueOf(e).IsNil() {
+					(*resp)[k] = NewError(e)
+				}
+			}
+		}
+		return nil
+	},
+	beforeDecodeReply: func(reply []interface{}) ([]interface{}, error) {
+		ret := make([]interface{}, len(reply))
+		for k, v := range reply {
+			if _, ok := v.(*error); ok {
+				var e *Error
+				ret[k] = e
+			} else {
+				ret[k] = v
+			}
+		}
+		return ret, nil
+	},
+	afterDecodeReply: func(reply *[]interface{}, wrappedReply []interface{}) error {
+		for k, v := range wrappedReply {
+			if x, ok := v.(*Error); ok && x != nil {
+				if y, ok := (*reply)[k].(*error); ok {
+					*y = x
+				}
+			}
+		}
+		return nil
+	},
 }
-
-//type TimeExt struct{}
-//
-//func (x TimeExt) WriteExt(v interface{}) []byte {
-//	b := make([]byte, binary.MaxVarintLen64)
-//	switch t := v.(type) {
-//	case time.Time:
-//		binary.PutVarint(b, t.UnixNano())
-//		return b
-//	case *time.Time:
-//		binary.PutVarint(b, t.UnixNano())
-//		return b
-//	default:
-//		panic("Bug")
-//	}
-//}
-//func (x TimeExt) ReadExt(dest interface{}, src []byte) {
-//	tt := dest.(*time.Time)
-//	r := bytes.NewBuffer(src)
-//	v, err := binary.ReadVarint(r)
-//	if err != nil {
-//		panic("BUG")
-//	}
-//	*tt = time.Unix(0, v).UTC()
-//}
 
 func init() {
 	mh := new(codec.MsgpackHandle)
 	// use map[string]interface{} instead of map[interface{}]interface{}
 	mh.MapType = reflect.TypeOf(map[string]interface{}(nil))
-	//if err := mh.SetBytesExt(reflect.TypeOf(time.Time{}), 1, TimeExt{}); err != nil {
-	//	panic("2")
-	//}
 	//mh.TimeNotBuiltin = true
 	msgpackClientHandle.handle = mh
 	// attempting to set promoted field in literal will cause a compiler error

@@ -87,10 +87,10 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		}
 	}
 
-	// Create request
 	// Create post url
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
 
+	// Create request
 	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, c.headers.Clone())
 	if errRequest != nil {
 		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
@@ -104,34 +104,34 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 
 	// Check status
 	if resp.StatusCode != http.StatusOK {
-		body := "request failed"
-		if value, err := ioutil.ReadAll(resp.Body); err == nil {
-			body = string(value)
-		}
-		return NewClientError(NewHTTPError(body, resp.StatusCode))
-	}
-
-	wrappedReply := make([]interface{}, len(reply))
-	for k, v := range reply {
-		if _, ok := v.(*error); ok {
-			var e *Error
-			wrappedReply[k] = e
+		var msg string
+		if value, err := ioutil.ReadAll(resp.Body); err != nil {
+			msg = "failed to read response body: " + err.Error()
 		} else {
-			wrappedReply[k] = v
+			msg = string(value)
+		}
+		return NewClientError(NewHTTPError(msg, resp.StatusCode))
+	}
+
+	clientHandle := getHandlerForContentType(resp.Header.Get("Content-Type"))
+
+	wrappedReply := reply
+	if clientHandle.beforeDecodeReply != nil {
+		if value, err := clientHandle.beforeDecodeReply(reply); err != nil {
+			return NewClientError(errors.Wrap(err, "failed to call beforeDecodeReply hook"))
+		} else {
+			wrappedReply = value
 		}
 	}
 
-	responseHandle := getHandlerForContentType(resp.Header.Get("Content-Type")).handle
-	if err := codec.NewDecoder(resp.Body, responseHandle).Decode(wrappedReply); err != nil {
+	if err := codec.NewDecoder(resp.Body, clientHandle.handle).Decode(wrappedReply); err != nil {
 		return NewClientError(errors.Wrap(err, "failed to decode response"))
 	}
 
 	// replace error
-	for k, v := range wrappedReply {
-		if x, ok := v.(*Error); ok && x != nil {
-			if y, ok := reply[k].(*error); ok {
-				*y = x
-			}
+	if clientHandle.afterDecodeReply != nil {
+		if err := clientHandle.afterDecodeReply(&reply, wrappedReply); err != nil {
+			return NewClientError(errors.Wrap(err, "failed to call afterDecodeReply hook"))
 		}
 	}
 
