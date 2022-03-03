@@ -23,7 +23,7 @@ func (h *Handler) Simple(w http.ResponseWriter, r *http.Request) (e *frontend.Er
 
 func (h *Handler) Multiple(w http.ResponseWriter, r *http.Request) (e *frontend.ErrMulti) {
 	return &frontend.ErrMulti{
-		ErrMultiA: frontend.ErrMultiAOne,
-		ErrMultiB: "",
+		A: frontend.ErrMultiAOne,
+		B: "",
 	}
 }

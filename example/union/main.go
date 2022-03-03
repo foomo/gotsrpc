@@ -9,7 +9,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 
-	"github.com/foomo/gotsrpc/v2/example/multi/service"
+	"github.com/foomo/gotsrpc/v2/example/union/service"
 )
 
 func main() {
@@ -26,15 +26,16 @@ func main() {
 		}
 	})
 
-	go exec.Command("open", "http://127.0.0.1:3000").Run()
-	go call()
+	go func() {
+		time.Sleep(time.Second)
+		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
+		call()
+	}()
 
-	http.ListenAndServe("localhost:3000", mux)
+	panic(http.ListenAndServe("localhost:3000", mux))
 }
 
 func call() {
-	time.Sleep(time.Second)
-
 	c := service.NewDefaultServiceGoTSRPCClient("http://127.0.0.1:3000")
 
 	{

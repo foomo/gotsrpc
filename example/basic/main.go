@@ -28,5 +28,5 @@ func main() {
 		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
 	}()
 
-	_ = http.ListenAndServe("localhost:3000", mux)
+	panic(http.ListenAndServe("localhost:3000", mux))
 }

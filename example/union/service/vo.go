@@ -31,7 +31,9 @@ type (
 type (
 	UnionString struct {
 		A *UnionStringA `json:"a,omitempty,union"`
+
 		B *UnionStringB `json:"b,omitempty,union"`
+		c string
 	}
 	UnionStringA string
 	UnionStringB string

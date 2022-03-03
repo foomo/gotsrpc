@@ -1,16 +1,16 @@
 module:
-  name: github.com/foomo/gotsrpc/v2/example/multi
+  name: github.com/foomo/gotsrpc/v2/example/union
   path: ./
 
 targets:
-  multi:
+  union:
     services:
       /service: Service
-    package: github.com/foomo/gotsrpc/v2/example/multi/service
+    package: github.com/foomo/gotsrpc/v2/example/union/service
     out: ./client/src/service-client.ts
     tsrpc:
       - Service
 
 mappings:
-  github.com/foomo/gotsrpc/v2/example/multi/service:
+  github.com/foomo/gotsrpc/v2/example/union/service:
     out: ./client/src/service-vo.ts

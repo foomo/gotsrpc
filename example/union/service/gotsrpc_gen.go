@@ -12,8 +12,8 @@ import (
 )
 
 func init() {
-	gotsrpc.MustRegisterUnionExt(UnionStruct{})
 	gotsrpc.MustRegisterUnionExt(UnionString{})
+	gotsrpc.MustRegisterUnionExt(UnionStruct{})
 }
 
 const (
@@ -54,7 +54,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	callStats := gotsrpc.GetStatsForRequest(r)
 	if callStats != nil {
 		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/v2/example/multi/service"
+		callStats.Package = "github.com/foomo/gotsrpc/v2/example/union/service"
 		callStats.Service = "Service"
 	}
 	switch funcName {

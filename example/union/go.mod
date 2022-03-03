@@ -1,4 +1,4 @@
-module github.com/foomo/gotsrpc/v2/example/multi
+module github.com/foomo/gotsrpc/v2/example/union
 
 go 1.16
 

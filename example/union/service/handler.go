@@ -20,6 +20,6 @@ func (h *Handler) UnionString(w http.ResponseWriter, r *http.Request) (e UnionSt
 }
 
 func (h *Handler) UnionStruct(w http.ResponseWriter, r *http.Request) (e UnionStruct) {
-	//return UnionStruct{UnionStructA: UnionStructA{Kind: "UnionStructA", Value: UnionStructAValueAOne}}
+	// return UnionStruct{UnionStructA: UnionStructA{Kind: "UnionStructA", Value: UnionStructAValueAOne}}
 	return UnionStruct{B: &UnionStructB{Kind: "UnionStructB", Value: UnionStructAValueBOne}}
 }
