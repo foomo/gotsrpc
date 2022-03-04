@@ -3,6 +3,7 @@ package gotsrpc
 import (
 	"net/http"
 	"reflect"
+	"unsafe"
 
 	"github.com/ugorji/go/codec"
 )
@@ -13,6 +14,8 @@ const (
 	EncodingMsgpack = ClientEncoding(0)
 	EncodingJson    = ClientEncoding(1)
 )
+
+var errorType = reflect.TypeOf((*error)(nil)).Elem()
 
 type clientHandle struct {
 	handle            codec.Handle
@@ -29,7 +32,7 @@ var msgpackClientHandle = &clientHandle{
 	beforeEncodeReply: func(resp *[]interface{}) error {
 		for k, v := range *resp {
 			if e, ok := v.(error); ok {
-				if !reflect.ValueOf(e).IsNil() {
+				if r := reflect.ValueOf(e); !r.IsNil() { //&& r.Elem().Kind() == reflect.Struct {
 					(*resp)[k] = NewError(e)
 				}
 			}
@@ -39,7 +42,7 @@ var msgpackClientHandle = &clientHandle{
 	beforeDecodeReply: func(reply []interface{}) ([]interface{}, error) {
 		ret := make([]interface{}, len(reply))
 		for k, v := range reply {
-			if _, ok := v.(*error); ok {
+			if reflect.TypeOf(v).Elem().Implements(errorType) {
 				var e *Error
 				ret[k] = e
 			} else {
@@ -49,10 +52,22 @@ var msgpackClientHandle = &clientHandle{
 		return ret, nil
 	},
 	afterDecodeReply: func(reply *[]interface{}, wrappedReply []interface{}) error {
+		ptr := func(v reflect.Value) reflect.Value {
+			pt := reflect.PtrTo(v.Type()) // create a *T type.
+			pv := reflect.New(pt.Elem())  // create a reflect.Value of type *T.
+			pv.Elem().Set(v)              // sets pv to point to underlying value of v.
+			return pv
+		}
+
 		for k, v := range wrappedReply {
-			if x, ok := v.(*Error); ok && x != nil {
+			if e, ok := v.(*Error); ok && e != nil {
 				if y, ok := (*reply)[k].(*error); ok {
-					*y = x
+					*y = e
+				} else {
+					rv := reflect.ValueOf((*reply)[k]).Elem()
+					elem := reflect.NewAt(rv.Type().Elem(), unsafe.Pointer(rv.UnsafeAddr())).Elem()
+					elem.Set(reflect.ValueOf(e.Data).Convert(elem.Type()))
+					rv.Set(ptr(elem))
 				}
 			}
 		}

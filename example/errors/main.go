@@ -76,6 +76,7 @@ func call() {
 			fmt.Println("OK")
 		}
 	}
+
 	{
 		fmt.Println("-------------------------")
 		scalar, err := c.MultiScalar(ctx)

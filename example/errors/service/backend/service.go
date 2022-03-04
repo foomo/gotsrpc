@@ -21,6 +21,10 @@ type (
 	}
 )
 
+//func (e *Scalar) Error() string {
+//	return string(*e)
+//}
+
 const (
 	ScalarOne Scalar = "one"
 	ScalarTwo Scalar = "two"
