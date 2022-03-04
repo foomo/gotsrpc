@@ -57,12 +57,20 @@ func traceData(args ...interface{}) {
 }
 
 func extractJSONInfo(tag string) *JSONInfo {
-	t := reflect.StructTag(tag)
-	jsonTagString := t.Get("json")
-	if len(jsonTagString) == 0 {
+	structTag := reflect.StructTag(tag)
+
+	jsonTags := strings.Split(structTag.Get("json"), ",")
+	gotsrpcTags := strings.Split(structTag.Get("gotsrpc"), ",")
+	if len(jsonTags) == 0 && len(gotsrpcTags) == 0 {
 		return nil
 	}
-	jsonTagParts := strings.Split(jsonTagString, ",")
+
+	for k, value := range jsonTags {
+		jsonTags[k] = strings.TrimSpace(value)
+	}
+	for k, value := range gotsrpcTags {
+		gotsrpcTags[k] = strings.TrimSpace(value)
+	}
 
 	name := ""
 	tsType := ""
@@ -70,35 +78,38 @@ func extractJSONInfo(tag string) *JSONInfo {
 	union := false
 	inline := false
 	ignore := false
-	var cleanParts []string
-	for _, jsonTagPart := range jsonTagParts {
-		cleanParts = append(cleanParts, strings.TrimSpace(jsonTagPart))
-	}
-	if len(cleanParts) > 0 {
-		switch cleanParts[0] {
+
+	if len(jsonTags) > 0 {
+		switch jsonTags[0] {
 		case "":
 			// do nothing
 		case "-":
 			ignore = true
 		default:
-			name = cleanParts[0]
+			name = jsonTags[0]
 		}
 	}
-	if len(cleanParts) > 1 {
-		for _, cleanPart := range cleanParts[1:] {
+	if len(jsonTags) > 1 {
+		for _, value := range jsonTags[1:] {
 			switch {
-			case cleanPart == "union":
-				union = true
-			case cleanPart == "inline":
+			case value == "inline":
 				inline = true
-			case cleanPart == "omitempty":
+			case value == "omitempty":
 				omit = true
-			case strings.HasPrefix(cleanPart, "type:"):
-				tsType = strings.TrimPrefix(cleanPart, "type:")
 			}
 		}
 	}
 
+	for _, value := range gotsrpcTags {
+		switch {
+		case value == "union":
+			union = true
+		case strings.HasPrefix(value, "type:"):
+			tsType = strings.TrimPrefix(value, "type:")
+		}
+	}
+
+	// TODO split up gotsrpc info
 	return &JSONInfo{
 		Name:      name,
 		Type:      tsType,

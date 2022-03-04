@@ -30,9 +30,9 @@ type (
 
 type (
 	UnionString struct {
-		A *UnionStringA `json:"a,omitempty,union"`
+		A *UnionStringA `json:"a,omitempty" gotsrpc:"union"`
 
-		B *UnionStringB `json:"b,omitempty,union"`
+		B *UnionStringB `json:"b,omitempty" gotsrpc:"union"`
 		c string
 	}
 	UnionStringA string
@@ -48,22 +48,22 @@ const (
 
 type (
 	UnionStructA struct {
-		Kind  string             `json:"kind,type:'UnionStructA'"`
+		Kind  string             `json:"kind" gotsrpc:"type:'UnionStructA'"`
 		Value UnionStructAValueA `json:"value"`
 		Bar   string             `json:"bar"`
 	}
 	UnionStructAValueA string
 
 	UnionStructB struct {
-		Kind  string             `json:"kind,type:'UnionStructB'"`
+		Kind  string             `json:"kind" gotsrpc:"type:'UnionStructB'"`
 		Value UnionStructAValueB `json:"value"`
 		Foo   string             `json:"foo"`
 	}
 	UnionStructAValueB string
 
 	UnionStruct struct {
-		A *UnionStructA `json:"a,omitempty,union"`
-		B *UnionStructB `json:"b,omitempty,union"`
+		A *UnionStructA `json:"a,omitempty" gotsrpc:"union"`
+		B *UnionStructB `json:"b,omitempty" gotsrpc:"union"`
 	}
 )
 

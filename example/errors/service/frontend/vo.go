@@ -4,8 +4,8 @@ type ErrSimple string
 
 type (
 	ErrMulti struct {
-		A ErrMultiA `json:"a,omitempty,union"`
-		B ErrMultiB `json:"b,omitempty,union"`
+		A ErrMultiA `json:"a,omitempty" gotsrpc:"union"`
+		B ErrMultiB `json:"b,omitempty" gotsrpc:"union"`
 	}
 	ErrMultiA string
 	ErrMultiB string
