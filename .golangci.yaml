@@ -24,6 +24,14 @@ linters-settings:
     settings:
       hugeParam:
         sizeThreshold: 512
+  # https://golangci-lint.run/usage/linters/#tagliatelle
+  tagliatelle:
+    case:
+      use-field-name: true
+      rules:
+        json: camel
+        yaml: camel
+        bson: camel
 
 linters:
   enable:

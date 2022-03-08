@@ -102,7 +102,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 
 	if stats != nil {
 		stats.ResponseSize = writer.length
-		stats.Marshalling = time.Now().Sub(serializationStart)
+		stats.Marshalling = time.Since(serializationStart)
 	}
 }
 

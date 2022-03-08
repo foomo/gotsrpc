@@ -2,9 +2,7 @@ package gotsrpc
 
 import (
 	"errors"
-	"fmt"
 	"go/ast"
-	"os"
 	"sort"
 	"strings"
 
@@ -13,18 +11,12 @@ import (
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-func (f *Field) tsName(camelCase bool) string {
-	name := f.Name
-	if camelCase {
-		name = strcase.ToLowerCamel(name)
-	}
+func (f *Field) tsName() string {
+	n := f.Name
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
-		if camelCase && f.JSONInfo.Name != name && strcase.ToLowerCamel(f.JSONInfo.Name) == name {
-			fmt.Fprintf(os.Stderr, "WARN: json struct field annotation for `%s` does not match the camelCase pattern (expected: `%s`, got: `%s`)\n", f.Name, name, f.JSONInfo.Name)
-		}
-		name = f.JSONInfo.Name
+		n = f.JSONInfo.Name
 	}
-	return name
+	return n
 }
 
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
@@ -122,7 +114,7 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 		} else if f.JSONInfo != nil && f.JSONInfo.Ignore {
 			continue
 		}
-		ts.app(f.tsName(true))
+		ts.app(f.tsName())
 		if f.JSONInfo != nil && f.JSONInfo.OmitEmpty {
 			ts.app("?")
 		}

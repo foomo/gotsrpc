@@ -36,19 +36,19 @@ export interface Base {
 	f1:github_com_foomo_gotsrpc_v2_example_nullable_service.ACustomTypesMap|null;
 	f2?:github_com_foomo_gotsrpc_v2_example_nullable_service.ACustomTypesMap;
 	f3:github_com_foomo_gotsrpc_v2_example_nullable_service.ACustomTypesMap|null;
-	two:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null;
-	two1:Array<Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null>|null;
-	two2:Array<Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null>|null;
-	three:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Nested|null>|null;
-	three1:Array<string|null>|null;
-	four:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null;
-	five:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Nested|null>|null;
-	six:{
-		foo:string;
+	Two:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null;
+	Two1:Array<Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null>|null;
+	Two2:Array<Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null>|null;
+	Three:Array<github_com_foomo_gotsrpc_v2_example_nullable_service.Nested|null>|null;
+	Three1:Array<string|null>|null;
+	Four:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Nested>|null;
+	Five:Record<string,github_com_foomo_gotsrpc_v2_example_nullable_service.Nested|null>|null;
+	Six:{
+		Foo:string;
 	}|null;
 }
 // github.com/foomo/gotsrpc/v2/example/nullable/service.Nested
 export interface Nested {
-	foo:string;
+	Foo:string;
 }
 // end of common js

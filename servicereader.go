@@ -33,7 +33,6 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 			if funcDecl.Recv != nil {
 				trace("that is a method named", funcDecl.Name)
 				if len(funcDecl.Recv.List) == 1 {
-
 					firstReceiverField := funcDecl.Recv.List[0]
 					if "*ast.StarExpr" == reflect.ValueOf(firstReceiverField.Type).Type().String() {
 						starExpr := firstReceiverField.Type.(*ast.StarExpr)
@@ -69,7 +68,6 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 					ident := typeSpec.Name
 					trace("that is an interface named", ident.Name)
 					if service, ok := findService(ident.Name); ok {
-
 						if iSpec, ok := typeSpec.Type.(*ast.InterfaceType); ok {
 							service.IsInterface = true
 							for _, fieldDecl := range iSpec.Methods.List {

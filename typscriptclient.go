@@ -47,7 +47,7 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 			if index > argOffset {
 				ts.app(", ")
 			}
-			ts.app(arg.tsName(false))
+			ts.app(arg.tsName())
 			ts.app(":")
 			arg.Value.tsType(mappings, scalars, structs, ts, arg.JSONInfo)
 			callArgs = append(callArgs, arg.Name)
@@ -67,7 +67,7 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 
 		for index, retField := range method.Return {
 			countInnerReturns++
-			retArgName := retField.tsName(false)
+			retArgName := retField.tsName()
 
 			if len(retArgName) == 0 {
 				retArgName = "ret"
