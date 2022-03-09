@@ -2,6 +2,7 @@ package gotsrpc
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/foomo/gotsrpc/v2/config"
@@ -805,15 +806,20 @@ func renderInit(unions map[string][]string, aliases map[string]string, packageNa
 	if len(unions) > 0 {
 		g.l("func init() {")
 		g.ind(1)
+		var strs []string
 		for pkg, us := range unions {
 			for _, name := range us {
-				var t string
+				var str string
 				if packageName != pkg && aliases[pkg] != "" {
-					t += aliases[pkg] + "."
+					str += aliases[pkg] + "."
 				}
-				t += name
-				g.l("gotsrpc.MustRegisterUnionExt(" + t + "{})")
+				str += name
+				strs = append(strs, str)
 			}
+		}
+		sort.Strings(strs)
+		for _, str := range strs {
+			g.l("gotsrpc.MustRegisterUnionExt(" + str + "{})")
 		}
 		g.ind(-1)
 		g.l("}")
