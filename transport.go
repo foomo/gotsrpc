@@ -3,6 +3,7 @@ package gotsrpc
 import (
 	"net/http"
 	"reflect"
+	"time"
 	"unsafe"
 
 	"github.com/ugorji/go/codec"
@@ -32,7 +33,7 @@ var msgpackClientHandle = &clientHandle{
 	beforeEncodeReply: func(resp *[]interface{}) error {
 		for k, v := range *resp {
 			if e, ok := v.(error); ok {
-				if r := reflect.ValueOf(e); !r.IsNil() { //&& r.Elem().Kind() == reflect.Struct {
+				if r := reflect.ValueOf(e); !r.IsNil() {
 					(*resp)[k] = NewError(e)
 				}
 			}
@@ -79,16 +80,25 @@ func init() {
 	mh := new(codec.MsgpackHandle)
 	// use map[string]interface{} instead of map[interface{}]interface{}
 	mh.MapType = reflect.TypeOf(map[string]interface{}(nil))
-	//mh.TimeNotBuiltin = true
-	msgpackClientHandle.handle = mh
 	// attempting to set promoted field in literal will cause a compiler error
 	mh.RawToString = true
+	msgpackClientHandle.handle = mh
+	// WriteExt is not being called
+	// if err := SetJSONExt(time.Time{}, 2, timeExt); err != nil {
+	// 	 panic(err)
+	// }
+
+	jh := new(codec.JsonHandle)
+	jh.MapKeyAsString = true
+	jh.TimeNotBuiltin = true
+	if err := jh.SetInterfaceExt(reflect.TypeOf(time.Time{}), 1, timeExt); err != nil {
+		panic(err)
+	}
+	jsonClientHandle.handle = jh
 }
 
 var jsonClientHandle = &clientHandle{
-	handle: &codec.JsonHandle{
-		MapKeyAsString: true,
-	},
+	handle:      &codec.JsonHandle{},
 	contentType: "application/json; charset=utf-8",
 }
 
@@ -103,6 +113,7 @@ func NewMSGPackDecoderBytes(b []byte) *codec.Decoder {
 func SetJSONExt(rt interface{}, tag uint64, ext codec.InterfaceExt) error {
 	return jsonClientHandle.handle.(*codec.JsonHandle).SetInterfaceExt(reflect.TypeOf(rt), tag, ext)
 }
+
 func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
 	return msgpackClientHandle.handle.(*codec.MsgpackHandle).SetBytesExt(reflect.TypeOf(rt), tag, ext)
 }

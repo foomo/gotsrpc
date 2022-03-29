@@ -19,6 +19,10 @@ func (f *Field) tsName() string {
 	return n
 }
 
+var tsTypeAliases = map[string]string{
+	"time.Time": "number",
+}
+
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
 	switch {
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
@@ -54,7 +58,11 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			if ok {
 				tsModule = mapping.TypeScriptModule
 			}
-			ts.app(tsModule + "." + tsTypeFromScalarType(v.ScalarType))
+			tsType := tsModule + "." + tsTypeFromScalarType(v.ScalarType)
+			if value, ok := tsTypeAliases[tsType]; ok {
+				tsType = value
+			}
+			ts.app(tsType)
 			if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 				ts.app("|null")
 			}

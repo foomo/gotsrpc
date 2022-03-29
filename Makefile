@@ -31,7 +31,7 @@ build.debug:
 
 ## === Tools ===
 
-EXAMPLES=basic errors nullable union
+EXAMPLES=basic errors nullable union time
 define examples
 .PHONY: example.$(1)
 example.$(1):
