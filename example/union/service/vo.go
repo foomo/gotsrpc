@@ -31,9 +31,7 @@ type (
 type (
 	UnionString struct {
 		A *UnionStringA `json:"a,omitempty" gotsrpc:"union"`
-
 		B *UnionStringB `json:"b,omitempty" gotsrpc:"union"`
-		c string
 	}
 	UnionStringA string
 	UnionStringB string

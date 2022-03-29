@@ -35,6 +35,5 @@ func (h *Handler) VariantG(w http.ResponseWriter, r *http.Request, i1 map[string
 }
 
 func (h *Handler) VariantH(w http.ResponseWriter, r *http.Request, i1 Base, i2 *Base, i3 []*Base, i4 map[string]Base) (r1 Base, r2 *Base, r3 []*Base, r4 map[string]Base) {
-	//TODO implement me
 	panic("implement me")
 }
