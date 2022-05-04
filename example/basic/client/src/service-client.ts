@@ -16,6 +16,9 @@ export class ServiceClient {
 	async boolSlice(v:Array<boolean>|null):Promise<Array<boolean>|null> {
 		return (await this.transport<{0:Array<boolean>|null}>("BoolSlice", [v]))[0]
 	}
+	async empty():Promise<void> {
+		await this.transport<void>("Empty", [])
+	}
 	async float32(v:number):Promise<number> {
 		return (await this.transport<{0:number}>("Float32", [v]))[0]
 	}

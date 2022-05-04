@@ -278,6 +278,12 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			g.ind(1)
 			var callArgs []string
 			isSessionRequest := false
+			g.l("var (")
+			g.ind(1)
+			g.l("args []interface{}")
+			g.l("rets []interface{}")
+			g.ind(-1)
+			g.l(")")
 			if len(method.Args) > 0 {
 				var args []string
 				var argsDecls []string
@@ -295,10 +301,6 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 					callArgs = append(callArgs, argName)
 					skipArgI++
 				}
-				g.l("var (").ind(1)
-				g.l("args []interface{}")
-				g.l("rets []interface{}")
-				g.ind(-1).l(")")
 				if len(args) > 0 {
 					g.l("var (")
 					for _, argDecl := range argsDecls {

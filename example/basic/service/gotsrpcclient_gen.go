@@ -14,6 +14,7 @@ type ServiceGoTSRPCClient interface {
 	Bool(ctx go_context.Context, v bool) (retBool_0 bool, clientErr error)
 	BoolPtr(ctx go_context.Context, v bool) (retBoolPtr_0 *bool, clientErr error)
 	BoolSlice(ctx go_context.Context, v []bool) (retBoolSlice_0 []bool, clientErr error)
+	Empty(ctx go_context.Context) (clientErr error)
 	Float32(ctx go_context.Context, v float32) (retFloat32_0 float32, clientErr error)
 	Float32Map(ctx go_context.Context, v map[float32]interface{}) (retFloat32Map_0 map[float32]interface{}, clientErr error)
 	Float32Slice(ctx go_context.Context, v []float32) (retFloat32Slice_0 []float32, clientErr error)
@@ -120,6 +121,16 @@ func (tsc *HTTPServiceGoTSRPCClient) BoolSlice(ctx go_context.Context, v []bool)
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolSlice", args, reply)
 	if clientErr != nil {
 		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy BoolSlice")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) Empty(ctx go_context.Context) (clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Empty", args, reply)
+	if clientErr != nil {
+		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy Empty")
 	}
 	return
 }

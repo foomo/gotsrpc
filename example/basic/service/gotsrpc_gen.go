@@ -15,6 +15,7 @@ const (
 	ServiceGoTSRPCProxyBool                = "Bool"
 	ServiceGoTSRPCProxyBoolPtr             = "BoolPtr"
 	ServiceGoTSRPCProxyBoolSlice           = "BoolSlice"
+	ServiceGoTSRPCProxyEmpty               = "Empty"
 	ServiceGoTSRPCProxyFloat32             = "Float32"
 	ServiceGoTSRPCProxyFloat32Map          = "Float32Map"
 	ServiceGoTSRPCProxyFloat32Slice        = "Float32Slice"
@@ -169,6 +170,21 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		boolSliceRet := p.service.BoolSlice(arg_v)
 		callStats.Execution = time.Since(executionStart)
 		rets = []interface{}{boolSliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyEmpty:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
+		executionStart := time.Now()
+		p.service.Empty()
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return

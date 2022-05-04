@@ -1,6 +1,7 @@
 package service
 
 type Service interface {
+	Empty()
 	Bool(v bool) bool
 	BoolPtr(v bool) *bool
 	Int(v int) int

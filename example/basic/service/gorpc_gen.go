@@ -42,6 +42,11 @@ type (
 		RetBoolSlice_0 []bool
 	}
 
+	ServiceEmptyRequest struct {
+	}
+	ServiceEmptyResponse struct {
+	}
+
 	ServiceFloat32Request struct {
 		V float32
 	}
@@ -449,6 +454,8 @@ func init() {
 	gob.Register(ServiceBoolPtrResponse{})
 	gob.Register(ServiceBoolSliceRequest{})
 	gob.Register(ServiceBoolSliceResponse{})
+	gob.Register(ServiceEmptyRequest{})
+	gob.Register(ServiceEmptyResponse{})
 	gob.Register(ServiceFloat32Request{})
 	gob.Register(ServiceFloat32Response{})
 	gob.Register(ServiceFloat32MapRequest{})
@@ -615,6 +622,9 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		req := request.(ServiceBoolSliceRequest)
 		retBoolSlice_0 := p.service.BoolSlice(req.V)
 		response = ServiceBoolSliceResponse{RetBoolSlice_0: retBoolSlice_0}
+	case "ServiceEmptyRequest":
+		p.service.Empty()
+		response = ServiceEmptyResponse{}
 	case "ServiceFloat32Request":
 		req := request.(ServiceFloat32Request)
 		retFloat32_0 := p.service.Float32(req.V)

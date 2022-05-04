@@ -2,6 +2,9 @@ package service
 
 type Handler struct{}
 
+func (h *Handler) Empty() {
+}
+
 func (h *Handler) Bool(v bool) bool {
 	return v
 }
