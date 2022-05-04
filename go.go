@@ -252,10 +252,9 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 
         // ServeHTTP exposes your service
         func (p *` + proxyName + `) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	        if r.Method != http.MethodPost {
-				if r.Method == http.MethodOptions {
-					return
-				}
+	        if r.Method == http.MethodOptions {
+				return
+			} else if r.Method != http.MethodPost {
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return
 	        }
@@ -263,12 +262,10 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		`)
 
 		g.l("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
-		g.l("callStats := gotsrpc.GetStatsForRequest(r)")
-		g.l("if callStats != nil {").ind(1)
+		g.l("callStats, _ := gotsrpc.GetStatsForRequest(r)")
 		g.l("callStats.Func = funcName")
 		g.l("callStats.Package = \"" + fullPackageName + "\"")
 		g.l("callStats.Service = \"" + service.Name + "\"")
-		g.ind(-1).l("}")
 
 		g.l(`switch funcName {`)
 
@@ -279,11 +276,11 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			// a case for each method
 			g.l("case " + proxyName + method.Name + ":")
 			g.ind(1)
-			callArgs := []string{}
+			var callArgs []string
 			isSessionRequest := false
 			if len(method.Args) > 0 {
-				args := []string{}
-				argsDecls := []string{}
+				var args []string
+				var argsDecls []string
 
 				skipArgI := 0
 
@@ -292,23 +289,24 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 				isSessionRequest = len(method.Args)-len(nonHTTPRelatedArgs) == 2
 
 				for _, arg := range nonHTTPRelatedArgs {
-					argName := "arg_" + arg.Name //strconv.Itoa(argI)
-
-					//argsDecls = append(argsDecls, argName+" := "+arg.Value.emptyLiteral(aliases))
+					argName := "arg_" + arg.Name
 					argsDecls = append(argsDecls, argName+"  "+arg.Value.goType(aliases, packageName))
 					args = append(args, "&"+argName)
 					callArgs = append(callArgs, argName)
 					skipArgI++
 				}
+				g.l("var (").ind(1)
+				g.l("args []interface{}")
+				g.l("rets []interface{}")
+				g.ind(-1).l(")")
 				if len(args) > 0 {
 					g.l("var (")
 					for _, argDecl := range argsDecls {
 						g.l(argDecl)
 					}
 					g.l(")")
-					g.l("args := []interface{}{" + strings.Join(args, ", ") + "}")
-					g.l("err := gotsrpc.LoadArgs(&args, callStats, r)")
-					g.l("if err != nil {")
+					g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
+					g.l("if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {")
 					g.ind(1)
 					g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
 					g.l("return")
@@ -337,22 +335,27 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
-			g.l("if callStats != nil {")
-			g.ind(1).l("callStats.Execution = time.Now().Sub(executionStart)").ind(-1)
-			g.l("}")
+			g.l("callStats.Execution = time.Since(executionStart)")
 			if isSessionRequest {
 				g.l("if rw.Status() == http.StatusOK {").ind(1)
 			}
-			g.l("gotsrpc.Reply([]interface{}{" + strings.Join(returnValueNames, ", ") + "}, callStats, r, w)")
+			g.l("rets = []interface{}{" + strings.Join(returnValueNames, ", ") + "}")
+			g.l("if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {")
+			g.ind(1)
+			g.l("gotsrpc.ErrorCouldNotReply(w)")
+			g.l("return")
+			g.ind(-1)
+			g.l("}")
 			if isSessionRequest {
 				g.ind(-1).l("}")
 			}
+			g.l("gotsrpc.Monitor(w, r, args, rets, callStats)")
 			g.l("return")
 			g.ind(-1)
 		}
 		g.l("default:")
 		g.ind(1).l("gotsrpc.ClearStats(r)")
-		g.ind(1).l("http.Error(w, \"404 - not found \" + r.URL.Path, http.StatusNotFound)")
+		g.ind(1).l("gotsrpc.ErrorFuncNotFound(w)")
 		g.ind(-2).l("}") // close switch
 		g.ind(-1).l("}") // close ServeHttp
 	}

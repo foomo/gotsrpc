@@ -42,135 +42,202 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 
 // ServeHTTP exposes your service
 func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		if r.Method == http.MethodOptions {
-			return
-		}
+	if r.Method == http.MethodOptions {
+		return
+	} else if r.Method != http.MethodPost {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
 	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
-		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/v2/example/errors/service/backend"
-		callStats.Service = "Service"
-	}
+	callStats, _ := gotsrpc.GetStatsForRequest(r)
+	callStats.Func = funcName
+	callStats.Package = "github.com/foomo/gotsrpc/v2/example/errors/service/backend"
+	callStats.Service = "Service"
 	switch funcName {
 	case ServiceGoTSRPCProxyCustomError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		customErrorE := p.service.CustomError(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{customErrorE}, callStats, r, w)
+			rets = []interface{}{customErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		errorE := p.service.Error(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{errorE}, callStats, r, w)
+			rets = []interface{}{errorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyMultiScalar:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		multiScalarE := p.service.MultiScalar(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{multiScalarE}, callStats, r, w)
+			rets = []interface{}{multiScalarE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyScalar:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		scalarE := p.service.Scalar(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{scalarE}, callStats, r, w)
+			rets = []interface{}{scalarE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyScalarError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		scalarErrorE := p.service.ScalarError(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{scalarErrorE}, callStats, r, w)
+			rets = []interface{}{scalarErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyTypedCustomError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedCustomErrorE := p.service.TypedCustomError(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{typedCustomErrorE}, callStats, r, w)
+			rets = []interface{}{typedCustomErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyTypedError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedErrorE := p.service.TypedError(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{typedErrorE}, callStats, r, w)
+			rets = []interface{}{typedErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyTypedScalarError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedScalarErrorE := p.service.TypedScalarError(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{typedScalarErrorE}, callStats, r, w)
+			rets = []interface{}{typedScalarErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyTypedWrappedError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedWrappedErrorE := p.service.TypedWrappedError(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{typedWrappedErrorE}, callStats, r, w)
+			rets = []interface{}{typedWrappedErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyWrappedError:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		wrappedErrorE := p.service.WrappedError(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{wrappedErrorE}, callStats, r, w)
+			rets = []interface{}{wrappedErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	default:
 		gotsrpc.ClearStats(r)
-		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
+		gotsrpc.ErrorFuncNotFound(w)
 	}
 }

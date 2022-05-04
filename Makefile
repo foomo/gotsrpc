@@ -31,12 +31,12 @@ build.debug:
 
 ## === Tools ===
 
-EXAMPLES=basic errors nullable union time
+EXAMPLES=basic errors monitor nullable union time
 define examples
 .PHONY: example.$(1)
 example.$(1):
 	cd example/${1} && go run ../../cmd/gotsrpc/gotsrpc.go gotsrpc.yml
-	cd example/${1}/client && tsc --build
+	cd example/${1}/client && ../../node_modules/.bin/tsc --build
 
 .PHONY: example.$(1).run
 example.$(1).run: example.${1}

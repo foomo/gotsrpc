@@ -40,188 +40,233 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 
 // ServeHTTP exposes your service
 func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		if r.Method == http.MethodOptions {
-			return
-		}
+	if r.Method == http.MethodOptions {
+		return
+	} else if r.Method != http.MethodPost {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
 	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
-		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/v2/example/nullable/service"
-		callStats.Service = "Service"
-	}
+	callStats, _ := gotsrpc.GetStatsForRequest(r)
+	callStats.Func = funcName
+	callStats.Package = "github.com/foomo/gotsrpc/v2/example/nullable/service"
+	callStats.Service = "Service"
 	switch funcName {
 	case ServiceGoTSRPCProxyVariantA:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_i1 Base
 		)
-		args := []interface{}{&arg_i1}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantAR1 := p.service.VariantA(&rw, r, arg_i1)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantAR1}, callStats, r, w)
+			rets = []interface{}{variantAR1}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyVariantB:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_i1 BCustomType
 		)
-		args := []interface{}{&arg_i1}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantBR1 := p.service.VariantB(&rw, r, arg_i1)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantBR1}, callStats, r, w)
+			rets = []interface{}{variantBR1}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyVariantC:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_i1 BCustomTypes
 		)
-		args := []interface{}{&arg_i1}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantCR1 := p.service.VariantC(&rw, r, arg_i1)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantCR1}, callStats, r, w)
+			rets = []interface{}{variantCR1}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyVariantD:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_i1 BCustomTypesMap
 		)
-		args := []interface{}{&arg_i1}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantDR1 := p.service.VariantD(&rw, r, arg_i1)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantDR1}, callStats, r, w)
+			rets = []interface{}{variantDR1}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyVariantE:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_i1 *Base
 		)
-		args := []interface{}{&arg_i1}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantER1 := p.service.VariantE(&rw, r, arg_i1)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantER1}, callStats, r, w)
+			rets = []interface{}{variantER1}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyVariantF:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_i1 []*Base
 		)
-		args := []interface{}{&arg_i1}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantFR1 := p.service.VariantF(&rw, r, arg_i1)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantFR1}, callStats, r, w)
+			rets = []interface{}{variantFR1}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyVariantG:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_i1 map[string]*Base
 		)
-		args := []interface{}{&arg_i1}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantGR1 := p.service.VariantG(&rw, r, arg_i1)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantGR1}, callStats, r, w)
+			rets = []interface{}{variantGR1}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyVariantH:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		var (
 			arg_i1 Base
 			arg_i2 *Base
 			arg_i3 []*Base
 			arg_i4 map[string]Base
 		)
-		args := []interface{}{&arg_i1, &arg_i2, &arg_i3, &arg_i4}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_i1, &arg_i2, &arg_i3, &arg_i4}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		variantHR1, variantHR2, variantHR3, variantHR4 := p.service.VariantH(&rw, r, arg_i1, arg_i2, arg_i3, arg_i4)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{variantHR1, variantHR2, variantHR3, variantHR4}, callStats, r, w)
+			rets = []interface{}{variantHR1, variantHR2, variantHR3, variantHR4}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	default:
 		gotsrpc.ClearStats(r)
-		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
+		gotsrpc.ErrorFuncNotFound(w)
 	}
 }

@@ -38,47 +38,58 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 
 // ServeHTTP exposes your service
 func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		if r.Method == http.MethodOptions {
-			return
-		}
+	if r.Method == http.MethodOptions {
+		return
+	} else if r.Method != http.MethodPost {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
 	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
-		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/v2/example/errors/service/frontend"
-		callStats.Service = "Service"
-	}
+	callStats, _ := gotsrpc.GetStatsForRequest(r)
+	callStats.Func = funcName
+	callStats.Package = "github.com/foomo/gotsrpc/v2/example/errors/service/frontend"
+	callStats.Service = "Service"
 	switch funcName {
 	case ServiceGoTSRPCProxyMultiple:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		multipleE := p.service.Multiple(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{multipleE}, callStats, r, w)
+			rets = []interface{}{multipleE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxySimple:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		simpleE := p.service.Simple(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{simpleE}, callStats, r, w)
+			rets = []interface{}{simpleE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	default:
 		gotsrpc.ClearStats(r)
-		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
+		gotsrpc.ErrorFuncNotFound(w)
 	}
 }

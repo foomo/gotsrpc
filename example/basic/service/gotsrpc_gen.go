@@ -92,1045 +92,1402 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 
 // ServeHTTP exposes your service
 func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		if r.Method == http.MethodOptions {
-			return
-		}
+	if r.Method == http.MethodOptions {
+		return
+	} else if r.Method != http.MethodPost {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
 	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
-		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/v2/example/basic/service"
-		callStats.Service = "Service"
-	}
+	callStats, _ := gotsrpc.GetStatsForRequest(r)
+	callStats.Func = funcName
+	callStats.Package = "github.com/foomo/gotsrpc/v2/example/basic/service"
+	callStats.Service = "Service"
 	switch funcName {
 	case ServiceGoTSRPCProxyBool:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v bool
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		boolRet := p.service.Bool(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{boolRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{boolRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyBoolPtr:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v bool
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		boolPtrRet := p.service.BoolPtr(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{boolPtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{boolPtrRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyBoolSlice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []bool
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		boolSliceRet := p.service.BoolSlice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{boolSliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{boolSliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat32:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v float32
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float32Ret := p.service.Float32(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float32Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float32Ret}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat32Map:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[float32]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float32MapRet := p.service.Float32Map(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float32MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float32MapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat32Slice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []float32
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float32SliceRet := p.service.Float32Slice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float32SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float32SliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat32Type:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Float32Type
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float32TypeRet := p.service.Float32Type(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float32TypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float32TypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat32TypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[Float32TypeMapKey]Float32TypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float32TypeMapRet := p.service.Float32TypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float32TypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float32TypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat32TypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Float32TypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float32TypeMapTypedRet := p.service.Float32TypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float32TypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float32TypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat64:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v float64
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float64Ret := p.service.Float64(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float64Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float64Ret}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat64Map:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[float64]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float64MapRet := p.service.Float64Map(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float64MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float64MapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat64Slice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []float64
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float64SliceRet := p.service.Float64Slice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float64SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float64SliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat64Type:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Float64Type
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float64TypeRet := p.service.Float64Type(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float64TypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float64TypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat64TypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[Float64TypeMapKey]Float64TypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float64TypeMapRet := p.service.Float64TypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float64TypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float64TypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyFloat64TypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Float64TypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		float64TypeMapTypedRet := p.service.Float64TypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{float64TypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{float64TypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v int
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		intRet := p.service.Int(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{intRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{intRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt32:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v int32
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int32Ret := p.service.Int32(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int32Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int32Ret}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt32Map:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[int32]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int32MapRet := p.service.Int32Map(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int32MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int32MapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt32Slice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []int32
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int32SliceRet := p.service.Int32Slice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int32SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int32SliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt32Type:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Int32Type
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int32TypeRet := p.service.Int32Type(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int32TypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int32TypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt32TypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[Int32TypeMapKey]Int32TypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int32TypeMapRet := p.service.Int32TypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int32TypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int32TypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt32TypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Int32TypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int32TypeMapTypedRet := p.service.Int32TypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int32TypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int32TypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt64:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v int64
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int64Ret := p.service.Int64(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int64Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int64Ret}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt64Map:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[int64]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int64MapRet := p.service.Int64Map(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int64MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int64MapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt64Slice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []int64
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int64SliceRet := p.service.Int64Slice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int64SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int64SliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt64Type:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Int64Type
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int64TypeRet := p.service.Int64Type(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int64TypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int64TypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt64TypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[Int64TypeMapKey]Int64TypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int64TypeMapRet := p.service.Int64TypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int64TypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int64TypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInt64TypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Int64TypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		int64TypeMapTypedRet := p.service.Int64TypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{int64TypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{int64TypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyIntMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[int]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		intMapRet := p.service.IntMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{intMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{intMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyIntSlice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []int
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		intSliceRet := p.service.IntSlice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{intSliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{intSliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyIntType:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v IntType
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		intTypeRet := p.service.IntType(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{intTypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{intTypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyIntTypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[IntTypeMapKey]IntTypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		intTypeMapRet := p.service.IntTypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{intTypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{intTypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyIntTypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v IntTypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		intTypeMapTypedRet := p.service.IntTypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{intTypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{intTypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInterface:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		interfaceRet := p.service.Interface(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{interfaceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{interfaceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInterfaceSlice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		interfaceSliceRet := p.service.InterfaceSlice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{interfaceSliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{interfaceSliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyString:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v string
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		stringRet := p.service.String(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{stringRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{stringRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyStringMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[string]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		stringMapRet := p.service.StringMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{stringMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{stringMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyStringSlice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []string
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		stringSliceRet := p.service.StringSlice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{stringSliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{stringSliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyStringType:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v StringType
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		stringTypeRet := p.service.StringType(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{stringTypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{stringTypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyStringTypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[StringTypeMapKey]StringTypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		stringTypeMapRet := p.service.StringTypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{stringTypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{stringTypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyStringTypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v StringTypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		stringTypeMapTypedRet := p.service.StringTypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{stringTypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{stringTypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyStruct:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v Struct
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		structRet := p.service.Struct(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{structRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{structRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v uint
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uIntRet := p.service.UInt(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uIntRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uIntRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt32:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v uint32
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt32Ret := p.service.UInt32(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt32Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt32Ret}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt32Map:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[uint32]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt32MapRet := p.service.UInt32Map(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt32MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt32MapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt32Slice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []uint32
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt32SliceRet := p.service.UInt32Slice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt32SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt32SliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt32Type:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v UInt32Type
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt32TypeRet := p.service.UInt32Type(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt32TypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt32TypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt32TypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[UInt32TypeMapKey]UInt32TypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt32TypeMapRet := p.service.UInt32TypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt32TypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt32TypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt32TypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v UInt32TypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt32TypeMapTypedRet := p.service.UInt32TypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt32TypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt32TypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt64:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v uint64
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt64Ret := p.service.UInt64(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt64Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt64Ret}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt64Map:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[uint64]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt64MapRet := p.service.UInt64Map(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt64MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt64MapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt64Slice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []uint64
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt64SliceRet := p.service.UInt64Slice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt64SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt64SliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt64Type:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v UInt64Type
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt64TypeRet := p.service.UInt64Type(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt64TypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt64TypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt64TypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[UInt64TypeMapKey]UInt64TypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt64TypeMapRet := p.service.UInt64TypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt64TypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt64TypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUInt64TypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v UInt64TypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uInt64TypeMapTypedRet := p.service.UInt64TypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uInt64TypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uInt64TypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUIntMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[uint]interface{}
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uIntMapRet := p.service.UIntMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uIntMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uIntMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUIntSlice:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v []uint
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uIntSliceRet := p.service.UIntSlice(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uIntSliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uIntSliceRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUIntType:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v UIntType
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uIntTypeRet := p.service.UIntType(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uIntTypeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uIntTypeRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUIntTypeMap:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v map[UIntTypeMapKey]UIntTypeMapValue
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uIntTypeMapRet := p.service.UIntTypeMap(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uIntTypeMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uIntTypeMapRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUIntTypeMapTyped:
 		var (
+			args []interface{}
+			rets []interface{}
+		)
+		var (
 			arg_v UIntTypeMapTyped
 		)
-		args := []interface{}{&arg_v}
-		err := gotsrpc.LoadArgs(&args, callStats, r)
-		if err != nil {
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
 		executionStart := time.Now()
 		uIntTypeMapTypedRet := p.service.UIntTypeMapTyped(arg_v)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{uIntTypeMapTypedRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
 		}
-		gotsrpc.Reply([]interface{}{uIntTypeMapTypedRet}, callStats, r, w)
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	default:
 		gotsrpc.ClearStats(r)
-		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
+		gotsrpc.ErrorFuncNotFound(w)
 	}
 }

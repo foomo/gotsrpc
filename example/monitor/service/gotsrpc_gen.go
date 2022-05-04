@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	ServiceGoTSRPCProxyTime       = "Time"
-	ServiceGoTSRPCProxyTimeStruct = "TimeStruct"
+	ServiceGoTSRPCProxyHello = "Hello"
 )
 
 type ServiceGoTSRPCProxy struct {
@@ -45,16 +44,16 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
 	callStats.Func = funcName
-	callStats.Package = "github.com/foomo/gotsrpc/v2/example/time/service"
+	callStats.Package = "github.com/foomo/gotsrpc/v2/example/monitor/service"
 	callStats.Service = "Service"
 	switch funcName {
-	case ServiceGoTSRPCProxyTime:
+	case ServiceGoTSRPCProxyHello:
 		var (
 			args []interface{}
 			rets []interface{}
 		)
 		var (
-			arg_v time.Time
+			arg_v string
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -62,32 +61,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		executionStart := time.Now()
-		timeRet := p.service.Time(arg_v)
+		helloRet := p.service.Hello(arg_v)
 		callStats.Execution = time.Since(executionStart)
-		rets = []interface{}{timeRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
-			gotsrpc.ErrorCouldNotReply(w)
-			return
-		}
-		gotsrpc.Monitor(w, r, args, rets, callStats)
-		return
-	case ServiceGoTSRPCProxyTimeStruct:
-		var (
-			args []interface{}
-			rets []interface{}
-		)
-		var (
-			arg_v TimeStruct
-		)
-		args = []interface{}{&arg_v}
-		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
-			return
-		}
-		executionStart := time.Now()
-		timeStructRet := p.service.TimeStruct(arg_v)
-		callStats.Execution = time.Since(executionStart)
-		rets = []interface{}{timeStructRet}
+		rets = []interface{}{helloRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return

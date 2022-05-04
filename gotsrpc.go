@@ -31,6 +31,10 @@ func ErrorFuncNotFound(w http.ResponseWriter) {
 	http.Error(w, "method not found", http.StatusNotFound)
 }
 
+func ErrorCouldNotReply(w http.ResponseWriter) {
+	http.Error(w, "could not reply", http.StatusInternalServerError)
+}
+
 func ErrorCouldNotLoadArgs(w http.ResponseWriter) {
 	http.Error(w, "could not load args", http.StatusBadRequest)
 }
@@ -44,10 +48,11 @@ func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 
 	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
 	if errDecode := codec.NewDecoder(r.Body, handle).Decode(args); errDecode != nil {
+		_, _ = fmt.Fprintln(os.Stderr, errDecode.Error())
 		return errors.Wrap(errDecode, "could not decode arguments")
 	}
 	if callStats != nil {
-		callStats.Unmarshalling = time.Now().Sub(start)
+		callStats.Unmarshalling = time.Since(start)
 		callStats.RequestSize = int(r.ContentLength)
 	}
 	return nil
@@ -65,12 +70,12 @@ func RequestWithStatsContext(r *http.Request) *http.Request {
 	return r.WithContext(context.WithValue(r.Context(), contextStatsKey, stats))
 }
 
-func GetStatsForRequest(r *http.Request) *CallStats {
-	value := r.Context().Value(contextStatsKey)
-	if value == nil {
-		return nil
+func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
+	if value := r.Context().Value(contextStatsKey); value != nil {
+		return value.(*CallStats), true
+	} else {
+		return &CallStats{}, false
 	}
-	return value.(*CallStats)
 }
 
 func ClearStats(r *http.Request) {
@@ -78,7 +83,7 @@ func ClearStats(r *http.Request) {
 }
 
 // Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
-func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) {
+func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
 	writer := newResponseWriterWithLength(w)
 	serializationStart := time.Now()
 
@@ -89,21 +94,20 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	if clientHandle.beforeEncodeReply != nil {
 		if err := clientHandle.beforeEncodeReply(&response); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err.Error())
-			http.Error(w, "could not encode data to accepted format", http.StatusInternalServerError)
-			return
+			return errors.Wrap(err, "error during before encoder reply")
 		}
 	}
 
 	if err := codec.NewEncoder(writer, clientHandle.handle).Encode(response); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err.Error())
-		http.Error(w, "could not encode data to accepted format", http.StatusInternalServerError)
-		return
+		return errors.Wrap(err, "could not encode data to accepted format")
 	}
 
 	if stats != nil {
 		stats.ResponseSize = writer.length
 		stats.Marshalling = time.Since(serializationStart)
 	}
+	return nil
 }
 
 func parserExcludeFiles(info os.FileInfo) bool {

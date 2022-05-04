@@ -8,5 +8,5 @@ type CallStats struct {
 	Marshalling            time.Duration
 	Unmarshalling          time.Duration
 	RequestSize            int
-	ResponseSize            int
+	ResponseSize           int
 }

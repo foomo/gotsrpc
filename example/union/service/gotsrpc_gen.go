@@ -41,69 +41,94 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 
 // ServeHTTP exposes your service
 func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		if r.Method == http.MethodOptions {
-			return
-		}
+	if r.Method == http.MethodOptions {
+		return
+	} else if r.Method != http.MethodPost {
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
 	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
-		callStats.Func = funcName
-		callStats.Package = "github.com/foomo/gotsrpc/v2/example/union/service"
-		callStats.Service = "Service"
-	}
+	callStats, _ := gotsrpc.GetStatsForRequest(r)
+	callStats.Func = funcName
+	callStats.Package = "github.com/foomo/gotsrpc/v2/example/union/service"
+	callStats.Service = "Service"
 	switch funcName {
 	case ServiceGoTSRPCProxyInlineStruct:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructE := p.service.InlineStruct(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{inlineStructE}, callStats, r, w)
+			rets = []interface{}{inlineStructE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyInlineStructPtr:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructPtrE := p.service.InlineStructPtr(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{inlineStructPtrE}, callStats, r, w)
+			rets = []interface{}{inlineStructPtrE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUnionString:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStringE := p.service.UnionString(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{unionStringE}, callStats, r, w)
+			rets = []interface{}{unionStringE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	case ServiceGoTSRPCProxyUnionStruct:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStructE := p.service.UnionStruct(&rw, r)
-		if callStats != nil {
-			callStats.Execution = time.Now().Sub(executionStart)
-		}
+		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			gotsrpc.Reply([]interface{}{unionStructE}, callStats, r, w)
+			rets = []interface{}{unionStructE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
 	default:
 		gotsrpc.ClearStats(r)
-		http.Error(w, "404 - not found "+r.URL.Path, http.StatusNotFound)
+		gotsrpc.ErrorFuncNotFound(w)
 	}
 }

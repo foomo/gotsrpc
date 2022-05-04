@@ -1,0 +1,14 @@
+module:
+  name: github.com/foomo/gotsrpc/v2/example/monitor
+  path: ./
+
+targets:
+  monitor:
+    services:
+      /service: Service
+    package: github.com/foomo/gotsrpc/v2/example/monitor/service
+    out: ./client/src/service-client.ts
+    gorpc:
+      - Service
+    tsrpc:
+      - Service

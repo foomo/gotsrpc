@@ -6,8 +6,7 @@ func InstrumentedService(middleware http.HandlerFunc, handleStats GoRPCCallStats
 	return func(w http.ResponseWriter, r *http.Request) {
 		*r = *RequestWithStatsContext(r)
 		middleware(w, r)
-		stats := GetStatsForRequest(r)
-		if stats != nil {
+		if stats, ok := GetStatsForRequest(r); ok {
 			handleStats(stats)
 		}
 	}
