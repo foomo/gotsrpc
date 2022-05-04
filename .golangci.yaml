@@ -42,7 +42,6 @@ linters:
     - exportloopref
     - goconst
     - gocritic
-    - gocyclo
     - gofmt
     - goprintffuncname
     - gosec
