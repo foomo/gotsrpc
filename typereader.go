@@ -336,6 +336,9 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 					if jsonInfo == nil {
 						trace("i do not understand this one", field, names, value, jsonInfo)
 						continue
+					} else if jsonInfo.Ignore {
+						trace("ignoring this one", field, names, value, jsonInfo)
+						continue
 					} else if jsonInfo.Inline {
 						inlineFields = append(inlineFields, &Field{
 							Name:     name,
