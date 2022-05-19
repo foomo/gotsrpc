@@ -33,7 +33,7 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 		}
 		t += v.StructType.Name
 	case v.Map != nil:
-		t += `map[` + v.Map.KeyGoType + `]` + v.Map.Value.goType(aliases, packageName)
+		t += `map[` + v.Map.Key.goType(aliases, packageName) + `]` + v.Map.Value.goType(aliases, packageName)
 	case v.Scalar != nil:
 		if packageName != v.Scalar.Package && aliases[v.Scalar.Package] != "" {
 			t += aliases[v.Scalar.Package] + "."
@@ -166,23 +166,21 @@ func extractImport(packageName string, fullPackageName string, aliases map[strin
 
 func extractImports(fields []*Field, fullPackageName string, aliases map[string]string) {
 	for _, f := range fields {
-		if f.Value.StructType != nil {
-			extractImport(f.Value.StructType.Package, fullPackageName, aliases)
-		} else if f.Value.Array != nil && f.Value.Array.Value.StructType != nil {
-			extractImport(f.Value.Array.Value.StructType.Package, fullPackageName, aliases)
-		} else if f.Value.Map != nil && f.Value.Map.Value.StructType != nil {
-			extractImport(f.Value.Map.Value.StructType.Package, fullPackageName, aliases)
-		} else if f.Value.Map != nil && f.Value.Map.Key.StructType != nil {
-			extractImport(f.Value.Map.Key.StructType.Package, fullPackageName, aliases)
-		} else if f.Value.Array != nil && f.Value.Array.Value.Scalar != nil {
-			extractImport(f.Value.Array.Value.Scalar.Package, fullPackageName, aliases)
-		} else if f.Value.Map != nil && f.Value.Map.Value.Scalar != nil {
-			extractImport(f.Value.Map.Value.Scalar.Package, fullPackageName, aliases)
-		} else if f.Value.Map != nil && f.Value.Map.Key.Scalar != nil {
-			extractImport(f.Value.Map.Key.Scalar.Package, fullPackageName, aliases)
-		} else if f.Value.Scalar != nil {
-			extractImport(f.Value.Scalar.Package, fullPackageName, aliases)
-		}
+		extractImportValue(f.Value, fullPackageName, aliases)
+	}
+}
+
+func extractImportValue(value *Value, fullPackageName string, aliases map[string]string) {
+	switch {
+	case value.StructType != nil:
+		extractImport(value.StructType.Package, fullPackageName, aliases)
+	case value.Array != nil:
+		extractImportValue(value.Array.Value, fullPackageName, aliases)
+	case value.Map != nil:
+		extractImportValue(value.Map.Key, fullPackageName, aliases)
+		extractImportValue(value.Map.Value, fullPackageName, aliases)
+	case value.Scalar != nil:
+		extractImport(value.Scalar.Package, fullPackageName, aliases)
 	}
 }
 
