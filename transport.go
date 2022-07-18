@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"reflect"
 	"time"
-	"unsafe"
 
+	"github.com/mitchellh/mapstructure"
+	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
 )
 
@@ -53,22 +54,12 @@ var msgpackClientHandle = &clientHandle{
 		return ret, nil
 	},
 	afterDecodeReply: func(reply *[]interface{}, wrappedReply []interface{}) error {
-		ptr := func(v reflect.Value) reflect.Value {
-			pt := reflect.PtrTo(v.Type()) // create a *T type.
-			pv := reflect.New(pt.Elem())  // create a reflect.Value of type *T.
-			pv.Elem().Set(v)              // sets pv to point to underlying value of v.
-			return pv
-		}
-
 		for k, v := range wrappedReply {
 			if e, ok := v.(*Error); ok && e != nil {
 				if y, ok := (*reply)[k].(*error); ok {
 					*y = e
-				} else {
-					rv := reflect.ValueOf((*reply)[k]).Elem()
-					elem := reflect.NewAt(rv.Type().Elem(), unsafe.Pointer(rv.UnsafeAddr())).Elem()
-					elem.Set(reflect.ValueOf(e.Data).Convert(elem.Type()))
-					rv.Set(ptr(elem))
+				} else if err := mapstructure.Decode(e.Data, (*reply)[k]); err != nil {
+					return errors.Wrap(err, "failed to decode wrapped error")
 				}
 			}
 		}

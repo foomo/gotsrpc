@@ -75,6 +75,13 @@ func (h *Handler) MultiScalar(w http.ResponseWriter, r *http.Request) (e *backen
 	}
 }
 
+func (h *Handler) Struct(w http.ResponseWriter, r *http.Request) (e *backend.Struct) {
+	return &backend.Struct{
+		Message: "my custom scalar",
+		Data:    "hello world",
+	}
+}
+
 func (h *Handler) TypedError(w http.ResponseWriter, r *http.Request) (e error) {
 	return ErrTyped
 }

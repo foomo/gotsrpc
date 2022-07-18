@@ -1,5 +1,9 @@
 package main
 
+// func () error
+
+// func () error => func () *Error => decode => func() error
+
 import (
 	"context"
 	"fmt"
@@ -85,6 +89,18 @@ func call() {
 		} else if scalar == nil {
 			panic("service error should not be nil")
 		} else if scalar != nil {
+			fmt.Println("OK")
+		}
+	}
+
+	{
+		fmt.Println("-------------------------")
+		strct, err := c.Struct(ctx)
+		if err != nil {
+			panic("client error should be nil")
+		} else if strct == nil {
+			panic("service error should not be nil")
+		} else if strct != nil {
 			fmt.Println("OK")
 		}
 	}

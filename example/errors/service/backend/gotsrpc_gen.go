@@ -17,6 +17,7 @@ const (
 	ServiceGoTSRPCProxyMultiScalar       = "MultiScalar"
 	ServiceGoTSRPCProxyScalar            = "Scalar"
 	ServiceGoTSRPCProxyScalarError       = "ScalarError"
+	ServiceGoTSRPCProxyStruct            = "Struct"
 	ServiceGoTSRPCProxyTypedCustomError  = "TypedCustomError"
 	ServiceGoTSRPCProxyTypedError        = "TypedError"
 	ServiceGoTSRPCProxyTypedScalarError  = "TypedScalarError"
@@ -139,6 +140,24 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []interface{}{scalarErrorE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStruct:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
+		executionStart := time.Now()
+		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
+		structE := p.service.Struct(&rw, r)
+		callStats.Execution = time.Since(executionStart)
+		if rw.Status() == http.StatusOK {
+			rets = []interface{}{structE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return

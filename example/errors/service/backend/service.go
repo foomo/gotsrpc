@@ -12,6 +12,23 @@ const (
 
 type Scalar string
 
+func (s Scalar) String() string {
+	return string(s)
+}
+
+func (s *Scalar) Error() string {
+	return s.String()
+}
+
+type Struct struct {
+	Message string `json:"message"`
+	Data    string `json:"data"`
+}
+
+func (s *Struct) Error() string {
+	return s.Message
+}
+
 type (
 	ScalarA     string
 	ScalarB     string
@@ -36,6 +53,7 @@ type Service interface {
 	Error(w http.ResponseWriter, r *http.Request) (e error)
 	Scalar(w http.ResponseWriter, r *http.Request) (e *Scalar)
 	MultiScalar(w http.ResponseWriter, r *http.Request) (e *MultiScalar)
+	Struct(w http.ResponseWriter, r *http.Request) (e *Struct)
 	TypedError(w http.ResponseWriter, r *http.Request) (e error)
 	ScalarError(w http.ResponseWriter, r *http.Request) (e error)
 	CustomError(w http.ResponseWriter, r *http.Request) (e error)
