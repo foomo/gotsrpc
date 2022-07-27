@@ -51,22 +51,30 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[strin
 				return
 			}
 
-			hiddenStruct, okHiddenStruct := structs[scalarName]
-			if okHiddenStruct && hiddenStruct.Array != nil {
-				if hiddenStruct.Array.Value.StructType != nil {
-					hiddenMapping, hiddenMappingOK := mappings[hiddenStruct.Array.Value.StructType.Package]
+			if hiddenStruct, ok := structs[scalarName]; ok && hiddenStruct.Array != nil {
+				switch {
+				case hiddenStruct.Array.Value.StructType != nil:
 					var tsModule string
-					if hiddenMappingOK {
+					if hiddenMapping, ok := mappings[hiddenStruct.Array.Value.StructType.Package]; ok {
 						tsModule = hiddenMapping.TypeScriptModule
 					}
 					ts.app(tsModule + "." + hiddenStruct.Array.Value.StructType.Name + "[]")
 					return
-				}
-				if hiddenStruct.Array.Value.StructType == nil {
+
+				case hiddenStruct.Array.Value.Scalar != nil:
+					var tsModule string
+					if hiddenMapping, ok := mappings[hiddenStruct.Array.Value.Scalar.Package]; ok {
+						tsModule = hiddenMapping.TypeScriptModule
+					}
+					ts.app(tsModule + "." + hiddenStruct.Name)
+					return
+
+				case hiddenStruct.Array.Value.StructType == nil:
 					if hiddenStruct.Array.Value.GoScalarType == "byte" { // this fixes types like primitive.ID [12]byte
 						ts.app(tsTypeFromScalarType(hiddenStruct.Array.Value.ScalarType))
 					}
 					return
+
 				}
 			}
 
@@ -115,7 +123,12 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 
 func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, structs map[string]*Struct, ts *code) error {
 	if str.Array != nil {
-		// skipping array type
+
+		if str.Array.Value != nil && str.Array.Value.Scalar != nil && str.Array.Value.Scalar.Type != "" {
+			ts.l("// " + str.FullName())
+			ts.l("export type " + str.Name + " = " + str.Array.Value.Scalar.Name + "[]")
+			ts.l("export type " + str.Array.Value.Scalar.Name + " = " + string(str.Array.Value.Scalar.Type))
+		}
 		return nil
 	}
 	ts.l("// " + str.FullName())
