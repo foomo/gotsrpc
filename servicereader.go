@@ -110,7 +110,7 @@ func getFileImports(file *ast.File, packageName string) (imports fileImportSpecM
 							name:  standardImportName(importPath),
 							path:  importPath,
 						}
-						//trace("  import   >>>>>>>>>>>>>>>>>>>>", importName, importPath)
+						// trace("  import   >>>>>>>>>>>>>>>>>>>>", importName, importPath)
 					}
 				}
 			}
@@ -135,7 +135,6 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	}
 	trace("done reading fields")
 	return
-
 }
 
 func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services ServiceList, err error) {
@@ -193,7 +192,6 @@ func loadConstants(pkg *ast.Package) map[string]*ast.BasicLit {
 		}
 	}
 	return constants
-
 }
 
 func Read(
@@ -278,7 +276,6 @@ func Read(
 
 func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[string]*Scalar) {
 	for _, f := range fields {
-
 		if f.Value.StructType != nil {
 			// do we have that struct or is it a hidden scalar
 			name := f.Value.StructType.FullName()
@@ -320,7 +317,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 			fullNameParts := strings.Split(fullName, ".")
 			fullNameParts = fullNameParts[:len(fullNameParts)-1]
 
-			//path := fullNameParts[:len(fullNameParts)-1][0]
+			// path := fullNameParts[:len(fullNameParts)-1][0]
 
 			packageName := strings.Join(fullNameParts, ".")
 
@@ -377,7 +374,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 		}
 		newNumMissingTypes := len(missingTypeNames())
 		if newNumMissingTypes > 0 && newNumMissingTypes == lastNumMissing {
-			//packageStructs, structOK := scannedPackageStructs[packageName]
+			// packageStructs, structOK := scannedPackageStructs[packageName]
 			for scalarName, scalars := range scannedPackageScalars {
 				fmt.Println("scanned scalars ", scalarName)
 				for _, scalar := range scalars {
@@ -488,16 +485,17 @@ func getTypesInPackage(
 	if err != nil {
 		return nil, nil, err
 	}
+
 	return structs, scalars, nil
 }
 
 func getStructTypeForField(value *Value) *StructType {
-	//field.Value.StructType
+	// field.Value.StructType
 	var strType *StructType
 	switch true {
 	case value.StructType != nil:
 		strType = value.StructType
-		//case field.Value.ArrayType
+		// case field.Value.ArrayType
 	case value.Map != nil:
 		strType = getStructTypeForField(value.Map.Value)
 	case value.Array != nil:
@@ -507,12 +505,12 @@ func getStructTypeForField(value *Value) *StructType {
 }
 
 func getScalarForField(value *Value) *Scalar {
-	//field.Value.StructType
+	// field.Value.StructType
 	var scalarType *Scalar
 	switch true {
 	case value.Scalar != nil:
 		scalarType = value.Scalar
-		//case field.Value.ArrayType
+		// case field.Value.ArrayType
 	case value.Map != nil:
 		scalarType = getScalarForField(value.Map.Value)
 	case value.Array != nil:
@@ -552,5 +550,3 @@ func collectStructTypes(fields []*Field, structTypes map[string]bool) {
 		}
 	}
 }
-
-//func collectStructs(goPath, structs)

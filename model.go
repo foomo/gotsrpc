@@ -4,6 +4,7 @@ type ScalarType string
 
 const (
 	ScalarTypeString ScalarType = "string"
+	ScalarTypeAny    ScalarType = "any"
 	ScalarTypeByte   ScalarType = "byte"
 	ScalarTypeNumber ScalarType = "number"
 	ScalarTypeBool   ScalarType = "bool"
