@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"go/format"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -20,7 +19,7 @@ import (
 func deriveCommonJSMapping(conf *config.Config) {
 	replacer := strings.NewReplacer(".", "_", "/", "_", "-", "_")
 	for _, mapping := range conf.Mappings {
-		mapping.TypeScriptModule = replacer.Replace(mapping.GoPackage) //strings.Replace(strings.Replace(mapping.GoPackage, ".", "_", -1), "/", "_", -1)
+		mapping.TypeScriptModule = replacer.Replace(mapping.GoPackage)
 	}
 }
 
@@ -59,8 +58,7 @@ func getPathForTarget(gomod config.Namespace, goPath string, target *config.Targ
 	}
 }
 
-func Build(conf *config.Config, goPath string) {
-
+func Build(conf *config.Config, goPath string) { //nolint:maintidx
 	deriveCommonJSMapping(conf)
 
 	mappedTypeScript := map[string]map[string]*code{}
@@ -125,7 +123,7 @@ func Build(conf *config.Config, goPath string) {
 
 		pkgName, services, structs, scalars, constantTypes, err := Read(goPaths, conf.Module, packageName, target.Services, missingTypes, missingConstants)
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "\t an error occured while trying to understand your code: ", err)
+			_, _ = fmt.Fprintln(os.Stderr, "\t an error occurred while trying to understand your code: ", err)
 			os.Exit(2)
 		}
 
@@ -179,7 +177,7 @@ func Build(conf *config.Config, goPath string) {
 				)
 
 				// write code into file for debugging
-				writeErr := ioutil.WriteFile(filename, []byte(code), 0644)
+				writeErr := os.WriteFile(filename, []byte(code), 0644)
 				if writeErr != nil {
 					_, _ = fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
 					os.Exit(5)
@@ -189,7 +187,7 @@ func Build(conf *config.Config, goPath string) {
 				os.Exit(5)
 			}
 
-			writeErr := ioutil.WriteFile(filename, codeBytes, 0644)
+			writeErr := os.WriteFile(filename, codeBytes, 0644)
 			if writeErr != nil {
 				_, _ = fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
 				os.Exit(5)
@@ -238,9 +236,7 @@ func Build(conf *config.Config, goPath string) {
 
 		_, _ = fmt.Fprintln(os.Stderr, "building structs for go package", goPackage, "to ts module", mapping.TypeScriptModule, "in file", mapping.Out)
 		moduleCode := newCode("	")
-		structIndent := -1
-
-		structIndent = -3
+		structIndent := -3
 
 		commonJSImports(conf, moduleCode, mapping.Out)
 
@@ -251,7 +247,6 @@ func Build(conf *config.Config, goPath string) {
 		}
 		sort.Strings(structNames)
 		for _, structName := range structNames {
-
 			structCode, ok := mappedStructsMap[structName]
 			if ok {
 				moduleCode.app(structCode.ind(structIndent).l("").string())
@@ -264,7 +259,6 @@ func Build(conf *config.Config, goPath string) {
 			_, _ = fmt.Fprintln(os.Stderr, "	failed to update code in", mapping.Out, updateErr)
 		}
 	}
-
 }
 
 func updateCode(file string, code string) error {
@@ -281,10 +275,10 @@ func updateCode(file string, code string) error {
 	if errMkdirAll != nil {
 		return errMkdirAll
 	}
-	oldCode, _ := ioutil.ReadFile(file)
+	oldCode, _ := os.ReadFile(file)
 	if string(oldCode) != code {
 		fmt.Println("	writing file", file)
-		return ioutil.WriteFile(file, []byte(code), 0644)
+		return os.WriteFile(file, []byte(code), 0644)
 	}
 	fmt.Println("	update file not necessary - unchanged", file)
 	return nil

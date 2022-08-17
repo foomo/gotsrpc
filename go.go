@@ -22,7 +22,7 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 	if v.IsPtr {
 		t = "*"
 	}
-	switch true {
+	switch {
 	case v.Array != nil:
 		t += "[]" + v.Array.Value.goType(aliases, packageName)
 	case len(v.GoScalarType) > 0:
@@ -49,80 +49,6 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 	return
 }
 
-func (v *Value) emptyLiteral(aliases map[string]string) (e string) {
-	e = ""
-	if v.IsPtr {
-		e += "&"
-	}
-	switch true {
-	case v.Map != nil:
-		e += "map[" + v.Map.KeyGoType + "]" + v.Map.Value.emptyLiteral(aliases)
-	case len(v.GoScalarType) > 0:
-		switch v.GoScalarType {
-		case "string":
-			e += "\"\""
-		case "float":
-			return "float(0.0)"
-		case "float32":
-			return "float32(0.0)"
-		case "float64":
-			return "float64(0.0)"
-		case "int":
-			return "int(0)"
-		case "int8":
-			return "int8(0)"
-		case "int16":
-			return "int16(0)"
-		case "int32":
-			return "int32(0)"
-		case "int64":
-			return "int64(0)"
-		case "uint":
-			return "uint(0)"
-		case "uint8":
-			return "uint8(0)"
-		case "uint16":
-			return "uint16(0)"
-		case "uint32":
-			return "uint32(0)"
-		case "uint64":
-			return "uint64(0)"
-		case "bool":
-			return "false"
-		}
-	case v.Array != nil:
-		e += "[]"
-		if v.Array.Value.IsPtr {
-			e += "*"
-		}
-		l := v.Array.Value.emptyLiteral(aliases)
-		if len(v.Array.Value.GoScalarType) == 0 {
-			if v.Array.Value.IsPtr {
-				l = strings.TrimPrefix(l, "&")
-			}
-			l = strings.TrimSuffix(l, "{}")
-		} else {
-			l = v.Array.Value.GoScalarType
-		}
-		e += l + "{}"
-	case v.StructType != nil:
-		alias := aliases[v.StructType.Package]
-		if alias != "" {
-			e += alias + "."
-		}
-		e += v.StructType.Name + "{}"
-	case v.Scalar != nil:
-		alias := aliases[v.Scalar.Package]
-		if alias != "" {
-			e += alias + "."
-		}
-		e += v.Scalar.Name + "{}"
-	case v.IsInterface:
-		e += "interface{}{}"
-	}
-	return
-}
-
 func lcfirst(str string) string {
 	return strfirst(str, strings.ToLower)
 }
@@ -139,7 +65,6 @@ func strfirst(str string, strfunc func(string) string) string {
 		} else {
 			res += string(char)
 		}
-
 	}
 	return res
 }
@@ -147,12 +72,11 @@ func strfirst(str string, strfunc func(string) string) string {
 func extractImport(packageName string, fullPackageName string, aliases map[string]string) {
 	r := strings.NewReplacer(".", "_", "/", "_", "-", "_")
 	if packageName != fullPackageName {
-		alias, ok := aliases[packageName]
-		if !ok {
+		if _, ok := aliases[packageName]; !ok {
 			packageParts := strings.Split(packageName, "/")
 			beautifulAlias := packageParts[len(packageParts)-1]
 			uglyAlias := r.Replace(packageName)
-			alias = uglyAlias //beautifulAlias
+			alias := uglyAlias // beautifulAlias
 			for _, otherAlias := range aliases {
 				if otherAlias == beautifulAlias {
 					alias = uglyAlias
@@ -189,7 +113,6 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		"time":                        "time",
 		"net/http":                    "http",
 		"io":                          "io",
-		"io/ioutil":                   "ioutil",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 	}
 	for _, service := range services {
@@ -256,7 +179,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return
 	        }
-			defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body 
+			defer io.Copy(io.Discard, r.Body) // Drain Request Body 
 		`)
 
 		g.l("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
@@ -435,7 +358,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 		interfaceName := service.Name + "GoTSRPCClient"
 		clientName := "HTTP" + interfaceName
 
-		//Render Interface
+		// Render Interface
 		g.l(`type ` + interfaceName + ` interface { `)
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)
@@ -444,7 +367,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 
 		g.l(`} `)
 
-		//Render Constructors
+		// Render Constructors
 		g.l(`
         type ` + clientName + ` struct {
 					URL string
@@ -634,7 +557,7 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			g.l(`response = ` + service.Name + method.Name + `Response{` + strings.Join(retParams, ", ") + `}`)
 		}
 		g.l(`default:`)
-		g.l(`fmt.Println("Unkown request type", reflect.TypeOf(request).String())`)
+		g.l(`fmt.Println("Unknown request type", reflect.TypeOf(request).String())`)
 		g.l(`}`)
 		g.nl()
 		g.l(`if p.callStatsHandler != nil {`)

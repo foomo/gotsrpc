@@ -3,12 +3,13 @@ package prometheus
 import (
 	"net/http"
 
-	"github.com/foomo/gotsrpc/v2"
 	p "github.com/prometheus/client_golang/prometheus"
+
+	"github.com/foomo/gotsrpc/v2"
 )
 
 func InstrumentService(s http.HandlerFunc) (handler http.HandlerFunc) {
-	requestDuration := p.NewSummaryVec(p.SummaryOpts{
+	requestDuration := p.NewSummaryVec(p.SummaryOpts{ //nolint:promlinter
 		Namespace:  "gotsrpc",
 		Subsystem:  "service",
 		Name:       "time_nanoseconds",

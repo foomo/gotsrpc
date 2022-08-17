@@ -14,8 +14,8 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 	ts.l("export class " + clientName + " {")
 
 	ts.ind(1)
-	//ts.l(`static defaultInst = new ` + clientName + `()`)
-	//ts.l(`constructor(public endpoint = "` + service.Endpoint + `") {}`)
+	// ts.l(`static defaultInst = new ` + clientName + `()`)
+	// ts.l(`constructor(public endpoint = "` + service.Endpoint + `") {}`)
 	ts.l(`public static defaultEndpoint = "` + service.Endpoint + `";`)
 	ts.l("constructor(")
 	ts.ind(1)

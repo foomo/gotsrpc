@@ -19,8 +19,8 @@ func usage() {
 	fmt.Println(os.Args[0], " path/to/build-config.yml")
 	flag.PrintDefaults()
 }
-func main() {
 
+func main() {
 	flagDebug := flag.Bool("debug", false, "debug")
 
 	flag.Parse()

@@ -4,7 +4,6 @@ package service
 
 import (
 	io "io"
-	ioutil "io/ioutil"
 	http "net/http"
 	time "time"
 
@@ -47,7 +46,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
-	defer io.Copy(ioutil.Discard, r.Body) // Drain Request Body
+	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)

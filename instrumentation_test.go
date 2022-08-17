@@ -10,12 +10,11 @@ import (
 
 func TestInstrumentedService(t *testing.T) {
 	middleware := func(w http.ResponseWriter, r *http.Request) {
-		if s := GetStatsForRequest(r); s != nil {
+		if s, ok := GetStatsForRequest(r); ok && s != nil {
 			s.Func = "func"
 			s.Package = "package"
 			s.Service = "service"
 		}
-		return
 	}
 
 	t.Run("stats", func(t *testing.T) {
@@ -29,7 +28,7 @@ func TestInstrumentedService(t *testing.T) {
 		})
 
 		rsp := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/test", nil)
+		req := httptest.NewRequest(http.MethodGet, "/test", nil)
 
 		handler(rsp, req)
 

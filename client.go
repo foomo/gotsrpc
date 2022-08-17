@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -31,7 +31,7 @@ func NewClient() Client {
 	return &bufferedClient{client: defaultHttpFactory(), handle: getHandleForEncoding(EncodingMsgpack), headers: nil}
 }
 
-func NewClientWithHttpClient(client *http.Client) Client {
+func NewClientWithHttpClient(client *http.Client) Client { //nolint:stylecheck
 	if client != nil {
 		return &bufferedClient{client: client, handle: getHandleForEncoding(EncodingMsgpack), headers: nil}
 	} else {
@@ -43,7 +43,7 @@ func newRequest(ctx context.Context, url string, contentType string, buffer *byt
 	if buffer == nil {
 		buffer = &bytes.Buffer{}
 	}
-	request, errRequest := http.NewRequestWithContext(ctx, "POST", url, buffer)
+	request, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, url, buffer)
 	if errRequest != nil {
 		return nil, errors.Wrap(errRequest, "could not create a request")
 	}
@@ -71,7 +71,7 @@ func (c *bufferedClient) SetClientEncoding(encoding ClientEncoding) {
 	c.handle = getHandleForEncoding(encoding)
 }
 
-func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
+func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:stylecheck
 	c.client = client
 }
 
@@ -105,7 +105,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	// Check status
 	if resp.StatusCode != http.StatusOK {
 		var msg string
-		if value, err := ioutil.ReadAll(resp.Body); err != nil {
+		if value, err := io.ReadAll(resp.Body); err != nil {
 			msg = "failed to read response body: " + err.Error()
 		} else {
 			msg = string(value)

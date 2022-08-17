@@ -1,9 +1,10 @@
 package gotsrpc
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSetDefaultHttpClientFactory(t *testing.T) {

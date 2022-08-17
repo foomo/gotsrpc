@@ -174,7 +174,7 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		r1, r2, r3, r4 := p.service.VariantH(nil, nil, req.I1, req.I2, req.I3, req.I4)
 		response = ServiceVariantHResponse{R1: r1, R2: r2, R3: r3, R4: r4}
 	default:
-		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
+		fmt.Println("Unknown request type", reflect.TypeOf(request).String())
 	}
 
 	if p.callStatsHandler != nil {

@@ -77,7 +77,7 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		retHello_0 := p.service.Hello(req.V)
 		response = ServiceHelloResponse{RetHello_0: retHello_0}
 	default:
-		fmt.Println("Unkown request type", reflect.TypeOf(request).String())
+		fmt.Println("Unknown request type", reflect.TypeOf(request).String())
 	}
 
 	if p.callStatsHandler != nil {
