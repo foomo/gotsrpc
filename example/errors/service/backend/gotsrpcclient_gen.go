@@ -14,9 +14,9 @@ type ServiceGoTSRPCClient interface {
 	CustomError(ctx go_context.Context) (e error, clientErr error)
 	Error(ctx go_context.Context) (e error, clientErr error)
 	MultiScalar(ctx go_context.Context) (e *MultiScalar, clientErr error)
-	Scalar(ctx go_context.Context) (e *Scalar, clientErr error)
+	Scalar(ctx go_context.Context) (e *ScalarError, clientErr error)
 	ScalarError(ctx go_context.Context) (e error, clientErr error)
-	Struct(ctx go_context.Context) (e *Struct, clientErr error)
+	Struct(ctx go_context.Context) (e *StructError, clientErr error)
 	TypedCustomError(ctx go_context.Context) (e error, clientErr error)
 	TypedError(ctx go_context.Context) (e error, clientErr error)
 	TypedScalarError(ctx go_context.Context) (e error, clientErr error)
@@ -75,7 +75,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MultiScalar(ctx go_context.Context) (e *Mul
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) Scalar(ctx go_context.Context) (e *Scalar, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) Scalar(ctx go_context.Context) (e *ScalarError, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&e}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Scalar", args, reply)
@@ -95,7 +95,7 @@ func (tsc *HTTPServiceGoTSRPCClient) ScalarError(ctx go_context.Context) (e erro
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) Struct(ctx go_context.Context) (e *Struct, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) Struct(ctx go_context.Context) (e *StructError, clientErr error) {
 	args := []interface{}{}
 	reply := []interface{}{&e}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Struct", args, reply)
