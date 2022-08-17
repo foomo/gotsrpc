@@ -66,7 +66,6 @@ func TestLoadConfig(t *testing.T) {
 	if demoTarget.Services["/service/demo"] != "Service" {
 		t.Fatal("first service is wrong")
 	}
-
 }
 
 func TestLoadConfigFile_GomodAbsolute(t *testing.T) {

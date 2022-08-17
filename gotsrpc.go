@@ -21,7 +21,9 @@ import (
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-const contextStatsKey = "gotsrpcStats"
+type contextKey string
+
+const contextStatsKey contextKey = "gotsrpcStats"
 
 func GetCalledFunc(r *http.Request, endPoint string) string {
 	return strings.TrimPrefix(r.URL.Path, endPoint+"/")
@@ -71,8 +73,8 @@ func RequestWithStatsContext(r *http.Request) *http.Request {
 }
 
 func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
-	if value := r.Context().Value(contextStatsKey); value != nil {
-		return value.(*CallStats), true
+	if value, ok := r.Context().Value(contextStatsKey).(*CallStats); ok && value != nil {
+		return value, true
 	} else {
 		return &CallStats{}, false
 	}
@@ -197,9 +199,7 @@ func parsePackage(goPaths []string, gomod config.Namespace, packageName string) 
 	}
 	var foundPackages []string
 	sortedGoPaths := make([]string, len(goPaths))
-	for iGoPath := range goPaths {
-		sortedGoPaths[iGoPath] = goPaths[iGoPath]
-	}
+	copy(sortedGoPaths, goPaths)
 	sort.Sort(byLen(sortedGoPaths))
 
 	var parsedPkg *ast.Package

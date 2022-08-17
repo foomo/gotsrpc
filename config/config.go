@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -65,7 +64,7 @@ type Config struct {
 }
 
 func LoadConfigFile(file string) (conf *Config, err error) {
-	yamlBytes, readErr := ioutil.ReadFile(file)
+	yamlBytes, readErr := os.ReadFile(file)
 	if readErr != nil {
 		return nil, errors.New("could not read config file: " + readErr.Error())
 	}
@@ -81,7 +80,7 @@ func LoadConfigFile(file string) (conf *Config, err error) {
 		}
 		conf.Module.Path = absPath
 
-		if data, err := ioutil.ReadFile(path.Join(absPath, "go.mod")); err != nil && !os.IsNotExist(err) {
+		if data, err := os.ReadFile(path.Join(absPath, "go.mod")); err != nil && !os.IsNotExist(err) {
 			return nil, err
 		} else if err == nil {
 			modFile, err := modfile.Parse(path.Join(absPath, "go.mod"), data, nil)

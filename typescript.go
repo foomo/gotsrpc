@@ -102,11 +102,10 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 	default:
 		ts.app("any")
 	}
-	return
 }
 
 func tsTypeFromScalarType(scalarType ScalarType) string {
-	switch scalarType {
+	switch scalarType { //nolint:exhaustive
 	case ScalarTypeByte:
 		return "string"
 	case ScalarTypeBool:
@@ -267,7 +266,6 @@ func renderTypescriptStructsToPackages(
 						packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValuesList[k].Value + ",")
 					}
 					packageCodeMap[packageConstantTypeName].ind(-1).l("}")
-
 				} else if packageConstantTypeValuesString, ok := packageConstantTypeValues.(string); ok {
 					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + packageConstantTypeValuesString)
 				}
@@ -279,7 +277,6 @@ func renderTypescriptStructsToPackages(
 		if !ok {
 			mappedTypeScript[goPackage] = map[string]*code{}
 		}
-		return
 	}
 	for _, mapping := range mappings {
 		for structName, structCode := range codeMap[mapping.GoPackage] {
@@ -296,9 +293,7 @@ func split(str string, seps []string) []string {
 	for _, sep := range seps {
 		var nextStrs []string
 		for _, str := range strs {
-			for _, part := range strings.Split(str, sep) {
-				nextStrs = append(nextStrs, part)
-			}
+			nextStrs = append(nextStrs, strings.Split(str, sep)...)
 		}
 		strs = nextStrs
 		res = nextStrs

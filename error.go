@@ -21,12 +21,12 @@ type Error struct {
 // NewError returns a new instance
 func NewError(err error) *Error {
 	// check if already transformed
-	if v, ok := err.(*Error); ok {
+	if v, ok := err.(*Error); ok { //nolint:errorlint
 		return v
 	}
 
 	// skip *withStack error type
-	if _, ok := err.(interface {
+	if _, ok := err.(interface { //nolint:errorlint
 		StackTrace() errors.StackTrace
 	}); ok && errors.Unwrap(err) != nil {
 		err = errors.Unwrap(err)
@@ -87,7 +87,7 @@ func (e *Error) Format(s fmt.State, verb rune) {
 		}
 		fallthrough
 	case 's', 'q':
-		io.WriteString(s, e.Error())
+		_, _ = io.WriteString(s, e.Error())
 	}
 }
 

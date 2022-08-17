@@ -14,7 +14,7 @@ type ClientEncoding int
 
 const (
 	EncodingMsgpack = ClientEncoding(0)
-	EncodingJson    = ClientEncoding(1)
+	EncodingJson    = ClientEncoding(1) //nolint:stylecheck
 )
 
 var errorType = reflect.TypeOf((*error)(nil)).Elem()
@@ -102,11 +102,17 @@ func NewMSGPackDecoderBytes(b []byte) *codec.Decoder {
 }
 
 func SetJSONExt(rt interface{}, tag uint64, ext codec.InterfaceExt) error {
-	return jsonClientHandle.handle.(*codec.JsonHandle).SetInterfaceExt(reflect.TypeOf(rt), tag, ext)
+	if value, ok := jsonClientHandle.handle.(*codec.JsonHandle); ok {
+		return value.SetInterfaceExt(reflect.TypeOf(rt), tag, ext)
+	}
+	return errors.New("invalid handle type")
 }
 
 func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
-	return msgpackClientHandle.handle.(*codec.MsgpackHandle).SetBytesExt(reflect.TypeOf(rt), tag, ext)
+	if value, ok := msgpackClientHandle.handle.(*codec.MsgpackHandle); ok {
+		return value.SetBytesExt(reflect.TypeOf(rt), tag, ext)
+	}
+	return errors.New("invalid handle type")
 }
 
 func getHandleForEncoding(encoding ClientEncoding) *clientHandle {

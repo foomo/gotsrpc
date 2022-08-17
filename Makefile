@@ -55,11 +55,21 @@ $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 ## Run go mod tidy recursive
 .PHONY: lint
 lint:
-	# @golangci-lint run
+	@golangci-lint run
 	@for name in example/*/; do\
 		if [ $$name != "example/node_modules/" ]; then \
 			echo "-------- $${name} ------------";\
 			sh -c "cd $$(pwd)/$${name} && golangci-lint run";\
+		fi \
+  done
+
+.PHONY: lint.fix
+lint.fix:
+	@golangci-lint run --fix
+	@for name in example/*/; do\
+		if [ $$name != "example/node_modules/" ]; then \
+			echo "-------- $${name} ------------";\
+			sh -c "cd $$(pwd)/$${name} && golangci-lint run --fix";\
 		fi \
   done
 

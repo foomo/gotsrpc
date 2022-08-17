@@ -136,9 +136,10 @@ func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 		return ScalarTypeNumber
 	default:
 		if ident.Obj != nil && ident.Obj.Decl != nil && reflect.ValueOf(ident.Obj.Decl).Type().String() == "*ast.TypeSpec" {
-			typeSpec := ident.Obj.Decl.(*ast.TypeSpec)
-			if reflect.ValueOf(typeSpec.Type).Type().String() == "*ast.Ident" {
-				return ScalarType(ident.Name) //getScalarFromAstIdent(typeSpec.Type.(*ast.Ident))
+			if typeSpec, ok := ident.Obj.Decl.(*ast.TypeSpec); ok {
+				if reflect.ValueOf(typeSpec.Type).Type().String() == "*ast.Ident" {
+					return ScalarType(ident.Name) // getScalarFromAstIdent(typeSpec.Type.(*ast.Ident))
+				}
 			}
 		} else if ident.Obj == nil {
 			return ScalarType(ident.Name)
@@ -149,7 +150,7 @@ func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 
 func getTypesFromAstType(ident *ast.Ident) (structType string, scalarType ScalarType) {
 	scalarType = getScalarFromAstIdent(ident)
-	switch scalarType {
+	switch scalarType { //nolint:gocritic,exhaustive
 	case ScalarTypeNone:
 		structType = ident.Name
 	}
@@ -182,8 +183,7 @@ func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpe
 	v.IsPtr = true
 	switch starExprType := starExpr.X.(type) {
 	case *ast.Ident:
-		ident := starExpr.X.(*ast.Ident)
-		readAstType(v, ident, fileImports, "")
+		readAstType(v, starExprType, fileImports, "")
 	case *ast.StructType:
 		// nested anonymous
 		readAstStructType(v, starExprType, fileImports)
@@ -212,21 +212,21 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 		// todo: implement support for "*ast.Scalar" type (sca)
 		// this is important for scalar types in map keys
 		// Example:
-		//(*ast.MapType)(0xc420e2cc90)({
-		//Map: (token.Pos) 276258,
-		//		Key: (*ast.SelectorExpr)(0xc420301900)({
-		//	X: (*ast.Ident)(0xc4203018c0)(constants),
-		//		Sel: (*ast.Ident)(0xc4203018e0)(Site)
-		//	}),
-		//Value: (*ast.ArrayType)(0xc420e2cc60)({
-		//	Lbrack: (token.Pos) 276277,
-		//			Len: (ast.Expr) <nil>,
-		//			Elt: (*ast.SelectorExpr)(0xc420301960)({
-		//		X: (*ast.Ident)(0xc420301920)(elastic),
-		//			Sel: (*ast.Ident)(0xc420301940)(CategoryDocument)
-		//		})
-		//	})
-		//})
+		// (*ast.MapType)(0xc420e2cc90)({
+		// Map: (token.Pos) 276258,
+		// 		Key: (*ast.SelectorExpr)(0xc420301900)({
+		// 	X: (*ast.Ident)(0xc4203018c0)(constants),
+		// 		Sel: (*ast.Ident)(0xc4203018e0)(Site)
+		// 	}),
+		// Value: (*ast.ArrayType)(0xc420e2cc60)({
+		// 	Lbrack: (token.Pos) 276277,
+		// 			Len: (ast.Expr) <nil>,
+		// 			Elt: (*ast.SelectorExpr)(0xc420301960)({
+		// 		X: (*ast.Ident)(0xc420301920)(elastic),
+		// 			Sel: (*ast.Ident)(0xc420301940)(CategoryDocument)
+		// 		})
+		// 	})
+		// })
 	}
 	// value
 	m.Value.loadExpr(mapType.Value, fileImports)
@@ -236,16 +236,16 @@ func readAstSelectorExpr(v *Value, selectorExpr *ast.SelectorExpr, fileImports f
 	switch selExpType := selectorExpr.X.(type) {
 	case *ast.Ident:
 		// that could be the package name
-		//selectorIdent := selectorExpr.X.(*ast.Ident)
+		// selectorIdent := selectorExpr.X.(*ast.Ident)
 		// fmt.Println(selectorExpr, selectorExpr.X.(*ast.Ident))
-		//readAstType(v, selectorExpr.X.(*ast.Ident), fileImports)
+		// readAstType(v, selectorExpr.X.(*ast.Ident), fileImports)
 		readAstType(v, selectorExpr.Sel, fileImports, selExpType.Name)
 		if v.StructType != nil {
 			v.StructType.Package = fileImports.getPackagePath(v.StructType.Name)
 			v.StructType.Name = selectorExpr.Sel.Name
 		}
-		//fmt.Println(selectorExpr.X.(*ast.Ident).Name, ".", selectorExpr.Sel)
-		//readAstType(v, selectorExpr.Sel, fileImports)
+		// fmt.Println(selectorExpr.X.(*ast.Ident).Name, ".", selectorExpr.Sel)
+		// readAstType(v, selectorExpr.Sel, fileImports)
 	default:
 		trace("selectorExpr.Sel !?", selectorExpr.X, reflect.ValueOf(selectorExpr.X).Type().String())
 	}
@@ -261,14 +261,13 @@ func readAstInterfaceType(v *Value, interfaceType *ast.InterfaceType, fileImport
 }
 
 func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
-
 	switch exprType := expr.(type) {
 	case *ast.ArrayType:
 		v.Array = &Array{Value: &Value{}}
 
 		switch exprEltType := exprType.Elt.(type) {
 		case *ast.ArrayType:
-			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
+			// readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
 			v.Array.Value.loadExpr(exprEltType, fileImports)
 		case *ast.Ident:
 			readAstType(v.Array.Value, exprEltType, fileImports, "")
@@ -369,23 +368,18 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 
 func extractErrorTypes(file *ast.File, packageName string, errorTypes map[string]bool) (err error) {
 	for _, d := range file.Decls {
-		if reflect.ValueOf(d).Type().String() == "*ast.FuncDecl" {
-			funcDecl := d.(*ast.FuncDecl)
+		if funcDecl, ok := d.(*ast.FuncDecl); ok {
 			if funcDecl.Recv != nil && len(funcDecl.Recv.List) == 1 {
 				firstReceiverField := funcDecl.Recv.List[0]
-				if "*ast.StarExpr" == reflect.ValueOf(firstReceiverField.Type).Type().String() {
-					starExpr := firstReceiverField.Type.(*ast.StarExpr)
-					if "*ast.Ident" == reflect.ValueOf(starExpr.X).Type().String() {
-						ident := starExpr.X.(*ast.Ident)
+				if starExpr, ok := firstReceiverField.Type.(*ast.StarExpr); ok {
+					if ident, ok := starExpr.X.(*ast.Ident); ok {
 						if funcDecl.Name.Name == "Error" && funcDecl.Type.Params.NumFields() == 0 && funcDecl.Type.Results.NumFields() == 1 {
 							returnValueField := funcDecl.Type.Results.List[0]
-							refl := reflect.ValueOf(returnValueField.Type)
-							if refl.Type().String() == "*ast.Ident" {
-								returnValueIdent := returnValueField.Type.(*ast.Ident)
+							if returnValueIdent, ok := returnValueField.Type.(*ast.Ident); ok {
 								if returnValueIdent.Name == "string" {
 									errorTypes[packageName+"."+ident.Name] = true
 								}
-								//fmt.Println("error for:", ident.Name, returnValueIdent.Name)
+								// fmt.Println("error for:", ident.Name, returnValueIdent.Name)
 							}
 						}
 					}
@@ -402,39 +396,34 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 		if obj.Kind == ast.Typ && obj.Decl != nil {
 			structName := packageName + "." + name
 
-			if reflect.ValueOf(obj.Decl).Type().String() == "*ast.TypeSpec" {
-				typeSpec := obj.Decl.(*ast.TypeSpec)
-				typeSpecRefl := reflect.ValueOf(typeSpec.Type)
-				typeName := typeSpecRefl.Type().String()
-				switch typeName {
-				case "*ast.StructType":
+			if typeSpec, ok := obj.Decl.(*ast.TypeSpec); ok {
+				switch typeSpecType := typeSpec.Type.(type) {
+				case *ast.StructType:
 					structs[structName] = &Struct{
 						Name:    name,
 						Fields:  []*Field{},
 						Package: packageName,
 					}
-					structType := typeSpec.Type.(*ast.StructType)
 					trace("StructType", obj.Name)
-					fields, inlineFields, unionFields := readFieldList(structType.Fields.List, fileImports)
+					fields, inlineFields, unionFields := readFieldList(typeSpecType.Fields.List, fileImports)
 					structs[structName].Fields = fields
 					structs[structName].InlineFields = inlineFields
 					structs[structName].UnionFields = unionFields
-				case "*ast.InterfaceType":
+				case *ast.InterfaceType:
 					trace("Interface", obj.Name)
 					scalars[structName] = &Scalar{
 						Name:    structName,
 						Package: packageName,
 						Type:    ScalarTypeAny,
 					}
-				case "*ast.Ident":
+				case *ast.Ident:
 					trace("Scalar", obj.Name)
-					scalarIdent := typeSpec.Type.(*ast.Ident)
 					scalars[structName] = &Scalar{
 						Name:    structName,
 						Package: packageName,
-						Type:    getScalarFromAstIdent(scalarIdent),
+						Type:    getScalarFromAstIdent(typeSpecType),
 					}
-				case "*ast.ArrayType":
+				case *ast.ArrayType:
 					arrayValue := &Value{}
 					arrayValue.loadExpr(typeSpec.Type, fileImports)
 					structs[structName] = &Struct{
@@ -442,7 +431,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 						Package: packageName,
 						Array:   arrayValue.Array,
 					}
-				case "*ast.MapType":
+				case *ast.MapType:
 					mapValue := &Value{}
 					mapValue.loadExpr(typeSpec.Type, fileImports)
 					structs[structName] = &Struct{
@@ -451,7 +440,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 						Map:     mapValue.Map,
 					}
 				default:
-					fmt.Println("	ignoring", obj.Name, typeSpecRefl.Type().String())
+					fmt.Println("	ignoring", obj.Name, reflect.ValueOf(typeSpec.Type).Type().String())
 				}
 			}
 		}

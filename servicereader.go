@@ -34,11 +34,8 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 				trace("that is a method named", funcDecl.Name)
 				if len(funcDecl.Recv.List) == 1 {
 					firstReceiverField := funcDecl.Recv.List[0]
-					if "*ast.StarExpr" == reflect.ValueOf(firstReceiverField.Type).Type().String() {
-						starExpr := firstReceiverField.Type.(*ast.StarExpr)
-						if "*ast.Ident" == reflect.ValueOf(starExpr.X).Type().String() {
-
-							ident := starExpr.X.(*ast.Ident)
+					if starExpr, ok := firstReceiverField.Type.(*ast.StarExpr); ok {
+						if ident, ok := starExpr.X.(*ast.Ident); ok {
 							service, ok := findService(ident.Name)
 							firstCharOfMethodName := funcDecl.Name.Name[0:1]
 							if !ok || strings.ToLower(firstCharOfMethodName) == firstCharOfMethodName {
@@ -77,7 +74,7 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 									}
 									mname := fieldDecl.Names[0]
 									trace(" on sth:", mname.Name)
-									//fmt.Println("interface:", ident.Name, "method:", mname.Name)
+									// fmt.Println("interface:", ident.Name, "method:", mname.Name)
 									service.Methods = append(service.Methods, &Method{
 										Name:   mname.Name,
 										Args:   readFields(funcDecl.Params, fileImports),
@@ -121,13 +118,11 @@ func standardImportName(importPath string) string {
 func getFileImports(file *ast.File, packageName string) (imports fileImportSpecMap) {
 	imports = fileImportSpecMap{"": importSpec{alias: "", name: "", path: packageName}}
 	for _, decl := range file.Decls {
-		if reflect.ValueOf(decl).Type().String() == "*ast.GenDecl" {
-			genDecl := decl.(*ast.GenDecl)
+		if genDecl, ok := decl.(*ast.GenDecl); ok {
 			if genDecl.Tok == token.IMPORT {
 				trace("got an import", genDecl.Specs)
 				for _, spec := range genDecl.Specs {
-					if "*ast.ImportSpec" == reflect.ValueOf(spec).Type().String() {
-						spec := spec.(*ast.ImportSpec)
+					if spec, ok := spec.(*ast.ImportSpec); ok {
 						importPath := spec.Path.Value[1 : len(spec.Path.Value)-1]
 						importName := spec.Name.String()
 						if importName == "" || importName == "<nil>" {
@@ -138,7 +133,7 @@ func getFileImports(file *ast.File, packageName string) (imports fileImportSpecM
 							name:  standardImportName(importPath),
 							path:  importPath,
 						}
-						//trace("  import   >>>>>>>>>>>>>>>>>>>>", importName, importPath)
+						// trace("  import   >>>>>>>>>>>>>>>>>>>>", importName, importPath)
 					}
 				}
 			}
@@ -191,7 +186,6 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 		if err != nil {
 			return
 		}
-
 	}
 	sort.Sort(services)
 	return
@@ -201,23 +195,20 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 	constantTypes := map[string]interface{}{}
 	for _, file := range pkg.Files {
 		for _, decl := range file.Decls {
-			if reflect.ValueOf(decl).Type().String() == "*ast.GenDecl" {
-				genDecl := decl.(*ast.GenDecl)
-				switch genDecl.Tok {
+			if genDecl, ok := decl.(*ast.GenDecl); ok {
+				switch genDecl.Tok { //nolint:exhaustive
 				case token.TYPE:
 					trace("got a type", genDecl.Specs)
 					for _, spec := range genDecl.Specs {
-						if reflect.ValueOf(spec).Type().String() == "*ast.TypeSpec" {
-							spec := spec.(*ast.TypeSpec)
+						if spec, ok := spec.(*ast.TypeSpec); ok {
 							if _, ok := constantTypes[spec.Name.Name]; ok {
 								continue
 							}
-							switch reflect.ValueOf(spec.Type).Type().String() {
-							case "*ast.InterfaceType":
+							switch specType := spec.Type.(type) {
+							case *ast.InterfaceType:
 								constantTypes[spec.Name.Name] = "any"
-							case "*ast.Ident":
-								specIdent := spec.Type.(*ast.Ident)
-								switch specIdent.Name {
+							case *ast.Ident:
+								switch specType.Name {
 								case "byte":
 									constantTypes[spec.Name.Name] = "any"
 								case "string":
@@ -239,17 +230,16 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 				case token.CONST:
 					trace("got a const", genDecl.Specs)
 					for _, spec := range genDecl.Specs {
-						if reflect.ValueOf(spec).Type().String() == "*ast.ValueSpec" {
-							spec := spec.(*ast.ValueSpec)
+						if spec, ok := spec.(*ast.ValueSpec); ok {
 							if specType, ok := spec.Type.(*ast.Ident); ok {
 								for _, val := range spec.Values {
-									if reflect.ValueOf(val).Type().String() == "*ast.BasicLit" {
+									if valType, ok := val.(*ast.BasicLit); ok {
 										if _, ok := constantTypes[specType.Name]; !ok {
 											constantTypes[specType.Name] = map[string]*ast.BasicLit{}
 										} else if _, ok := constantTypes[specType.Name].(map[string]*ast.BasicLit); !ok {
 											constantTypes[specType.Name] = map[string]*ast.BasicLit{}
 										}
-										constantTypes[specType.Name].(map[string]*ast.BasicLit)[spec.Names[0].Name] = val.(*ast.BasicLit)
+										constantTypes[specType.Name].(map[string]*ast.BasicLit)[spec.Names[0].Name] = valType //nolint:forcetypeassert
 									}
 								}
 							}
@@ -461,7 +451,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 			fullNameParts := strings.Split(fullName, ".")
 			fullNameParts = fullNameParts[:len(fullNameParts)-1]
 
-			//path := fullNameParts[:len(fullNameParts)-1][0]
+			// path := fullNameParts[:len(fullNameParts)-1][0]
 
 			packageName := strings.Join(fullNameParts, ".")
 
@@ -514,11 +504,10 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 					scalars[packageScalarName] = packageScalar
 				}
 			}
-
 		}
 		newNumMissingTypes := len(missingTypeNames())
 		if newNumMissingTypes > 0 && newNumMissingTypes == lastNumMissing {
-			//packageStructs, structOK := scannedPackageStructs[packageName]
+			// packageStructs, structOK := scannedPackageStructs[packageName]
 			for scalarName, scalars := range scannedPackageScalars {
 				fmt.Println("scanned scalars ", scalarName)
 				for _, scalar := range scalars {
@@ -597,25 +586,25 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 				return false
 			}
 
-			//var fieldStructType *StructType = nil
-			//if field.Value.StructType != nil {
-			//	fieldStructType = field.Value.StructType
-			//} else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
-			//	fieldStructType = field.Value.Array.Value.StructType
-			//} else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
-			//	fieldStructType = field.Value.Map.Value.StructType
-			//} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
-			//	return false
-			//} else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
-			//	return false
-			//} else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
-			//	return false
-			//}
-			//if fieldStructType != nil {
-			//	if needsWork(fieldStructType.FullName()) {
-			//		return false
-			//	}
-			//}
+			// var fieldStructType *StructType = nil
+			// if field.Value.StructType != nil {
+			// 	fieldStructType = field.Value.StructType
+			// } else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
+			// 	fieldStructType = field.Value.Array.Value.StructType
+			// } else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
+			// 	fieldStructType = field.Value.Map.Value.StructType
+			// } else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
+			// 	return false
+			// } else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
+			// 	return false
+			// } else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
+			// 	return false
+			// }
+			// if fieldStructType != nil {
+			// 	if needsWork(fieldStructType.FullName()) {
+			// 		return false
+			// 	}
+			// }
 		}
 		return true
 	}
@@ -627,7 +616,7 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 		return false
 	}
 	//// special handling of union only structs
-	//if len(s.Fields) == 0 {
+	// if len(s.Fields) == 0 {
 	//	for _, field := range s.UnionFields {
 	//		var fieldStructType *StructType = nil
 	//		if field.Value.StructType != nil {
@@ -704,12 +693,12 @@ func getTypesInPackage(
 }
 
 func getStructTypeForField(value *Value) *StructType {
-	//field.Value.StructType
+	// field.Value.StructType
 	var strType *StructType
-	switch true {
+	switch {
 	case value.StructType != nil:
 		strType = value.StructType
-		//case field.Value.ArrayType
+		// case field.Value.ArrayType
 	case value.Map != nil:
 		strType = getStructTypeForField(value.Map.Value)
 	case value.Array != nil:
@@ -719,12 +708,12 @@ func getStructTypeForField(value *Value) *StructType {
 }
 
 func getScalarForField(value *Value) []*Scalar {
-	//field.Value.StructType
+	// field.Value.StructType
 	var scalarTypes []*Scalar
-	switch true {
+	switch {
 	case value.Scalar != nil:
 		scalarTypes = append(scalarTypes, value.Scalar)
-		//case field.Value.ArrayType
+		// case field.Value.ArrayType
 	case value.Map != nil:
 		if value.Map.Key != nil {
 			if v := getScalarForField(value.Map.Key); v != nil {
@@ -775,4 +764,4 @@ func collectStructTypes(fields []*Field, structTypes map[string]bool) {
 	}
 }
 
-//func collectStructs(goPath, structs)
+// func collectStructs(goPath, structs)
