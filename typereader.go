@@ -122,8 +122,8 @@ func extractJSONInfo(tag string) *JSONInfo {
 
 func getScalarFromAstIdent(ident *ast.Ident) ScalarType {
 	switch ident.Name {
-	case "interface":
-		return ScalarTypeInterface
+	case "any", "interface":
+		return ScalarTypeAny
 	case "string":
 		return ScalarTypeString
 	case "bool":
@@ -180,15 +180,15 @@ func readAstType(v *Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap,
 
 func readAstStarExpr(v *Value, starExpr *ast.StarExpr, fileImports fileImportSpecMap) {
 	v.IsPtr = true
-	switch reflect.ValueOf(starExpr.X).Type().String() {
-	case "*ast.Ident":
+	switch starExprType := starExpr.X.(type) {
+	case *ast.Ident:
 		ident := starExpr.X.(*ast.Ident)
 		readAstType(v, ident, fileImports, "")
-	case "*ast.StructType":
+	case *ast.StructType:
 		// nested anonymous
-		readAstStructType(v, starExpr.X.(*ast.StructType), fileImports)
-	case "*ast.SelectorExpr":
-		readAstSelectorExpr(v, starExpr.X.(*ast.SelectorExpr), fileImports)
+		readAstStructType(v, starExprType, fileImports)
+	case *ast.SelectorExpr:
+		readAstSelectorExpr(v, starExprType, fileImports)
 	default:
 		trace("a pointer on what", reflect.ValueOf(starExpr.X).Type().String())
 	}
@@ -198,16 +198,16 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 	trace("		map key", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
 	trace("		map value", mapType.Value, reflect.ValueOf(mapType.Value).Type().String())
 	// key
-	switch reflect.ValueOf(mapType.Key).Type().String() {
-	case "*ast.Ident":
-		_, scalarType := getTypesFromAstType(mapType.Key.(*ast.Ident))
+	switch keyType := mapType.Key.(type) {
+	case *ast.Ident:
+		_, scalarType := getTypesFromAstType(keyType)
 		m.KeyType = string(scalarType)
-		m.KeyGoType = mapType.Key.(*ast.Ident).Name
+		m.KeyGoType = keyType.Name
 		m.Key = &Value{}
-		readAstType(m.Key, mapType.Key.(*ast.Ident), fileImports, "")
-	case "*ast.SelectorExpr":
+		readAstType(m.Key, keyType, fileImports, "")
+	case *ast.SelectorExpr:
 		m.Key = &Value{}
-		readAstSelectorExpr(m.Key, mapType.Key.(*ast.SelectorExpr), fileImports)
+		readAstSelectorExpr(m.Key, keyType, fileImports)
 	default:
 		// todo: implement support for "*ast.Scalar" type (sca)
 		// this is important for scalar types in map keys
@@ -233,13 +233,13 @@ func readAstMapType(m *Map, mapType *ast.MapType, fileImports fileImportSpecMap)
 }
 
 func readAstSelectorExpr(v *Value, selectorExpr *ast.SelectorExpr, fileImports fileImportSpecMap) {
-	switch reflect.ValueOf(selectorExpr.X).Type().String() {
-	case "*ast.Ident":
+	switch selExpType := selectorExpr.X.(type) {
+	case *ast.Ident:
 		// that could be the package name
 		//selectorIdent := selectorExpr.X.(*ast.Ident)
 		// fmt.Println(selectorExpr, selectorExpr.X.(*ast.Ident))
 		//readAstType(v, selectorExpr.X.(*ast.Ident), fileImports)
-		readAstType(v, selectorExpr.Sel, fileImports, selectorExpr.X.(*ast.Ident).Name)
+		readAstType(v, selectorExpr.Sel, fileImports, selExpType.Name)
 		if v.StructType != nil {
 			v.StructType.Package = fileImports.getPackagePath(v.StructType.Name)
 			v.StructType.Name = selectorExpr.Sel.Name
@@ -262,50 +262,48 @@ func readAstInterfaceType(v *Value, interfaceType *ast.InterfaceType, fileImport
 
 func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 
-	switch reflect.ValueOf(expr).Type().String() {
-	case "*ast.ArrayType":
-		fieldArray := expr.(*ast.ArrayType)
+	switch exprType := expr.(type) {
+	case *ast.ArrayType:
 		v.Array = &Array{Value: &Value{}}
 
-		switch reflect.ValueOf(fieldArray.Elt).Type().String() {
-		case "*ast.ArrayType":
+		switch exprEltType := exprType.Elt.(type) {
+		case *ast.ArrayType:
 			//readAstArrayType(v.Array.Value, fieldArray.Elt.(*ast.ArrayType), fileImports)
-			v.Array.Value.loadExpr(fieldArray.Elt.(*ast.ArrayType), fileImports)
-		case "*ast.Ident":
-			readAstType(v.Array.Value, fieldArray.Elt.(*ast.Ident), fileImports, "")
-		case "*ast.StarExpr":
-			readAstStarExpr(v.Array.Value, fieldArray.Elt.(*ast.StarExpr), fileImports)
-		case "*ast.MapType":
+			v.Array.Value.loadExpr(exprEltType, fileImports)
+		case *ast.Ident:
+			readAstType(v.Array.Value, exprEltType, fileImports, "")
+		case *ast.StarExpr:
+			readAstStarExpr(v.Array.Value, exprEltType, fileImports)
+		case *ast.MapType:
 			v.Array.Value.Map = &Map{
 				Value: &Value{},
 			}
-			readAstMapType(v.Array.Value.Map, fieldArray.Elt.(*ast.MapType), fileImports)
-		case "*ast.SelectorExpr":
-			readAstSelectorExpr(v.Array.Value, fieldArray.Elt.(*ast.SelectorExpr), fileImports)
-		case "*ast.StructType":
-			readAstStructType(v.Array.Value, fieldArray.Elt.(*ast.StructType), fileImports)
-		case "*ast.InterfaceType":
-			readAstInterfaceType(v.Array.Value, fieldArray.Elt.(*ast.InterfaceType), fileImports)
+			readAstMapType(v.Array.Value.Map, exprEltType, fileImports)
+		case *ast.SelectorExpr:
+			readAstSelectorExpr(v.Array.Value, exprEltType, fileImports)
+		case *ast.StructType:
+			readAstStructType(v.Array.Value, exprEltType, fileImports)
+		case *ast.InterfaceType:
+			readAstInterfaceType(v.Array.Value, exprEltType, fileImports)
 		default:
-			trace("---------------------> array of", reflect.ValueOf(fieldArray.Elt).Type().String())
+			trace("---------------------> array of", reflect.ValueOf(exprType.Elt).Type().String())
 		}
-	case "*ast.Ident":
-		fieldIdent := expr.(*ast.Ident)
-		readAstType(v, fieldIdent, fileImports, "")
-	case "*ast.StarExpr":
+	case *ast.Ident:
+		readAstType(v, exprType, fileImports, "")
+	case *ast.StarExpr:
 		// a pointer on sth
-		readAstStarExpr(v, expr.(*ast.StarExpr), fileImports)
-	case "*ast.MapType":
+		readAstStarExpr(v, exprType, fileImports)
+	case *ast.MapType:
 		v.Map = &Map{
 			Value: &Value{},
 		}
-		readAstMapType(v.Map, expr.(*ast.MapType), fileImports)
-	case "*ast.SelectorExpr":
-		readAstSelectorExpr(v, expr.(*ast.SelectorExpr), fileImports)
-	case "*ast.StructType":
-		readAstStructType(v, expr.(*ast.StructType), fileImports)
-	case "*ast.InterfaceType":
-		readAstInterfaceType(v, expr.(*ast.InterfaceType), fileImports)
+		readAstMapType(v.Map, exprType, fileImports)
+	case *ast.SelectorExpr:
+		readAstSelectorExpr(v, exprType, fileImports)
+	case *ast.StructType:
+		readAstStructType(v, exprType, fileImports)
+	case *ast.InterfaceType:
+		readAstInterfaceType(v, exprType, fileImports)
 	default:
 		trace("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())
 	}
@@ -426,7 +424,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 					scalars[structName] = &Scalar{
 						Name:    structName,
 						Package: packageName,
-						Type:    ScalarTypeInterface,
+						Type:    ScalarTypeAny,
 					}
 				case "*ast.Ident":
 					trace("Scalar", obj.Name)
