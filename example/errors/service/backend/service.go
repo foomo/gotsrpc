@@ -10,22 +10,22 @@ const (
 	ErrUnauthorized ErrService = "unauthorized"
 )
 
-type Scalar string
+type ScalarError string
 
-func (s Scalar) String() string {
-	return string(s)
+func (s *ScalarError) String() string {
+	return string(*s)
 }
 
-func (s *Scalar) Error() string {
+func (s *ScalarError) Error() string {
 	return s.String()
 }
 
-type Struct struct {
+type StructError struct {
 	Message string `json:"message"`
 	Data    string `json:"data"`
 }
 
-func (s *Struct) Error() string {
+func (s *StructError) Error() string {
 	return s.Message
 }
 
@@ -39,8 +39,8 @@ type (
 )
 
 const (
-	ScalarOne Scalar = "one"
-	ScalarTwo Scalar = "two"
+	ScalarOne ScalarError = "one" //nolint:errname
+	ScalarTwo ScalarError = "two" //nolint:errname
 
 	ScalarAOne ScalarA = "one"
 	ScalarATwo ScalarA = "two"
@@ -51,9 +51,9 @@ const (
 
 type Service interface {
 	Error(w http.ResponseWriter, r *http.Request) (e error)
-	Scalar(w http.ResponseWriter, r *http.Request) (e *Scalar)
+	Scalar(w http.ResponseWriter, r *http.Request) (e *ScalarError)
 	MultiScalar(w http.ResponseWriter, r *http.Request) (e *MultiScalar)
-	Struct(w http.ResponseWriter, r *http.Request) (e *Struct)
+	Struct(w http.ResponseWriter, r *http.Request) (e *StructError)
 	TypedError(w http.ResponseWriter, r *http.Request) (e error)
 	ScalarError(w http.ResponseWriter, r *http.Request) (e error)
 	CustomError(w http.ResponseWriter, r *http.Request) (e error)

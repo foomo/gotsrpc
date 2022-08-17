@@ -21,8 +21,8 @@ type (
 )
 
 const (
-	ScalarErrorOne ScalarError = "scalar error one"
-	ScalarErrorTwo ScalarError = "scalar error two"
+	ScalarErrorOne ScalarError = "scalar error one" //nolint:errname
+	ScalarErrorTwo ScalarError = "scalar error two" //nolint:errname
 )
 
 func NewScalarError(e ScalarError) *ScalarError {
@@ -64,7 +64,7 @@ func (h *Handler) Error(w http.ResponseWriter, r *http.Request) (e error) {
 	return errors.New("error")
 }
 
-func (h *Handler) Scalar(w http.ResponseWriter, r *http.Request) (e *backend.Scalar) {
+func (h *Handler) Scalar(w http.ResponseWriter, r *http.Request) (e *backend.ScalarError) {
 	s := backend.ScalarOne
 	return &s
 }
@@ -75,8 +75,8 @@ func (h *Handler) MultiScalar(w http.ResponseWriter, r *http.Request) (e *backen
 	}
 }
 
-func (h *Handler) Struct(w http.ResponseWriter, r *http.Request) (e *backend.Struct) {
-	return &backend.Struct{
+func (h *Handler) Struct(w http.ResponseWriter, r *http.Request) (e *backend.StructError) {
+	return &backend.StructError{
 		Message: "my custom scalar",
 		Data:    "hello world",
 	}

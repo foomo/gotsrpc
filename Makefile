@@ -57,8 +57,10 @@ $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 lint:
 	# @golangci-lint run
 	@for name in example/*/; do\
-		echo "-------- $${name} ------------";\
-		sh -c "cd $$(pwd)/$${name} && golangci-lint run";\
+		if [ $$name != "example/node_modules/" ]; then \
+			echo "-------- $${name} ------------";\
+			sh -c "cd $$(pwd)/$${name} && golangci-lint run";\
+		fi \
   done
 
 ## Run go mod tidy recursive
@@ -66,8 +68,10 @@ lint:
 gomod:
 	@go mod tidy
 	@for name in example/*/; do\
-		echo "-------- $${name} ------------";\
-		sh -c "cd $$(pwd)/$${name} && go mod tidy";\
+		if [ $$name != "example/node_modules/" ]; then \
+			echo "-------- $${name} ------------";\
+			sh -c "cd $$(pwd)/$${name} && go mod tidy";\
+		fi \
   done
 
 ## === Examples ===
@@ -76,8 +80,10 @@ gomod:
 ## Build examples
 examples:
 	@for name in example/*/; do\
-		echo "-------- $${name} ------------";\
-		$(MAKE) example.`basename $${name}`;\
+		if [ $$name != "example/node_modules/" ]; then \
+			echo "-------- $${name} ------------";\
+			$(MAKE) example.`basename $${name}`;\
+		fi \
   done
 .PHONY: examples
 
