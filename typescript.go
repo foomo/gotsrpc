@@ -26,7 +26,12 @@ func (f *Field) tsName() string {
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalarTypes map[string]*Scalar, structs map[string]*Struct, ts *code) {
 	switch true {
 	case v.Map != nil:
-		ts.app("{[index:" + v.Map.KeyType + "]:")
+		keyType := v.Map.KeyType
+		if keyType == "" {
+			keyType = v.Map.Value.Map.KeyType
+		}
+
+		ts.app("{[index:" + keyType + "]:")
 		v.Map.Value.tsType(mappings, scalarTypes, structs, ts)
 		ts.app("}")
 	case v.Array != nil:
