@@ -22,7 +22,7 @@ type Demo struct {
 
 func (d *Demo) Hello(name string) (string, *Err) {
 	if name == "Peter" {
-		return "", &Err{"fuck you Peter I do not like you"}
+		return "", &Err{"Hello Peter, I appreciate you :)"}
 	}
 	return "Hello from the server: " + name, nil
 }
