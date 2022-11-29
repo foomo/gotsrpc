@@ -631,26 +631,17 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 	//		}
 	//	}
 	//}
-	if s.Array != nil && s.Array.Value != nil {
-		if s.Array.Value.StructType != nil {
-			if needsWork(s.Array.Value.StructType.FullName()) {
-				return false
-			}
-		} else if s.Array.Value.Scalar != nil {
-			if needsWork(s.Array.Value.Scalar.FullName()) {
-				return false
-			}
+	if s.Array != nil {
+		if s.Array.Value != nil && needsWorkValue(s.Array.Value, needsWork) {
+			return false
 		}
 	}
-	if s.Map != nil && s.Map.Value != nil {
-		if s.Map.Value.StructType != nil {
-			if needsWork(s.Map.Value.StructType.FullName()) {
-				return false
-			}
-		} else if s.Map.Value.Scalar != nil {
-			if needsWork(s.Map.Value.Scalar.FullName()) {
-				return false
-			}
+	if s.Map != nil {
+		if s.Map.Key != nil && needsWorkValue(s.Map.Key, needsWork) {
+			return false
+		}
+		if s.Map.Value != nil && needsWorkValue(s.Map.Value, needsWork) {
+			return false
 		}
 	}
 	return !needsWork(s.FullName())

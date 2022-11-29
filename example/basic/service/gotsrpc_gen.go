@@ -47,6 +47,7 @@ const (
 	ServiceGoTSRPCProxyIntTypeMapTyped     = "IntTypeMapTyped"
 	ServiceGoTSRPCProxyInterface           = "Interface"
 	ServiceGoTSRPCProxyInterfaceSlice      = "InterfaceSlice"
+	ServiceGoTSRPCProxyNestedType          = "NestedType"
 	ServiceGoTSRPCProxyString              = "String"
 	ServiceGoTSRPCProxyStringMap           = "StringMap"
 	ServiceGoTSRPCProxyStringSlice         = "StringSlice"
@@ -920,6 +921,21 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		interfaceSliceRet := p.service.InterfaceSlice(arg_v)
 		callStats.Execution = time.Since(executionStart)
 		rets = []interface{}{interfaceSliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyNestedType:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
+		executionStart := time.Now()
+		nestedTypeRet := p.service.NestedType()
+		callStats.Execution = time.Since(executionStart)
+		rets = []interface{}{nestedTypeRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return

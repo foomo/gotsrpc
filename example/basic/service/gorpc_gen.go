@@ -271,6 +271,12 @@ type (
 		RetInterfaceSlice_0 []interface{}
 	}
 
+	ServiceNestedTypeRequest struct {
+	}
+	ServiceNestedTypeResponse struct {
+		RetNestedType_0 NestedType
+	}
+
 	ServiceStringRequest struct {
 		V string
 	}
@@ -520,6 +526,8 @@ func init() {
 	gob.Register(ServiceInterfaceResponse{})
 	gob.Register(ServiceInterfaceSliceRequest{})
 	gob.Register(ServiceInterfaceSliceResponse{})
+	gob.Register(ServiceNestedTypeRequest{})
+	gob.Register(ServiceNestedTypeResponse{})
 	gob.Register(ServiceStringRequest{})
 	gob.Register(ServiceStringResponse{})
 	gob.Register(ServiceStringMapRequest{})
@@ -753,6 +761,9 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		req := request.(ServiceInterfaceSliceRequest)
 		retInterfaceSlice_0 := p.service.InterfaceSlice(req.V)
 		response = ServiceInterfaceSliceResponse{RetInterfaceSlice_0: retInterfaceSlice_0}
+	case "ServiceNestedTypeRequest":
+		retNestedType_0 := p.service.NestedType()
+		response = ServiceNestedTypeResponse{RetNestedType_0: retNestedType_0}
 	case "ServiceStringRequest":
 		req := request.(ServiceStringRequest)
 		retString_0 := p.service.String(req.V)

@@ -62,4 +62,14 @@ type Service interface {
 	Float32Type(v Float32Type) Float32Type
 	Float64Type(v Float64Type) Float64Type
 	StringType(v StringType) StringType
+	NestedType() NestedType
 }
+
+type (
+	NestedType       map[NestedTypeKey]map[NestedTypeSubKey][]*NestedSubType
+	NestedTypeKey    string
+	NestedTypeSubKey string
+	NestedSubType    struct {
+		Foo string
+	}
+)

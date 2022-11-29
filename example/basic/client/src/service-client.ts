@@ -115,6 +115,9 @@ export class ServiceClient {
 	async interfaceSlice(v:Array<any>|null):Promise<Array<any>|null> {
 		return (await this.transport<{0:Array<any>|null}>("InterfaceSlice", [v]))[0]
 	}
+	async nestedType():Promise<github_com_foomo_gotsrpc_v2_example_basic_service.NestedType|null> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_example_basic_service.NestedType|null}>("NestedType", []))[0]
+	}
 	async string(v:string):Promise<string> {
 		return (await this.transport<{0:string}>("String", [v]))[0]
 	}
