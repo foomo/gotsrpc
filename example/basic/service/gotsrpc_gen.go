@@ -932,8 +932,16 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []interface{}
 			rets []interface{}
 		)
+		var (
+			arg_v NestedType
+		)
+		args = []interface{}{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
 		executionStart := time.Now()
-		nestedTypeRet := p.service.NestedType()
+		nestedTypeRet := p.service.NestedType(arg_v)
 		callStats.Execution = time.Since(executionStart)
 		rets = []interface{}{nestedTypeRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {

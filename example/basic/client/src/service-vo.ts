@@ -86,16 +86,15 @@ export enum IntTypeMapValue {
 	IntATypeMapValue = 1,
 	IntBTypeMapValue = 2,
 }
-// github.com/foomo/gotsrpc/v2/example/basic/service.NestedSubType
-export interface NestedSubType {
-	Foo:string;
-}
 // github.com/foomo/gotsrpc/v2/example/basic/service.NestedType
-export type NestedType = Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeKey,Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeSubKey,Array<github_com_foomo_gotsrpc_v2_example_basic_service.NestedSubType|null>|null>|null>
+export type NestedType = Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeKey,Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeSubKey,Array<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeSubType|null>|null>|null>
 // github.com/foomo/gotsrpc/v2/example/basic/service.NestedTypeKey
 export type NestedTypeKey = string
 // github.com/foomo/gotsrpc/v2/example/basic/service.NestedTypeSubKey
 export type NestedTypeSubKey = string
+// github.com/foomo/gotsrpc/v2/example/basic/service.NestedTypeSubType
+export interface NestedTypeSubType {
+}
 // github.com/foomo/gotsrpc/v2/example/basic/service.StringType
 export enum StringType {
 	StringAType = "A",

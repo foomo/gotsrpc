@@ -272,6 +272,7 @@ type (
 	}
 
 	ServiceNestedTypeRequest struct {
+		V NestedType
 	}
 	ServiceNestedTypeResponse struct {
 		RetNestedType_0 NestedType
@@ -762,7 +763,8 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		retInterfaceSlice_0 := p.service.InterfaceSlice(req.V)
 		response = ServiceInterfaceSliceResponse{RetInterfaceSlice_0: retInterfaceSlice_0}
 	case "ServiceNestedTypeRequest":
-		retNestedType_0 := p.service.NestedType()
+		req := request.(ServiceNestedTypeRequest)
+		retNestedType_0 := p.service.NestedType(req.V)
 		response = ServiceNestedTypeResponse{RetNestedType_0: retNestedType_0}
 	case "ServiceStringRequest":
 		req := request.(ServiceStringRequest)

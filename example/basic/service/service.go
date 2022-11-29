@@ -62,5 +62,5 @@ type Service interface {
 	Float32Type(v Float32Type) Float32Type
 	Float64Type(v Float64Type) Float64Type
 	StringType(v StringType) StringType
-	NestedType() NestedType
+	NestedType(v NestedType) NestedType
 }

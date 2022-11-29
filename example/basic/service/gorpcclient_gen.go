@@ -425,8 +425,8 @@ func (tsc *ServiceGoRPCClient) InterfaceSlice(v []interface{}) (retInterfaceSlic
 	return response.RetInterfaceSlice_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) NestedType() (retNestedType_0 NestedType, clientErr error) {
-	req := ServiceNestedTypeRequest{}
+func (tsc *ServiceGoRPCClient) NestedType(v NestedType) (retNestedType_0 NestedType, clientErr error) {
+	req := ServiceNestedTypeRequest{V: v}
 	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
 	if rpcCallErr != nil {
 		clientErr = rpcCallErr

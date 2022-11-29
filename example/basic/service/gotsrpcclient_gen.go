@@ -47,7 +47,7 @@ type ServiceGoTSRPCClient interface {
 	IntTypeMapTyped(ctx go_context.Context, v IntTypeMapTyped) (retIntTypeMapTyped_0 IntTypeMapTyped, clientErr error)
 	Interface(ctx go_context.Context, v interface{}) (retInterface_0 interface{}, clientErr error)
 	InterfaceSlice(ctx go_context.Context, v []interface{}) (retInterfaceSlice_0 []interface{}, clientErr error)
-	NestedType(ctx go_context.Context) (retNestedType_0 NestedType, clientErr error)
+	NestedType(ctx go_context.Context, v NestedType) (retNestedType_0 NestedType, clientErr error)
 	String(ctx go_context.Context, v string) (retString_0 string, clientErr error)
 	StringMap(ctx go_context.Context, v map[string]interface{}) (retStringMap_0 map[string]interface{}, clientErr error)
 	StringSlice(ctx go_context.Context, v []string) (retStringSlice_0 []string, clientErr error)
@@ -456,8 +456,8 @@ func (tsc *HTTPServiceGoTSRPCClient) InterfaceSlice(ctx go_context.Context, v []
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) NestedType(ctx go_context.Context) (retNestedType_0 NestedType, clientErr error) {
-	args := []interface{}{}
+func (tsc *HTTPServiceGoTSRPCClient) NestedType(ctx go_context.Context, v NestedType) (retNestedType_0 NestedType, clientErr error) {
+	args := []interface{}{v}
 	reply := []interface{}{&retNestedType_0}
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "NestedType", args, reply)
 	if clientErr != nil {
