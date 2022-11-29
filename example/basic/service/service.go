@@ -64,12 +64,3 @@ type Service interface {
 	StringType(v StringType) StringType
 	NestedType() NestedType
 }
-
-type (
-	NestedType       map[NestedTypeKey]map[NestedTypeSubKey][]*NestedSubType
-	NestedTypeKey    string
-	NestedTypeSubKey string
-	NestedSubType    struct {
-		Foo string
-	}
-)

@@ -222,3 +222,10 @@ type Struct struct {
 	Float64TypeMapTyped map[Float64TypeMapKey]Float64TypeMapValue
 	StringTypeMapTyped  map[StringTypeMapKey]StringTypeMapValue
 }
+
+type (
+	NestedType        map[NestedTypeKey]map[NestedTypeSubKey][]*NestedTypeSubType
+	NestedTypeKey     string
+	NestedTypeSubKey  string
+	NestedTypeSubType struct{}
+)

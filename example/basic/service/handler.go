@@ -244,3 +244,7 @@ func (h *Handler) Float64Type(v Float64Type) Float64Type {
 func (h *Handler) StringType(v StringType) StringType {
 	return v
 }
+
+func (h *Handler) NestedType(v NestedType) NestedType {
+	return v
+}
