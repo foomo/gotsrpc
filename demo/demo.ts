@@ -29,7 +29,7 @@ GoTSRPC.Demo.DemoClient.defaultInst.hello(
 GoTSRPC.Demo.DemoClient.defaultInst.hello(
     "Peter",
     (reply:string, err:GoTSRPC.Demo.Err) => {
-        console.log("server should not like Peter, sorry Peter ;)", reply, err);
+        console.log("I particularly like you Peter ;)", reply, err);
         handleCrap(err, null);
     },
     (request:XMLHttpRequest) => {
