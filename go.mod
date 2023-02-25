@@ -13,7 +13,7 @@ require (
 	github.com/ugorji/go/codec v1.1.7
 	github.com/valyala/gorpc v0.0.0-20160519171614-908281bef774
 	golang.org/x/mod v0.4.0
-	golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/tools v0.0.0-20210105210202-9ed45478a130
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
