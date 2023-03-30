@@ -5,6 +5,11 @@
 test:
 	go test -v ./...
 
+.PHONY: tidy
+## Run go tidy
+tidy:
+	go mod tidy
+
 .PHONY: install
 ## Run go install
 install:
