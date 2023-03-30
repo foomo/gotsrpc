@@ -24,8 +24,6 @@ linters-settings:
         sizeThreshold: 512
   # https://golangci-lint.run/usage/linters/#gosec
   gosec:
-    config:
-      G306: "0700"
     excludes:
       - G101 # Potential hardcoded credentials
       - G102 # Bind to all interfaces
@@ -47,7 +45,6 @@ linters-settings:
 linters:
   enable:
     # Enabled by default linters:
-    - deadcode # Finds unused code [fast: false, auto-fix: false]
     - errcheck # Errcheck is a program for checking for unchecked errors in go programs. These unchecked errors can be critical bugs in some cases [fast: false, auto-fix: false]
     - gosimple # (megacheck): Linter for Go source code that specializes in simplifying code [fast: false, auto-fix: false]
     - govet # (vet, vetshadow): Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string [fast: false, auto-fix: false]
@@ -55,7 +52,6 @@ linters:
     - staticcheck # (megacheck): It's a set of rules from staticcheck. It's not the same thing as the staticcheck binary. The author of staticcheck doesn't support or approve the use of staticcheck as a library inside golangci-lint. [fast: false, auto-fix: false]
     - typecheck # Like the front-end of a Go compiler, parses and type-checks Go code [fast: false, auto-fix: false]
     - unused # (megacheck): Checks Go code for unused constants, variables, functions and types [fast: false, auto-fix: false]
-    - varcheck # Finds unused global variables and constants [fast: false, auto-fix: false]
 
     # Disabled by default linters:
     - asasalint # check for pass []any as any in variadic func(...any) [fast: false, auto-fix: false]
@@ -114,7 +110,6 @@ linters:
     - noctx # noctx finds sending http request without context.Context [fast: false, auto-fix: false]
     - nolintlint # Reports ill-formed or insufficient nolint directives [fast: true, auto-fix: false]
     #- nonamedreturns # Reports all named returns [fast: false, auto-fix: false]
-    - nosnakecase # nosnakecase is a linter that detects snake case of variable naming and function name. [fast: true, auto-fix: false]
     - nosprintfhostport # Checks for misuse of Sprintf to construct a host with port in a URL. [fast: true, auto-fix: false]
     #- paralleltest # paralleltest detects missing usage of t.Parallel() method in your Go test [fast: false, auto-fix: false]
     #- prealloc # Finds slice declarations that could potentially be pre-allocated [fast: true, auto-fix: false]
@@ -123,7 +118,6 @@ linters:
     - revive # Fast, configurable, extensible, flexible, and beautiful linter for Go. Drop-in replacement of golint. [fast: false, auto-fix: false]
     - rowserrcheck # checks whether Err of rows is checked successfully [fast: false, auto-fix: false]
     - sqlclosecheck # Checks that sql.Rows and sql.Stmt are closed. [fast: false, auto-fix: false]
-    - structcheck # Finds unused struct fields [fast: false, auto-fix: false]
     - stylecheck # Stylecheck is a replacement for golint [fast: false, auto-fix: false]
     #- tagliatelle # Checks the struct tags. [fast: true, auto-fix: false]
     - tenv # tenv is analyzer that detects using os.Setenv instead of t.Setenv since Go1.17 [fast: false, auto-fix: false]

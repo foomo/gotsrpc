@@ -73,9 +73,9 @@ lint.fix:
 		fi \
   done
 
+.PHONY: tidy
 ## Run go mod tidy recursive
-.PHONY: gomod
-gomod:
+tidy:
 	@go mod tidy
 	@for name in example/*/; do\
 		if [ $$name != "example/node_modules/" ]; then \

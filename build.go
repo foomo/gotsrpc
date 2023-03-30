@@ -177,7 +177,7 @@ func Build(conf *config.Config, goPath string) { //nolint:maintidx
 				)
 
 				// write code into file for debugging
-				writeErr := os.WriteFile(filename, []byte(code), 0644)
+				writeErr := os.WriteFile(filename, []byte(code), 0644) //nolint:gosec
 				if writeErr != nil {
 					_, _ = fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
 					os.Exit(5)
@@ -187,7 +187,7 @@ func Build(conf *config.Config, goPath string) { //nolint:maintidx
 				os.Exit(5)
 			}
 
-			writeErr := os.WriteFile(filename, codeBytes, 0644)
+			writeErr := os.WriteFile(filename, codeBytes, 0644) //nolint:gosec
 			if writeErr != nil {
 				_, _ = fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
 				os.Exit(5)
@@ -278,7 +278,7 @@ func updateCode(file string, code string) error {
 	oldCode, _ := os.ReadFile(file)
 	if string(oldCode) != code {
 		fmt.Println("	writing file", file)
-		return os.WriteFile(file, []byte(code), 0644)
+		return os.WriteFile(file, []byte(code), 0644) //nolint:gosec
 	}
 	fmt.Println("	update file not necessary - unchanged", file)
 	return nil

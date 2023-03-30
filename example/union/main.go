@@ -32,7 +32,7 @@ func main() {
 		call()
 	}()
 
-	panic(http.ListenAndServe("localhost:3000", mux))
+	panic(http.ListenAndServe("localhost:3000", mux)) //nolint:gosec
 }
 
 func call() {
