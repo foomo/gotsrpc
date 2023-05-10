@@ -1,8 +1,18 @@
 # Go / TypeScript and Go / Go RPC
 
-[![Build Status](https://travis-ci.org/foomo/gotsrpc.svg?branch=master)](https://travis-ci.org/foomo/gotsrpc)
+[![Build Status](https://travis-ci.org/foomo/gotsrpc.svg?branch=main)](https://travis-ci.org/foomo/gotsrpc)
+
+## Documentation
+
+Please refer to the documentation:
+
+https://www.foomo.org/docs/projects/gotsrpc
 
 ## Installation
+
+Follow the docs:
+
+https://www.foomo.org/docs/projects/gotsrpc/cli#installation
 
 From source to /usr/local/bin/gotsrpc:
 
@@ -12,96 +22,7 @@ cd $GOPATH/src/github.com/foomo/gotsrpc
 make install
 ```
 
-If you trust us there are precompiled versions:
+Release downloads:
 
 [releases](https://github.com/foomo/gotsrpc/releases)
 
-On the mac:
-
-```bash
-brew install foomo/gotsrpc/gotsrpc
-```
-
-
-## Usage
-
-```bash
-gotsrpc gotsrpc.yml
-```
-
-Will generate client and server side go and TypeScript code. Have fun!
-
-## Configuration Examples
-
-```yaml
-targets:
-  demo:
-    services:
-      /service/foo: Foo
-      /service/demo: Demo
-    package: github.com/foomo/gotsrpc/v2/demo
-    out: /tmp/test.ts
-    gorpc:
-      - Foo
-      - Demo
-    tsrpc:
-      - Foo
-      - Demo
-
-mappings:
-  github.com/foomo/gotsrpc/v2/demo:
-    out: /tmp/test-files-demo.ts
-  github.com/foomo/gotsrpc/v2/demo/nested:
-    out: /tmp/test-files-demo-nested.ts
-...
-```
-
-#### Async Example
-
-How to use async clients in this case with axios:
-
-```TypeScript
-import axios, { AxiosResponse } from "axios";
-import { ServiceClient as ExampleClient } from "./some/generated/client";
-
-// axios transport
-let getTransport = endpoint => async <T>(method, args = []) => {
-	return new Promise<T>(async (resolve, reject) => {
-		try {
-			let axiosPromise: AxiosResponse<T> = await axios.post<T>(
-				endpoint + "/" + encodeURIComponent(method),
-				JSON.stringify(args),
-			);
-			return resolve(axiosPromise.data);
-		} catch (e) {
-			return reject(e);
-		}
-	});
-};
-
-let client = new ExampleClient(getTransport(ExampleClient.defaultEndpoint));
-
-export async function test() {
-	try {
-		let result = await client.getResult();
-		console.log("here is the result", result);
-	} catch (e) {
-		// e => network?
-		// e => json
-		// e => domain error type
-		console.error("something went wrong ...", e);
-	}
-}
-```
-
-## GOModule Support
-
-To support go modules add 
-
-```yaml
-
-module:
-  name: github.com/foomo/gotsrpc
-  path: ../ # Relative Or Absolute Path where the package was checked out (root of the package)
-
-```
