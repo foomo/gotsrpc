@@ -1,7 +1,5 @@
 # Go / TypeScript and Go / Go RPC
 
-[![Build Status](https://travis-ci.org/foomo/gotsrpc.svg?branch=main)](https://travis-ci.org/foomo/gotsrpc)
-
 ## Documentation
 
 Please refer to the documentation:
@@ -24,5 +22,9 @@ make install
 
 Release downloads:
 
-[releases](https://github.com/foomo/gotsrpc/releases)
+[https://github.com/foomo/gotsrpc/releases](https://github.com/foomo/gotsrpc/releases)
 
+## Github actions
+
+
+![checks](https://github.com/foomo/gotsrpc/actions/workflows/checks.yml/badge.svg)  ![goreleaser](https://github.com/foomo/gotsrpc/actions/workflows/goreleaser.yml/badge.svg)
