@@ -43,7 +43,10 @@ func NewError(err error) *Error {
 	}
 
 	// unwrap error
-	if unwrappedErr := errors.Unwrap(err); unwrappedErr != nil {
+	if causeErr := errors.Cause(err); causeErr != nil {
+		inst.ErrCause = NewError(causeErr)
+		inst.Msg = strings.TrimSuffix(inst.Msg, ": "+causeErr.Error())
+	} else if unwrappedErr := errors.Unwrap(err); unwrappedErr != nil {
 		inst.ErrCause = NewError(unwrappedErr)
 		inst.Msg = strings.TrimSuffix(inst.Msg, ": "+unwrappedErr.Error())
 	}
