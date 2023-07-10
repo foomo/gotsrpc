@@ -108,6 +108,20 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	if stats != nil {
 		stats.ResponseSize = writer.length
 		stats.Marshalling = time.Since(serializationStart)
+		if len(response) > 0 {
+			errResp := response[len(response)-1]
+			if v, ok := errResp.(interface {
+				Error() string
+			}); ok {
+				stats.ErrorCode = 1
+				stats.ErrorMessage = v.Error()
+			}
+			if v, ok := errResp.(interface {
+				ErrorCode() int
+			}); ok {
+				stats.ErrorCode = v.ErrorCode()
+			}
+		}
 	}
 	return nil
 }
