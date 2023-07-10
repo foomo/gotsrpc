@@ -110,18 +110,16 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		stats.Marshalling = time.Since(serializationStart)
 		if len(response) > 0 {
 			errResp := response[len(response)-1]
-			if errResp != nil {
-				if v, ok := errResp.(interface {
-					Error() string
-				}); ok {
-					stats.ErrorCode = 1
-					stats.ErrorMessage = v.Error()
-				}
-				if v, ok := errResp.(interface {
-					ErrorCode() int
-				}); ok {
-					stats.ErrorCode = v.ErrorCode()
-				}
+			if v, ok := errResp.(interface {
+				Error() string
+			}); ok && v != nil {
+				stats.ErrorCode = 1
+				stats.ErrorMessage = v.Error()
+			}
+			if v, ok := errResp.(interface {
+				ErrorCode() int
+			}); ok && v != nil {
+				stats.ErrorCode = v.ErrorCode()
 			}
 		}
 	}
