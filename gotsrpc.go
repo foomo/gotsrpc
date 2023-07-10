@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -110,13 +111,15 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		stats.Marshalling = time.Since(serializationStart)
 		if len(response) > 0 {
 			errResp := response[len(response)-1]
-			if v, ok := errResp.(error); ok && v != nil {
-				stats.ErrorCode = 1
-				stats.ErrorMessage = v.Error()
-				if v, ok := v.(interface {
-					ErrorCode() int
-				}); ok && v != nil {
-					stats.ErrorCode = v.ErrorCode()
+			if !reflect.ValueOf(errResp).IsNil() {
+				if v, ok := errResp.(error); ok {
+					stats.ErrorCode = 1
+					stats.ErrorMessage = v.Error()
+					if v, ok := v.(interface {
+						ErrorCode() int
+					}); ok {
+						stats.ErrorCode = v.ErrorCode()
+					}
 				}
 			}
 		}
