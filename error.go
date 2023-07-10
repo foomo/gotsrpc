@@ -46,9 +46,6 @@ func NewError(err error) *Error {
 	if unwrappedErr := errors.Unwrap(err); unwrappedErr != nil {
 		inst.ErrCause = NewError(unwrappedErr)
 		inst.Msg = strings.TrimSuffix(inst.Msg, ": "+unwrappedErr.Error())
-	} else if causeErr := errors.Cause(err); err != causeErr {
-		inst.ErrCause = NewError(causeErr)
-		inst.Msg = strings.TrimSuffix(inst.Msg, ": "+causeErr.Error())
 	}
 
 	return inst
