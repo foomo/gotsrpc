@@ -52,7 +52,7 @@ func call() {
 	c := backendsvs.NewDefaultServiceGoTSRPCClient("http://localhost:3000")
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- Error ----------------------")
 		var gotsrpcErr *gotsrpc.Error
 		serviceErr, err := c.Error(ctx)
 		if err != nil {
@@ -70,7 +70,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- Scalar ---------------------")
 		scalar, err := c.Scalar(ctx)
 		if err != nil {
 			panic("client error should be nil")
@@ -82,7 +82,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- MultiScalar ----------------")
 		scalar, err := c.MultiScalar(ctx)
 		if err != nil {
 			panic("client error should be nil")
@@ -94,7 +94,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- Struct ---------------------")
 		strct, err := c.Struct(ctx)
 		if err != nil {
 			panic("client error should be nil")
@@ -106,7 +106,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- WrappedError ---------------")
 		var gotsrpcErr *gotsrpc.Error
 		serviceErr, err := c.WrappedError(ctx)
 		if err != nil {
@@ -126,7 +126,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- ScalarError ----------------")
 		var scalarErr *backend.ScalarError
 		var gotsrpcErr *gotsrpc.Error
 		serviceErr, err := c.ScalarError(ctx)
@@ -148,7 +148,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- CustomError ----------------")
 		var customErr *backend.CustomError
 		var gotsrpcErr *gotsrpc.Error
 		serviceErr, err := c.CustomError(ctx)
@@ -170,7 +170,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- TypedError -----------------")
 		serviceErr, err := c.TypedError(ctx)
 		if err != nil {
 			panic("client error should be nil")
@@ -185,7 +185,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- TypedWrappedError ----------")
 		serviceErr, err := c.TypedWrappedError(ctx)
 		if err != nil {
 			panic("client error should be nil")
@@ -200,7 +200,7 @@ func call() {
 	}
 
 	{
-		fmt.Println("-------------------------")
+		fmt.Println("--- TypedCustomError -----------")
 		serviceErr, err := c.TypedCustomError(ctx)
 		if err != nil {
 			panic("client error should be nil")
