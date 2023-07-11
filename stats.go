@@ -12,5 +12,6 @@ type CallStats struct {
 	RequestSize   int
 	ResponseSize  int
 	ErrorCode     int
+	ErrorType     string
 	ErrorMessage  string
 }
