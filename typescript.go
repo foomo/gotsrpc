@@ -174,14 +174,23 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 			}
 			ts.nl()
 		case str.UnionFields[0].Value.Scalar != nil:
+			ts.app("export const " + str.Name + " = ")
+			ts.app("{ ")
+			for i, field := range str.UnionFields {
+				if i > 0 {
+					ts.app(", ")
+				}
+				ts.app("...")
+				field.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+			}
+			ts.app(" }")
+			ts.nl()
 			ts.app("export type " + str.Name + " = ")
 			for i, field := range str.UnionFields {
 				if i > 0 {
-					ts.app(" & ")
+					ts.app(" | ")
 				}
-				ts.app("(typeof ")
 				field.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
-				ts.app(")")
 			}
 			ts.nl()
 		default:
