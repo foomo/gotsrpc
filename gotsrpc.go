@@ -116,7 +116,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 					stats.ErrorCode = 1
 					stats.ErrorType = fmt.Sprintf("%T", v)
 					stats.ErrorMessage = v.Error()
-					if v, ok := v.(interface {
+					if v, ok := v.(interface { //nolint:errorlint
 						ErrorCode() int
 					}); ok {
 						stats.ErrorCode = v.ErrorCode()
@@ -146,7 +146,7 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 		fset := token.NewFileSet()
 		if gomod.ModFile != nil {
 			for _, rep := range gomod.ModFile.Replace {
-				if strings.HasPrefix(packageName, rep.Old.Path) {
+				if packageName == rep.Old.Path || strings.HasPrefix(packageName, rep.Old.Path+"/") {
 					if strings.HasPrefix(rep.New.String(), ".") || strings.HasPrefix(rep.New.Path, "/") {
 						trace("replacing package with local dir", packageName, rep.Old.String(), rep.New.String())
 						dir = strings.Replace(packageName, rep.Old.Path, filepath.Join(gomod.Path, rep.New.Path), 1)
@@ -159,7 +159,7 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 			}
 			if dir == "" {
 				for _, req := range gomod.ModFile.Require {
-					if strings.HasPrefix(packageName, req.Mod.Path) {
+					if packageName == req.Mod.Path || strings.HasPrefix(packageName, req.Mod.Path+"/") {
 						trace("resolving mod package", packageName, req.Mod.String())
 						dir = strings.TrimSuffix(path.Join(goPath, "pkg", "mod", req.Mod.String(), strings.TrimPrefix(packageName, req.Mod.Path)), "/")
 						break
