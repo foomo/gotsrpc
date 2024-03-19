@@ -2,12 +2,9 @@
 # Build customization
 builds:
   - binary: gotsrpc
-    main:   ./cmd/gotsrpc/gotsrpc.go
+    main: ./cmd/gotsrpc/gotsrpc.go
     env:
       - CGO_ENABLED=0
-    ldflags:
-      - -s -w -X cmd/gotsrpc/main.version={{.Version}}
-      - -s -w -X main.version={{.Version}}
     goos:
       - windows
       - darwin
@@ -15,19 +12,30 @@ builds:
     goarch:
       - amd64
       - arm64
+    goarm:
+      - 7
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X cmd/gotsrpc/gotsrpc.version={{.Version}}
 
-# .goreleaser.yml
+release:
+  prerelease: auto
+
 archives:
   - format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
 
+changelog:
+  use: github-native
+
 brews:
   # Reporitory to push the tap to.
-  - tap:
+  - repository:
       owner: foomo
-      name: homebrew-gotsrpc
+      name: homebrew-tap
     caveats: "gotsrpc gotsrpc.yml"
     homepage: "https://github.com/foomo/gotsrpc"
     description: "CLI utility to generate go and typescript RPC calls easily"
