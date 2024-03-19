@@ -19,16 +19,6 @@ install.debug:
 outdated:
 	go list -u -m -json all | go-mod-outdated -update -direct
 
-## Run goreleaser
-build:
-	goreleaser build --snapshot --rm-dist
-
-## run go build with debug
-build.debug:
-	rm -f bin/gotsrpc
-	go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
-
-
 ## === Tools ===
 
 EXAMPLES=basic errors monitor nullable union time
@@ -56,33 +46,15 @@ $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 .PHONY: lint
 lint:
 	@golangci-lint run
-	@for name in example/*/; do\
-		if [ $$name != "example/node_modules/" ]; then \
-			echo "-------- $${name} ------------";\
-			sh -c "cd $$(pwd)/$${name} && golangci-lint run";\
-		fi \
-  done
 
 .PHONY: lint.fix
 lint.fix:
 	@golangci-lint run --fix
-	@for name in example/*/; do\
-		if [ $$name != "example/node_modules/" ]; then \
-			echo "-------- $${name} ------------";\
-			sh -c "cd $$(pwd)/$${name} && golangci-lint run --fix";\
-		fi \
-  done
 
 .PHONY: tidy
 ## Run go mod tidy recursive
 tidy:
 	@go mod tidy
-	@for name in example/*/; do\
-		if [ $$name != "example/node_modules/" ]; then \
-			echo "-------- $${name} ------------";\
-			sh -c "cd $$(pwd)/$${name} && go mod tidy";\
-		fi \
-  done
 
 ## === Examples ===
 

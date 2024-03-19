@@ -1,5 +1,10 @@
 # Go / TypeScript and Go / Go RPC
 
+[![Build Status](https://github.com/foomo/gotsrpc/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/foomo/gotsrpc/actions/workflows/test.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/foomo/gotsrpc)](https://goreportcard.com/report/github.com/foomo/gotsrpc)
+[![godoc](https://godoc.org/github.com/foomo/gotsrpc?status.svg)](https://godoc.org/github.com/foomo/gotsrpc)
+[![goreleaser](https://github.com/foomo/gotsrpc/actions/workflows/release.yml/badge.svg)](https://github.com/foomo/gotsrpc/actions)
+
 ## Documentation
 
 Please refer to the documentation:
@@ -23,8 +28,3 @@ make install
 Release downloads:
 
 [https://github.com/foomo/gotsrpc/releases](https://github.com/foomo/gotsrpc/releases)
-
-## Github actions
-
-
-![checks](https://github.com/foomo/gotsrpc/actions/workflows/checks.yml/badge.svg)  ![goreleaser](https://github.com/foomo/gotsrpc/actions/workflows/goreleaser.yml/badge.svg)
