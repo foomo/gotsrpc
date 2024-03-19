@@ -32,7 +32,7 @@ func relativeFilePath(a, b string) (r string, e error) {
 	return
 }
 
-func commonJSImports(conf *config.Config, c *code, tsFilename string) {
+func commonJSImports(conf *config.Config, c *code, tsFilename string, code string) {
 	packageNames := make([]string, 0, len(conf.Mappings))
 	for packageName := range conf.Mappings {
 		packageNames = append(packageNames, packageName)
@@ -40,6 +40,11 @@ func commonJSImports(conf *config.Config, c *code, tsFilename string) {
 	sort.Strings(packageNames)
 	for _, packageName := range packageNames {
 		importMapping := conf.Mappings[packageName]
+
+		if len(code) > 0 && !strings.Contains(code, importMapping.TypeScriptModule+".") {
+			continue
+		}
+
 		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out)
 		if relativeErr != nil {
 			fmt.Println("can not derive a relative path between", tsFilename, "and", importMapping.Out, relativeErr)
@@ -141,10 +146,12 @@ func Build(conf *config.Config, goPath string) { //nolint:maintidx
 				_, _ = fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
 				os.Exit(3)
 			}
-			tsClientCode := newCode("	")
-			commonJSImports(conf, tsClientCode, target.Out)
-			tsClientCode.l("").l("")
-			ts = tsClientCode.string() + ts
+
+			// workaround to remove unneeded imports
+			importsCode := newCode("	")
+			commonJSImports(conf, importsCode, target.Out, ts)
+			importsCode.l("").l("")
+			ts = importsCode.string() + ts
 
 			// _, _ = fmt.Fprintln(os.Stdout, ts)
 			updateErr := updateCode(target.Out, getTSHeaderComment()+ts)
@@ -238,8 +245,6 @@ func Build(conf *config.Config, goPath string) { //nolint:maintidx
 		moduleCode := newCode("	")
 		structIndent := -3
 
-		commonJSImports(conf, moduleCode, mapping.Out)
-
 		var structNames []string
 
 		for structName := range mappedStructsMap {
@@ -254,7 +259,14 @@ func Build(conf *config.Config, goPath string) { //nolint:maintidx
 		}
 
 		moduleCode.l("// end of common js")
-		updateErr := updateCode(mapping.Out, getTSHeaderComment()+moduleCode.string())
+
+		// workaround to remove unneeded imports
+		importsCode := newCode("	")
+		commonJSImports(conf, importsCode, mapping.Out, moduleCode.string())
+		importsCode.l("").l("")
+		ts := importsCode.string() + moduleCode.string()
+
+		updateErr := updateCode(mapping.Out, getTSHeaderComment()+ts)
 		if updateErr != nil {
 			_, _ = fmt.Fprintln(os.Stderr, "	failed to update code in", mapping.Out, updateErr)
 		}
