@@ -116,7 +116,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 					stats.ErrorCode = 1
 					stats.ErrorType = fmt.Sprintf("%T", v)
 					stats.ErrorMessage = v.Error()
-					if v, ok := v.(interface { //nolint:errorlint
+					if v, ok := v.(interface {
 						ErrorCode() int
 					}); ok {
 						stats.ErrorCode = v.ErrorCode()

@@ -26,7 +26,7 @@ func NewError(err error) *Error {
 	}
 
 	// skip *withStack error type
-	if _, ok := err.(interface { //nolint:errorlint
+	if _, ok := err.(interface {
 		StackTrace() errors.StackTrace
 	}); ok && errors.Unwrap(err) != nil {
 		err = errors.Unwrap(err)
