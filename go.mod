@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/davecgh/go-spew v1.1.1
-	github.com/iancoleman/strcase v0.3.0
+	github.com/iancoleman/strcase v0.2.0 // Be aware of https://github.com/iancoleman/strcase/pull/49
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.19.0
@@ -25,6 +25,6 @@ require (
 	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
