@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/ugorji/go/codec v1.2.12
 	github.com/valyala/gorpc v0.0.0-20160519171614-908281bef774
-	golang.org/x/mod v0.16.0
+	golang.org/x/mod v0.17.0
 	golang.org/x/tools v0.19.0
 	gopkg.in/yaml.v2 v2.4.0
 )
