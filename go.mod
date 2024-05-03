@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/davecgh/go-spew v1.1.1
-	github.com/iancoleman/strcase v0.2.0 // Be aware of https://github.com/iancoleman/strcase/pull/49
+	github.com/iancoleman/strcase v0.3.0 // Be aware of https://github.com/iancoleman/strcase/pull/49
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.19.0
