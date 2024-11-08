@@ -31,6 +31,12 @@ jobs:
           check-latest: true
           go-version-file: go.mod
 
+      - uses: actions/setup-node@v4
+
+      - name: Run yarn install
+        working-directory: examples
+        run: yarn install
+
       - name: Run go mod tidy
         run: |
           make tidy

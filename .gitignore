@@ -1,7 +1,27 @@
-!.git*
-/vendor/
-dist/
-.idea
+.*
 bin/
+dist/
 tmp/
+
+## Git ##
+!.gitignore
+!.gitkeep
+
+## GitHub ##
+!.github/
+
+## Node ##
 **/node_modules/
+
+## TypeScript ###
+*.tsbuildinfo
+
+## Goreleaser ###
+!.goreleaser.yaml
+
+### Go ###
+/go.mod
+/go.sum
+/go.work
+/go.work.sum
+!.golangci.yaml

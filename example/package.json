@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "name": "@foomo/gotsrpc-examples",
   "devDependencies": {
-    "typescript": "^4.6.2"
+    "typescript": "5.6.3"
   }
 }
