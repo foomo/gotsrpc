@@ -1,6 +1,6 @@
 module:
-  name: github.com/foomo/gotsrpc/v2/example/time
-  path: ./
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
 
 targets:
   time:

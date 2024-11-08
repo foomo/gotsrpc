@@ -1,6 +1,6 @@
 module:
-  name: github.com/foomo/gotsrpc/v2/example/union
-  path: ./
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
 
 targets:
   union:
