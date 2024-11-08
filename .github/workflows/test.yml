@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-node@v4
 
       - name: Run yarn install
-        working-directory: examples
+        working-directory: example
         run: yarn install
 
       - name: Run go mod tidy
