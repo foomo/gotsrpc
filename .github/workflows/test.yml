@@ -4,9 +4,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
   merge_group:
-    branches: [ main ]
   workflow_dispatch:
 
 concurrency:
@@ -16,6 +14,11 @@ concurrency:
 env:
   GOFLAGS: -mod=readonly
   GOPROXY: https://proxy.golang.org
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
 
 jobs:
   test:
@@ -28,10 +31,24 @@ jobs:
           check-latest: true
           go-version-file: go.mod
 
+      - uses: actions/setup-node@v4
+
+      - name: Run yarn install
+        working-directory: example
+        run: yarn install
+
+      - name: Run go mod tidy
+        run: |
+          make tidy
+          git diff --exit-code
+
       - uses: golangci/golangci-lint-action@v5
-        with:
-          working-directory: ${{ matrix.gomod }}
 
       - name: Run tests
-        run: go test -v ./...
+        run: make test
+
+      - name: Make examples
+        run: |
+          make examples
+          git diff --exit-code
 
