@@ -10,6 +10,7 @@ test:
 install:
 	go install cmd/gotsrpc/gotsrpc.go
 
+.PHONY: install.debug
 ## Run go install with debug
 install.debug:
 	go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
@@ -18,6 +19,12 @@ install.debug:
 ## Show outdated direct dependencies
 outdated:
 	go list -u -m -json all | go-mod-outdated -update -direct
+
+.PHONY: build.debug
+## Build binary in debug mode
+build.debug:
+	rm -f bin/gotsrpc
+	go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 ## === Tools ===
 
