@@ -423,6 +423,12 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*Struct
 						Package: packageName,
 						Type:    getScalarFromAstIdent(typeSpecType),
 					}
+				case *ast.SelectorExpr:
+					trace("SelectorExpr", obj.Name)
+					structs[structName] = &Struct{
+						Name:    name,
+						Package: packageName,
+					}
 				case *ast.ArrayType:
 					arrayValue := &Value{}
 					arrayValue.loadExpr(typeSpec.Type, fileImports)

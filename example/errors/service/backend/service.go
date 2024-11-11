@@ -39,8 +39,8 @@ type (
 )
 
 const (
-	ScalarOne ScalarError = "one" //nolint:errname
-	ScalarTwo ScalarError = "two" //nolint:errname
+	ScalarOne ScalarError = "one"
+	ScalarTwo ScalarError = "two"
 
 	ScalarAOne ScalarA = "one"
 	ScalarATwo ScalarA = "two"
