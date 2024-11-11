@@ -21,8 +21,8 @@ type (
 )
 
 const (
-	ScalarErrorOne ScalarError = "scalar error one" //nolint:errname
-	ScalarErrorTwo ScalarError = "scalar error two" //nolint:errname
+	ScalarErrorOne ScalarError = "scalar error one"
+	ScalarErrorTwo ScalarError = "scalar error two"
 )
 
 func NewScalarError(e ScalarError) *ScalarError {

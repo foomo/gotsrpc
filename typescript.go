@@ -185,13 +185,7 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 			}
 			ts.app(" }")
 			ts.nl()
-			ts.app("export type " + str.Name + " = ")
-			for i, field := range str.UnionFields {
-				if i > 0 {
-					ts.app(" | ")
-				}
-				field.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
-			}
+			ts.app("export type " + str.Name + " = typeof " + str.Name)
 			ts.nl()
 		default:
 			return errors.New("could not resolve this union type")
