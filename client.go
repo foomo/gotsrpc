@@ -1,7 +1,6 @@
 package gotsrpc
 
 import (
-	"bufio"
 	"compress/gzip"
 	"context"
 	"fmt"
@@ -155,7 +154,7 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 				encodeWriter = snappyWriter
 				defer snappyWriter.Close()
 			case CompressorNone:
-				encodeWriter = bufio.NewWriterSize(writer, 1024)
+				encodeWriter = writer
 			default:
 				encodeWriter = writer
 			}
@@ -180,6 +179,8 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		req.Header.Set("Content-Encoding", "gzip")
 	case CompressorSnappy:
 		req.Header.Set("Content-Encoding", "snappy")
+	case CompressorNone:
+		// uncompressed, nothing to do
 	default:
 		// uncompressed, nothing to do
 	}

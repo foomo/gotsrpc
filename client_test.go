@@ -97,7 +97,6 @@ func TestNewBufferedClient(t *testing.T) {
 }
 
 func BenchmarkBufferedClient(b *testing.B) {
-
 	var testRequestData []interface{}
 	data, err := os.ReadFile("testdata/request.json")
 	require.NoError(b, err)
@@ -106,22 +105,33 @@ func BenchmarkBufferedClient(b *testing.B) {
 	require.NoError(b, err)
 
 	benchClient := func(b *testing.B, client Client) {
-
 		server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			writer.Write([]byte("[]"))
 		}))
 		defer server.Close()
 		b.ReportAllocs()
-
-		client.(*BufferedClient).client = server.Client()
+		b.ResetTimer()
+		if bc, ok := client.(*BufferedClient); ok {
+			bc.client = server.Client()
+		}
 
 		for i := 0; i < b.N; i++ {
 			err := client.Call(context.Background(), server.URL, "/test", "test", testRequestData, nil)
 			require.NoError(b, err)
 		}
 	}
+	benchmarks := map[string]Compressor{
+		"none":   CompressorNone,
+		"gzip":   CompressorGZIP,
+		"snappy": CompressorSnappy,
+	}
+	runs := 5
 
-	b.Run("uncompressed", func(b *testing.B) { benchClient(b, NewBufferedClient(WithCompressor(CompressorNone))) })
-	b.Run("gzip", func(b *testing.B) { benchClient(b, NewBufferedClient(WithCompressor(CompressorGZIP))) })
-	b.Run("snappy", func(b *testing.B) { benchClient(b, NewBufferedClient(WithCompressor(CompressorSnappy))) })
+	for name, compressor := range benchmarks {
+		b.Run(name, func(b *testing.B) {
+			for index := 0; index < runs; index++ {
+				b.Run(fmt.Sprintf("%d", index), func(b *testing.B) { benchClient(b, NewBufferedClient(WithCompressor(compressor))) })
+			}
+		})
+	}
 }
