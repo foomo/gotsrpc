@@ -115,7 +115,7 @@ func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
 	return errors.New("invalid handle type")
 }
 
-func getHandleForEncoding(encoding ClientEncoding) *clientHandle {
+func getHandleForType(encoding ClientEncoding) *clientHandle {
 	switch encoding {
 	case EncodingMsgpack:
 		return msgpackClientHandle

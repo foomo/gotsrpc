@@ -376,20 +376,29 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
         }
 
         func NewDefault` + interfaceName + `(url string) *` + clientName + ` {
-	        return New` + interfaceName + `(url, "` + service.Endpoint + `")
+	        return New` + interfaceName + `WithOptions(url, "` + service.Endpoint + `")
         }
 
         func New` + interfaceName + `(url string, endpoint string) *` + clientName + ` {
-			return New` + interfaceName + `WithClient(url, endpoint, nil) 
+			return New` + interfaceName + `WithOptions(url, endpoint) 
         }
 
+		// Deprecated: Use New` + interfaceName + `WithOptions instead
         func New` + interfaceName + `WithClient(url string, endpoint string, client *go_net_http.Client) *` + clientName + ` {
 	        return &` + clientName + `{
 		        URL: url,
 		        EndPoint: endpoint,
-		        Client: gotsrpc.NewClientWithHttpClient(client),
+				Client:   gotsrpc.NewBufferedClient(gotsrpc.WithHTTPClient(client)),
 	        }
-		}`)
+		}
+
+        func New` + interfaceName + `WithOptions(url string, endpoint string, options... gotsrpc.ClientOption) *` + clientName + ` {
+			return &HTTPServiceGoTSRPCClient{
+				URL:      url,
+				EndPoint: endpoint,
+				Client:   gotsrpc.NewBufferedClient(options...),
+			}
+		}` + "\n")
 
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)

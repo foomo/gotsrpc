@@ -21,20 +21,30 @@ type HTTPServiceGoTSRPCClient struct {
 }
 
 func NewDefaultServiceGoTSRPCClient(url string) *HTTPServiceGoTSRPCClient {
-	return NewServiceGoTSRPCClient(url, "/service")
+	return NewServiceGoTSRPCClientWithOptions(url, "/service")
 }
 
 func NewServiceGoTSRPCClient(url string, endpoint string) *HTTPServiceGoTSRPCClient {
-	return NewServiceGoTSRPCClientWithClient(url, endpoint, nil)
+	return NewServiceGoTSRPCClientWithOptions(url, endpoint)
 }
 
+// Deprecated: Use NewServiceGoTSRPCClientWithOptions instead
 func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_net_http.Client) *HTTPServiceGoTSRPCClient {
 	return &HTTPServiceGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
-		Client:   gotsrpc.NewClientWithHttpClient(client),
+		Client:   gotsrpc.NewBufferedClient(gotsrpc.WithHTTPClient(client)),
 	}
 }
+
+func NewServiceGoTSRPCClientWithOptions(url string, endpoint string, options ...gotsrpc.ClientOption) *HTTPServiceGoTSRPCClient {
+	return &HTTPServiceGoTSRPCClient{
+		URL:      url,
+		EndPoint: endpoint,
+		Client:   gotsrpc.NewBufferedClient(options...),
+	}
+}
+
 func (tsc *HTTPServiceGoTSRPCClient) Hello(ctx go_context.Context, v string) (retHello_0 string, clientErr error) {
 	args := []interface{}{v}
 	reply := []interface{}{&retHello_0}
