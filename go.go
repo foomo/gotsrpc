@@ -385,15 +385,11 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 
 		// Deprecated: Use New` + interfaceName + `WithOptions instead
         func New` + interfaceName + `WithClient(url string, endpoint string, client *go_net_http.Client) *` + clientName + ` {
-	        return &` + clientName + `{
-		        URL: url,
-		        EndPoint: endpoint,
-				Client:   gotsrpc.NewBufferedClient(gotsrpc.WithHTTPClient(client)),
-	        }
+	        return New` + interfaceName + `WithOptions(url, endpoint, gotsrpc.WithHTTPClient(client)) 
 		}
 
         func New` + interfaceName + `WithOptions(url string, endpoint string, options... gotsrpc.ClientOption) *` + clientName + ` {
-			return &HTTPServiceGoTSRPCClient{
+			return &` + clientName + `{
 				URL:      url,
 				EndPoint: endpoint,
 				Client:   gotsrpc.NewBufferedClient(options...),

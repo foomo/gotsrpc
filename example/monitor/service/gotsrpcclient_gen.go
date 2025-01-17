@@ -30,11 +30,7 @@ func NewServiceGoTSRPCClient(url string, endpoint string) *HTTPServiceGoTSRPCCli
 
 // Deprecated: Use NewServiceGoTSRPCClientWithOptions instead
 func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_net_http.Client) *HTTPServiceGoTSRPCClient {
-	return &HTTPServiceGoTSRPCClient{
-		URL:      url,
-		EndPoint: endpoint,
-		Client:   gotsrpc.NewBufferedClient(gotsrpc.WithHTTPClient(client)),
-	}
+	return NewServiceGoTSRPCClientWithOptions(url, endpoint, gotsrpc.WithHTTPClient(client))
 }
 
 func NewServiceGoTSRPCClientWithOptions(url string, endpoint string, options ...gotsrpc.ClientOption) *HTTPServiceGoTSRPCClient {
