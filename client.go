@@ -133,17 +133,17 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	var encodeWriter io.Writer
 	switch c.compressor {
 	case CompressorGZIP:
-		gzipWriter := globalCompressorPools[CompressorGZIP].Get().(*gzip.Writer)
+		gzipWriter := globalCompressorWriterPools[CompressorGZIP].Get().(*gzip.Writer)
 		gzipWriter.Reset(buffer)
 
-		defer globalCompressorPools[CompressorGZIP].Put(gzipWriter)
+		defer globalCompressorWriterPools[CompressorGZIP].Put(gzipWriter)
 
 		encodeWriter = gzipWriter
 	case CompressorSnappy:
-		snappyWriter := globalCompressorPools[CompressorSnappy].Get().(*snappy.Writer)
+		snappyWriter := globalCompressorWriterPools[CompressorSnappy].Get().(*snappy.Writer)
 		snappyWriter.Reset(buffer)
 
-		defer globalCompressorPools[CompressorSnappy].Put(snappyWriter)
+		defer globalCompressorWriterPools[CompressorSnappy].Put(snappyWriter)
 		encodeWriter = snappyWriter
 	case CompressorNone:
 		encodeWriter = buffer
@@ -177,9 +177,9 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		req.Header.Set("Content-Encoding", "snappy")
 		req.Header.Set("Accept-Encoding", "snappy")
 	case CompressorNone:
-		// Dissalow Automatic Compression
-		req.Header.Set("Content-Encoding", "")
-		req.Header.Set("Accept-Encoding", "")
+		// Disable Automatic Compression
+		// https://http.dev/accept-encoding
+		req.Header.Set("Accept-Encoding", "identity")
 		// uncompressed, nothing to do
 	default:
 		// uncompressed, nothing to do
@@ -215,14 +215,20 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	var responseBodyReader io.Reader
 	switch resp.Header.Get("Content-Encoding") {
 	case "snappy":
-		responseBodyReader = snappy.NewReader(resp.Body)
+		snappyReader := globalCompressorReaderPools[CompressorSnappy].Get().(*snappy.Reader)
+		defer globalCompressorReaderPools[CompressorSnappy].Put(snappyReader)
+
+		snappyReader.Reset(resp.Body)
+		responseBodyReader = snappyReader
 	case "gzip":
-		gzipReader, err := gzip.NewReader(resp.Body)
+		gzipReader := globalCompressorReaderPools[CompressorGZIP].Get().(*gzip.Reader)
+		defer globalCompressorReaderPools[CompressorGZIP].Put(gzipReader)
+
+		err := gzipReader.Reset(resp.Body)
 		if err != nil {
 			return NewClientError(errors.Wrap(err, "could not create gzip reader"))
 		}
 		responseBodyReader = gzipReader
-		defer gzipReader.Close()
 	default:
 		responseBodyReader = resp.Body
 	}

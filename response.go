@@ -7,20 +7,11 @@ import (
 	"net/http"
 	"reflect"
 	"slices"
-	"sync"
 	"time"
 
 	"github.com/golang/snappy"
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
-)
-
-var (
-	// Read-only global compressor pools
-	globalCompressorPools = map[Compressor]*sync.Pool{
-		CompressorGZIP:   {New: func() interface{} { return gzip.NewWriter(nil) }},
-		CompressorSnappy: {New: func() interface{} { return snappy.NewBufferedWriter(nil) }},
-	}
 )
 
 // Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
@@ -38,19 +29,19 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		responseWriter.Header().Set("Content-Encoding", "snappy")
 		responseWriter.Header().Set("Vary", "Accept-Encoding")
 
-		snappyWriter := globalCompressorPools[CompressorSnappy].Get().(*snappy.Writer)
+		snappyWriter := globalCompressorWriterPools[CompressorSnappy].Get().(*snappy.Writer)
 		snappyWriter.Reset(responseWriter)
 
-		defer globalCompressorPools[CompressorSnappy].Put(snappyWriter)
+		defer globalCompressorWriterPools[CompressorSnappy].Put(snappyWriter)
 		responseBody = snappyWriter
 	case slices.Contains(r.Header.Values("Accept-Encoding"), "gzip"):
 		responseWriter.Header().Set("Content-Encoding", "gzip")
 		responseWriter.Header().Set("Vary", "Accept-Encoding")
 
-		gzipWriter := globalCompressorPools[CompressorGZIP].Get().(*gzip.Writer)
+		gzipWriter := globalCompressorWriterPools[CompressorGZIP].Get().(*gzip.Writer)
 		gzipWriter.Reset(responseWriter)
 
-		defer globalCompressorPools[CompressorGZIP].Put(gzipWriter)
+		defer globalCompressorWriterPools[CompressorGZIP].Put(gzipWriter)
 		responseBody = gzipWriter
 	default:
 		responseBody = responseWriter

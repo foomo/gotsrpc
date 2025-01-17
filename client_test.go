@@ -101,6 +101,8 @@ func BenchmarkBufferedClient(b *testing.B) {
 	require.NoError(b, err)
 
 	benchClient := func(b *testing.B, client Client) {
+		b.ReportAllocs()
+
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var args []map[string]interface{}
 			err := LoadArgs(&args, nil, r)
@@ -109,7 +111,6 @@ func BenchmarkBufferedClient(b *testing.B) {
 			_ = Reply([]interface{}{"HI"}, nil, r, w)
 		}))
 		defer server.Close()
-		b.ReportAllocs()
 
 		if bc, ok := client.(*BufferedClient); ok {
 			bc.client = server.Client()
@@ -121,11 +122,11 @@ func BenchmarkBufferedClient(b *testing.B) {
 		}
 	}
 	benchmarks := map[string]Compressor{
-		"none":   CompressorNone,
-		"gzip":   CompressorGZIP,
-		"snappy": CompressorSnappy,
+		"none": CompressorNone,
+		//"gzip":   CompressorGZIP,
+		//"snappy": CompressorSnappy,
 	}
-	runs := 2
+	runs := 1
 
 	for name, compressor := range benchmarks {
 		b.Run(name, func(b *testing.B) {

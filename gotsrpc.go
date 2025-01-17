@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/golang/snappy"
@@ -25,6 +26,18 @@ import (
 )
 
 type contextKey string
+
+var (
+	// Read-only global compressor pools
+	globalCompressorWriterPools = map[Compressor]*sync.Pool{
+		CompressorGZIP:   {New: func() interface{} { return gzip.NewWriter(io.Discard) }},
+		CompressorSnappy: {New: func() interface{} { return snappy.NewBufferedWriter(io.Discard) }},
+	}
+	globalCompressorReaderPools = map[Compressor]*sync.Pool{
+		CompressorGZIP:   {New: func() interface{} { return &gzip.Reader{} }},
+		CompressorSnappy: {New: func() interface{} { return snappy.NewReader(nil) }},
+	}
+)
 
 const contextStatsKey contextKey = "gotsrpcStats"
 
@@ -53,20 +66,34 @@ func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	var bodyReader io.Reader = r.Body
 	switch r.Header.Get("Content-Encoding") {
 	case "snappy":
-		bodyReader = snappy.NewReader(r.Body)
+		snappyReader := globalCompressorReaderPools[CompressorSnappy].Get().(*snappy.Reader)
+		defer globalCompressorReaderPools[CompressorSnappy].Put(snappyReader)
+
+		snappyReader.Reset(r.Body)
+		bodyReader = snappyReader
 	case "gzip":
-		gzipReader, err := gzip.NewReader(r.Body)
+		gzipReader := globalCompressorReaderPools[CompressorGZIP].Get().(*gzip.Reader)
+		defer globalCompressorReaderPools[CompressorGZIP].Put(gzipReader)
+
+		err := gzipReader.Reset(r.Body)
 		if err != nil {
-			return errors.Wrap(err, "could not create gzip reader")
+			return NewClientError(errors.Wrap(err, "could not create gzip reader"))
 		}
 		bodyReader = gzipReader
-		defer gzipReader.Close()
 	}
 	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
 
 	if err := codec.NewDecoder(bodyReader, handle).Decode(args); err != nil {
 		return errors.Wrap(err, "could not decode arguments")
 	}
+
+	// We need to close the reader at the end of the function
+	if writer, ok := bodyReader.(io.Closer); ok {
+		if err := writer.Close(); err != nil {
+			return errors.Wrap(err, "failed to write to response body")
+		}
+	}
+
 	if callStats != nil {
 		callStats.Unmarshalling = time.Since(start)
 		callStats.RequestSize = int(r.ContentLength)
