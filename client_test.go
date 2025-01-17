@@ -54,6 +54,7 @@ func TestNewBufferedClient(t *testing.T) {
 		encoding ClientEncoding,
 		compressor Compressor,
 	) {
+		t.Helper()
 		requiredResponseMessage := "Fake Response Message"
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var args []map[string]interface{}
