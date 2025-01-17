@@ -27,7 +27,6 @@ build.debug:
 	go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 ## === Tools ===
-example: example.basic example.errors example.monitor example.nullable example.union example.time
 
 EXAMPLES=basic errors monitor nullable union time
 define examples
