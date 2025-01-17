@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -33,67 +32,63 @@ func Test_newRequest(t *testing.T) {
 }
 
 func TestNewBufferedClient(t *testing.T) {
+	contentTypeHeaderMap := map[ClientEncoding]string{
+		EncodingMsgpack: "application/msgpack; charset=utf-8",
+		EncodingJson:    "application/json; charset=utf-8",
+	}
+
+	contentEncodingHeaderMap := map[Compressor]string{
+		CompressorGZIP:   "gzip",
+		CompressorSnappy: "snappy",
+	}
+
 	var testRequestData []interface{}
 	data, err := os.ReadFile("testdata/request.json")
 	require.NoError(t, err)
 
 	err = json.Unmarshal(data, &testRequestData)
 	require.NoError(t, err)
-	t.Run("gzip", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			//require.Equal(t, "application/msgpack; charset=utf-8", request.Header.Get("Content-Type"))
-			require.Equal(t, "gzip", request.Header.Get("Content-Encoding"))
-			data, _ := io.ReadAll(request.Body)
-			fmt.Println(string(data))
 
-			_, _ = writer.Write([]byte("[]"))
+	testClient := func(
+		encoding ClientEncoding,
+		compressor Compressor,
+		t *testing.T,
+	) {
+		requiredResponseMessage := "Fake Response Message"
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var args []map[string]interface{}
+			err := LoadArgs(&args, nil, r)
+			require.NoError(t, err)
+
+			require.Equal(t, contentTypeHeaderMap[encoding], r.Header.Get("Content-Type"))
+			require.Equal(t, contentEncodingHeaderMap[compressor], r.Header.Get("Content-Encoding"))
+
+			_ = Reply([]interface{}{requiredResponseMessage}, nil, r, w)
 		}))
 		defer server.Close()
 
 		client := NewBufferedClient(
-			WithCompressor(CompressorGZIP),
+			WithCompressor(compressor),
+			WithHTTPClient(server.Client()),
+			WithClientEncoding(encoding),
 		)
 
-		assert.NotNil(t, client)
-		err := client.Call(context.Background(), server.URL, "/test", "test", testRequestData, nil)
-		assert.NoError(t, err)
-	})
-	t.Run("snappy", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			//require.Equal(t, "application/msgpack; charset=utf-8", request.Header.Get("Content-Type"))
-			require.Equal(t, "snappy", request.Header.Get("Content-Encoding"))
-			data, _ := io.ReadAll(request.Body)
-			fmt.Println(string(data))
+		require.NotNil(t, client)
 
-			_, _ = writer.Write([]byte("[]"))
-		}))
-		defer server.Close()
+		var actualResponseMessage string
+		response := []interface{}{&actualResponseMessage}
 
-		client := NewBufferedClient(
-			WithCompressor(CompressorSnappy),
-		)
-
-		assert.NotNil(t, client)
-		err := client.Call(context.Background(), server.URL, "/test", "test", testRequestData, nil)
-		assert.NoError(t, err)
-	})
-	t.Run("plain", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			//require.Equal(t, "application/msgpack; charset=utf-8", request.Header.Get("Content-Type"))
-			require.Empty(t, request.Header.Get("Content-Encoding"))
-			data, _ := io.ReadAll(request.Body)
-			fmt.Println(string(data))
-
-			_, _ = writer.Write([]byte("[]"))
-		}))
-		defer server.Close()
-
-		client := NewBufferedClient()
-
-		assert.NotNil(t, client)
-		err := client.Call(context.Background(), server.URL, "/test", "test", testRequestData, nil)
-		assert.NoError(t, err)
-	})
+		err := client.Call(context.Background(), server.URL, "/Example", "Example", testRequestData, response)
+		require.NoError(t, err)
+		require.Equal(t, requiredResponseMessage, actualResponseMessage)
+	}
+	for _, encoding := range []ClientEncoding{EncodingMsgpack, EncodingJson} {
+		for _, compressor := range []Compressor{CompressorNone, CompressorGZIP, CompressorSnappy} {
+			t.Run(fmt.Sprintf("%s/%s", encoding, compressor), func(t *testing.T) {
+				testClient(encoding, compressor, t)
+			})
+		}
+	}
 }
 
 func BenchmarkBufferedClient(b *testing.B) {
@@ -105,12 +100,12 @@ func BenchmarkBufferedClient(b *testing.B) {
 	require.NoError(b, err)
 
 	benchClient := func(b *testing.B, client Client) {
-		server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-			writer.Write([]byte("[]"))
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_ = Reply([]interface{}{"HI"}, nil, r, w)
 		}))
 		defer server.Close()
 		b.ReportAllocs()
-		b.ResetTimer()
+
 		if bc, ok := client.(*BufferedClient); ok {
 			bc.client = server.Client()
 		}
@@ -125,7 +120,7 @@ func BenchmarkBufferedClient(b *testing.B) {
 		"gzip":   CompressorGZIP,
 		"snappy": CompressorSnappy,
 	}
-	runs := 5
+	runs := 3
 
 	for name, compressor := range benchmarks {
 		b.Run(name, func(b *testing.B) {

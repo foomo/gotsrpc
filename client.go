@@ -1,6 +1,7 @@
 package gotsrpc
 
 import (
+	"bytes"
 	"compress/gzip"
 	"context"
 	"fmt"
@@ -11,7 +12,6 @@ import (
 	"github.com/golang/snappy"
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
-	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -25,6 +25,19 @@ const (
 	CompressorGZIP
 	CompressorSnappy
 )
+
+func (c Compressor) String() string {
+	switch c {
+	case CompressorNone:
+		return "none"
+	case CompressorGZIP:
+		return "gzip"
+	case CompressorSnappy:
+		return "snappy"
+	default:
+		return "unknown"
+	}
+}
 
 // ClientTransport to use for calls
 // var ClientTransport = &http.Transport{}
@@ -76,10 +89,9 @@ func WithHTTPClient(c *http.Client) ClientOption {
 	}
 }
 
-// WithClientHandle allows you to specify a custom clientHandle.
-func WithClientHandle(h *clientHandle) ClientOption {
+func WithClientEncoding(encoding ClientEncoding) ClientOption {
 	return func(bc *BufferedClient) {
-		bc.handle = h
+		bc.handle = getHandleForType(encoding)
 	}
 }
 
@@ -102,7 +114,7 @@ func NewBufferedClient(opts ...ClientOption) *BufferedClient {
 	bc := &BufferedClient{
 		client:     defaultHttpFactory(),
 		headers:    make(http.Header),
-		handle:     getHandleForType(EncodingJson),
+		handle:     getHandleForType(EncodingMsgpack),
 		compressor: CompressorNone,
 		writerPoolMap: map[Compressor]*sync.Pool{
 			CompressorGZIP: {
@@ -124,52 +136,45 @@ func NewBufferedClient(opts ...ClientOption) *BufferedClient {
 // Call calls a method on the remove service
 func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) error {
 	// Marshall args
-	reader, writer := io.Pipe()
-	defer reader.Close()
+	buffer := &bytes.Buffer{}
+
 	// If no arguments are set, remove
-	g, _ := errgroup.WithContext(ctx)
 
-	if len(args) != 0 {
-		g.Go(func() error {
+	var encodeWriter io.Writer
+	switch c.compressor {
+	case CompressorGZIP:
+		gzipWriter := c.writerPoolMap[CompressorGZIP].Get().(*gzip.Writer)
+		gzipWriter.Reset(buffer)
 
-			// Close piped writer after encoding
-			defer writer.Close()
+		defer c.writerPoolMap[CompressorGZIP].Put(gzipWriter)
 
-			var encodeWriter io.Writer
-			switch c.compressor {
-			case CompressorGZIP:
-				gzipWriter := c.writerPoolMap[CompressorGZIP].Get().(*gzip.Writer)
-				gzipWriter.Reset(writer)
+		encodeWriter = gzipWriter
+	case CompressorSnappy:
+		snappyWriter := c.writerPoolMap[CompressorSnappy].Get().(*snappy.Writer)
+		snappyWriter.Reset(buffer)
 
-				defer c.writerPoolMap[CompressorGZIP].Put(gzipWriter)
+		defer c.writerPoolMap[CompressorSnappy].Put(snappyWriter)
+		encodeWriter = snappyWriter
+	case CompressorNone:
+		encodeWriter = buffer
+	default:
+		encodeWriter = buffer
+	}
 
-				encodeWriter = gzipWriter
-				defer gzipWriter.Close()
-			case CompressorSnappy:
-				snappyWriter := c.writerPoolMap[CompressorSnappy].Get().(*snappy.Writer)
-				snappyWriter.Reset(writer)
+	err := codec.NewEncoder(encodeWriter, c.handle.handle).Encode(args)
+	if err != nil {
+		return errors.Wrap(err, "could not encode data")
+	}
 
-				defer c.writerPoolMap[CompressorSnappy].Put(snappyWriter)
-
-				encodeWriter = snappyWriter
-				defer snappyWriter.Close()
-			case CompressorNone:
-				encodeWriter = writer
-			default:
-				encodeWriter = writer
-			}
-
-			return codec.NewEncoder(encodeWriter, c.handle.handle).Encode(args)
-		})
-	} else {
-		// Without arguments, skip the piping altogether
-		writer.Close()
+	if writer, ok := encodeWriter.(io.Closer); ok {
+		if err = writer.Close(); err != nil {
+			return errors.Wrap(err, "failed to write to request body")
+		}
 	}
 
 	// Create post url
 	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
-
-	req, err := newRequest(ctx, postURL, c.handle.contentType, reader, c.headers.Clone())
+	req, err := newRequest(ctx, postURL, c.handle.contentType, buffer, c.headers.Clone())
 	if err != nil {
 		return NewClientError(errors.Wrap(err, "failed to create request"))
 	}
@@ -177,8 +182,10 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	switch c.compressor {
 	case CompressorGZIP:
 		req.Header.Set("Content-Encoding", "gzip")
+		req.Header.Set("Accept-Encoding", "gzip")
 	case CompressorSnappy:
 		req.Header.Set("Content-Encoding", "snappy")
+		req.Header.Set("Accept-Encoding", "snappy")
 	case CompressorNone:
 		// uncompressed, nothing to do
 	default:
@@ -190,13 +197,6 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		return NewClientError(errors.Wrap(err, "failed to send request"))
 	}
 	defer resp.Body.Close()
-
-	if len(args) != 0 {
-		err = g.Wait()
-		if err != nil {
-			return NewClientError(errors.Wrap(err, "failed to send request data"))
-		}
-	}
 
 	// Check status
 	if resp.StatusCode != http.StatusOK {
@@ -219,7 +219,23 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		}
 	}
 
-	if err := codec.NewDecoder(resp.Body, clientHandle.handle).Decode(wrappedReply); err != nil {
+	var responseBodyReader io.Reader
+
+	switch resp.Header.Get("Content-Encoding") {
+	case "snappy":
+		responseBodyReader = snappy.NewReader(resp.Body)
+	case "gzip":
+		gzipReader, err := gzip.NewReader(resp.Body)
+		if err != nil {
+			return NewClientError(errors.Wrap(err, "could not create gzip reader"))
+		}
+		responseBodyReader = gzipReader
+		defer gzipReader.Close()
+	default:
+		responseBodyReader = resp.Body
+	}
+
+	if err := codec.NewDecoder(responseBodyReader, clientHandle.handle).Decode(wrappedReply); err != nil {
 		return NewClientError(errors.Wrap(err, "failed to decode response"))
 	}
 

@@ -12,6 +12,17 @@ import (
 
 type ClientEncoding int
 
+func (c ClientEncoding) String() string {
+	switch c {
+	case EncodingMsgpack:
+		return "msgpack"
+	case EncodingJson:
+		return "json"
+	default:
+		return "unknown"
+	}
+}
+
 const (
 	EncodingMsgpack = ClientEncoding(0)
 	EncodingJson    = ClientEncoding(1) //nolint:stylecheck

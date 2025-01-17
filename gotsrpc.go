@@ -1,21 +1,23 @@
 package gotsrpc
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/golang/snappy"
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
 
@@ -48,11 +50,23 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
+	var bodyReader io.Reader = r.Body
 
+	switch r.Header.Get("Content-Encoding") {
+	case "snappy":
+		bodyReader = snappy.NewReader(r.Body)
+	case "gzip":
+		gzipReader, err := gzip.NewReader(r.Body)
+		if err != nil {
+			return errors.Wrap(err, "could not create gzip reader")
+		}
+		bodyReader = gzipReader
+		defer gzipReader.Close()
+	}
 	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
-	if errDecode := codec.NewDecoder(r.Body, handle).Decode(args); errDecode != nil {
-		_, _ = fmt.Fprintln(os.Stderr, errDecode.Error())
-		return errors.Wrap(errDecode, "could not decode arguments")
+
+	if err := codec.NewDecoder(bodyReader, handle).Decode(args); err != nil {
+		return errors.Wrap(err, "could not decode arguments")
 	}
 	if callStats != nil {
 		callStats.Unmarshalling = time.Since(start)
@@ -83,49 +97,6 @@ func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
 
 func ClearStats(r *http.Request) {
 	*r = *r.WithContext(context.WithValue(r.Context(), contextStatsKey, nil))
-}
-
-// Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
-func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
-	writer := newResponseWriterWithLength(w)
-	serializationStart := time.Now()
-
-	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
-
-	writer.Header().Set("Content-Type", clientHandle.contentType)
-
-	if clientHandle.beforeEncodeReply != nil {
-		if err := clientHandle.beforeEncodeReply(&response); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err.Error())
-			return errors.Wrap(err, "error during before encoder reply")
-		}
-	}
-
-	if err := codec.NewEncoder(writer, clientHandle.handle).Encode(response); err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err.Error())
-		return errors.Wrap(err, "could not encode data to accepted format")
-	}
-
-	if stats != nil {
-		stats.ResponseSize = writer.length
-		stats.Marshalling = time.Since(serializationStart)
-		if len(response) > 0 {
-			errResp := response[len(response)-1]
-			if v, ok := errResp.(error); ok && v != nil {
-				if !reflect.ValueOf(v).IsNil() {
-					stats.ErrorCode = 1
-					stats.ErrorType = fmt.Sprintf("%T", v)
-					stats.ErrorMessage = v.Error()
-					if v, ok := v.(interface {
-						ErrorCode() int
-					}); ok {
-						stats.ErrorCode = v.ErrorCode()
-					}
-				}
-			}
-		}
-	}
-	return nil
 }
 
 func parserExcludeFiles(info os.FileInfo) bool {
