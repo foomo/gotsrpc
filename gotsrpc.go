@@ -51,7 +51,6 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
 	var bodyReader io.Reader = r.Body
-
 	switch r.Header.Get("Content-Encoding") {
 	case "snappy":
 		bodyReader = snappy.NewReader(r.Body)

@@ -82,6 +82,7 @@ func TestNewBufferedClient(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, requiredResponseMessage, actualResponseMessage)
 	}
+
 	for _, encoding := range []ClientEncoding{EncodingMsgpack, EncodingJson} {
 		for _, compressor := range []Compressor{CompressorNone, CompressorGZIP, CompressorSnappy} {
 			t.Run(fmt.Sprintf("%s/%s", encoding, compressor), func(t *testing.T) {
@@ -101,6 +102,10 @@ func BenchmarkBufferedClient(b *testing.B) {
 
 	benchClient := func(b *testing.B, client Client) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var args []map[string]interface{}
+			err := LoadArgs(&args, nil, r)
+			require.NoError(b, err)
+
 			_ = Reply([]interface{}{"HI"}, nil, r, w)
 		}))
 		defer server.Close()
@@ -120,7 +125,7 @@ func BenchmarkBufferedClient(b *testing.B) {
 		"gzip":   CompressorGZIP,
 		"snappy": CompressorSnappy,
 	}
-	runs := 3
+	runs := 2
 
 	for name, compressor := range benchmarks {
 		b.Run(name, func(b *testing.B) {

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 
 	"github.com/golang/snappy"
 	"github.com/pkg/errors"
@@ -68,11 +67,10 @@ func newRequest(ctx context.Context, url string, contentType string, reader io.R
 }
 
 type BufferedClient struct {
-	client        *http.Client
-	handle        *clientHandle
-	headers       http.Header
-	compressor    Compressor
-	writerPoolMap map[Compressor]*sync.Pool
+	client     *http.Client
+	handle     *clientHandle
+	headers    http.Header
+	compressor Compressor
 }
 
 // ClientOption is a function that configures a BufferedClient.
@@ -116,14 +114,6 @@ func NewBufferedClient(opts ...ClientOption) *BufferedClient {
 		headers:    make(http.Header),
 		handle:     getHandleForType(EncodingMsgpack),
 		compressor: CompressorNone,
-		writerPoolMap: map[Compressor]*sync.Pool{
-			CompressorGZIP: {
-				New: func() interface{} { return gzip.NewWriter(nil) },
-			},
-			CompressorSnappy: {
-				New: func() interface{} { return snappy.NewBufferedWriter(nil) },
-			},
-		},
 	}
 
 	// Apply each option
@@ -143,17 +133,17 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	var encodeWriter io.Writer
 	switch c.compressor {
 	case CompressorGZIP:
-		gzipWriter := c.writerPoolMap[CompressorGZIP].Get().(*gzip.Writer)
+		gzipWriter := globalCompressorPools[CompressorGZIP].Get().(*gzip.Writer)
 		gzipWriter.Reset(buffer)
 
-		defer c.writerPoolMap[CompressorGZIP].Put(gzipWriter)
+		defer globalCompressorPools[CompressorGZIP].Put(gzipWriter)
 
 		encodeWriter = gzipWriter
 	case CompressorSnappy:
-		snappyWriter := c.writerPoolMap[CompressorSnappy].Get().(*snappy.Writer)
+		snappyWriter := globalCompressorPools[CompressorSnappy].Get().(*snappy.Writer)
 		snappyWriter.Reset(buffer)
 
-		defer c.writerPoolMap[CompressorSnappy].Put(snappyWriter)
+		defer globalCompressorPools[CompressorSnappy].Put(snappyWriter)
 		encodeWriter = snappyWriter
 	case CompressorNone:
 		encodeWriter = buffer
@@ -187,6 +177,9 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		req.Header.Set("Content-Encoding", "snappy")
 		req.Header.Set("Accept-Encoding", "snappy")
 	case CompressorNone:
+		// Dissalow Automatic Compression
+		req.Header.Set("Content-Encoding", "")
+		req.Header.Set("Accept-Encoding", "")
 		// uncompressed, nothing to do
 	default:
 		// uncompressed, nothing to do
@@ -220,7 +213,6 @@ func (c *BufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	}
 
 	var responseBodyReader io.Reader
-
 	switch resp.Header.Get("Content-Encoding") {
 	case "snappy":
 		responseBodyReader = snappy.NewReader(resp.Body)
