@@ -16,10 +16,11 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
+require github.com/golang/snappy v0.0.4
+
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
