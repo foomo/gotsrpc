@@ -66,20 +66,22 @@ func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	var bodyReader io.Reader = r.Body
 	switch r.Header.Get("Content-Encoding") {
 	case "snappy":
-		snappyReader := globalCompressorReaderPools[CompressorSnappy].Get().(*snappy.Reader)
-		defer globalCompressorReaderPools[CompressorSnappy].Put(snappyReader)
+		if snappyReader, ok := globalCompressorReaderPools[CompressorSnappy].Get().(*snappy.Reader); ok {
+			defer globalCompressorReaderPools[CompressorSnappy].Put(snappyReader)
 
-		snappyReader.Reset(r.Body)
-		bodyReader = snappyReader
-	case "gzip":
-		gzipReader := globalCompressorReaderPools[CompressorGZIP].Get().(*gzip.Reader)
-		defer globalCompressorReaderPools[CompressorGZIP].Put(gzipReader)
-
-		err := gzipReader.Reset(r.Body)
-		if err != nil {
-			return NewClientError(errors.Wrap(err, "could not create gzip reader"))
+			snappyReader.Reset(r.Body)
+			bodyReader = snappyReader
 		}
-		bodyReader = gzipReader
+	case "gzip":
+		if gzipReader, ok := globalCompressorReaderPools[CompressorGZIP].Get().(*gzip.Reader); ok {
+			defer globalCompressorReaderPools[CompressorGZIP].Put(gzipReader)
+
+			err := gzipReader.Reset(r.Body)
+			if err != nil {
+				return NewClientError(errors.Wrap(err, "could not create gzip reader"))
+			}
+			bodyReader = gzipReader
+		}
 	}
 	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
 

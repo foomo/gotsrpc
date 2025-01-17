@@ -19,7 +19,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	responseWriter := newResponseWriterWithLength(w)
 	defer recordStats(stats, response, responseWriter)()
 
-	var responseBody io.Writer = responseWriter
+	var responseBody io.Writer
 
 	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
 	responseWriter.Header().Set("Content-Type", clientHandle.contentType)
@@ -28,21 +28,23 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	case slices.Contains(r.Header.Values("Accept-Encoding"), "snappy"):
 		responseWriter.Header().Set("Content-Encoding", "snappy")
 		responseWriter.Header().Set("Vary", "Accept-Encoding")
+		if snappyWriter, ok := globalCompressorWriterPools[CompressorSnappy].Get().(*snappy.Writer); ok {
+			snappyWriter.Reset(responseWriter)
 
-		snappyWriter := globalCompressorWriterPools[CompressorSnappy].Get().(*snappy.Writer)
-		snappyWriter.Reset(responseWriter)
+			defer globalCompressorWriterPools[CompressorSnappy].Put(snappyWriter)
+			responseBody = snappyWriter
+		}
 
-		defer globalCompressorWriterPools[CompressorSnappy].Put(snappyWriter)
-		responseBody = snappyWriter
 	case slices.Contains(r.Header.Values("Accept-Encoding"), "gzip"):
 		responseWriter.Header().Set("Content-Encoding", "gzip")
 		responseWriter.Header().Set("Vary", "Accept-Encoding")
 
-		gzipWriter := globalCompressorWriterPools[CompressorGZIP].Get().(*gzip.Writer)
-		gzipWriter.Reset(responseWriter)
+		if gzipWriter, ok := globalCompressorWriterPools[CompressorGZIP].Get().(*gzip.Writer); ok {
+			gzipWriter.Reset(responseWriter)
 
-		defer globalCompressorWriterPools[CompressorGZIP].Put(gzipWriter)
-		responseBody = gzipWriter
+			defer globalCompressorWriterPools[CompressorGZIP].Put(gzipWriter)
+			responseBody = gzipWriter
+		}
 	default:
 		responseBody = responseWriter
 	}

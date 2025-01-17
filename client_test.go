@@ -50,9 +50,9 @@ func TestNewBufferedClient(t *testing.T) {
 	require.NoError(t, err)
 
 	testClient := func(
+		t *testing.T,
 		encoding ClientEncoding,
 		compressor Compressor,
-		t *testing.T,
 	) {
 		requiredResponseMessage := "Fake Response Message"
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +86,7 @@ func TestNewBufferedClient(t *testing.T) {
 	for _, encoding := range []ClientEncoding{EncodingMsgpack, EncodingJson} {
 		for _, compressor := range []Compressor{CompressorNone, CompressorGZIP, CompressorSnappy} {
 			t.Run(fmt.Sprintf("%s/%s", encoding, compressor), func(t *testing.T) {
-				testClient(encoding, compressor, t)
+				testClient(t, encoding, compressor)
 			})
 		}
 	}
@@ -101,6 +101,7 @@ func BenchmarkBufferedClient(b *testing.B) {
 	require.NoError(b, err)
 
 	benchClient := func(b *testing.B, client Client) {
+		b.Helper()
 		b.ReportAllocs()
 
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -122,9 +123,9 @@ func BenchmarkBufferedClient(b *testing.B) {
 		}
 	}
 	benchmarks := map[string]Compressor{
-		"none": CompressorNone,
-		//"gzip":   CompressorGZIP,
-		//"snappy": CompressorSnappy,
+		"none":   CompressorNone,
+		"gzip":   CompressorGZIP,
+		"snappy": CompressorSnappy,
 	}
 	runs := 1
 
