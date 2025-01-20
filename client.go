@@ -106,6 +106,18 @@ func WithCompressor(compressor Compressor) ClientOption {
 	}
 }
 
+func WithSnappyCompression() ClientOption {
+	return WithCompressor(CompressorSnappy)
+}
+
+func WithGZIPCompression() ClientOption {
+	return WithCompressor(CompressorGZIP)
+}
+
+func WithNoCompression() ClientOption {
+	return WithCompressor(CompressorNone)
+}
+
 // NewBufferedClient is the constructor that applies all functional options.
 func NewBufferedClient(opts ...ClientOption) *BufferedClient {
 	// Set reasonable defaults here
