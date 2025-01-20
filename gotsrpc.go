@@ -1,21 +1,24 @@
 package gotsrpc
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/golang/snappy"
 	"github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
 
@@ -23,6 +26,18 @@ import (
 )
 
 type contextKey string
+
+var (
+	// Read-only global compressor pools
+	globalCompressorWriterPools = map[Compressor]*sync.Pool{
+		CompressorGZIP:   {New: func() interface{} { return gzip.NewWriter(io.Discard) }},
+		CompressorSnappy: {New: func() interface{} { return snappy.NewBufferedWriter(io.Discard) }},
+	}
+	globalCompressorReaderPools = map[Compressor]*sync.Pool{
+		CompressorGZIP:   {New: func() interface{} { return &gzip.Reader{} }},
+		CompressorSnappy: {New: func() interface{} { return snappy.NewReader(nil) }},
+	}
+)
 
 const contextStatsKey contextKey = "gotsrpcStats"
 
@@ -35,11 +50,16 @@ func ErrorFuncNotFound(w http.ResponseWriter) {
 }
 
 func ErrorCouldNotReply(w http.ResponseWriter) {
-	http.Error(w, "could not reply", http.StatusInternalServerError)
+	http.Error(w, "could not reply %w", http.StatusInternalServerError)
 }
 
+// Deprecated: Use ErrorFailedToLoadArgs instead
 func ErrorCouldNotLoadArgs(w http.ResponseWriter) {
 	http.Error(w, "could not load args", http.StatusBadRequest)
+}
+
+func ErrorFailedToLoadArgs(w http.ResponseWriter, err error) {
+	http.Error(w, fmt.Sprintf("failed to parse args: %v", err), http.StatusBadRequest)
 }
 
 func ErrorMethodNotAllowed(w http.ResponseWriter) {
@@ -48,12 +68,39 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
+	var bodyReader io.Reader = r.Body
+	switch r.Header.Get("Content-Encoding") {
+	case "snappy":
+		if snappyReader, ok := globalCompressorReaderPools[CompressorSnappy].Get().(*snappy.Reader); ok {
+			defer globalCompressorReaderPools[CompressorSnappy].Put(snappyReader)
 
-	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
-	if errDecode := codec.NewDecoder(r.Body, handle).Decode(args); errDecode != nil {
-		_, _ = fmt.Fprintln(os.Stderr, errDecode.Error())
-		return errors.Wrap(errDecode, "could not decode arguments")
+			snappyReader.Reset(r.Body)
+			bodyReader = snappyReader
+		}
+	case "gzip":
+		if gzipReader, ok := globalCompressorReaderPools[CompressorGZIP].Get().(*gzip.Reader); ok {
+			defer globalCompressorReaderPools[CompressorGZIP].Put(gzipReader)
+
+			err := gzipReader.Reset(r.Body)
+			if err != nil {
+				return NewClientError(errors.Wrap(err, "could not create gzip reader"))
+			}
+			bodyReader = gzipReader
+		}
 	}
+	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
+
+	if err := codec.NewDecoder(bodyReader, handle).Decode(args); err != nil {
+		return errors.Wrap(err, "could not decode arguments")
+	}
+
+	// We need to close the reader at the end of the function
+	if writer, ok := bodyReader.(io.Closer); ok {
+		if err := writer.Close(); err != nil {
+			return errors.Wrap(err, "failed to write to response body")
+		}
+	}
+
 	if callStats != nil {
 		callStats.Unmarshalling = time.Since(start)
 		callStats.RequestSize = int(r.ContentLength)
@@ -83,49 +130,6 @@ func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
 
 func ClearStats(r *http.Request) {
 	*r = *r.WithContext(context.WithValue(r.Context(), contextStatsKey, nil))
-}
-
-// Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
-func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
-	writer := newResponseWriterWithLength(w)
-	serializationStart := time.Now()
-
-	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
-
-	writer.Header().Set("Content-Type", clientHandle.contentType)
-
-	if clientHandle.beforeEncodeReply != nil {
-		if err := clientHandle.beforeEncodeReply(&response); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err.Error())
-			return errors.Wrap(err, "error during before encoder reply")
-		}
-	}
-
-	if err := codec.NewEncoder(writer, clientHandle.handle).Encode(response); err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err.Error())
-		return errors.Wrap(err, "could not encode data to accepted format")
-	}
-
-	if stats != nil {
-		stats.ResponseSize = writer.length
-		stats.Marshalling = time.Since(serializationStart)
-		if len(response) > 0 {
-			errResp := response[len(response)-1]
-			if v, ok := errResp.(error); ok && v != nil {
-				if !reflect.ValueOf(v).IsNil() {
-					stats.ErrorCode = 1
-					stats.ErrorType = fmt.Sprintf("%T", v)
-					stats.ErrorMessage = v.Error()
-					if v, ok := v.(interface {
-						ErrorCode() int
-					}); ok {
-						stats.ErrorCode = v.ErrorCode()
-					}
-				}
-			}
-		}
-	}
-	return nil
 }
 
 func parserExcludeFiles(info os.FileInfo) bool {

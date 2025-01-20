@@ -12,6 +12,17 @@ import (
 
 type ClientEncoding int
 
+func (c ClientEncoding) String() string {
+	switch c {
+	case EncodingMsgpack:
+		return "msgpack"
+	case EncodingJson:
+		return "json"
+	default:
+		return "unknown"
+	}
+}
+
 const (
 	EncodingMsgpack = ClientEncoding(0)
 	EncodingJson    = ClientEncoding(1) //nolint:stylecheck
@@ -115,7 +126,7 @@ func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
 	return errors.New("invalid handle type")
 }
 
-func getHandleForEncoding(encoding ClientEncoding) *clientHandle {
+func getHandleForType(encoding ClientEncoding) *clientHandle {
 	switch encoding {
 	case EncodingMsgpack:
 		return msgpackClientHandle

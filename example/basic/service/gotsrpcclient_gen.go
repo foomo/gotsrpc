@@ -81,21 +81,30 @@ type HTTPServiceGoTSRPCClient struct {
 	Client   gotsrpc.Client
 }
 
-func NewDefaultServiceGoTSRPCClient(url string) *HTTPServiceGoTSRPCClient {
-	return NewServiceGoTSRPCClient(url, "/service")
+const DefaultServiceGoTSRPCClientPath = "/service"
+
+func NewDefaultServiceGoTSRPCClient(url string, options ...gotsrpc.ClientOption) *HTTPServiceGoTSRPCClient {
+	return NewServiceGoTSRPCClientWithOptions(url, DefaultServiceGoTSRPCClientPath, options...)
 }
 
+// Deprecated: Use NewServiceGoTSRPCClientWithOptions instead
 func NewServiceGoTSRPCClient(url string, endpoint string) *HTTPServiceGoTSRPCClient {
-	return NewServiceGoTSRPCClientWithClient(url, endpoint, nil)
+	return NewServiceGoTSRPCClientWithOptions(url, endpoint)
 }
 
+// Deprecated: Use NewServiceGoTSRPCClientWithOptions instead
 func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_net_http.Client) *HTTPServiceGoTSRPCClient {
+	return NewServiceGoTSRPCClientWithOptions(url, endpoint, gotsrpc.WithHTTPClient(client))
+}
+
+func NewServiceGoTSRPCClientWithOptions(url string, endpoint string, options ...gotsrpc.ClientOption) *HTTPServiceGoTSRPCClient {
 	return &HTTPServiceGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
-		Client:   gotsrpc.NewClientWithHttpClient(client),
+		Client:   gotsrpc.NewBufferedClient(options...),
 	}
 }
+
 func (tsc *HTTPServiceGoTSRPCClient) Bool(ctx go_context.Context, v bool) (retBool_0 bool, clientErr error) {
 	args := []interface{}{v}
 	reply := []interface{}{&retBool_0}

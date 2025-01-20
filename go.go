@@ -231,7 +231,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 					g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
 					g.l("if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {")
 					g.ind(1)
-					g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
+					g.l("gotsrpc.ErrorFailedToLoadArgs(w, err)")
 					g.l("return")
 					g.ind(-1)
 					g.l("}")
@@ -374,22 +374,30 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 	        EndPoint string
 			Client gotsrpc.Client
         }
+        
+        const Default` + interfaceName + `Path = "` + service.Endpoint + `"
 
-        func NewDefault` + interfaceName + `(url string) *` + clientName + ` {
-	        return New` + interfaceName + `(url, "` + service.Endpoint + `")
+        func NewDefault` + interfaceName + `(url string, options... gotsrpc.ClientOption) *` + clientName + ` {
+	        return New` + interfaceName + `WithOptions(url, Default` + interfaceName + `Path, options...)
         }
 
+		// Deprecated: Use New` + interfaceName + `WithOptions instead
         func New` + interfaceName + `(url string, endpoint string) *` + clientName + ` {
-			return New` + interfaceName + `WithClient(url, endpoint, nil) 
+			return New` + interfaceName + `WithOptions(url, endpoint) 
         }
 
+		// Deprecated: Use New` + interfaceName + `WithOptions instead
         func New` + interfaceName + `WithClient(url string, endpoint string, client *go_net_http.Client) *` + clientName + ` {
-	        return &` + clientName + `{
-		        URL: url,
-		        EndPoint: endpoint,
-		        Client: gotsrpc.NewClientWithHttpClient(client),
-	        }
-		}`)
+	        return New` + interfaceName + `WithOptions(url, endpoint, gotsrpc.WithHTTPClient(client)) 
+		}
+
+        func New` + interfaceName + `WithOptions(url string, endpoint string, options... gotsrpc.ClientOption) *` + clientName + ` {
+			return &` + clientName + `{
+				URL:      url,
+				EndPoint: endpoint,
+				Client:   gotsrpc.NewBufferedClient(options...),
+			}
+		}` + "\n")
 
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)
