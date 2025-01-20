@@ -68,26 +68,31 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 }
 
 func recordStats(stats *CallStats, response []interface{}, responseWriter *responseWriterWithLength) func() {
+	if stats == nil {
+		return func() {}
+	}
+
 	start := time.Now()
 	return func() {
-		if stats != nil {
-			stats.ResponseSize = responseWriter.length
-			stats.Marshalling = time.Since(start)
-			if len(response) > 0 {
-				errResp := response[len(response)-1]
-				if v, ok := errResp.(error); ok && v != nil {
-					if !reflect.ValueOf(v).IsNil() {
-						stats.ErrorCode = 1
-						stats.ErrorType = fmt.Sprintf("%T", v)
-						stats.ErrorMessage = v.Error()
-						if v, ok := v.(interface {
-							ErrorCode() int
-						}); ok {
-							stats.ErrorCode = v.ErrorCode()
-						}
-					}
+		stats.ResponseSize = responseWriter.length
+		stats.Marshalling = time.Since(start)
+		if len(response) == 0 {
+			return
+		}
+
+		errResp := response[len(response)-1]
+		if v, ok := errResp.(error); ok && v != nil {
+			if !reflect.ValueOf(v).IsNil() {
+				stats.ErrorCode = 1
+				stats.ErrorType = fmt.Sprintf("%T", v)
+				stats.ErrorMessage = v.Error()
+				if v, ok := v.(interface {
+					ErrorCode() int
+				}); ok {
+					stats.ErrorCode = v.ErrorCode()
 				}
 			}
 		}
+
 	}
 }
