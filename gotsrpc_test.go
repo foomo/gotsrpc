@@ -1,8 +1,25 @@
 package gotsrpc
 
 import (
+	"bytes"
+	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
+
+func TestLoadArgsFail(t *testing.T) {
+	jsonBytes := []byte(`["a"", ["a", "b", "c"]]`)
+
+	foo := ""
+	bar := []string{}
+	args := []interface{}{&foo, &bar}
+
+	r := httptest.NewRequest("GET", "/", bytes.NewBuffer(jsonBytes))
+
+	err := LoadArgs(&args, nil, r)
+	require.Error(t, err)
+}
 
 func TestLoadArgs(t *testing.T) {
 	jsonBytes := []byte(`["a", ["a", "b", "c"]]`)

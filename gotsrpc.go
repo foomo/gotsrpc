@@ -50,11 +50,16 @@ func ErrorFuncNotFound(w http.ResponseWriter) {
 }
 
 func ErrorCouldNotReply(w http.ResponseWriter) {
-	http.Error(w, "could not reply", http.StatusInternalServerError)
+	http.Error(w, "could not reply %w", http.StatusInternalServerError)
 }
 
+// Deprecated: Use ErrorFailedToLoadArgs instead
 func ErrorCouldNotLoadArgs(w http.ResponseWriter) {
 	http.Error(w, "could not load args", http.StatusBadRequest)
+}
+
+func ErrorFailedToLoadArgs(w http.ResponseWriter, err error) {
+	http.Error(w, fmt.Sprintf("failed to parse args: %v", err), http.StatusBadRequest)
 }
 
 func ErrorMethodNotAllowed(w http.ResponseWriter) {

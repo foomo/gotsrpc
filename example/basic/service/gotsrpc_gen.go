@@ -117,7 +117,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -140,7 +140,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -163,7 +163,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -201,7 +201,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -224,7 +224,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -247,7 +247,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -270,7 +270,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -293,7 +293,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -316,7 +316,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -339,7 +339,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -362,7 +362,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -385,7 +385,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -408,7 +408,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -431,7 +431,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -454,7 +454,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -477,7 +477,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -500,7 +500,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -523,7 +523,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -546,7 +546,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -569,7 +569,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -592,7 +592,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -615,7 +615,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -638,7 +638,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -661,7 +661,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -684,7 +684,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -707,7 +707,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -730,7 +730,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -753,7 +753,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -776,7 +776,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -799,7 +799,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -822,7 +822,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -845,7 +845,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -868,7 +868,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -891,7 +891,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -914,7 +914,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -937,7 +937,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -960,7 +960,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -983,7 +983,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1006,7 +1006,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1029,7 +1029,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1052,7 +1052,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1075,7 +1075,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1098,7 +1098,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1121,7 +1121,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1144,7 +1144,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1167,7 +1167,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1190,7 +1190,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1213,7 +1213,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1236,7 +1236,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1259,7 +1259,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1282,7 +1282,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1305,7 +1305,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1328,7 +1328,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1351,7 +1351,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1374,7 +1374,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1397,7 +1397,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1420,7 +1420,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1443,7 +1443,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1466,7 +1466,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1489,7 +1489,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
@@ -1512,7 +1512,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		)
 		args = []interface{}{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
-			gotsrpc.ErrorCouldNotLoadArgs(w)
+			gotsrpc.ErrorFailedToLoadArgs(w, err)
 			return
 		}
 		executionStart := time.Now()
