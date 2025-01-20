@@ -374,11 +374,14 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 	        EndPoint string
 			Client gotsrpc.Client
         }
+        
+        const Default` + interfaceName + `Path = "` + service.Endpoint + `"
 
-        func NewDefault` + interfaceName + `(url string) *` + clientName + ` {
-	        return New` + interfaceName + `WithOptions(url, "` + service.Endpoint + `")
+        func NewDefault` + interfaceName + `(url string, options... gotsrpc.ClientOption) *` + clientName + ` {
+	        return New` + interfaceName + `WithOptions(url, Default` + interfaceName + `Path, options...)
         }
 
+		// Deprecated: Use New` + interfaceName + `WithOptions instead
         func New` + interfaceName + `(url string, endpoint string) *` + clientName + ` {
 			return New` + interfaceName + `WithOptions(url, endpoint) 
         }

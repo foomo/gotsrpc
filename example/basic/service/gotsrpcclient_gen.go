@@ -81,10 +81,13 @@ type HTTPServiceGoTSRPCClient struct {
 	Client   gotsrpc.Client
 }
 
-func NewDefaultServiceGoTSRPCClient(url string) *HTTPServiceGoTSRPCClient {
-	return NewServiceGoTSRPCClientWithOptions(url, "/service")
+const DefaultServiceGoTSRPCClientPath = "/service"
+
+func NewDefaultServiceGoTSRPCClient(url string, options ...gotsrpc.ClientOption) *HTTPServiceGoTSRPCClient {
+	return NewServiceGoTSRPCClientWithOptions(url, DefaultServiceGoTSRPCClientPath, options...)
 }
 
+// Deprecated: Use NewServiceGoTSRPCClientWithOptions instead
 func NewServiceGoTSRPCClient(url string, endpoint string) *HTTPServiceGoTSRPCClient {
 	return NewServiceGoTSRPCClientWithOptions(url, endpoint)
 }
