@@ -102,15 +102,14 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	}
 	defer resp.Body.Close()
 
+	buf := new(bytes.Buffer)
+	if _, err := io.Copy(buf, resp.Body); err != nil {
+		return NewClientError(errors.Wrap(err, "failed to read response body"))
+	}
+
 	// Check status
 	if resp.StatusCode != http.StatusOK {
-		var msg string
-		if value, err := io.ReadAll(resp.Body); err != nil {
-			msg = "failed to read response body: " + err.Error()
-		} else {
-			msg = string(value)
-		}
-		return NewClientError(NewHTTPError(msg, resp.StatusCode))
+		return NewClientError(NewHTTPError(buf.String(), resp.StatusCode))
 	}
 
 	clientHandle := getHandlerForContentType(resp.Header.Get("Content-Type"))
@@ -124,7 +123,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		}
 	}
 
-	if err := codec.NewDecoder(resp.Body, clientHandle.handle).Decode(wrappedReply); err != nil {
+	if err := codec.NewDecoder(buf, clientHandle.handle).Decode(wrappedReply); err != nil {
 		return NewClientError(errors.Wrap(err, "failed to decode response"))
 	}
 

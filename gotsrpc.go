@@ -1,6 +1,7 @@
 package gotsrpc
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -87,12 +89,11 @@ func ClearStats(r *http.Request) {
 
 // Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
 func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
-	writer := newResponseWriterWithLength(w)
 	serializationStart := time.Now()
 
 	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
 
-	writer.Header().Set("Content-Type", clientHandle.contentType)
+	w.Header().Set("Content-Type", clientHandle.contentType)
 
 	if clientHandle.beforeEncodeReply != nil {
 		if err := clientHandle.beforeEncodeReply(&response); err != nil {
@@ -101,13 +102,20 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		}
 	}
 
-	if err := codec.NewEncoder(writer, clientHandle.handle).Encode(response); err != nil {
+	buf := new(bytes.Buffer)
+	if err := codec.NewEncoder(buf, clientHandle.handle).Encode(response); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err.Error())
 		return errors.Wrap(err, "could not encode data to accepted format")
 	}
 
+	w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
+
+	if _, err := w.Write(buf.Bytes()); err != nil {
+		return errors.Wrap(err, "could not write response")
+	}
+
 	if stats != nil {
-		stats.ResponseSize = writer.length
+		stats.ResponseSize = buf.Len()
 		stats.Marshalling = time.Since(serializationStart)
 		if len(response) > 0 {
 			errResp := response[len(response)-1]

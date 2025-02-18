@@ -31,6 +31,8 @@ linters-settings:
       - G404 # Insecure random number source (rand)
       - G501 # Import blocklist: crypto/md5
       - G505 # Import blocklist: crypto/sha1
+  staticcheck:
+    checks: [ "all", "-SA1019"]
   # https://golangci-lint.run/usage/linters/#tagliatelle
   tagliatelle:
     case:
@@ -129,7 +131,6 @@ linters:
     - sqlclosecheck # Checks that sql.Rows and sql.Stmt are closed. [fast: false, auto-fix: false]
     - stylecheck # Stylecheck is a replacement for golint [fast: false, auto-fix: false]
     #- tagliatelle # Checks the struct tags. [fast: true, auto-fix: false]
-    - tenv # tenv is analyzer that detects using os.Setenv instead of t.Setenv since Go1.17 [fast: false, auto-fix: false]
     #- testpackage # linter that makes you use a separate _test package [fast: true, auto-fix: false]
     - thelper # thelper detects golang test helpers without t.Helper() call and checks the consistency of test helpers [fast: false, auto-fix: false]
     - tparallel # tparallel detects inappropriate usage of t.Parallel() method in your Go test codes [fast: false, auto-fix: false]

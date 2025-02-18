@@ -1,9 +1,13 @@
-# Go / TypeScript and Go / Go RPC
-
 [![Build Status](https://github.com/foomo/gotsrpc/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/foomo/gotsrpc/actions/workflows/test.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/foomo/gotsrpc)](https://goreportcard.com/report/github.com/foomo/gotsrpc)
-[![godoc](https://godoc.org/github.com/foomo/gotsrpc?status.svg)](https://godoc.org/github.com/foomo/gotsrpc)
-[![goreleaser](https://github.com/foomo/gotsrpc/actions/workflows/release.yml/badge.svg)](https://github.com/foomo/gotsrpc/actions)
+[![Coverage Status](https://coveralls.io/repos/github/foomo/gotsrpc/badge.svg?branch=main&)](https://coveralls.io/github/foomo/gotsrpc?branch=main)
+[![GoDoc](https://godoc.org/github.com/foomo/gotsrpc?status.svg)](https://godoc.org/github.com/foomo/gotsrpc)
+
+<p align="center">
+  <img alt="gotsrpc" src=".github/assets/gotsrpc.png"/>
+</p>
+
+# Go / TypeScript and Go / Go RPC
 
 ## Documentation
 
@@ -28,3 +32,13 @@ make install
 Release downloads:
 
 [https://github.com/foomo/gotsrpc/releases](https://github.com/foomo/gotsrpc/releases)
+
+## How to Contribute
+
+Make a pull request...
+
+## License
+
+Distributed under MIT License, please see license file within the code for more details.
+
+_Made with ♥ [foomo](https://www.foomo.org) by [bestbytes](https://www.bestbytes.com)_
