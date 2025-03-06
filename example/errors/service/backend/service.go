@@ -54,6 +54,7 @@ type Service interface {
 	Scalar(w http.ResponseWriter, r *http.Request) (e *ScalarError)
 	MultiScalar(w http.ResponseWriter, r *http.Request) (e *MultiScalar)
 	Struct(w http.ResponseWriter, r *http.Request) (e *StructError)
+	StructError(w http.ResponseWriter, r *http.Request) (e error)
 	TypedError(w http.ResponseWriter, r *http.Request) (e error)
 	ScalarError(w http.ResponseWriter, r *http.Request) (e error)
 	CustomError(w http.ResponseWriter, r *http.Request) (e error)

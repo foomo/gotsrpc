@@ -34,11 +34,15 @@ func NewError(err error) *Error {
 
 	// retrieve error details
 	errType := reflect.TypeOf(err)
+	errElem := errType
+	if errType.Kind() == reflect.Ptr {
+		errElem = errType.Elem()
+	}
 
 	inst := &Error{
 		Msg:  err.Error(),
 		Type: errType.String(),
-		Pkg:  errType.Elem().PkgPath(),
+		Pkg:  errElem.PkgPath(),
 		Data: err,
 	}
 
@@ -80,9 +84,9 @@ func (e *Error) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
-			fmt.Fprintf(s, "%s.(%s)\n", e.Pkg, e.Type)
+			_, _ = fmt.Fprintf(s, "%s.(%s)\n", e.Pkg, e.Type)
 			if e.Data != nil {
-				fmt.Fprintf(s, "Data: %v\n", e.Data)
+				_, _ = fmt.Fprintf(s, "Data: %v\n", e.Data)
 			}
 		}
 		fallthrough
@@ -106,10 +110,14 @@ func (e *Error) Is(err error) bool {
 	}
 
 	errType := reflect.TypeOf(err)
+	errElem := errType
+	if errType.Kind() == reflect.Ptr {
+		errElem = errType.Elem()
+	}
 
 	if e.Msg == err.Error() &&
 		errType.String() == e.Type &&
-		errType.Elem().PkgPath() == e.Pkg {
+		errElem.PkgPath() == e.Pkg {
 		return true
 	}
 

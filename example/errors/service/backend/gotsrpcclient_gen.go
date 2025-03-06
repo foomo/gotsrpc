@@ -17,6 +17,7 @@ type ServiceGoTSRPCClient interface {
 	Scalar(ctx go_context.Context) (e *ScalarError, clientErr error)
 	ScalarError(ctx go_context.Context) (e error, clientErr error)
 	Struct(ctx go_context.Context) (e *StructError, clientErr error)
+	StructError(ctx go_context.Context) (e error, clientErr error)
 	TypedCustomError(ctx go_context.Context) (e error, clientErr error)
 	TypedError(ctx go_context.Context) (e error, clientErr error)
 	TypedScalarError(ctx go_context.Context) (e error, clientErr error)
@@ -101,6 +102,16 @@ func (tsc *HTTPServiceGoTSRPCClient) Struct(ctx go_context.Context) (e *StructEr
 	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Struct", args, reply)
 	if clientErr != nil {
 		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy Struct")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) StructError(ctx go_context.Context) (e error, clientErr error) {
+	args := []interface{}{}
+	reply := []interface{}{&e}
+	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StructError", args, reply)
+	if clientErr != nil {
+		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy StructError")
 	}
 	return
 }

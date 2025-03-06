@@ -10,6 +10,14 @@ import (
 
 type (
 	ScalarError string
+	StructError struct {
+		Msg    string
+		Map    map[string]string
+		Slice  []string
+		Struct struct {
+			A string
+		}
+	}
 	CustomError struct {
 		Msg    string
 		Map    map[string]string
@@ -31,6 +39,19 @@ func NewScalarError(e ScalarError) *ScalarError {
 
 func (e *ScalarError) Error() string {
 	return string(*e)
+}
+
+func NewStructError(msg string) StructError {
+	return StructError{
+		Msg:    msg,
+		Map:    map[string]string{"a": "b"},
+		Slice:  []string{"a", "b"},
+		Struct: struct{ A string }{A: "b"},
+	}
+}
+
+func (e StructError) Error() string {
+	return e.Msg
 }
 
 func NewCustomError(msg string) *CustomError {
@@ -84,6 +105,10 @@ func (h *Handler) Struct(w http.ResponseWriter, r *http.Request) (e *backend.Str
 
 func (h *Handler) TypedError(w http.ResponseWriter, r *http.Request) (e error) {
 	return ErrTyped
+}
+
+func (h *Handler) StructError(w http.ResponseWriter, r *http.Request) (e error) {
+	return NewStructError("struct error")
 }
 
 func (h *Handler) ScalarError(w http.ResponseWriter, r *http.Request) (e error) {
