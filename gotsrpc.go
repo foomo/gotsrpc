@@ -120,7 +120,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 		if len(response) > 0 {
 			errResp := response[len(response)-1]
 			if v, ok := errResp.(error); ok && v != nil {
-				if !reflect.ValueOf(v).IsNil() {
+				if !reflect.ValueOf(v).IsZero() {
 					stats.ErrorCode = 1
 					stats.ErrorType = fmt.Sprintf("%T", v)
 					stats.ErrorMessage = v.Error()

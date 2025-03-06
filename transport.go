@@ -33,7 +33,7 @@ var msgpackClientHandle = &clientHandle{
 	beforeEncodeReply: func(resp *[]interface{}) error {
 		for k, v := range *resp {
 			if e, ok := v.(error); ok {
-				if r := reflect.ValueOf(e); !r.IsNil() {
+				if r := reflect.ValueOf(e); !r.IsZero() {
 					(*resp)[k] = NewError(e)
 				}
 			}
@@ -43,7 +43,11 @@ var msgpackClientHandle = &clientHandle{
 	beforeDecodeReply: func(reply []interface{}) ([]interface{}, error) {
 		ret := make([]interface{}, len(reply))
 		for k, v := range reply {
-			if reflect.TypeOf(v).Elem().Implements(errorType) {
+			val := reflect.TypeOf(v)
+			if val.Kind() == reflect.Ptr {
+				val = val.Elem()
+			}
+			if val.Implements(errorType) {
 				var e *Error
 				ret[k] = e
 			} else {

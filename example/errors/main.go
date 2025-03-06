@@ -148,6 +148,28 @@ func call() {
 	}
 
 	{
+		fmt.Println("--- StructError ----------------")
+		var structErr backend.StructError
+		var gotsrpcErr *gotsrpc.Error
+		serviceErr, err := c.StructError(ctx)
+		if err != nil {
+			panic("client error should be nil")
+		} else if serviceErr == nil {
+			panic("service error should not be nil")
+		} else if serviceErr != nil {
+			fmt.Printf("%s\n", serviceErr)
+			fmt.Printf("%q\n", serviceErr)
+			fmt.Printf("%+v\n", serviceErr)
+		}
+		if errors.As(serviceErr, &gotsrpcErr) {
+			fmt.Println(gotsrpcErr)
+		}
+		if errors.As(serviceErr, &structErr) {
+			fmt.Println(structErr)
+		}
+	}
+
+	{
 		fmt.Println("--- CustomError ----------------")
 		var customErr *backend.CustomError
 		var gotsrpcErr *gotsrpc.Error

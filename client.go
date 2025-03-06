@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	HeaderServiceToService = "X-Foomo-S2S"
+	HeaderServiceToService = "X-Foomo-S2s"
 )
 
 // ClientTransport to use for calls
