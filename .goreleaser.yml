@@ -1,5 +1,5 @@
-# .goreleaser.yml
-# Build customization
+version: 2
+
 builds:
   - binary: gotsrpc
     main: ./cmd/gotsrpc/gotsrpc.go
@@ -32,7 +32,6 @@ changelog:
   use: github-native
 
 brews:
-  # Reporitory to push the tap to.
   - repository:
       owner: foomo
       name: homebrew-tap
