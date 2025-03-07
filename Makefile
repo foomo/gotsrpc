@@ -1,30 +1,34 @@
 .DEFAULT_GOAL:=help
 
+.PHONY: check
+## Run lint & test
+check: tidy examples lint test
+
 .PHONY: test
 ## Run go test
 test:
-	go test -v ./...
+	@go test -v ./...
 
 .PHONY: install
 ## Run go install
 install:
-	go install cmd/gotsrpc/gotsrpc.go
+	@go install cmd/gotsrpc/gotsrpc.go
 
 .PHONY: install.debug
 ## Run go install with debug
 install.debug:
-	go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
+	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
 
 .PHONY: outdated
 ## Show outdated direct dependencies
 outdated:
-	go list -u -m -json all | go-mod-outdated -update -direct
+	@go list -u -m -json all | go-mod-outdated -update -direct
 
 .PHONY: build.debug
 ## Build binary in debug mode
 build.debug:
-	rm -f bin/gotsrpc
-	go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
+	@rm -f bin/gotsrpc
+	@go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 ## === Tools ===
 
@@ -49,17 +53,18 @@ example.$(1).lint:
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 
-## Run go mod tidy recursive
 .PHONY: lint
+## Run linter
 lint:
 	@golangci-lint run
 
 .PHONY: lint.fix
+## Run linter and fix
 lint.fix:
 	@golangci-lint run --fix
 
 .PHONY: tidy
-## Run go mod tidy recursive
+## Run go mod tidy
 tidy:
 	@go mod tidy
 
