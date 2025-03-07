@@ -44,11 +44,11 @@ jobs:
 
       - uses: golangci/golangci-lint-action@v6
 
-      - name: Run tests
-        run: make test
-
       - name: Make examples
         run: |
           make examples
           git diff --exit-code
+
+      - name: Run tests
+        run: make test
 

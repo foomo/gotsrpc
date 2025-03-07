@@ -42,6 +42,11 @@ type (
 		RetBoolSlice_0 []bool
 	}
 
+	ServiceContextRequest struct {
+	}
+	ServiceContextResponse struct {
+	}
+
 	ServiceEmptyRequest struct {
 	}
 	ServiceEmptyResponse struct {
@@ -461,6 +466,8 @@ func init() {
 	gob.Register(ServiceBoolPtrResponse{})
 	gob.Register(ServiceBoolSliceRequest{})
 	gob.Register(ServiceBoolSliceResponse{})
+	gob.Register(ServiceContextRequest{})
+	gob.Register(ServiceContextResponse{})
 	gob.Register(ServiceEmptyRequest{})
 	gob.Register(ServiceEmptyResponse{})
 	gob.Register(ServiceFloat32Request{})
@@ -631,6 +638,9 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (res
 		req := request.(ServiceBoolSliceRequest)
 		retBoolSlice_0 := p.service.BoolSlice(req.V)
 		response = ServiceBoolSliceResponse{RetBoolSlice_0: retBoolSlice_0}
+	case "ServiceContextRequest":
+		p.service.Context(nil, nil)
+		response = ServiceContextResponse{}
 	case "ServiceEmptyRequest":
 		p.service.Empty()
 		response = ServiceEmptyResponse{}

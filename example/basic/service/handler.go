@@ -1,9 +1,19 @@
 package service
 
+import (
+	"net/http"
+	"time"
+)
+
 type Handler struct{}
 
-func (h *Handler) Empty() {
+func (h *Handler) Context(w http.ResponseWriter, r *http.Request) {
+	for r.Context().Err() == nil {
+		time.Sleep(100 * time.Millisecond)
+	}
 }
+
+func (h *Handler) Empty() {}
 
 func (h *Handler) Bool(v bool) bool {
 	return v
