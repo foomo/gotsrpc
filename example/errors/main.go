@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os/exec"
 	"strings"
 	"time"
 
@@ -40,7 +39,7 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
-		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
+		// _ = exec.Command("open", "http://127.0.0.1:3000").Run()
 		call()
 	}()
 
@@ -49,12 +48,30 @@ func main() {
 
 func call() {
 	ctx := context.Background()
+	time.Sleep(time.Second)
+
+	ctx2, cancel := context.WithCancel(ctx)
+	req, _ := http.NewRequestWithContext(ctx2, "POST", "http://127.0.0.1:3000/service/frontend/Simple", nil)
+	go func() {
+		time.Sleep(time.Millisecond * 100)
+		fmt.Println("cancel")
+		cancel()
+	}()
+	fmt.Println("sending request")
+	res, err := http.DefaultClient.Do(req)
+	time.Sleep(time.Second)
+	fmt.Printf("%v\n", err)
+	fmt.Printf("%v\n", res.StatusCode)
+
 	c := backendsvs.NewDefaultServiceGoTSRPCClient("http://localhost:3000")
 
 	{
 		fmt.Println("--- Error ----------------------")
 		var gotsrpcErr *gotsrpc.Error
-		serviceErr, err := c.Error(ctx)
+
+		ctx2, cancel2 := context.WithCancel(ctx)
+		cancel2()
+		serviceErr, err := c.Error(ctx2)
 		if err != nil {
 			panic("client error should be nil")
 		} else if serviceErr == nil {

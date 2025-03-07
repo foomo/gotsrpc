@@ -63,6 +63,16 @@ func (tsc *ServiceGoRPCClient) BoolSlice(v []bool) (retBoolSlice_0 []bool, clien
 	return response.RetBoolSlice_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) Context() (clientErr error) {
+	req := ServiceContextRequest{}
+	_, rpcCallErr := tsc.Client.Call(req)
+	if rpcCallErr != nil {
+		clientErr = rpcCallErr
+		return
+	}
+	return nil
+}
+
 func (tsc *ServiceGoRPCClient) Empty() (clientErr error) {
 	req := ServiceEmptyRequest{}
 	_, rpcCallErr := tsc.Client.Call(req)

@@ -1,6 +1,11 @@
 package service
 
+import (
+	"net/http"
+)
+
 type Service interface {
+	Context(w http.ResponseWriter, r *http.Request)
 	Empty()
 	Bool(v bool) bool
 	BoolPtr(v bool) *bool

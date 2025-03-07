@@ -14,6 +14,7 @@ const (
 	ServiceGoTSRPCProxyBool                = "Bool"
 	ServiceGoTSRPCProxyBoolPtr             = "BoolPtr"
 	ServiceGoTSRPCProxyBoolSlice           = "BoolSlice"
+	ServiceGoTSRPCProxyContext             = "Context"
 	ServiceGoTSRPCProxyEmpty               = "Empty"
 	ServiceGoTSRPCProxyFloat32             = "Float32"
 	ServiceGoTSRPCProxyFloat32Map          = "Float32Map"
@@ -173,6 +174,24 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyContext:
+		var (
+			args []interface{}
+			rets []interface{}
+		)
+		executionStart := time.Now()
+		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
+		p.service.Context(&rw, r)
+		callStats.Execution = time.Since(executionStart)
+		if rw.Status() == http.StatusOK {
+			rets = []interface{}{}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
 		}
 		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
