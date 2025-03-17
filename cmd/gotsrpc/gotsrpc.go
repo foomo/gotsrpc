@@ -37,9 +37,9 @@ func main() {
 
 	// check if GOPATH has been set as env variable
 	// if not use the default from the build pkg
-	goPath := os.Getenv("GOPATH")
+	goPath := os.Getenv("GOROOT")
 	if goPath == "" {
-		goPath = build.Default.GOPATH
+		goPath = build.Default.GOROOT
 	}
 
 	conf, err := config.LoadConfigFile(args[0])
