@@ -37,7 +37,11 @@ func main() {
 
 	// check if GOPATH has been set as env variable
 	// if not use the default from the build pkg
-	goPath := os.Getenv("GOROOT")
+	goPath := os.Getenv("GOPATH")
+	if goPath == "" {
+		goPath = build.Default.GOPATH
+	}
+	goRoot := os.Getenv("GOROOT")
 	if goPath == "" {
 		goPath = build.Default.GOROOT
 	}
@@ -47,5 +51,5 @@ func main() {
 		fmt.Fprintln(os.Stderr, "config load error, could not load config from", args[0], ":", err)
 		os.Exit(2)
 	}
-	gotsrpc.Build(conf, goPath)
+	gotsrpc.Build(conf, goRoot, goPath)
 }
