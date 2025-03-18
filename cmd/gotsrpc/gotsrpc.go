@@ -35,21 +35,11 @@ func main() {
 	}
 	gotsrpc.ReaderTrace = *flagDebug
 
-	// check if GOPATH has been set as env variable
-	// if not use the default from the build pkg
-	goPath := os.Getenv("GOPATH")
-	if goPath == "" {
-		goPath = build.Default.GOPATH
-	}
-	goRoot := os.Getenv("GOROOT")
-	if goPath == "" {
-		goPath = build.Default.GOROOT
-	}
-
 	conf, err := config.LoadConfigFile(args[0])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "config load error, could not load config from", args[0], ":", err)
 		os.Exit(2)
 	}
-	gotsrpc.Build(conf, goRoot, goPath)
+
+	gotsrpc.Build(conf, build.Default.GOPATH, build.Default.SrcDirs())
 }
