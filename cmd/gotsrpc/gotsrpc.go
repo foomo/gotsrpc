@@ -41,5 +41,5 @@ func main() {
 		os.Exit(2)
 	}
 
-	gotsrpc.Build(conf, build.Default.GOPATH, build.Default.SrcDirs())
+	gotsrpc.Build(conf, build.Default.GOPATH, build.Default.GOROOT)
 }
