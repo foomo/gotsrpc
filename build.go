@@ -119,7 +119,7 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 		}
 		vendorDirectory := path.Join(workDirectory, "vendor")
 
-		goPaths := []string{goRoot, goPath}
+		goPaths := []string{goPath, goRoot}
 
 		if _, err := os.Stat(vendorDirectory); !os.IsNotExist(err) {
 			goPaths = append(goPaths, vendorDirectory)
