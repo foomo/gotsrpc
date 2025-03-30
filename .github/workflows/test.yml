@@ -42,7 +42,7 @@ jobs:
           make tidy
           git diff --exit-code
 
-      - uses: golangci/golangci-lint-action@v6
+      - uses: golangci/golangci-lint-action@v7
 
       - name: Make examples
         run: |
