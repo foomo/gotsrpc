@@ -1,27 +1,34 @@
 .*
+*.zip
+*.tar
+*.out
+*.log
 bin/
 dist/
 tmp/
 
-## Git ##
+## Git
 !.gitignore
 !.gitkeep
 
-## GitHub ##
+## GitHub
 !.github/
+
+## Editorconfig
+!.editorconfig
+
+## Husky
+!.husky/
+!.husky.yaml
 
 ## Node ##
 **/node_modules/
 
-## TypeScript ###
+## TypeScript
 *.tsbuildinfo
 
-## Goreleaser ###
-!.goreleaser.yaml
-
-### Go ###
-/go.mod
-/go.sum
+### Golang
 /go.work
 /go.work.sum
 !.golangci.yaml
+!.goreleaser.yaml
