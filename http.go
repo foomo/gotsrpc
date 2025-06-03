@@ -9,7 +9,7 @@ import (
 // Default Client Factory
 // https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 
-var defaultHttpFactory HttpClientFactory = func() *http.Client { //nolint:stylecheck
+var defaultHttpFactory HttpClientFactory = func() *http.Client { //nolint:staticcheck
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
@@ -28,8 +28,8 @@ var defaultHttpFactory HttpClientFactory = func() *http.Client { //nolint:stylec
 	}
 }
 
-type HttpClientFactory func() *http.Client //nolint:stylecheck
+type HttpClientFactory func() *http.Client //nolint:staticcheck
 
-func SetDefaultHttpClientFactory(factory HttpClientFactory) { //nolint:stylecheck
+func SetDefaultHttpClientFactory(factory HttpClientFactory) { //nolint:staticcheck
 	defaultHttpFactory = factory
 }

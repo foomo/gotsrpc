@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strings"
 
@@ -63,7 +62,7 @@ func getPathForTarget(gomod config.Namespace, goPath string, target *config.Targ
 	}
 }
 
-func Build(conf *config.Config, goPath string) { //nolint:maintidx
+func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 	deriveCommonJSMapping(conf)
 
 	mappedTypeScript := map[string]map[string]*code{}
@@ -120,7 +119,7 @@ func Build(conf *config.Config, goPath string) { //nolint:maintidx
 		}
 		vendorDirectory := path.Join(workDirectory, "vendor")
 
-		goPaths := []string{goPath, runtime.GOROOT()}
+		goPaths := []string{goPath, goRoot}
 
 		if _, err := os.Stat(vendorDirectory); !os.IsNotExist(err) {
 			goPaths = append(goPaths, vendorDirectory)

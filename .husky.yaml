@@ -1,0 +1,15 @@
+hooks:
+  pre-commit:
+    - golangci-lint run --fast-only
+    - husky lint-staged
+  commit-msg:
+    # only execute if not in a merge
+    - if [[ -z $(git rev-parse -q --verify MERGE_HEAD) ]]; then husky lint-commit; fi
+
+lint-staged:
+  '*.go':
+    - golangci-lint fmt
+
+lint-commit:
+  types: '^(feat|fix|build|chore|docs|perf|refactor|revert|style|test|wip)$'
+  header: '^(?P<type>\w+)(\((?P<scope>[\w/.-]+)\))?(?P<breaking>!)?:( +)?(?P<header>.+)'

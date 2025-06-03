@@ -116,11 +116,12 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 		}
 
 		call := "this.transport<" + innerCallTypeString + ">(\"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "])"
-		if countReturns == 0 {
+		switch countReturns {
+		case 0:
 			ts.l("await " + call)
-		} else if countReturns == 1 {
+		case 1:
 			ts.l("return (await " + call + ")[0]")
-		} else {
+		default:
 			ts.l("const response = await " + call)
 			ts.l(responseObject)
 		}

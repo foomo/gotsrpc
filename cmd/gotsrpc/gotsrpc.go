@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
-	"go/build"
 	"os"
+	"os/exec"
 
 	"github.com/foomo/gotsrpc/v2"
 	"github.com/foomo/gotsrpc/v2/config"
@@ -35,11 +36,19 @@ func main() {
 	}
 	gotsrpc.ReaderTrace = *flagDebug
 
-	// check if GOPATH has been set as env variable
-	// if not use the default from the build pkg
-	goPath := os.Getenv("GOPATH")
-	if goPath == "" {
-		goPath = build.Default.GOPATH
+	var goRoot string
+	var goPath string
+	if out, err := exec.Command("go", "env", "GOROOT").Output(); err != nil {
+		fmt.Println("failed to retrieve GOROOT", err.Error())
+		os.Exit(1)
+	} else {
+		goRoot = string(bytes.TrimSpace(out))
+	}
+	if out, err := exec.Command("go", "env", "GOPATH").Output(); err != nil {
+		fmt.Println("failed to retrieve GOPATH", err.Error())
+		os.Exit(1)
+	} else {
+		goPath = string(bytes.TrimSpace(out))
 	}
 
 	conf, err := config.LoadConfigFile(args[0])
@@ -47,5 +56,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, "config load error, could not load config from", args[0], ":", err)
 		os.Exit(2)
 	}
-	gotsrpc.Build(conf, goPath)
+
+	gotsrpc.Build(conf, goPath, goRoot)
 }
