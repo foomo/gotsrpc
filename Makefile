@@ -1,4 +1,22 @@
 .DEFAULT_GOAL:=help
+-include .makerc
+
+# --- Targets -----------------------------------------------------------------
+
+# This allows us to accept extra arguments
+%: .husky
+	@:
+
+.PHONY: .husky
+# Configure git hooks for husky
+.husky:
+	@if ! command -v husky &> /dev/null; then \
+		echo "ERROR: missing executeable 'husky', please run:"; \
+		echo "\n$ go install github.com/go-courier/husky/cmd/husky@latest\n"; \
+	fi
+	@git config core.hooksPath .husky
+
+## === Tasks ===
 
 .PHONY: check
 ## Run lint & test
@@ -7,7 +25,7 @@ check: tidy examples lint test
 .PHONY: test
 ## Run go test
 test:
-	@go test -v ./...
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out --tags=safe -race ./...
 
 .PHONY: install
 ## Run go install
