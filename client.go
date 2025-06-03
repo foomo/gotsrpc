@@ -31,7 +31,7 @@ func NewClient() Client {
 	return &bufferedClient{client: defaultHttpFactory(), handle: getHandleForEncoding(EncodingMsgpack), headers: nil}
 }
 
-func NewClientWithHttpClient(client *http.Client) Client { //nolint:stylecheck
+func NewClientWithHttpClient(client *http.Client) Client { //nolint:staticcheck
 	if client != nil {
 		return &bufferedClient{client: client, handle: getHandleForEncoding(EncodingMsgpack), headers: nil}
 	} else {
@@ -71,7 +71,7 @@ func (c *bufferedClient) SetClientEncoding(encoding ClientEncoding) {
 	c.handle = getHandleForEncoding(encoding)
 }
 
-func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:stylecheck
+func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:staticcheck
 	c.client = client
 }
 

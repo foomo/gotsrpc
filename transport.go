@@ -13,7 +13,7 @@ type ClientEncoding int
 
 const (
 	EncodingMsgpack = ClientEncoding(0)
-	EncodingJson    = ClientEncoding(1) //nolint:stylecheck
+	EncodingJson    = ClientEncoding(1) //nolint:staticcheck
 )
 
 var errorType = reflect.TypeOf((*error)(nil)).Elem()

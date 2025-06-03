@@ -91,10 +91,10 @@ func extractJSONInfo(tag string) *JSONInfo {
 	}
 	if len(jsonTags) > 1 {
 		for _, value := range jsonTags[1:] {
-			switch {
-			case value == "inline":
+			switch value {
+			case "inline":
 				inline = true
-			case value == "omitempty":
+			case "omitempty":
 				omit = true
 			}
 		}
