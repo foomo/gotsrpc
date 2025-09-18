@@ -11,7 +11,7 @@ import (
 )
 
 func TestContextCanceled(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.TODO())
+	ctx, cancel := context.WithCancel(t.Context())
 	go func() {
 		time.Sleep(time.Second)
 		cancel()
