@@ -1,0 +1,11 @@
+module:
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
+
+targets:
+  basic:
+    services:
+      /service: Service
+    package: github.com/foomo/gotsrpc/v2/example/types
+    tsrpc:
+      - Service
