@@ -17,6 +17,9 @@ tmp/
 ## Editorconfig
 !.editorconfig
 
+## Docker
+!.dockerignore
+
 ## Husky
 !.husky/
 !.husky.yaml
@@ -32,3 +35,6 @@ tmp/
 /go.work.sum
 !.golangci.yaml
 !.goreleaser.yaml
+
+## Mise
+!.mise.toml
