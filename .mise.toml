@@ -1,0 +1,5 @@
+[tools]
+# https://github.com/golangci/golangci-lint/releases
+golangci-lint = "2.4.0"
+# https://github.com/go-courier/husky/releases
+"github:go-courier/husky" = "1.8.1"

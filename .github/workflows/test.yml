@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Test Branch
 
 on:
   push:
@@ -7,48 +7,51 @@ on:
   merge_group:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
-env:
-  GOFLAGS: -mod=readonly
-  GOPROXY: https://proxy.golang.org
-
-permissions:
-  contents: read
-  pull-requests: read
-  checks: write
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-go@v5
+      - uses: jdx/mise-action@v3
+
+      - uses: actions/setup-go@v6
         with:
           check-latest: true
           go-version-file: go.mod
 
-      - uses: actions/setup-node@v4
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          install-mode: none
+
+      - uses: actions/setup-node@v5
+        with:
+          cache: yarn
 
       - name: Run yarn install
         working-directory: example
         run: yarn install
 
       - name: Run go mod tidy
-        run: |
-          make tidy
-          git diff --exit-code
+        run: make tidy && git diff --exit-code
 
-      - uses: golangci/golangci-lint-action@v8
+      - name: Run lint
+        run: make lint
+
+      - name: Run tests
+        run: make test
 
       - name: Make examples
         run: |
           make examples
           git diff --exit-code
 
-      - name: Run tests
-        run: make test
 
