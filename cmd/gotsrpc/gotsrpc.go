@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -42,6 +43,8 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
+	ctx := context.Background()
+
 	args := flag.Args()
 	switch {
 	case len(args) == 0:
@@ -67,13 +70,13 @@ func main() {
 
 	var goRoot string
 	var goPath string
-	if out, err := exec.Command("go", "env", "GOROOT").Output(); err != nil {
+	if out, err := exec.CommandContext(ctx, "go", "env", "GOROOT").Output(); err != nil {
 		fmt.Println("failed to retrieve GOROOT", err.Error())
 		os.Exit(1)
 	} else {
 		goRoot = string(bytes.TrimSpace(out))
 	}
-	if out, err := exec.Command("go", "env", "GOPATH").Output(); err != nil {
+	if out, err := exec.CommandContext(ctx, "go", "env", "GOPATH").Output(); err != nil {
 		fmt.Println("failed to retrieve GOPATH", err.Error())
 		os.Exit(1)
 	} else {

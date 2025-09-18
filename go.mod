@@ -4,7 +4,9 @@ go 1.24.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/foomo/go v0.0.3
 	github.com/iancoleman/strcase v0.2.0 // Be aware of https://github.com/iancoleman/strcase/pull/49
+	github.com/invopop/jsonschema v0.13.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
@@ -13,11 +15,6 @@ require (
 	golang.org/x/mod v0.28.0
 	golang.org/x/tools v0.37.0
 	gopkg.in/yaml.v2 v2.4.0
-)
-
-require (
-	github.com/foomo/go v0.0.3
-	github.com/invopop/jsonschema v0.13.0
 )
 
 require (
