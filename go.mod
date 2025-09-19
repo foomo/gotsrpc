@@ -11,7 +11,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
-	github.com/ugorji/go/codec v1.2.14
+	github.com/ugorji/go/codec v1.3.1-0.20250729181524-a9af3d3cd758
 	golang.org/x/mod v0.28.0
 	golang.org/x/tools v0.37.0
 	gopkg.in/yaml.v2 v2.4.0
