@@ -29,7 +29,7 @@ endif
 .husky:
 	@git config core.hooksPath .husky
 
-## === Tasks ===
+### Tasks
 
 .PHONY: check
 ## Run lint & test
@@ -38,22 +38,22 @@ check: tidy examples lint test
 .PHONY: tidy
 ## Run go mod tidy
 tidy:
-	@go mod tidy
+	@find . -name go.mod -execdir go mod tidy \;
 
 .PHONY: lint
 ## Run linter
 lint:
-	@golangci-lint run
+	@find . -name go.mod -execdir golangci-lint run \;
 
 .PHONY: lint.fix
 ## Run linter and fix
 lint.fix:
-	@golangci-lint run --fix
+	@find . -name go.mod -execdir golangci-lint run --fix \;
 
 .PHONY: test
 ## Run go test
 test:
-	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out --tags=safe -race ./...
+	@GO_TEST_TAGS=-skip find . -name go.mod -execdir go test -coverprofile=coverage.out --tags=safe -race ./... \;
 
 .PHONY: build
 ## Build binary
@@ -77,13 +77,6 @@ install:
 install.debug:
 	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
 
-.PHONY: outdated
-## Show outdated direct dependencies
-outdated:
-	@go list -u -m -json all | go-mod-outdated -update -direct
-
-## === Tools ===
-
 EXAMPLES=basic errors monitor nullable union time types
 define examples
 .PHONY: example.$(1)
@@ -105,10 +98,8 @@ example.$(1).lint:
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 
-## === Examples ===
-
 .PHONY: examples
-## Build examples
+## Generate examples
 examples:
 	@for name in example/*/; do\
 		if [ $$name != "example/node_modules/" ]; then \
@@ -118,36 +109,23 @@ examples:
   done
 .PHONY: examples
 
-## === Utils ===
+### Utils
 
+.PHONY: help
 ## Show help text
 help:
+	@echo "gotsrpc\n"
+	@echo "Usage:\n  make [task]"
 	@awk '{ \
-			if ($$0 ~ /^.PHONY: [a-zA-Z\-\_0-9]+$$/) { \
-				helpCommand = substr($$0, index($$0, ":") + 2); \
-				if (helpMessage) { \
-					printf "\033[36m%-23s\033[0m %s\n", \
-						helpCommand, helpMessage; \
-					helpMessage = ""; \
-				} \
-			} else if ($$0 ~ /^[a-zA-Z\-\_0-9.]+:/) { \
-				helpCommand = substr($$0, 0, index($$0, ":")); \
-				if (helpMessage) { \
-					printf "\033[36m%-23s\033[0m %s\n", \
-						helpCommand, helpMessage"\n"; \
-					helpMessage = ""; \
-				} \
-			} else if ($$0 ~ /^##/) { \
-				if (helpMessage) { \
-					helpMessage = helpMessage"\n                        "substr($$0, 3); \
-				} else { \
-					helpMessage = substr($$0, 3); \
-				} \
-			} else { \
-				if (helpMessage) { \
-					print "\n                        "helpMessage"\n" \
-				} \
-				helpMessage = ""; \
-			} \
-		}' \
-		$(MAKEFILE_LIST)
+		if($$0 ~ /^### /){ \
+			if(help) printf "%-23s %s\n\n", cmd, help; help=""; \
+			printf "\n%s:\n", substr($$0,5); \
+		} else if($$0 ~ /^[a-zA-Z0-9._-]+:/){ \
+			cmd = substr($$0, 1, index($$0, ":")-1); \
+			if(help) printf "  %-23s %s\n", cmd, help; help=""; \
+		} else if($$0 ~ /^##/){ \
+			help = help ? help "\n                        " substr($$0,3) : substr($$0,3); \
+		} else if(help){ \
+			print "\n                        " help "\n"; help=""; \
+		} \
+	}' $(MAKEFILE_LIST)
