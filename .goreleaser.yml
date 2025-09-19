@@ -1,10 +1,20 @@
 version: 2
 
+project_name: gotsrpc
+
 builds:
   - binary: gotsrpc
     main: ./cmd/gotsrpc/gotsrpc.go
     env:
       - CGO_ENABLED=0
+    flags:
+      - -trimpath
+      - -tags=safe
+    ldflags:
+      - -s -w
+      - -X cmd/gotsrpc/gotsrpc.version={{.Version}}
+      - -X cmd/gotsrpc/gotsrpc.commitHash={{.FullCommit}}
+      - -X cmd/gotsrpc/gotsrpc.buildTimestamp={{.Timestamp}}
     goos:
       - windows
       - darwin
@@ -12,21 +22,15 @@ builds:
     goarch:
       - amd64
       - arm64
-    goarm:
-      - 7
-    flags:
-      - -trimpath
-    ldflags:
-      - -s -w -X cmd/gotsrpc/gotsrpc.version={{.Version}}
+
+archives:
+  - formats: [ tar.gz ]
+    format_overrides:
+      - goos: windows
+        formats: [ zip ]
 
 release:
   prerelease: auto
-
-archives:
-  - format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
 
 changelog:
   use: github-native
@@ -35,6 +39,77 @@ brews:
   - repository:
       owner: foomo
       name: homebrew-tap
-    caveats: "gotsrpc gotsrpc.yml"
+    caveats: "gotsrpc"
     homepage: "https://github.com/foomo/gotsrpc"
     description: "CLI utility to generate go and typescript RPC calls easily"
+
+dockers:
+  - use: buildx
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile
+    image_templates:
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:latest-amd64{{ end }}'
+      - 'foomo/gotsrpc:{{ .Version }}-amd64'
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}-amd64{{ end }}'
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}.{{ .Minor }}-amd64{{ end }}'
+    build_flag_templates:
+      - '--pull'
+      # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
+      - '--label=org.opencontainers.image.title={{.ProjectName}}'
+      - '--label=org.opencontainers.image.description=CLI utility to generate go and typescript RPC calls easily'
+      - '--label=org.opencontainers.image.source={{.GitURL}}'
+      - '--label=org.opencontainers.image.url={{.GitURL}}'
+      - '--label=org.opencontainers.image.documentation={{.GitURL}}'
+      - '--label=org.opencontainers.image.created={{.Date}}'
+      - '--label=org.opencontainers.image.revision={{.FullCommit}}'
+      - '--label=org.opencontainers.image.version={{.Version}}'
+      - '--platform=linux/amd64'
+
+  - use: buildx
+    goos: linux
+    goarch: arm64
+    dockerfile: Dockerfile
+    image_templates:
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:latest-arm64{{ end }}'
+      - 'foomo/gotsrpc:{{ .Version }}-arm64'
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}-arm64{{ end }}'
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}.{{ .Minor }}-arm64{{ end }}'
+    build_flag_templates:
+      - '--pull'
+      # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
+      - '--label=org.opencontainers.image.title={{.ProjectName}}'
+      - '--label=org.opencontainers.image.description=Project Oriented SHELL'
+      - '--label=org.opencontainers.image.source={{.GitURL}}'
+      - '--label=org.opencontainers.image.url={{.GitURL}}'
+      - '--label=org.opencontainers.image.documentation={{.GitURL}}'
+      - '--label=org.opencontainers.image.created={{.Date}}'
+      - '--label=org.opencontainers.image.revision={{.FullCommit}}'
+      - '--label=org.opencontainers.image.version={{.Version}}'
+      - '--platform=linux/arm64'
+
+docker_manifests:
+  # basic
+  - name_template: 'foomo/gotsrpc:latest'
+    image_templates:
+      - 'foomo/gotsrpc:latest-amd64'
+      - 'foomo/gotsrpc:latest-arm64'
+    skip_push: auto
+
+  - name_template: 'foomo/gotsrpc:{{ .Version }}'
+    image_templates:
+      - 'foomo/gotsrpc:{{ .Version }}-amd64'
+      - 'foomo/gotsrpc:{{ .Version }}-arm64'
+    skip_push: auto
+
+  - name_template: 'foomo/gotsrpc:{{ .Major }}'
+    image_templates:
+      - 'foomo/gotsrpc:{{ .Major }}-amd64'
+      - 'foomo/gotsrpc:{{ .Major }}-arm64'
+    skip_push: auto
+
+  - name_template: 'foomo/gotsrpc:{{ .Major }}.{{ .Minor }}'
+    image_templates:
+      - 'foomo/gotsrpc:{{ .Major }}.{{ .Minor }}-amd64'
+      - 'foomo/gotsrpc:{{ .Major }}.{{ .Minor }}-arm64'
+    skip_push: auto

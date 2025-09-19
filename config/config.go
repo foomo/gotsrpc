@@ -11,13 +11,20 @@ import (
 )
 
 type Target struct {
-	Package          string            `yaml:"package"`
-	Services         map[string]string `yaml:"services"`
-	TypeScriptModule string            `yaml:"module"`
-	Out              string            `yaml:"out"`
-	GoRPC            []string          `yaml:"gorpc"`
-	TSRPC            []string          `yaml:"tsrpc"`
-	SkipTSRPCClient  bool              `yaml:"skipTSRPCClient"`
+	// Go package name
+	Package string `json:"package" yaml:"package"`
+	// Map of default routes to service names
+	Services map[string]string `json:"services" yaml:"services"`
+	// TypeScript module name
+	TypeScriptModule string `json:"module" yaml:"module"`
+	// TypeScript output filename
+	Out string `json:"out" yaml:"out"`
+	// List of go rpc services to generate
+	GoRPC []string `json:"gorpc" yaml:"gorpc"`
+	// List of ts rpc services to generate
+	TSRPC []string `json:"tsrpc" yaml:"tsrpc"`
+	// Skip generating go rpc client
+	SkipTSRPCClient bool `json:"skipTSRPCClient" yaml:"skipTSRPCClient"`
 }
 
 func (t *Target) IsGoRPC(service string) bool {
@@ -42,25 +49,36 @@ func (t *Target) IsTSRPC(service string) bool {
 }
 
 type Mapping struct {
-	GoPackage        string   `yaml:"-"`
-	Out              string   `yaml:"out"`
-	Structs          []string `yaml:"structs"`
-	Scalars          []string `yaml:"scalars"`
-	TypeScriptModule string   `yaml:"module"`
+	// Internal go package name
+	GoPackage string `json:"-" yaml:"-"`
+	// TypeScript output filename
+	Out string `json:"out" yaml:"out"`
+	// List of go types to generate
+	Structs []string `json:"structs" yaml:"structs"`
+	// List of go types to generate
+	Scalars []string `json:"scalars" yaml:"scalars"`
+	// Optional TypeScript module name
+	TypeScriptModule string `json:"module" yaml:"module"`
 }
 
 type TypeScriptMappings map[string]*Mapping
 
 type Namespace struct {
-	Name    string        `yaml:"name"`
-	Path    string        `yaml:"path"`
-	ModFile *modfile.File `yaml:"-"`
+	// Go module name
+	Name string `json:"name" yaml:"name"`
+	// Go module path
+	Path string `json:"path" yaml:"path"`
+	// Internally loaded mod file
+	ModFile *modfile.File `json:"-" yaml:"-"`
 }
 
 type Config struct {
-	Module   Namespace
-	Targets  map[string]*Target
-	Mappings TypeScriptMappings
+	// Go module settings
+	Module Namespace `json:"module" yaml:"module"`
+	// Map of target names to target settings
+	Targets map[string]*Target `json:"targets" yaml:"targets"`
+	// Map of go module names to TypeScript mapping settings
+	Mappings TypeScriptMappings `json:"mappings" yaml:"mappings"`
 }
 
 func LoadConfigFile(file string) (conf *Config, err error) {

@@ -1,6 +1,5 @@
 [![Build Status](https://github.com/foomo/gotsrpc/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/foomo/gotsrpc/actions/workflows/test.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/foomo/gotsrpc)](https://goreportcard.com/report/github.com/foomo/gotsrpc)
-[![Coverage Status](https://coveralls.io/repos/github/foomo/gotsrpc/badge.svg?branch=main&)](https://coveralls.io/github/foomo/gotsrpc?branch=main)
 [![GoDoc](https://godoc.org/github.com/foomo/gotsrpc?status.svg)](https://godoc.org/github.com/foomo/gotsrpc)
 
 <p align="center">
@@ -11,22 +10,49 @@
 
 ## Documentation
 
-Please refer to the documentation:
+Please refer to the [documentation](https://www.foomo.org/docs/projects/gotsrpc).
 
-https://www.foomo.org/docs/projects/gotsrpc
+```shell
+$ gotsrpc
+gotsrpc
+
+Usage:
+  gotsrpc [options] <config-file>
+
+Options:
+  -version   Display version information
+  -debug     Print debug information
+
+Examples:
+  $ gotsrpc path/to/gotsrpc.yaml
+```
 
 ## Installation
 
-Follow the docs:
+Please follow the [documentation](https://www.foomo.org/docs/projects/gotsrpc/cli#installation).
 
-https://www.foomo.org/docs/projects/gotsrpc/cli#installation
+### Download binary
 
-From source to /usr/local/bin/gotsrpc:
+Download a [binary release](https://github.com/foomo/gotsrpc/releases)
 
-```bash
-go get github.com/foomo/gotsrpc/v2
-cd $GOPATH/src/github.com/foomo/gotsrpc
-make install
+### Build from source
+
+```
+go install github.com/foomo/gotsrpc@latest
+```
+
+### Homebrew (Linux/macOS)
+
+If you use [Homebrew](https://brew.sh), you can install like this:
+```
+brew install foomo/tap/gotsrpc
+```
+
+### Mise
+
+If you use [mise](https://https://mise.jdx.dev), you can install like this:
+```
+mise use github.com:foomo/gotsrpc
 ```
 
 Release downloads:

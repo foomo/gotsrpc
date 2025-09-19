@@ -6,22 +6,27 @@ on:
       - v*.*.*
   workflow_dispatch:
 
-env:
-  GOFLAGS: -mod=readonly
-  GOPROXY: https://proxy.golang.org
+permissions:
+  contents: write
 
 jobs:
-  goreleaser:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v5
+      - uses: jdx/mise-action@v3
+
+      - uses: actions/setup-go@v6
         with:
           check-latest: true
           go-version-file: go.mod
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
 
       - id: app_token
         uses: tibdex/github-app-token@v2
@@ -29,9 +34,12 @@ jobs:
           app_id: ${{ secrets.TOKEN_APP_ID }}
           private_key: ${{ secrets.TOKEN_APP_PRIVATE_KEY }}
 
+      - name: Login to docker.io
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+
       - uses: goreleaser/goreleaser-action@v6
         with:
-          version: latest
+          version: '~> v2'
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}

@@ -2,49 +2,81 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
+	"time"
 
 	"github.com/foomo/gotsrpc/v2"
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
 var (
-	version string
+	version        = "dev"
+	commitHash     = "n/a"
+	buildTimestamp = "n/a"
 )
 
 func usage() {
-	fmt.Println("Usage")
-	fmt.Println(os.Args[0], " path/to/build-config.yml")
-	flag.PrintDefaults()
+	fmt.Print(`gotsrpc
+
+Usage:
+  gotsrpc [options] [command] <config-file>
+
+Available Commands
+  version    Display version information
+
+Options:
+  -debug     Print debug information
+
+Examples:
+  $ gotsrpc path/to/gotsrpc.yaml
+`)
 }
 
 func main() {
 	flagDebug := flag.Bool("debug", false, "debug")
 
+	flag.Usage = usage
 	flag.Parse()
+
+	ctx := context.Background()
+
 	args := flag.Args()
-	if len(args) != 1 {
+	switch {
+	case len(args) == 0:
 		usage()
 		os.Exit(1)
-	}
-	if flag.Arg(0) == "version" {
-		fmt.Println(version)
+	case args[0] == "version":
+		if *flagDebug {
+			buildTime := buildTimestamp
+			if value, err := strconv.ParseInt(buildTimestamp, 10, 64); err == nil {
+				buildTime = time.Unix(value, 0).String()
+			}
+			fmt.Printf("Version: %s\nCommit: %s\nBuildTime: %s\n", version, commitHash, buildTime)
+		} else {
+			fmt.Println(version)
+		}
 		os.Exit(0)
+	case len(args) != 1:
+		usage()
+		os.Exit(1)
+	default:
+		gotsrpc.ReaderTrace = *flagDebug
 	}
-	gotsrpc.ReaderTrace = *flagDebug
 
 	var goRoot string
 	var goPath string
-	if out, err := exec.Command("go", "env", "GOROOT").Output(); err != nil {
+	if out, err := exec.CommandContext(ctx, "go", "env", "GOROOT").Output(); err != nil {
 		fmt.Println("failed to retrieve GOROOT", err.Error())
 		os.Exit(1)
 	} else {
 		goRoot = string(bytes.TrimSpace(out))
 	}
-	if out, err := exec.Command("go", "env", "GOPATH").Output(); err != nil {
+	if out, err := exec.CommandContext(ctx, "go", "env", "GOPATH").Output(); err != nil {
 		fmt.Println("failed to retrieve GOPATH", err.Error())
 		os.Exit(1)
 	} else {
@@ -53,7 +85,7 @@ func main() {
 
 	conf, err := config.LoadConfigFile(args[0])
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "config load error, could not load config from", args[0], ":", err)
+		_, _ = fmt.Fprintln(os.Stderr, "config load error, could not load config from", args[0], ":", err)
 		os.Exit(2)
 	}
 

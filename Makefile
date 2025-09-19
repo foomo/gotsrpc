@@ -1,19 +1,32 @@
 .DEFAULT_GOAL:=help
 -include .makerc
 
+# --- Config -----------------------------------------------------------------
+
+# Newline hack for error output
+define br
+
+
+endef
+
 # --- Targets -----------------------------------------------------------------
 
 # This allows us to accept extra arguments
-%: .husky
+%: .mise .husky
 	@:
+
+.PHONY: .mise
+# Install dependencies
+.mise: msg := $(br)$(br)Please ensure you have 'mise' installed and activated!$(br)$(br)$$ brew update$(br)$$ brew install mise$(br)$(br)See the documentation: https://mise.jdx.dev/getting-started.html$(br)$(br)
+.mise:
+ifeq (, $(shell command -v mise))
+	$(error ${msg})
+endif
+	@mise install
 
 .PHONY: .husky
 # Configure git hooks for husky
 .husky:
-	@if ! command -v husky &> /dev/null; then \
-		echo "ERROR: missing executeable 'husky', please run:"; \
-		echo "\n$ go install github.com/go-courier/husky/cmd/husky@latest\n"; \
-	fi
 	@git config core.hooksPath .husky
 
 ## === Tasks ===
@@ -22,10 +35,37 @@
 ## Run lint & test
 check: tidy examples lint test
 
+.PHONY: tidy
+## Run go mod tidy
+tidy:
+	@go mod tidy
+
+.PHONY: lint
+## Run linter
+lint:
+	@golangci-lint run
+
+.PHONY: lint.fix
+## Run linter and fix
+lint.fix:
+	@golangci-lint run --fix
+
 .PHONY: test
 ## Run go test
 test:
 	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out --tags=safe -race ./...
+
+.PHONY: build
+## Build binary
+build:
+	@rm -f bin/gotsrpc
+	@go build -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
+
+.PHONY: build.debug
+## Build binary in debug mode
+build.debug:
+	@rm -f bin/gotsrpc
+	@go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 .PHONY: install
 ## Run go install
@@ -42,15 +82,9 @@ install.debug:
 outdated:
 	@go list -u -m -json all | go-mod-outdated -update -direct
 
-.PHONY: build.debug
-## Build binary in debug mode
-build.debug:
-	@rm -f bin/gotsrpc
-	@go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
-
 ## === Tools ===
 
-EXAMPLES=basic errors monitor nullable union time
+EXAMPLES=basic errors monitor nullable union time types
 define examples
 .PHONY: example.$(1)
 example.$(1):
@@ -70,21 +104,6 @@ example.$(1).lint:
 	cd example/${1} && golangci-lint run
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
-
-.PHONY: lint
-## Run linter
-lint:
-	@golangci-lint run
-
-.PHONY: lint.fix
-## Run linter and fix
-lint.fix:
-	@golangci-lint run --fix
-
-.PHONY: tidy
-## Run go mod tidy
-tidy:
-	@go mod tidy
 
 ## === Examples ===
 
