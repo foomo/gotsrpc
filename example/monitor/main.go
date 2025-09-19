@@ -26,6 +26,7 @@ func init() {
 }
 
 func main() {
+	ctx := context.Background()
 	fs := http.FileServer(http.Dir("./client"))
 	ws := service.NewDefaultServiceGoTSRPCProxy(&service.Handler{})
 
@@ -41,7 +42,7 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
-		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
+		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
 		call()
 	}()
 
