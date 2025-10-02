@@ -42,14 +42,13 @@ func main() {
 	go func() {
 		time.Sleep(time.Second)
 		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
-		call()
+		call(ctx)
 	}()
 
 	panic(http.ListenAndServe("localhost:3000", mux)) //nolint:gosec
 }
 
-func call() {
-	ctx := context.Background()
+func call(ctx context.Context) {
 	c := backendsvs.NewDefaultServiceGoTSRPCClient("http://localhost:3000")
 
 	{
