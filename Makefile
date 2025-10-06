@@ -63,41 +63,48 @@ lint.fix:
 .PHONY: test
 ## Run tests
 test:
+	@echo "〉go test"
 	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
 
 .PHONY: outdated
 ## Show outdated direct dependencies
 outdated:
+	@echo "〉go mod outdated"
 	@go list -u -m -json all | go-mod-outdated -update -direct
 
 .PHONY: build
 ## Build binary
 build:
+	@echo "〉go build bin/gotsrpc"
 	@rm -f bin/gotsrpc
 	@go build -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 .PHONY: build.debug
 ## Build binary in debug mode
 build.debug:
+	@echo "〉go build bin/gotsrpc (debug)"
 	@rm -f bin/gotsrpc
 	@go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 .PHONY: install
 ## Run go install
 install:
+	@echo "〉installing gotsrpc"
 	@go install cmd/gotsrpc/gotsrpc.go
 
 .PHONY: install.debug
 ## Run go install with debug
 install.debug:
+	@echo "〉installing gotsrpc (debug)"
 	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
 
 EXAMPLES=basic errors monitor nullable union time types
 define examples
 .PHONY: example.$(1)
 example.$(1):
+	@echo "📝  example: ${1}"
 	@cd example/${1} && go run ../../cmd/gotsrpc/gotsrpc.go gotsrpc.yml
-	@cd example/${1}/client && ../../node_modules/.bin/tsc --build
+	@-cd example/${1}/client && ../../node_modules/.bin/tsc --build
 
 .PHONY: example.$(1).run
 example.$(1).run: example.${1}
@@ -106,19 +113,15 @@ example.$(1).run: example.${1}
 .PHONY: example.$(1).debug
 example.$(1).debug: build.debug
 	@cd example/${1} && dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ../../bin/gotsrpc gotsrpc.yml
-
-.PHONY: example.$(1).lint
-example.$(1).lint:
-	@cd example/${1} && golangci-lint run
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 
 .PHONY: examples
 ## Generate examples
 examples:
+	@echo "〉Generating examples"
 	@for name in example/*/; do\
 		if [ $$name != "example/node_modules/" ]; then \
-			echo "-------- $${name} ------------";\
 			$(MAKE) example.`basename $${name}`;\
 		fi \
   done
