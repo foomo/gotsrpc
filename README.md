@@ -12,6 +12,18 @@
 
 Please refer to the [documentation](https://www.foomo.org/docs/projects/gotsrpc).
 
+### Enhanced Documentation
+
+This repository now includes comprehensive documentation in the `docs/` directory:
+
+- **[📖 Documentation Overview](docs/README.md)** - Complete guide to all documentation
+- **[⚙️ Configuration Guide](docs/CONFIGURATION_GUIDE.md)** - Detailed gotsrpc.yml configuration reference
+- **[🤖 AI Assistant Guide](docs/AI_ASSISTANT_GUIDE.md)** - Guidelines for AI assistants implementing gotsrpc
+- **[🔐 Context Function Pattern](docs/CONTEXT_FUNCTION_PATTERN.md)** - Authentication patterns and best practices
+- **[🔧 Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+
+**Quick Start**: Start with the [Documentation Overview](docs/README.md) for a complete introduction to all available guides.
+
 ```shell
 $ gotsrpc
 gotsrpc

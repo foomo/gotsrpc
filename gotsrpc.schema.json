@@ -1,103 +1,172 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/foomo/gotsrpc/v2/config/config",
+  "title": "gotsrpc Configuration Schema",
+  "description": "Schema for gotsrpc.yml configuration files. Defines how to configure Go-to-TypeScript and Go-to-Go RPC code generation.",
   "$ref": "#/$defs/Config",
   "$defs": {
     "Config": {
+      "title": "gotsrpc Configuration",
+      "description": "Root configuration object for gotsrpc code generation",
       "properties": {
         "module": {
-          "$ref": "#/$defs/Namespace"
+          "$ref": "#/$defs/Namespace",
+          "description": "Go module configuration defining the module name and path"
         },
         "targets": {
           "additionalProperties": {
             "$ref": "#/$defs/Target"
           },
-          "type": "object"
+          "type": "object",
+          "description": "Target configurations for code generation. Each target defines a client/server pair.",
+          "examples": [
+            {
+              "api": {
+                "services": { "/api": "APIService" },
+                "package": "github.com/your-org/project/service",
+                "out": "./client/src/api-client.ts",
+                "tsrpc": ["APIService"]
+              }
+            }
+          ]
         },
         "mappings": {
-          "$ref": "#/$defs/TypeScriptMappings"
+          "$ref": "#/$defs/TypeScriptMappings",
+          "description": "TypeScript value object mappings for Go packages"
         }
       },
       "additionalProperties": false,
-      "type": "object"
+      "type": "object",
+      "required": ["module", "targets"]
     },
     "Mapping": {
+      "title": "TypeScript Mapping",
+      "description": "Maps Go packages to TypeScript output files for value objects",
       "properties": {
         "out": {
-          "type": "string"
+          "type": "string",
+          "description": "TypeScript output file path for value objects",
+          "examples": ["./client/src/vo.ts", "./client/src/types.ts"]
         },
         "structs": {
           "items": {
             "type": "string"
           },
-          "type": "array"
+          "type": "array",
+          "description": "List of Go struct types to generate TypeScript interfaces for",
+          "examples": [["User", "Product", "Order"]]
         },
         "scalars": {
           "items": {
             "type": "string"
           },
-          "type": "array"
+          "type": "array",
+          "description": "List of Go scalar types to generate TypeScript types for",
+          "examples": [["UserID", "ProductID", "OrderStatus"]]
         },
         "module": {
-          "type": "string"
+          "type": "string",
+          "description": "Optional TypeScript module name for the generated code",
+          "examples": ["MyApp.Types", "Generated.VOs"]
         }
       },
       "additionalProperties": false,
-      "type": "object"
+      "type": "object",
+      "required": ["out"]
     },
     "Namespace": {
+      "title": "Go Module Namespace",
+      "description": "Defines the Go module name and path for the project",
       "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "description": "Go module name (must match go.mod file)",
+          "examples": ["github.com/your-org/your-project", "example.com/myapp"]
         },
         "path": {
-          "type": "string"
+          "type": "string",
+          "description": "Relative path to the Go module root directory",
+          "examples": ["./", "../", "./subdir/"]
         }
       },
       "additionalProperties": false,
-      "type": "object"
+      "type": "object",
+      "required": ["name", "path"]
     },
     "Target": {
+      "title": "Code Generation Target",
+      "description": "Defines a client/server code generation target",
       "properties": {
         "package": {
-          "type": "string"
+          "type": "string",
+          "description": "Full Go package path containing the service interfaces",
+          "examples": ["github.com/your-org/project/service", "example.com/api/service"]
         },
         "services": {
           "additionalProperties": {
             "type": "string"
           },
-          "type": "object"
+          "type": "object",
+          "description": "Maps URL paths to service interface names",
+          "examples": [
+            { "/api": "APIService", "/auth": "AuthService" },
+            { "/service": "Service" }
+          ]
         },
         "module": {
-          "type": "string"
+          "type": "string",
+          "description": "TypeScript module name for the generated client code",
+          "examples": ["MyApp.Client", "Generated.API"]
         },
         "out": {
-          "type": "string"
+          "type": "string",
+          "description": "TypeScript client output file path",
+          "examples": ["./client/src/api-client.ts", "./dist/client.js"]
         },
         "gorpc": {
           "items": {
             "type": "string"
           },
-          "type": "array"
+          "type": "array",
+          "description": "List of services to generate Go RPC code for (Go-to-Go communication)",
+          "examples": [["InternalService", "AdminService"]]
         },
         "tsrpc": {
           "items": {
             "type": "string"
           },
-          "type": "array"
+          "type": "array",
+          "description": "List of services to generate TypeScript RPC code for (Go-to-TypeScript communication)",
+          "examples": [["APIService", "AuthService", "UserService"]]
         },
         "skipTSRPCClient": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Skip generating TypeScript client code (server-only generation)",
+          "default": false,
+          "examples": [false, true]
         }
       },
       "additionalProperties": false,
-      "type": "object"
+      "type": "object",
+      "required": ["package", "services", "out"]
     },
     "TypeScriptMappings": {
+      "title": "TypeScript Value Object Mappings",
+      "description": "Maps Go packages to TypeScript output files for value objects and types",
       "additionalProperties": {
         "$ref": "#/$defs/Mapping"
       },
-      "type": "object"
+      "type": "object",
+      "examples": [
+        {
+          "github.com/your-org/project/service": {
+            "out": "./client/src/service-vo.ts"
+          },
+          "github.com/your-org/project/types": {
+            "out": "./client/src/types-vo.ts"
+          }
+        }
+      ]
     }
   }
 }
