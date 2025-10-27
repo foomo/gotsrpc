@@ -5,11 +5,13 @@ This guide is specifically designed to help AI assistants implement client/serve
 ## Table of Contents
 1. [Quick Start Patterns](#quick-start-patterns)
 2. [Configuration Decision Tree](#configuration-decision-tree)
-3. [Service Implementation Patterns](#service-implementation-patterns)
-4. [Authentication Implementation](#authentication-implementation)
-5. [Common Implementation Scenarios](#common-implementation-scenarios)
-6. [Code Generation Workflow](#code-generation-workflow)
-7. [Testing and Validation](#testing-and-validation)
+3. [Understanding TSRPC vs GORPC](#understanding-tsrpc-vs-gorpc-for-ai-assistants)
+4. [Service Implementation Patterns](#service-implementation-patterns)
+5. [Authentication Implementation](#authentication-implementation)
+6. [Common Implementation Scenarios](#common-implementation-scenarios)
+7. [Code Generation Workflow](#code-generation-workflow)
+8. [Testing and Validation](#testing-and-validation)
+9. [Best Practices for AI Assistants](#best-practices-for-ai-assistants)
 
 ## Quick Start Patterns
 
@@ -151,6 +153,10 @@ services:
 - **Go services only** → Use `gorpc` only
 - **Both** → Use separate targets for each type
 
+**Remember**: gotsrpc always generates Go server code. The `tsrpc`/`gorpc` arrays only determine which client libraries are generated.
+
+For detailed guidance on TSRPC vs GORPC selection, see [Understanding TSRPC vs GORPC for AI Assistants](#understanding-tsrpc-vs-gorpc-for-ai-assistants).
+
 ```yaml
 # TypeScript clients only
 targets:
@@ -221,67 +227,11 @@ mappings:
     out: ./client/src/vo-time.ts
 ```
 
-### Step 5: RPC Type Selection
-
-**Question**: What type of clients do you need?
-
-- **TypeScript clients only** → Use `tsrpc` array
-- **Go clients only** → Use `gorpc` array  
-- **Both TypeScript and Go clients** → Use both `tsrpc` and `gorpc` arrays
-
-**Important for AI Assistants**: Always consider both TSRPC and GORPC possibilities:
-- **TSRPC**: For web frontends, mobile apps, external APIs
-- **GORPC**: For internal microservices, backend-to-backend communication
-- **Mixed**: When the same service needs to serve both web and internal clients
-
-**Remember**: gotsrpc always generates Go server code. The `tsrpc`/`gorpc` arrays only determine which client libraries are generated.
-
-**Configuration Examples:**
-
-**TypeScript-only:**
-```yaml
-targets:
-  web:
-    services:
-      /api: Service
-    package: github.com/your-org/project/service
-    out: ./client/src/api-client.ts
-    tsrpc:
-      - Service
-```
-
-**Go-only:**
-```yaml
-targets:
-  internal:
-    services:
-      /internal: Service
-    package: github.com/your-org/project/service
-    out: ./internal/internal-client.go
-    gorpc:
-      - Service
-```
-
-**Mixed (both TypeScript and Go):**
-```yaml
-targets:
-  admin:
-    services:
-      /admin: Service
-    package: github.com/your-org/project/service
-    out: ./admin/admin-client.ts
-    tsrpc:
-      - Service    # TypeScript client
-    gorpc:
-      - Service    # Go client
-```
-
-### Step 6: Service Organization
+### Step 5: Service Organization
 
 **Question**: How many services do you have?
 
-- **Single service** → Use simple naming
-- **Multiple services** → Choose between two approaches
+If you have **multiple services**, you can choose between two approaches - see [chapter below](#service-organization-approaches).
 
 ## Service Organization Approaches
 
@@ -292,8 +242,7 @@ targets:
 service/
 ├── auth.go      # type AuthService interface { ... }
 ├── api.go       # type APIService interface { ... }
-├── admin.go     # type AdminService interface { ... }
-└── services.go  # Re-exports all services
+└── admin.go     # type AdminService interface { ... }
 ```
 
 **Configuration:**

@@ -7,7 +7,8 @@ This guide helps diagnose and fix common issues when using gotsrpc, especially f
 2. [Code Generation Problems](#code-generation-problems)
 3. [Runtime Errors](#runtime-errors)
 4. [Authentication Issues](#authentication-issues)
-5. [Debugging Techniques](#debugging-techniques)
+5. [TypeScript Client Issues](#typescript-client-issues)
+6. [Debugging Techniques](#debugging-techniques)
 
 ## Configuration Issues
 
@@ -396,6 +397,161 @@ const options: RequestInit = {
 1. Check token format in Context function
 2. Verify token validation logic
 3. Check for timing issues (token expiration)
+
+## TypeScript Client Issues
+
+### 1. Response Structure Handling
+
+#### Problem: Incorrect Response Parsing
+**Symptoms:**
+- TypeScript clients fail to parse responses
+- Runtime errors when accessing response data
+- Type mismatches in response handling
+
+**Root Cause:**
+GoTSRPC returns responses as JSON arrays with the format `[result, error]`, not as direct objects.
+
+**Incorrect Implementation:**
+```typescript
+// ❌ WRONG - Direct object access
+const response = await fetch('/api/auth/login', {
+  method: 'POST',
+  body: JSON.stringify(request)
+});
+const data = await response.json();
+return data.token; // ❌ This will fail
+```
+
+**Correct Implementation:**
+```typescript
+// ✅ CORRECT - Array response handling
+const response = await fetch('/api/auth/login', {
+  method: 'POST',
+  body: JSON.stringify(request)
+});
+const [result, error] = await response.json();
+
+if (error !== null) {
+  throw new Error(`Request failed: ${error}`);
+}
+
+return result.token; // ✅ Access result from array
+```
+
+#### Helper Function Pattern
+```typescript
+// Create a helper function for consistent response handling
+function handleGoTSRPCResponse<T>(response: [T, any]): T {
+  if (response[1] !== null) {
+    throw new Error(`Request failed: ${response[1]}`);
+  }
+  return response[0];
+}
+
+// Usage
+const [result, error] = await response.json();
+const data = handleGoTSRPCResponse<LoginResponse>([result, error]);
+```
+
+### 2. Function Name Headers
+
+#### Problem: Missing Function Headers
+**Symptoms:**
+- 404 errors from server
+- "Method not found" errors
+- Requests not reaching correct handlers
+
+**Root Cause:**
+GoTSRPC requires the function name in the `X-GoTSRPC-Func` header.
+
+**Correct Implementation:**
+```typescript
+const response = await fetch('/api/auth', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-GoTSRPC-Func': 'Login'  // ✅ Required header
+  },
+  body: JSON.stringify([request])  // ✅ Array format
+});
+```
+
+### 3. Request Body Format
+
+#### Problem: Incorrect Request Format
+**Symptoms:**
+- Server returns "could not load args" errors
+- Parameter parsing failures
+- Type mismatches
+
+**Root Cause:**
+GoTSRPC expects request arguments as JSON arrays, not objects.
+
+**Incorrect Implementation:**
+```typescript
+// ❌ WRONG - Direct object
+body: JSON.stringify({ username: 'admin', password: 'password' })
+```
+
+**Correct Implementation:**
+```typescript
+// ✅ CORRECT - Array format
+body: JSON.stringify([{ username: 'admin', password: 'password' }])
+```
+
+### 4. Complete TypeScript Client Example
+
+```typescript
+class AuthServiceClient {
+  constructor(private baseUrl: string) {}
+
+  async login(request: LoginRequest): Promise<LoginResponse> {
+    const response = await fetch(`${this.baseUrl}/auth`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-GoTSRPC-Func': 'Login'
+      },
+      body: JSON.stringify([request])  // Array format
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const [result, error] = await response.json();
+    
+    if (error !== null) {
+      throw new Error(`Request failed: ${error}`);
+    }
+
+    return result;
+  }
+
+  async validateToken(token: string): Promise<User> {
+    const response = await fetch(`${this.baseUrl}/auth`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-GoTSRPC-Func': 'ValidateToken'
+      },
+      body: JSON.stringify([token])  // Array format
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const [result, error] = await response.json();
+    
+    if (error !== null) {
+      throw new Error(`Request failed: ${error}`);
+    }
+
+    return result;
+  }
+}
+```
 
 ## Debugging Techniques
 

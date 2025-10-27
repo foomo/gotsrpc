@@ -633,9 +633,30 @@ type Service interface {
 }
 ```
 
-### Generated Code Usage
+#### Mixed Patterns
+```go
+type Service interface {
+    // Context function for protected methods
+    Context(w http.ResponseWriter, r *http.Request)
+    
+    // Protected methods (no HTTP parameters needed)
+    GetUserData() (UserData, error)
+    UpdateProfile(profile Profile) error
+    
+    // Public methods (no authentication needed)
+    GetPublicData() (PublicData, error)
+    
+    // HTTP-aware methods (custom handling)
+    UploadFile(w http.ResponseWriter, r *http.Request, file File) error
+}
+```
 
-#### Server-side (Go)
+**Use mixed patterns when:**
+- Some methods need authentication, others don't
+- You need both simple and HTTP-aware methods
+- You want maximum flexibility
+
+### Generated Code Usage
 ```go
 // Create handlers
 authHandler := service.NewAuthHandler()

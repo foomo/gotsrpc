@@ -2,6 +2,8 @@
 
 The Context function is a special pattern in gotsrpc that enables centralized authentication and request preprocessing. This document explains how to implement and use this pattern effectively.
 
+> **Note**: This is one of three function definition patterns supported by gotsrpc. See the [Configuration Guide](CONFIGURATION_GUIDE.md) for all patterns: simple functions, HTTP-aware functions, and the Context function pattern.
+
 ## Overview
 
 The Context function is automatically detected by gotsrpc when a service method has the signature:
