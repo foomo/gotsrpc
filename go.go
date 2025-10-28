@@ -18,6 +18,11 @@ func (v *Value) isHTTPRequest() bool {
 		(v.IsPtr && v.Scalar != nil && v.Scalar.Name == "Request" && v.Scalar.Package == "net/http")
 }
 
+func (v *Value) isContext() bool {
+	return (v.StructType != nil && v.StructType.Name == "Context" && v.StructType.Package == "context") ||
+		(v.Scalar != nil && v.Scalar.Name == "Context" && v.Scalar.Package == "context")
+}
+
 func (v *Value) goType(aliases map[string]string, packageName string) (t string) {
 	if v.IsPtr {
 		t = "*"
@@ -249,6 +254,13 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 				returnValueNames = append(returnValueNames, lcfirst(method.Name)+ucfirst(retArgName))
 			}
 			g.l("executionStart := time.Now()")
+
+			// Check if method has context parameter
+			hasContext := len(method.Args) > 0 && method.Args[0].Value.isContext()
+			if hasContext {
+				callArgs = append([]string{"r.Context()"}, callArgs...)
+			}
+
 			if isSessionRequest {
 				g.l("rw := gotsrpc.ResponseWriter{ResponseWriter: w}")
 				callArgs = append([]string{"&rw", "r"}, callArgs...)
@@ -635,9 +647,10 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 		for _, method := range service.Methods {
 			args := []string{}
 			params := []string{}
-			for _, a := range goMethodArgsWithoutHTTPContextRelatedArgs(method) {
-				args = append(args, ucfirst(a.Name)+`: `+a.Name)
-				params = append(params, a.Name+" "+a.Value.goType(aliases, fullPackageName))
+			for i, a := range goMethodArgsWithoutHTTPContextRelatedArgs(method) {
+				argName := fmt.Sprintf("arg_%d", i)
+				args = append(args, ucfirst(a.Name)+`: `+argName)
+				params = append(params, argName+" "+a.Value.goType(aliases, fullPackageName))
 			}
 			rets := []string{}
 			returns := []string{}
@@ -721,6 +734,10 @@ func goMethodArgsWithoutHTTPContextRelatedArgs(m *Method) (filteredArgs []*Field
 			continue
 		}
 		if argI == 1 && arg.Value.isHTTPRequest() {
+			continue
+		}
+		// ✅ ADD: Filter out context.Context
+		if arg.Value.isContext() {
 			continue
 		}
 		filteredArgs = append(filteredArgs, arg)
