@@ -20,6 +20,7 @@ linters:
     - forbidigo
     - gosmopolitan
     - nonamedreturns
+    - modernize
     - wsl_v5
     # Discouraged linters
     - noinlineerr # Disallows inline error handling (`if err := ...; err != nil {`).
@@ -71,6 +72,8 @@ linters:
         - ifElseChain
     gomoddirectives:
       replace-local: true
+      replace-allow-list:
+        - github.com/iancoleman/strcase
     gosec:
       severity: medium
       confidence: medium
