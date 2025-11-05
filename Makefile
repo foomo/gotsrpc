@@ -64,7 +64,7 @@ lint.fix:
 ## Run tests
 test:
 	@echo "〉go test"
-	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race ./...) &&) true
 
 .PHONY: outdated
 ## Show outdated direct dependencies
