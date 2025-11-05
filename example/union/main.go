@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-
 	"github.com/foomo/gotsrpc/v2/example/union/service"
 )
 
 func main() {
+	ctx := context.Background()
 	fs := http.FileServer(http.Dir("./client"))
 	ws := service.NewDefaultServiceGoTSRPCProxy(&service.Handler{})
 
@@ -28,33 +28,33 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
-		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
-		call()
+		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
+		call(ctx)
 	}()
 
 	panic(http.ListenAndServe("localhost:3000", mux)) //nolint:gosec
 }
 
-func call() {
+func call(ctx context.Context) {
 	c := service.NewDefaultServiceGoTSRPCClient("http://127.0.0.1:3000")
 
 	{
-		res, _ := c.InlineStruct(context.Background())
+		res, _ := c.InlineStruct(ctx)
 		spew.Dump(res)
 	}
 
 	{
-		res, _ := c.InlineStructPtr(context.Background())
+		res, _ := c.InlineStructPtr(ctx)
 		spew.Dump(res) // TODO this should have nil for InlineStructB as for Bug
 	}
 
 	{
-		res, _ := c.UnionString(context.Background())
+		res, _ := c.UnionString(ctx)
 		spew.Dump(res)
 	}
 
 	{
-		res, _ := c.UnionStruct(context.Background())
+		res, _ := c.UnionStruct(ctx)
 		spew.Dump(res)
 	}
 }
