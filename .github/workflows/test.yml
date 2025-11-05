@@ -32,7 +32,7 @@ jobs:
         with:
           install-mode: none
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
 
       - name: Run yarn install
         working-directory: example
