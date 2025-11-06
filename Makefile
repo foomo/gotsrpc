@@ -3,6 +3,7 @@
 
 # --- Config -----------------------------------------------------------------
 
+GOMODS=$(shell find . -type f -name go.mod)
 # Newline hack for error output
 define br
 
@@ -12,8 +13,14 @@ endef
 # --- Targets -----------------------------------------------------------------
 
 # This allows us to accept extra arguments
-%: .mise .husky
+%: .mise .husky go.work
 	@:
+
+# Ensure go.work file
+go.work:
+	@go work init
+	@go work use -r .
+	@go work sync
 
 .PHONY: .mise
 # Install dependencies
@@ -29,7 +36,7 @@ endif
 .husky:
 	@git config core.hooksPath .husky
 
-## === Tasks ===
+### Tasks
 
 .PHONY: check
 ## Run lint & test
@@ -38,116 +45,110 @@ check: tidy examples lint test
 .PHONY: tidy
 ## Run go mod tidy
 tidy:
-	@go mod tidy
+	@echo "〉go mod tidy"
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && go mod tidy) &&) true
 
 .PHONY: lint
 ## Run linter
 lint:
-	@golangci-lint run
+	@echo "〉golangci-lint run"
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && golangci-lint run) &&) true
 
 .PHONY: lint.fix
-## Run linter and fix
+## Fix lint violations
 lint.fix:
-	@golangci-lint run --fix
+	@echo "〉golangci-lint run fix"
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && golangci-lint run --fix) &&) true
 
 .PHONY: test
-## Run go test
+## Run tests
 test:
-	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out --tags=safe -race ./...
+	@echo "〉go test"
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race ./...) &&) true
+
+.PHONY: outdated
+## Show outdated direct dependencies
+outdated:
+	@echo "〉go mod outdated"
+	@go list -u -m -json all | go-mod-outdated -update -direct
 
 .PHONY: build
 ## Build binary
 build:
+	@echo "〉go build bin/gotsrpc"
 	@rm -f bin/gotsrpc
 	@go build -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 .PHONY: build.debug
 ## Build binary in debug mode
 build.debug:
+	@echo "〉go build bin/gotsrpc (debug)"
 	@rm -f bin/gotsrpc
 	@go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
 
 .PHONY: install
 ## Run go install
 install:
+	@echo "〉installing gotsrpc"
 	@go install cmd/gotsrpc/gotsrpc.go
 
 .PHONY: install.debug
 ## Run go install with debug
 install.debug:
+	@echo "〉installing gotsrpc (debug)"
 	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
-
-.PHONY: outdated
-## Show outdated direct dependencies
-outdated:
-	@go list -u -m -json all | go-mod-outdated -update -direct
-
-## === Tools ===
 
 EXAMPLES=basic errors monitor nullable union time types
 define examples
 .PHONY: example.$(1)
 example.$(1):
-	cd example/${1} && go run ../../cmd/gotsrpc/gotsrpc.go gotsrpc.yml
-	cd example/${1}/client && ../../node_modules/.bin/tsc --build
+	@echo "📝  example: ${1}"
+	@cd example/${1} && go run ../../cmd/gotsrpc/gotsrpc.go gotsrpc.yml
+	@-cd example/${1}/client && ../../node_modules/.bin/tsc --build
 
 .PHONY: example.$(1).run
 example.$(1).run: example.${1}
-	cd example/${1} && go run main.go
+	@cd example/${1} && go run main.go
 
 .PHONY: example.$(1).debug
 example.$(1).debug: build.debug
-	cd example/${1} && dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ../../bin/gotsrpc gotsrpc.yml
-
-.PHONY: example.$(1).lint
-example.$(1).lint:
-	cd example/${1} && golangci-lint run
+	@cd example/${1} && dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ../../bin/gotsrpc gotsrpc.yml
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 
-## === Examples ===
-
 .PHONY: examples
-## Build examples
+## Generate examples
 examples:
+	@echo "〉Generating examples"
 	@for name in example/*/; do\
 		if [ $$name != "example/node_modules/" ]; then \
-			echo "-------- $${name} ------------";\
 			$(MAKE) example.`basename $${name}`;\
 		fi \
   done
 .PHONY: examples
 
-## === Utils ===
+### Utils
 
+.PHONY: docs
+## Open go docs
+docs:
+	@go doc -http
+
+.PHONY: help
 ## Show help text
 help:
+	@echo "gotsrpc\n"
+	@echo "Usage:\n  make [task]"
 	@awk '{ \
-			if ($$0 ~ /^.PHONY: [a-zA-Z\-\_0-9]+$$/) { \
-				helpCommand = substr($$0, index($$0, ":") + 2); \
-				if (helpMessage) { \
-					printf "\033[36m%-23s\033[0m %s\n", \
-						helpCommand, helpMessage; \
-					helpMessage = ""; \
-				} \
-			} else if ($$0 ~ /^[a-zA-Z\-\_0-9.]+:/) { \
-				helpCommand = substr($$0, 0, index($$0, ":")); \
-				if (helpMessage) { \
-					printf "\033[36m%-23s\033[0m %s\n", \
-						helpCommand, helpMessage"\n"; \
-					helpMessage = ""; \
-				} \
-			} else if ($$0 ~ /^##/) { \
-				if (helpMessage) { \
-					helpMessage = helpMessage"\n                        "substr($$0, 3); \
-				} else { \
-					helpMessage = substr($$0, 3); \
-				} \
-			} else { \
-				if (helpMessage) { \
-					print "\n                        "helpMessage"\n" \
-				} \
-				helpMessage = ""; \
-			} \
-		}' \
-		$(MAKEFILE_LIST)
+		if($$0 ~ /^### /){ \
+			if(help) printf "%-23s %s\n\n", cmd, help; help=""; \
+			printf "\n%s:\n", substr($$0,5); \
+		} else if($$0 ~ /^[a-zA-Z0-9._-]+:/){ \
+			cmd = substr($$0, 1, index($$0, ":")-1); \
+			if(help) printf "  %-23s %s\n", cmd, help; help=""; \
+		} else if($$0 ~ /^##/){ \
+			help = help ? help "\n                        " substr($$0,3) : substr($$0,3); \
+		} else if(help){ \
+			print "\n                        " help "\n"; help=""; \
+		} \
+	}' $(MAKEFILE_LIST)

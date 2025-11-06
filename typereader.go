@@ -39,7 +39,7 @@ func readStructs(pkg *ast.Package, packageName string) (structs map[string]*Stru
 
 func trace(args ...interface{}) {
 	if ReaderTrace {
-		fmt.Fprintln(os.Stderr, args...)
+		_, _ = fmt.Fprintln(os.Stderr, args...)
 	}
 }
 
