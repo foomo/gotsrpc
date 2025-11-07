@@ -11,6 +11,19 @@ import (
 func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
 	clientName := service.Name + "Client"
 
+	ts.l("// generic error type")
+	ts.l("export interface Error {")
+	ts.ind(1)
+	ts.l("m: string;")
+	ts.l("p: string;")
+	ts.l("t: string;")
+	ts.l("d?: unknown;")
+	ts.l("c?: Error;")
+	ts.ind(-1)
+	ts.l("}")
+
+	ts.nl()
+
 	ts.l("export class " + clientName + " {")
 
 	ts.ind(1)
@@ -30,6 +43,10 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 		for index, arg := range method.Args {
 			if index == 0 && arg.Value.isHTTPResponseWriter() {
 				trace("skipping first arg is a http.ResponseWriter")
+				argOffset = 1
+				continue
+			} else if index == 0 && arg.Value.isContext() {
+				trace("skipping first arg is a context.Context")
 				argOffset = 1
 				continue
 			}

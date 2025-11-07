@@ -1,0 +1,18 @@
+module:
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
+
+targets:
+  context:
+    services:
+      /service: Service
+    package: github.com/foomo/gotsrpc/v2/example/context/service
+    out: ./client/src/service-client.ts
+    gorpc:
+      - Service
+    tsrpc:
+      - Service
+
+mappings:
+  github.com/foomo/gotsrpc/v2/example/context/service:
+    out: ./client/src/service-vo.ts

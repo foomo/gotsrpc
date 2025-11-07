@@ -11,11 +11,11 @@ import (
 )
 
 type Error struct {
-	Msg      string      `json:"m"`
-	Pkg      string      `json:"p"`
-	Type     string      `json:"t"`
-	Data     interface{} `json:"d,omitempty"`
-	ErrCause *Error      `json:"c,omitempty"`
+	Msg      string `json:"m"`
+	Pkg      string `json:"p"`
+	Type     string `json:"t"`
+	Data     any    `json:"d,omitempty"`
+	ErrCause *Error `json:"c,omitempty"`
 }
 
 // NewError returns a new instance

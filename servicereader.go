@@ -615,7 +615,7 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 	} else if ok := needWorksFields(s.UnionFields); !ok {
 		return false
 	}
-	//// special handling of union only structs
+	// // special handling of union only structs
 	// if len(s.Fields) == 0 {
 	//	for _, field := range s.UnionFields {
 	//		var fieldStructType *StructType = nil
@@ -630,7 +630,7 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 	//			}
 	//		}
 	//	}
-	//}
+	// }
 	if s.Array != nil {
 		if s.Array.Value != nil && needsWorkValue(s.Array.Value, needsWork) {
 			return false
@@ -727,7 +727,7 @@ func collectScalarTypes(fields []*Field, scalarTypes map[string]bool) {
 					fullName = scalarType.Name
 				}
 				switch fullName {
-				case "error", "net/http.Request", "net/http.ResponseWriter":
+				case "error", "net/http.Request", "net/http.ResponseWriter", "context.Context":
 					continue
 				default:
 					scalarTypes[fullName] = true
@@ -746,7 +746,7 @@ func collectStructTypes(fields []*Field, structTypes map[string]bool) {
 				fullName = strType.Name
 			}
 			switch fullName {
-			case "error", "net/http.Request", "net/http.ResponseWriter":
+			case "error", "net/http.Request", "net/http.ResponseWriter", "context.Context":
 				continue
 			default:
 				structTypes[fullName] = true

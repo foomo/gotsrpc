@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2/example/nullable/service"
+	"github.com/foomo/gotsrpc/v2/example/context/service"
 )
 
 func main() {
 	ctx := context.Background()
-	fs := http.FileServer(http.Dir("./nullable/client"))
+	fs := http.FileServer(http.Dir("./context/client"))
 	ws := service.NewDefaultServiceGoTSRPCProxy(&service.Handler{})
 
 	mux := http.NewServeMux()
@@ -27,7 +27,7 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
-		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
+		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000/").Run()
 	}()
 
 	panic(http.ListenAndServe("localhost:3000", mux)) //nolint:gosec

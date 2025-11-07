@@ -31,12 +31,12 @@ func (tsc *ServiceGoRPCClient) Stop() {
 }
 
 func (tsc *ServiceGoRPCClient) Hello(v string) (retHello_0 string, clientErr error) {
-	req := ServiceHelloRequest{V: v}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceHelloRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceHelloResponse)
-	return response.RetHello_0, nil
+	rpcResp := rpcRes.(ServiceHelloResponse)
+	return rpcResp.RetHello_0, nil
 }

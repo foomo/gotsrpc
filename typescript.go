@@ -25,6 +25,8 @@ var tsTypeAliases = map[string]string{
 
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
 	switch {
+	case v.IsError:
+		ts.app("Error")
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
 		ts.app(jsonInfo.Type)
 	case v.Map != nil:

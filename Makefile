@@ -98,7 +98,8 @@ install.debug:
 	@echo "〉installing gotsrpc (debug)"
 	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
 
-EXAMPLES=basic errors monitor nullable union time types
+EXAMPLES=context
+#EXAMPLES=basic errors monitor nullable union time types context
 define examples
 .PHONY: example.$(1)
 example.$(1):
