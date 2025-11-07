@@ -21,17 +21,53 @@ type (
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
+	ServiceCustomErrorRequest struct {
+		Msg string
+	}
+	ServiceCustomErrorResponse struct {
+		RetCustomError_0 error
+	}
+
 	ServiceHelloRequest struct {
-		V string
+		Args string
 	}
 	ServiceHelloResponse struct {
 		RetHello_0 string
 	}
+
+	ServiceStandardErrorRequest struct {
+		Msg string
+	}
+	ServiceStandardErrorResponse struct {
+		RetStandardError_0 error
+	}
+
+	ServiceTypedErrorRequest struct {
+		Msg string
+	}
+	ServiceTypedErrorResponse struct {
+		RetTypedError_0 error
+	}
+
+	ServiceWrappedErrorRequest struct {
+		Msg string
+	}
+	ServiceWrappedErrorResponse struct {
+		RetWrappedError_0 error
+	}
 )
 
 func init() {
+	gob.Register(ServiceCustomErrorRequest{})
+	gob.Register(ServiceCustomErrorResponse{})
 	gob.Register(ServiceHelloRequest{})
 	gob.Register(ServiceHelloResponse{})
+	gob.Register(ServiceStandardErrorRequest{})
+	gob.Register(ServiceStandardErrorResponse{})
+	gob.Register(ServiceTypedErrorRequest{})
+	gob.Register(ServiceTypedErrorResponse{})
+	gob.Register(ServiceWrappedErrorRequest{})
+	gob.Register(ServiceWrappedErrorResponse{})
 }
 
 func NewServiceGoRPCProxy(addr string, service Service, tlsConfig *tls.Config) *ServiceGoRPCProxy {
@@ -72,10 +108,26 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	funcName := funcNameParts[len(funcNameParts)-1]
 
 	switch funcName {
+	case "ServiceCustomErrorRequest":
+		req := request.(ServiceCustomErrorRequest)
+		retCustomError_0 := p.service.CustomError(nil, req.Msg)
+		response = ServiceCustomErrorResponse{RetCustomError_0: retCustomError_0}
 	case "ServiceHelloRequest":
 		req := request.(ServiceHelloRequest)
-		retHello_0 := p.service.Hello(req.V)
+		retHello_0 := p.service.Hello(nil, req.Args)
 		response = ServiceHelloResponse{RetHello_0: retHello_0}
+	case "ServiceStandardErrorRequest":
+		req := request.(ServiceStandardErrorRequest)
+		retStandardError_0 := p.service.StandardError(nil, req.Msg)
+		response = ServiceStandardErrorResponse{RetStandardError_0: retStandardError_0}
+	case "ServiceTypedErrorRequest":
+		req := request.(ServiceTypedErrorRequest)
+		retTypedError_0 := p.service.TypedError(nil, req.Msg)
+		response = ServiceTypedErrorResponse{RetTypedError_0: retTypedError_0}
+	case "ServiceWrappedErrorRequest":
+		req := request.(ServiceWrappedErrorRequest)
+		retWrappedError_0 := p.service.WrappedError(nil, req.Msg)
+		response = ServiceWrappedErrorResponse{RetWrappedError_0: retWrappedError_0}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())
 	}
@@ -83,7 +135,7 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	if p.callStatsHandler != nil {
 		p.callStatsHandler(&gotsrpc.CallStats{
 			Func:      funcName,
-			Package:   "github.com/foomo/gotsrpc/v2/example/monitor/service",
+			Package:   "github.com/foomo/gotsrpc/v2/example/context/service",
 			Service:   "Service",
 			Execution: time.Since(start),
 		})

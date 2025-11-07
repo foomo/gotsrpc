@@ -21,23 +21,30 @@ func TestServer(t *testing.T) {
 		assert.Equal(t, "Hello foomo", msg)
 	})
 
-	t.Run("Error", func(t *testing.T) {
-		err, clientErr := client.Error(t.Context(), "hello World")
+	t.Run("StandardError", func(t *testing.T) {
+		err, clientErr := client.StandardError(t.Context(), "hello World")
 		require.NoError(t, clientErr)
-		assert.Equal(t, "hello World", err.Error())
-	})
-}
-
-func TestHandler(t *testing.T) {
-	client := &service.Handler{}
-
-	t.Run("Hello", func(t *testing.T) {
-		msg := client.Hello(t.Context(), "foomo")
-		assert.Equal(t, "Hello foomo", msg)
+		assert.Equal(t, "something went wrong: hello World", err.Error())
 	})
 
-	t.Run("Error", func(t *testing.T) {
-		err := client.Error(t.Context(), "hello World")
+	t.Run("WrappedError", func(t *testing.T) {
+		err, clientErr := client.WrappedError(t.Context(), "hello World")
+		require.NoError(t, clientErr)
+		assert.Equal(t, "hello World: something", err.Error())
+	})
+
+	t.Run("TypedError", func(t *testing.T) {
+		err, clientErr := client.TypedError(t.Context(), "hello World")
+		require.NoError(t, clientErr)
+		require.ErrorIs(t, err, service.ErrSomething)
+		assert.Equal(t, "something", err.Error())
+	})
+
+	t.Run("CustomError", func(t *testing.T) {
+		err, clientErr := client.CustomError(t.Context(), "hello World")
+		require.NoError(t, clientErr)
+		var myErr *service.MyError
+		require.ErrorAs(t, err, &myErr)
 		assert.Equal(t, "hello World: something", err.Error())
 	})
 }

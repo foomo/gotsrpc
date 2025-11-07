@@ -94,7 +94,7 @@ func (tsc *ServiceGoRPCClient) Float32(v float32) (retFloat32_0 float32, clientE
 	return rpcResp.RetFloat32_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) Float32Map(v map[float32]interface{}) (retFloat32Map_0 map[float32]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) Float32Map(v map[float32]any) (retFloat32Map_0 map[float32]any, clientErr error) {
 	rpcReq := ServiceFloat32MapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -160,7 +160,7 @@ func (tsc *ServiceGoRPCClient) Float64(v float64) (retFloat64_0 float64, clientE
 	return rpcResp.RetFloat64_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) Float64Map(v map[float64]interface{}) (retFloat64Map_0 map[float64]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) Float64Map(v map[float64]any) (retFloat64Map_0 map[float64]any, clientErr error) {
 	rpcReq := ServiceFloat64MapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -237,7 +237,7 @@ func (tsc *ServiceGoRPCClient) Int32(v int32) (retInt32_0 int32, clientErr error
 	return rpcResp.RetInt32_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) Int32Map(v map[int32]interface{}) (retInt32Map_0 map[int32]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) Int32Map(v map[int32]any) (retInt32Map_0 map[int32]any, clientErr error) {
 	rpcReq := ServiceInt32MapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -303,7 +303,7 @@ func (tsc *ServiceGoRPCClient) Int64(v int64) (retInt64_0 int64, clientErr error
 	return rpcResp.RetInt64_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) Int64Map(v map[int64]interface{}) (retInt64Map_0 map[int64]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) Int64Map(v map[int64]any) (retInt64Map_0 map[int64]any, clientErr error) {
 	rpcReq := ServiceInt64MapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -358,7 +358,7 @@ func (tsc *ServiceGoRPCClient) Int64TypeMapTyped(v Int64TypeMapTyped) (retInt64T
 	return rpcResp.RetInt64TypeMapTyped_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) IntMap(v map[int]interface{}) (retIntMap_0 map[int]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) IntMap(v map[int]any) (retIntMap_0 map[int]any, clientErr error) {
 	rpcReq := ServiceIntMapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -413,7 +413,7 @@ func (tsc *ServiceGoRPCClient) IntTypeMapTyped(v IntTypeMapTyped) (retIntTypeMap
 	return rpcResp.RetIntTypeMapTyped_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) Interface(v interface{}) (retInterface_0 interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) Interface(v any) (retInterface_0 any, clientErr error) {
 	rpcReq := ServiceInterfaceRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -424,7 +424,7 @@ func (tsc *ServiceGoRPCClient) Interface(v interface{}) (retInterface_0 interfac
 	return rpcResp.RetInterface_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) InterfaceSlice(v []interface{}) (retInterfaceSlice_0 []interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) InterfaceSlice(v []any) (retInterfaceSlice_0 []any, clientErr error) {
 	rpcReq := ServiceInterfaceSliceRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -457,7 +457,7 @@ func (tsc *ServiceGoRPCClient) String(v string) (retString_0 string, clientErr e
 	return rpcResp.RetString_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) StringMap(v map[string]interface{}) (retStringMap_0 map[string]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) StringMap(v map[string]any) (retStringMap_0 map[string]any, clientErr error) {
 	rpcReq := ServiceStringMapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -545,7 +545,7 @@ func (tsc *ServiceGoRPCClient) UInt32(v uint32) (retUInt32_0 uint32, clientErr e
 	return rpcResp.RetUInt32_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) UInt32Map(v map[uint32]interface{}) (retUInt32Map_0 map[uint32]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) UInt32Map(v map[uint32]any) (retUInt32Map_0 map[uint32]any, clientErr error) {
 	rpcReq := ServiceUInt32MapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -611,7 +611,7 @@ func (tsc *ServiceGoRPCClient) UInt64(v uint64) (retUInt64_0 uint64, clientErr e
 	return rpcResp.RetUInt64_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) UInt64Map(v map[uint64]interface{}) (retUInt64Map_0 map[uint64]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) UInt64Map(v map[uint64]any) (retUInt64Map_0 map[uint64]any, clientErr error) {
 	rpcReq := ServiceUInt64MapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -666,7 +666,7 @@ func (tsc *ServiceGoRPCClient) UInt64TypeMapTyped(v UInt64TypeMapTyped) (retUInt
 	return rpcResp.RetUInt64TypeMapTyped_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) UIntMap(v map[uint]interface{}) (retUIntMap_0 map[uint]interface{}, clientErr error) {
+func (tsc *ServiceGoRPCClient) UIntMap(v map[uint]any) (retUIntMap_0 map[uint]any, clientErr error) {
 	rpcReq := ServiceUIntMapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {

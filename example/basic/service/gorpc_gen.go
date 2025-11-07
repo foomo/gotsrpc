@@ -60,10 +60,10 @@ type (
 	}
 
 	ServiceFloat32MapRequest struct {
-		V map[float32]interface{}
+		V map[float32]any
 	}
 	ServiceFloat32MapResponse struct {
-		RetFloat32Map_0 map[float32]interface{}
+		RetFloat32Map_0 map[float32]any
 	}
 
 	ServiceFloat32SliceRequest struct {
@@ -102,10 +102,10 @@ type (
 	}
 
 	ServiceFloat64MapRequest struct {
-		V map[float64]interface{}
+		V map[float64]any
 	}
 	ServiceFloat64MapResponse struct {
-		RetFloat64Map_0 map[float64]interface{}
+		RetFloat64Map_0 map[float64]any
 	}
 
 	ServiceFloat64SliceRequest struct {
@@ -151,10 +151,10 @@ type (
 	}
 
 	ServiceInt32MapRequest struct {
-		V map[int32]interface{}
+		V map[int32]any
 	}
 	ServiceInt32MapResponse struct {
-		RetInt32Map_0 map[int32]interface{}
+		RetInt32Map_0 map[int32]any
 	}
 
 	ServiceInt32SliceRequest struct {
@@ -193,10 +193,10 @@ type (
 	}
 
 	ServiceInt64MapRequest struct {
-		V map[int64]interface{}
+		V map[int64]any
 	}
 	ServiceInt64MapResponse struct {
-		RetInt64Map_0 map[int64]interface{}
+		RetInt64Map_0 map[int64]any
 	}
 
 	ServiceInt64SliceRequest struct {
@@ -228,10 +228,10 @@ type (
 	}
 
 	ServiceIntMapRequest struct {
-		V map[int]interface{}
+		V map[int]any
 	}
 	ServiceIntMapResponse struct {
-		RetIntMap_0 map[int]interface{}
+		RetIntMap_0 map[int]any
 	}
 
 	ServiceIntSliceRequest struct {
@@ -263,17 +263,17 @@ type (
 	}
 
 	ServiceInterfaceRequest struct {
-		V interface{}
+		V any
 	}
 	ServiceInterfaceResponse struct {
-		RetInterface_0 interface{}
+		RetInterface_0 any
 	}
 
 	ServiceInterfaceSliceRequest struct {
-		V []interface{}
+		V []any
 	}
 	ServiceInterfaceSliceResponse struct {
-		RetInterfaceSlice_0 []interface{}
+		RetInterfaceSlice_0 []any
 	}
 
 	ServiceNestedTypeRequest struct {
@@ -291,10 +291,10 @@ type (
 	}
 
 	ServiceStringMapRequest struct {
-		V map[string]interface{}
+		V map[string]any
 	}
 	ServiceStringMapResponse struct {
-		RetStringMap_0 map[string]interface{}
+		RetStringMap_0 map[string]any
 	}
 
 	ServiceStringSliceRequest struct {
@@ -347,10 +347,10 @@ type (
 	}
 
 	ServiceUInt32MapRequest struct {
-		V map[uint32]interface{}
+		V map[uint32]any
 	}
 	ServiceUInt32MapResponse struct {
-		RetUInt32Map_0 map[uint32]interface{}
+		RetUInt32Map_0 map[uint32]any
 	}
 
 	ServiceUInt32SliceRequest struct {
@@ -389,10 +389,10 @@ type (
 	}
 
 	ServiceUInt64MapRequest struct {
-		V map[uint64]interface{}
+		V map[uint64]any
 	}
 	ServiceUInt64MapResponse struct {
-		RetUInt64Map_0 map[uint64]interface{}
+		RetUInt64Map_0 map[uint64]any
 	}
 
 	ServiceUInt64SliceRequest struct {
@@ -424,10 +424,10 @@ type (
 	}
 
 	ServiceUIntMapRequest struct {
-		V map[uint]interface{}
+		V map[uint]any
 	}
 	ServiceUIntMapResponse struct {
-		RetUIntMap_0 map[uint]interface{}
+		RetUIntMap_0 map[uint]any
 	}
 
 	ServiceUIntSliceRequest struct {
@@ -618,7 +618,7 @@ func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHa
 	p.callStatsHandler = handler
 }
 
-func (p *ServiceGoRPCProxy) handler(clientAddr string, request interface{}) (response interface{}) {
+func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
 	start := time.Now()
 
 	reqType := reflect.TypeOf(request).String()
