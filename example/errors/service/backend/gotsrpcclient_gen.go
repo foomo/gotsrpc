@@ -50,9 +50,9 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 func (tsc *HTTPServiceGoTSRPCClient) CustomError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CustomError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy CustomError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CustomError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy CustomError")
 	}
 	return
 }
@@ -60,9 +60,9 @@ func (tsc *HTTPServiceGoTSRPCClient) CustomError(ctx go_context.Context) (e erro
 func (tsc *HTTPServiceGoTSRPCClient) Error(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Error", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy Error")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Error", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy Error")
 	}
 	return
 }
@@ -70,9 +70,9 @@ func (tsc *HTTPServiceGoTSRPCClient) Error(ctx go_context.Context) (e error, cli
 func (tsc *HTTPServiceGoTSRPCClient) MultiScalar(ctx go_context.Context) (e *MultiScalar, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MultiScalar", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy MultiScalar")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MultiScalar", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy MultiScalar")
 	}
 	return
 }
@@ -80,9 +80,9 @@ func (tsc *HTTPServiceGoTSRPCClient) MultiScalar(ctx go_context.Context) (e *Mul
 func (tsc *HTTPServiceGoTSRPCClient) Scalar(ctx go_context.Context) (e *ScalarError, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Scalar", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy Scalar")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Scalar", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy Scalar")
 	}
 	return
 }
@@ -90,9 +90,9 @@ func (tsc *HTTPServiceGoTSRPCClient) Scalar(ctx go_context.Context) (e *ScalarEr
 func (tsc *HTTPServiceGoTSRPCClient) ScalarError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ScalarError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy ScalarError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ScalarError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy ScalarError")
 	}
 	return
 }
@@ -100,9 +100,9 @@ func (tsc *HTTPServiceGoTSRPCClient) ScalarError(ctx go_context.Context) (e erro
 func (tsc *HTTPServiceGoTSRPCClient) Struct(ctx go_context.Context) (e *StructError, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Struct", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy Struct")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Struct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy Struct")
 	}
 	return
 }
@@ -110,9 +110,9 @@ func (tsc *HTTPServiceGoTSRPCClient) Struct(ctx go_context.Context) (e *StructEr
 func (tsc *HTTPServiceGoTSRPCClient) StructError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StructError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy StructError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StructError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy StructError")
 	}
 	return
 }
@@ -120,9 +120,9 @@ func (tsc *HTTPServiceGoTSRPCClient) StructError(ctx go_context.Context) (e erro
 func (tsc *HTTPServiceGoTSRPCClient) TypedCustomError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedCustomError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy TypedCustomError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedCustomError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy TypedCustomError")
 	}
 	return
 }
@@ -130,9 +130,9 @@ func (tsc *HTTPServiceGoTSRPCClient) TypedCustomError(ctx go_context.Context) (e
 func (tsc *HTTPServiceGoTSRPCClient) TypedError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy TypedError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy TypedError")
 	}
 	return
 }
@@ -140,9 +140,9 @@ func (tsc *HTTPServiceGoTSRPCClient) TypedError(ctx go_context.Context) (e error
 func (tsc *HTTPServiceGoTSRPCClient) TypedScalarError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedScalarError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy TypedScalarError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedScalarError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy TypedScalarError")
 	}
 	return
 }
@@ -150,9 +150,9 @@ func (tsc *HTTPServiceGoTSRPCClient) TypedScalarError(ctx go_context.Context) (e
 func (tsc *HTTPServiceGoTSRPCClient) TypedWrappedError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedWrappedError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy TypedWrappedError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedWrappedError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy TypedWrappedError")
 	}
 	return
 }
@@ -160,9 +160,9 @@ func (tsc *HTTPServiceGoTSRPCClient) TypedWrappedError(ctx go_context.Context) (
 func (tsc *HTTPServiceGoTSRPCClient) WrappedError(ctx go_context.Context) (e error, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "WrappedError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call backend.ServiceGoTSRPCProxy WrappedError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "WrappedError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call backend.ServiceGoTSRPCProxy WrappedError")
 	}
 	return
 }

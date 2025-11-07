@@ -28,6 +28,10 @@ type (
 	}
 )
 
+func (e *InlineStruct) Error() string {
+	return ""
+}
+
 type (
 	UnionString struct {
 		A *UnionStringA `json:"a,omitempty" gotsrpc:"union"`

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../gotsrpc.schema.json
 module:
   name: github.com/foomo/gotsrpc/v2
   path: ../../
@@ -16,3 +17,7 @@ targets:
 mappings:
   github.com/foomo/gotsrpc/v2/example/context/service:
     out: ./client/src/service-vo.ts
+  github.com/foomo/gotsrpc/v2:
+    out: ./client/src/service-error.ts
+    structs:
+      - github.com/foomo/gotsrpc/v2.Error

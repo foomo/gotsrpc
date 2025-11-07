@@ -11,19 +11,6 @@ import (
 func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
 	clientName := service.Name + "Client"
 
-	ts.l("// generic error type")
-	ts.l("export interface Error {")
-	ts.ind(1)
-	ts.l("m: string;")
-	ts.l("p: string;")
-	ts.l("t: string;")
-	ts.l("d?: unknown;")
-	ts.l("c?: Error;")
-	ts.ind(-1)
-	ts.l("}")
-
-	ts.nl()
-
 	ts.l("export class " + clientName + " {")
 
 	ts.ind(1)

@@ -41,9 +41,9 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 func (tsc *HTTPServiceGoTSRPCClient) Time(ctx go_context.Context, v time.Time) (retTime_0 time.Time, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retTime_0}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Time", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy Time")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Time", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Time")
 	}
 	return
 }
@@ -51,9 +51,9 @@ func (tsc *HTTPServiceGoTSRPCClient) Time(ctx go_context.Context, v time.Time) (
 func (tsc *HTTPServiceGoTSRPCClient) TimeStruct(ctx go_context.Context, v TimeStruct) (retTimeStruct_0 TimeStruct, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retTimeStruct_0}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TimeStruct", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy TimeStruct")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TimeStruct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy TimeStruct")
 	}
 	return
 }

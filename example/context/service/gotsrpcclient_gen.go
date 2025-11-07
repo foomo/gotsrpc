@@ -43,9 +43,9 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 func (tsc *HTTPServiceGoTSRPCClient) CustomError(ctx go_context.Context, msg string) (retCustomError_0 error, clientErr error) {
 	rpcArgs := []any{msg}
 	rpcReply := []any{&retCustomError_0}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CustomError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy CustomError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CustomError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy CustomError")
 	}
 	return
 }
@@ -53,9 +53,9 @@ func (tsc *HTTPServiceGoTSRPCClient) CustomError(ctx go_context.Context, msg str
 func (tsc *HTTPServiceGoTSRPCClient) Hello(ctx go_context.Context, args string) (retHello_0 string, clientErr error) {
 	rpcArgs := []any{args}
 	rpcReply := []any{&retHello_0}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Hello", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy Hello")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Hello", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Hello")
 	}
 	return
 }
@@ -63,9 +63,9 @@ func (tsc *HTTPServiceGoTSRPCClient) Hello(ctx go_context.Context, args string) 
 func (tsc *HTTPServiceGoTSRPCClient) StandardError(ctx go_context.Context, msg string) (retStandardError_0 error, clientErr error) {
 	rpcArgs := []any{msg}
 	rpcReply := []any{&retStandardError_0}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StandardError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy StandardError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StandardError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy StandardError")
 	}
 	return
 }
@@ -73,9 +73,9 @@ func (tsc *HTTPServiceGoTSRPCClient) StandardError(ctx go_context.Context, msg s
 func (tsc *HTTPServiceGoTSRPCClient) TypedError(ctx go_context.Context, msg string) (retTypedError_0 error, clientErr error) {
 	rpcArgs := []any{msg}
 	rpcReply := []any{&retTypedError_0}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy TypedError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TypedError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy TypedError")
 	}
 	return
 }
@@ -83,9 +83,9 @@ func (tsc *HTTPServiceGoTSRPCClient) TypedError(ctx go_context.Context, msg stri
 func (tsc *HTTPServiceGoTSRPCClient) WrappedError(ctx go_context.Context, msg string) (retWrappedError_0 error, clientErr error) {
 	rpcArgs := []any{msg}
 	rpcReply := []any{&retWrappedError_0}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "WrappedError", rpcArgs, rpcReply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy WrappedError")
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "WrappedError", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy WrappedError")
 	}
 	return
 }

@@ -25,8 +25,6 @@ var tsTypeAliases = map[string]string{
 
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
 	switch {
-	case v.IsError:
-		ts.app("Error")
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
 		ts.app(jsonInfo.Type)
 	case v.Map != nil:
@@ -108,6 +106,8 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 
 func tsTypeFromScalarType(scalarType ScalarType) string {
 	switch scalarType { //nolint:exhaustive
+	case ScalarTypeError:
+		return "github_com_foomo_gotsrpc_v2.Error"
 	case ScalarTypeByte:
 		return "string"
 	case ScalarTypeBool:
