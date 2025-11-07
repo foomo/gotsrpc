@@ -13,7 +13,7 @@ import (
 
 func main() {
 	ctx := context.Background()
-	fs := http.FileServer(http.Dir("./client"))
+	fs := http.FileServer(http.Dir("./union/client"))
 	ws := service.NewDefaultServiceGoTSRPCProxy(&service.Handler{})
 
 	mux := http.NewServeMux()

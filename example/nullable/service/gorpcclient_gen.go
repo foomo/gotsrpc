@@ -31,89 +31,89 @@ func (tsc *ServiceGoRPCClient) Stop() {
 }
 
 func (tsc *ServiceGoRPCClient) VariantA(i1 Base) (r1 Base, clientErr error) {
-	req := ServiceVariantARequest{I1: i1}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantARequest{I1: i1}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantAResponse)
-	return response.R1, nil
+	rpcResp := rpcRes.(ServiceVariantAResponse)
+	return rpcResp.R1, nil
 }
 
 func (tsc *ServiceGoRPCClient) VariantB(i1 BCustomType) (r1 BCustomType, clientErr error) {
-	req := ServiceVariantBRequest{I1: i1}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantBRequest{I1: i1}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantBResponse)
-	return response.R1, nil
+	rpcResp := rpcRes.(ServiceVariantBResponse)
+	return rpcResp.R1, nil
 }
 
 func (tsc *ServiceGoRPCClient) VariantC(i1 BCustomTypes) (r1 BCustomTypes, clientErr error) {
-	req := ServiceVariantCRequest{I1: i1}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantCRequest{I1: i1}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantCResponse)
-	return response.R1, nil
+	rpcResp := rpcRes.(ServiceVariantCResponse)
+	return rpcResp.R1, nil
 }
 
 func (tsc *ServiceGoRPCClient) VariantD(i1 BCustomTypesMap) (r1 BCustomTypesMap, clientErr error) {
-	req := ServiceVariantDRequest{I1: i1}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantDRequest{I1: i1}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantDResponse)
-	return response.R1, nil
+	rpcResp := rpcRes.(ServiceVariantDResponse)
+	return rpcResp.R1, nil
 }
 
 func (tsc *ServiceGoRPCClient) VariantE(i1 *Base) (r1 *Base, clientErr error) {
-	req := ServiceVariantERequest{I1: i1}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantERequest{I1: i1}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantEResponse)
-	return response.R1, nil
+	rpcResp := rpcRes.(ServiceVariantEResponse)
+	return rpcResp.R1, nil
 }
 
 func (tsc *ServiceGoRPCClient) VariantF(i1 []*Base) (r1 []*Base, clientErr error) {
-	req := ServiceVariantFRequest{I1: i1}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantFRequest{I1: i1}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantFResponse)
-	return response.R1, nil
+	rpcResp := rpcRes.(ServiceVariantFResponse)
+	return rpcResp.R1, nil
 }
 
 func (tsc *ServiceGoRPCClient) VariantG(i1 map[string]*Base) (r1 map[string]*Base, clientErr error) {
-	req := ServiceVariantGRequest{I1: i1}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantGRequest{I1: i1}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantGResponse)
-	return response.R1, nil
+	rpcResp := rpcRes.(ServiceVariantGResponse)
+	return rpcResp.R1, nil
 }
 
 func (tsc *ServiceGoRPCClient) VariantH(i1 Base, i2 *Base, i3 []*Base, i4 map[string]Base) (r1 Base, r2 *Base, r3 []*Base, r4 map[string]Base, clientErr error) {
-	req := ServiceVariantHRequest{I1: i1, I2: i2, I3: i3, I4: i4}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceVariantHRequest{I1: i1, I2: i2, I3: i3, I4: i4}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceVariantHResponse)
-	return response.R1, response.R2, response.R3, response.R4, nil
+	rpcResp := rpcRes.(ServiceVariantHResponse)
+	return rpcResp.R1, rpcResp.R2, rpcResp.R3, rpcResp.R4, nil
 }

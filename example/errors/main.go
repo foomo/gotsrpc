@@ -23,7 +23,7 @@ import (
 
 func main() {
 	ctx := context.Background()
-	fs := http.FileServer(http.Dir("./client"))
+	fs := http.FileServer(http.Dir("./errors/client"))
 	fh := frontendsvs.NewDefaultServiceGoTSRPCProxy(frontend.New(backendsvs.NewDefaultServiceGoTSRPCClient("http://localhost:3000")))
 	bh := backendsvs.NewDefaultServiceGoTSRPCProxy(backend.New())
 

@@ -49,13 +49,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	switch funcName {
 	case ServiceGoTSRPCProxyString:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_a string
 		)
-		args = []interface{}{&arg_a}
+		args = []any{&arg_a}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -65,7 +65,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		p.service.String(&rw, r, arg_a)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{}
+			rets = []any{}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -75,14 +75,14 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyStrings:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_a string
 			arg_b string
 		)
-		args = []interface{}{&arg_a, &arg_b}
+		args = []any{&arg_a, &arg_b}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -92,7 +92,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		p.service.Strings(&rw, r, arg_a, arg_b)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{}
+			rets = []any{}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return

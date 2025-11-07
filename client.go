@@ -76,7 +76,7 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:
 }
 
 // Call calls a method on the remove service
-func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) error {
+func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) error {
 	// Marshall args
 	b := new(bytes.Buffer)
 

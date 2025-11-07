@@ -55,13 +55,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	switch funcName {
 	case ServiceGoTSRPCProxyVariantA:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 Base
 		)
-		args = []interface{}{&arg_i1}
+		args = []any{&arg_i1}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -71,7 +71,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantAR1 := p.service.VariantA(&rw, r, arg_i1)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantAR1}
+			rets = []any{variantAR1}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -81,13 +81,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyVariantB:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 BCustomType
 		)
-		args = []interface{}{&arg_i1}
+		args = []any{&arg_i1}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -97,7 +97,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantBR1 := p.service.VariantB(&rw, r, arg_i1)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantBR1}
+			rets = []any{variantBR1}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -107,13 +107,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyVariantC:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 BCustomTypes
 		)
-		args = []interface{}{&arg_i1}
+		args = []any{&arg_i1}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -123,7 +123,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantCR1 := p.service.VariantC(&rw, r, arg_i1)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantCR1}
+			rets = []any{variantCR1}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -133,13 +133,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyVariantD:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 BCustomTypesMap
 		)
-		args = []interface{}{&arg_i1}
+		args = []any{&arg_i1}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -149,7 +149,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantDR1 := p.service.VariantD(&rw, r, arg_i1)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantDR1}
+			rets = []any{variantDR1}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -159,13 +159,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyVariantE:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 *Base
 		)
-		args = []interface{}{&arg_i1}
+		args = []any{&arg_i1}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -175,7 +175,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantER1 := p.service.VariantE(&rw, r, arg_i1)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantER1}
+			rets = []any{variantER1}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -185,13 +185,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyVariantF:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 []*Base
 		)
-		args = []interface{}{&arg_i1}
+		args = []any{&arg_i1}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -201,7 +201,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantFR1 := p.service.VariantF(&rw, r, arg_i1)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantFR1}
+			rets = []any{variantFR1}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -211,13 +211,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyVariantG:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 map[string]*Base
 		)
-		args = []interface{}{&arg_i1}
+		args = []any{&arg_i1}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -227,7 +227,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantGR1 := p.service.VariantG(&rw, r, arg_i1)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantGR1}
+			rets = []any{variantGR1}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -237,8 +237,8 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyVariantH:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_i1 Base
@@ -246,7 +246,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			arg_i3 []*Base
 			arg_i4 map[string]Base
 		)
-		args = []interface{}{&arg_i1, &arg_i2, &arg_i3, &arg_i4}
+		args = []any{&arg_i1, &arg_i2, &arg_i3, &arg_i4}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -256,7 +256,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		variantHR1, variantHR2, variantHR3, variantHR4 := p.service.VariantH(&rw, r, arg_i1, arg_i2, arg_i3, arg_i4)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{variantHR1, variantHR2, variantHR3, variantHR4}
+			rets = []any{variantHR1, variantHR2, variantHR3, variantHR4}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
