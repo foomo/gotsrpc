@@ -116,6 +116,12 @@ example.$(1).debug: build.debug
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 
+.PHONY: generate
+## Run go generate
+generate:
+	@echo "〉go generate"
+	@go generate work
+
 .PHONY: examples
 ## Generate examples
 examples:

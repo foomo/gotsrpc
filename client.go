@@ -75,7 +75,7 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:
 	c.client = client
 }
 
-// Call calls a method on the remove service
+// Call calls a method on the remote service
 func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) error {
 	// Marshall args
 	b := new(bytes.Buffer)
@@ -96,7 +96,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
 	}
 
-	resp, errDo := c.client.Do(request)
+	resp, errDo := c.client.Do(request) //nolint:gosec // G704 - URL is constructed from trusted service configuration, not user input
 	if errDo != nil {
 		return NewClientError(errors.Wrap(errDo, "failed to send request"))
 	}

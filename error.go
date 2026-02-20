@@ -11,11 +11,12 @@ import (
 )
 
 type Error struct {
-	Msg      string `json:"m"`
-	Pkg      string `json:"p"`
-	Type     string `json:"t"`
-	Data     any    `json:"d,omitempty"`
-	ErrCause *Error `json:"c,omitempty"`
+	Msg       string   `json:"m"`
+	Pkg       string   `json:"p"`
+	Type      string   `json:"t"`
+	Data      any      `json:"d,omitempty"`
+	ErrCause  *Error   `json:"c,omitempty"`
+	ErrCauses []*Error `json:"cs,omitempty"`
 }
 
 // NewError returns a new instance
@@ -46,7 +47,19 @@ func NewError(err error) *Error {
 		Data: err,
 	}
 
-	// unwrap error
+	// check for joined errors (errors.Join)
+	if joinedErr, ok := err.(interface{ Unwrap() []error }); ok {
+		errs := joinedErr.Unwrap()
+		if len(errs) > 0 {
+			inst.ErrCauses = make([]*Error, len(errs))
+			for i, e := range errs {
+				inst.ErrCauses[i] = NewError(e)
+			}
+			return inst
+		}
+	}
+
+	// unwrap single error
 	if unwrappedErr := errors.Unwrap(err); unwrappedErr != nil {
 		inst.ErrCause = NewError(unwrappedErr)
 		inst.Msg = strings.TrimSuffix(inst.Msg, ": "+unwrappedErr.Error())
@@ -96,11 +109,23 @@ func (e *Error) Format(s fmt.State, verb rune) {
 }
 
 // Unwrap interface
-func (e *Error) Unwrap() error {
-	if e != nil && e.ErrCause != nil {
-		return e.ErrCause
+func (e *Error) Unwrap() []error {
+	if e == nil {
+		return nil
 	}
-	return nil
+	var errs []error
+	if e.ErrCause != nil {
+		errs = append(errs, e.ErrCause)
+	}
+	for _, c := range e.ErrCauses {
+		if c != nil {
+			errs = append(errs, c)
+		}
+	}
+	if len(errs) == 0 {
+		return nil
+	}
+	return errs
 }
 
 // Is interface
