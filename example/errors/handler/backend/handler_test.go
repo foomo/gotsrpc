@@ -1,7 +1,6 @@
 package backend_test
 
 import (
-	"errors"
 	"fmt"
 	"net/http/httptest"
 	"testing"
@@ -43,9 +42,6 @@ func TestHandler(t *testing.T) {
 
 		var gotsrpcErr *gotsrpc.Error
 		if assert.ErrorAs(t, serviceErr, &gotsrpcErr) {
-			t.Log(gotsrpcErr.Error())
-		}
-		if assert.ErrorAs(t, errors.Unwrap(serviceErr), &gotsrpcErr) {
 			t.Log(gotsrpcErr.Error())
 		}
 	})

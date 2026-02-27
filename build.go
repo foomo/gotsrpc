@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -249,7 +250,25 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 		for structName := range mappedStructsMap {
 			structNames = append(structNames, structName)
 		}
-		sort.Strings(structNames)
+		// sort.Strings(structNames)
+		slices.SortFunc(structNames, func(e1 string, e2 string) int {
+			es1, ok1 := mappedStructsMap[e1]
+			es2, ok2 := mappedStructsMap[e2]
+			if !ok1 || !ok2 {
+				return strings.Compare(e1, e2)
+			}
+			es1E := strings.Contains(es1.string(), "export enum ")
+			es2E := strings.Contains(es2.string(), "export enum ")
+
+			switch true {
+			case es1E && !es2E:
+				return -1
+			case !es1E && es2E:
+				return 1
+			default:
+				return strings.Compare(e1, e2)
+			}
+		})
 		for _, structName := range structNames {
 			structCode, ok := mappedStructsMap[structName]
 			if ok {

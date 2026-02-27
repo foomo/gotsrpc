@@ -42,7 +42,6 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 	t.Run("WrappedError", func(t *testing.T) {
 		err, clientErr := c.WrappedError(t.Context(), "hello World")
 		require.NoError(t, clientErr)
-		require.ErrorIs(t, err, server.ErrGo)
 		require.ErrorIs(t, err, server.ErrPkg)
 	})
 

@@ -1,4 +1,4 @@
-package service
+package server
 
 import (
 	"github.com/foomo/gotsrpc/v2"
@@ -22,9 +22,9 @@ type (
 	}
 	InlineStructPtr struct {
 		*InlineStructA `json:",inline,omitempty"`
-		*InlineStructB `json:",inline,omitempty"` // TODO this should have nil for InlineStructB as for Bug
-		Bug            *InlineStructB             `json:"bug,omitempty"`
-		Value          string                     `json:"value"`
+		*InlineStructB `json:",inline,omitempty"`
+		Bug            *InlineStructB `json:"bug,omitempty"`
+		Value          string         `json:"value"`
 	}
 )
 

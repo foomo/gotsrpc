@@ -64,7 +64,19 @@ lint.fix:
 ## Run tests
 test:
 	@echo "〉go test"
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe ./...) &&) true
+
+.PHONY: test.race
+## Run tests with -race
+test.race:
+	@echo "〉go test -race"
 	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race ./...) &&) true
+
+.PHONY: test.nocache
+## Run tests with -count=1
+test.nocache:
+	@echo "〉go test -count=1"
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -count=1 ./...) &&) true
 
 .PHONY: outdated
 ## Show outdated direct dependencies
