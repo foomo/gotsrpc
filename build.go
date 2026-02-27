@@ -250,7 +250,8 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 		for structName := range mappedStructsMap {
 			structNames = append(structNames, structName)
 		}
-		// sort.Strings(structNames)
+
+		// sort and keep enums on top
 		slices.SortFunc(structNames, func(e1 string, e2 string) int {
 			es1, ok1 := mappedStructsMap[e1]
 			es2, ok2 := mappedStructsMap[e2]
@@ -260,7 +261,7 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 			es1E := strings.Contains(es1.string(), "export enum ")
 			es2E := strings.Contains(es2.string(), "export enum ")
 
-			switch true {
+			switch {
 			case es1E && !es2E:
 				return -1
 			case !es1E && es2E:
