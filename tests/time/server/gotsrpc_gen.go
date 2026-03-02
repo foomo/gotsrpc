@@ -5,6 +5,7 @@ package server
 import (
 	io "io"
 	http "net/http"
+	"reflect"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -62,6 +63,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		timeRet := p.service.Time(arg_v)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.Time)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{timeRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
@@ -85,6 +87,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		timeStructRet := p.service.TimeStruct(arg_v)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.TimeStruct)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{timeStructRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {

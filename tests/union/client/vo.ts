@@ -25,7 +25,7 @@ export enum UnionStructAValueB {
 	Two = "two",
 }
 // github.com/foomo/gotsrpc/v2/tests/union/server.InlineStruct
-export interface InlineStruct extends github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructA , github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructB {
+export interface InlineStruct extends github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructA, github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructB {
 	value:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/union/server.InlineStructA
@@ -37,7 +37,7 @@ export interface InlineStructB {
 	valueB:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/union/server.InlineStructPtr
-export interface InlineStructPtr extends Partial<github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructA> , Partial<github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructB> {
+export interface InlineStructPtr extends Partial<github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructA>, Partial<github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructB> {
 	bug?:github_com_foomo_gotsrpc_v2_tests_union_server.InlineStructB;
 	value:string;
 }

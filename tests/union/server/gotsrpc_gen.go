@@ -5,6 +5,7 @@ package server
 import (
 	io "io"
 	http "net/http"
+	"reflect"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -62,6 +63,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructE := p.service.InlineStruct(&rw, r)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.InlineStruct)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{inlineStructE}
@@ -80,6 +82,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructPtrE := p.service.InlineStructPtr(&rw, r)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.InlineStructPtr)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{inlineStructPtrE}
@@ -98,6 +101,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStringE := p.service.UnionString(&rw, r)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.UnionString)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{unionStringE}
@@ -116,6 +120,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStructE := p.service.UnionStruct(&rw, r)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.UnionStruct)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{unionStructE}

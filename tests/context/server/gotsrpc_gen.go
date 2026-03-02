@@ -5,6 +5,7 @@ package server
 import (
 	io "io"
 	http "net/http"
+	"reflect"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -66,6 +67,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		customErrorRet := p.service.CustomError(r.Context(), arg_msg)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.CustomError)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{customErrorRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
@@ -89,6 +91,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		errorRet := p.service.Error(r.Context(), arg_msg)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.Error)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{errorRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
@@ -112,6 +115,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		helloRet := p.service.Hello(r.Context(), arg_msg)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.Hello)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{helloRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
@@ -135,6 +139,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		joinedErrorRet := p.service.JoinedError(r.Context(), arg_msg)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.JoinedError)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{joinedErrorRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
@@ -158,6 +163,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		pkgErrorRet := p.service.PkgError(r.Context(), arg_msg)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.PkgError)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{pkgErrorRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
@@ -181,6 +187,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		wrappedErrorRet := p.service.WrappedError(r.Context(), arg_msg)
+		callStats.ResponseTypes = reflect.TypeOf(p.service.WrappedError)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{wrappedErrorRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {

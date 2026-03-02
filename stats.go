@@ -1,6 +1,9 @@
 package gotsrpc
 
-import "time"
+import (
+	"reflect"
+	"time"
+)
 
 type CallStats struct {
 	Package       string
@@ -14,4 +17,5 @@ type CallStats struct {
 	ErrorCode     int
 	ErrorType     string
 	ErrorMessage  string
+	ResponseTypes reflect.Type
 }

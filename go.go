@@ -270,6 +270,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
+			g.l("callStats.ResponseTypes = reflect.TypeOf(p.service." + method.Name + ")")
 			g.l("callStats.Execution = time.Since(executionStart)")
 			if isSessionRequest {
 				g.l("if rw.Status() == http.StatusOK {").ind(1)
@@ -539,7 +540,7 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		g.nl()
 		g.l(`switch funcName {`)
 		for _, method := range service.Methods {
-			argParams := []string{}
+			var argParams []string
 			nonHTTPRelatedMethodArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
 			diffNONHTTPRelatedMethodArgs := len(method.Args) - len(nonHTTPRelatedMethodArgs)
 			for i := 0; i < diffNONHTTPRelatedMethodArgs; i++ {
@@ -548,8 +549,8 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			for _, a := range nonHTTPRelatedMethodArgs {
 				argParams = append(argParams, "req."+ucfirst(a.Name))
 			}
-			rets := []string{}
-			retParams := []string{}
+			var rets []string
+			var retParams []string
 			for i, r := range method.Return {
 				name := r.Name
 				if len(name) == 0 {

@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
 )
 
@@ -18,17 +18,17 @@ const (
 type clientHandle struct {
 	handle            codec.Handle
 	contentType       string
-	beforeEncodeReply func(*[]any) error
+	beforeEncodeReply func(reflect.Type, *[]any) error
 	beforeDecodeReply func([]any) ([]any, error)
 	afterDecodeReply  func(*[]any, []any) error
 }
 
 var (
 	errorType                = reflect.TypeOf((*error)(nil)).Elem()
-	defaultBeforeEncodeReply = func(resp *[]any) error {
+	defaultBeforeEncodeReply = func(typ reflect.Type, resp *[]any) error {
 		for k, v := range *resp {
 			if e, ok := v.(error); ok {
-				if r := reflect.ValueOf(e); !r.IsZero() {
+				if r := reflect.ValueOf(e); !r.IsZero() && typ.Out(k) == errorType {
 					(*resp)[k] = NewError(e)
 				}
 			}
@@ -42,7 +42,7 @@ var (
 			if val.Kind() == reflect.Ptr {
 				val = val.Elem()
 			}
-			if val.Implements(errorType) {
+			if val == errorType {
 				var e *Error
 				ret[k] = e
 			} else {
@@ -57,7 +57,7 @@ var (
 				if y, ok := (*reply)[k].(*error); ok {
 					*y = e
 				} else if err := mapstructure.Decode(e.Data, (*reply)[k]); err != nil {
-					return errors.Wrap(err, "failed to decode wrapped error")
+					return pkgerrors.Wrap(err, "failed to decode wrapped error")
 				}
 			}
 		}

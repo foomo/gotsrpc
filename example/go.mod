@@ -5,7 +5,6 @@ go 1.25.3
 replace github.com/foomo/gotsrpc/v2 => ../
 
 require (
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/foomo/gotsrpc/v2 v2.0.0-00010101000000-000000000000
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
@@ -13,6 +12,7 @@ require (
 )
 
 require (
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect

@@ -199,8 +199,16 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 			return errors.New("could not resolve this union type")
 		}
 	case len(str.InlineFields) > 0:
-		ts.app("export interface " + str.Name + " extends ")
+		var extends bool
+		ts.app("export interface " + str.Name)
 		for i, inlineField := range str.InlineFields {
+			if inlineField.Value.Scalar != nil {
+				continue
+			}
+			if !extends {
+				ts.app(" extends ")
+				extends = true
+			}
 			if i > 0 {
 				ts.app(", ")
 			}
@@ -211,13 +219,35 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 			if inlineField.Value.IsPtr {
 				ts.app(">")
 			}
-			ts.app(" ")
 		}
-		ts.app("{")
+		ts.app(" {")
 		ts.nl()
 		ts.ind(1)
+		for _, inlineField := range str.InlineFields {
+			if inlineField.Value.Scalar != nil {
+				if inlineField.JSONInfo != nil && inlineField.JSONInfo.Ignore {
+					continue
+				}
+				if n := inlineField.tsName(); n != "" {
+					ts.app(n)
+				} else {
+					ts.app(inlineField.Value.Scalar.Name)
+				}
+				if inlineField.JSONInfo != nil && inlineField.JSONInfo.OmitEmpty {
+					ts.app("?")
+				}
+				ts.app(":")
+				if inlineField.Value.IsPtr {
+
+				}
+				inlineField.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+				ts.app(";")
+				ts.nl()
+			}
+		}
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
 		ts.ind(-1).l("}")
+		// }
 	default:
 		ts.l("export interface " + str.Name + " {").ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
