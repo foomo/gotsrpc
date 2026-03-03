@@ -64,7 +64,8 @@ lint.fix:
 ## Run tests
 test: go.work
 	@echo "〉go test"
-	GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
+	#@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe ./...) &&) true
 
 .PHONY: test.race
 ## Run tests with -race
