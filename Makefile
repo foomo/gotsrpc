@@ -62,15 +62,15 @@ lint.fix:
 
 .PHONY: test
 ## Run tests
-test:
+test: go.work
 	@echo "〉go test"
-	GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
 
 .PHONY: test.race
 ## Run tests with -race
 test.race: go.work
 	@echo "〉go test -race"
-	GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
 
 .PHONY: test.nocache
 ## Run tests with -count=1
