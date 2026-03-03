@@ -19,40 +19,40 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: jdx/mise-action@v3
 
       - uses: actions/setup-go@v6
         with:
           check-latest: true
-          go-version-file: go.mod
+          go-version-file: 'go.mod'
 
-      - uses: golangci/golangci-lint-action@v8
+      - name: Setup golangci-lint cache
+        uses: actions/cache@v5
         with:
-          install-mode: none
+          path: ~/.cache/golangci-lint
+          key: golangci-lint-${{ runner.os }}-${{ hashFiles('**/go.mod') }}
+          restore-keys: |
+            golangci-lint-${{ runner.os }}--
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
 
       - name: Run yarn install
         working-directory: example
         run: yarn install
 
-      - name: Run go mod tidy
+      - name: Run tidy
         run: make tidy && git diff --exit-code
+
+      - name: Run generate
+        run: |
+          make generate
+          make examples
+          git diff --exit-code
 
       - name: Run lint
         run: make lint
 
       - name: Run tests
         run: make test
-
-      - name: Make examples
-        run: |
-          make examples
-          git diff --exit-code
-
-      - uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage.out
-          token: ${{ secrets.CODECOV_TOKEN }}

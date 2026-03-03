@@ -42,82 +42,83 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 		Client:   gotsrpc.NewClientWithHttpClient(client),
 	}
 }
+
 func (tsc *HTTPServiceGoTSRPCClient) VariantA(ctx go_context.Context, i1 Base) (r1 Base, clientErr error) {
-	args := []interface{}{i1}
-	reply := []interface{}{&r1}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantA", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantA")
+	rpcArgs := []any{i1}
+	rpcReply := []any{&r1}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantA", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantA")
 	}
 	return
 }
 
 func (tsc *HTTPServiceGoTSRPCClient) VariantB(ctx go_context.Context, i1 BCustomType) (r1 BCustomType, clientErr error) {
-	args := []interface{}{i1}
-	reply := []interface{}{&r1}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantB", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantB")
+	rpcArgs := []any{i1}
+	rpcReply := []any{&r1}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantB", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantB")
 	}
 	return
 }
 
 func (tsc *HTTPServiceGoTSRPCClient) VariantC(ctx go_context.Context, i1 BCustomTypes) (r1 BCustomTypes, clientErr error) {
-	args := []interface{}{i1}
-	reply := []interface{}{&r1}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantC", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantC")
+	rpcArgs := []any{i1}
+	rpcReply := []any{&r1}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantC", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantC")
 	}
 	return
 }
 
 func (tsc *HTTPServiceGoTSRPCClient) VariantD(ctx go_context.Context, i1 BCustomTypesMap) (r1 BCustomTypesMap, clientErr error) {
-	args := []interface{}{i1}
-	reply := []interface{}{&r1}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantD", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantD")
+	rpcArgs := []any{i1}
+	rpcReply := []any{&r1}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantD", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantD")
 	}
 	return
 }
 
 func (tsc *HTTPServiceGoTSRPCClient) VariantE(ctx go_context.Context, i1 *Base) (r1 *Base, clientErr error) {
-	args := []interface{}{i1}
-	reply := []interface{}{&r1}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantE", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantE")
+	rpcArgs := []any{i1}
+	rpcReply := []any{&r1}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantE", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantE")
 	}
 	return
 }
 
 func (tsc *HTTPServiceGoTSRPCClient) VariantF(ctx go_context.Context, i1 []*Base) (r1 []*Base, clientErr error) {
-	args := []interface{}{i1}
-	reply := []interface{}{&r1}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantF", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantF")
+	rpcArgs := []any{i1}
+	rpcReply := []any{&r1}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantF", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantF")
 	}
 	return
 }
 
 func (tsc *HTTPServiceGoTSRPCClient) VariantG(ctx go_context.Context, i1 map[string]*Base) (r1 map[string]*Base, clientErr error) {
-	args := []interface{}{i1}
-	reply := []interface{}{&r1}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantG", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantG")
+	rpcArgs := []any{i1}
+	rpcReply := []any{&r1}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantG", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantG")
 	}
 	return
 }
 
 func (tsc *HTTPServiceGoTSRPCClient) VariantH(ctx go_context.Context, i1 Base, i2 *Base, i3 []*Base, i4 map[string]Base) (r1 Base, r2 *Base, r3 []*Base, r4 map[string]Base, clientErr error) {
-	args := []interface{}{i1, i2, i3, i4}
-	reply := []interface{}{&r1, &r2, &r3, &r4}
-	clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantH", args, reply)
-	if clientErr != nil {
-		clientErr = pkg_errors.WithMessage(clientErr, "failed to call service.ServiceGoTSRPCProxy VariantH")
+	rpcArgs := []any{i1, i2, i3, i4}
+	rpcReply := []any{&r1, &r2, &r3, &r4}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "VariantH", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy VariantH")
 	}
 	return
 }

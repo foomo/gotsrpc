@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os/exec"
 	"strings"
@@ -10,7 +11,8 @@ import (
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("./client"))
+	ctx := context.Background()
+	fs := http.FileServer(http.Dir("./basic/client"))
 	ws := service.NewDefaultServiceGoTSRPCProxy(&service.Handler{})
 
 	mux := http.NewServeMux()
@@ -25,7 +27,7 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
-		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
+		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
 	}()
 
 	panic(http.ListenAndServe("localhost:3000", mux)) //nolint:gosec

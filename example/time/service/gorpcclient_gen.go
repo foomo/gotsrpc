@@ -32,23 +32,23 @@ func (tsc *ServiceGoRPCClient) Stop() {
 }
 
 func (tsc *ServiceGoRPCClient) Time(v time.Time) (retTime_0 time.Time, clientErr error) {
-	req := ServiceTimeRequest{V: v}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceTimeRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceTimeResponse)
-	return response.RetTime_0, nil
+	rpcResp := rpcRes.(ServiceTimeResponse)
+	return rpcResp.RetTime_0, nil
 }
 
 func (tsc *ServiceGoRPCClient) TimeStruct(v TimeStruct) (retTimeStruct_0 TimeStruct, clientErr error) {
-	req := ServiceTimeStructRequest{V: v}
-	rpcCallRes, rpcCallErr := tsc.Client.Call(req)
-	if rpcCallErr != nil {
-		clientErr = rpcCallErr
+	rpcReq := ServiceTimeStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
 		return
 	}
-	response := rpcCallRes.(ServiceTimeStructResponse)
-	return response.RetTimeStruct_0, nil
+	rpcResp := rpcRes.(ServiceTimeStructResponse)
+	return rpcResp.RetTimeStruct_0, nil
 }

@@ -18,6 +18,11 @@ func (v *Value) isHTTPRequest() bool {
 		(v.IsPtr && v.Scalar != nil && v.Scalar.Name == "Request" && v.Scalar.Package == "net/http")
 }
 
+func (v *Value) isContext() bool {
+	return (v.StructType != nil && v.StructType.Name == "Context" && v.StructType.Package == "context") ||
+		(v.Scalar != nil && v.Scalar.Name == "Context" && v.Scalar.Package == "context")
+}
+
 func (v *Value) goType(aliases map[string]string, packageName string) (t string) {
 	if v.IsPtr {
 		t = "*"
@@ -40,7 +45,7 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 		}
 		t += v.Scalar.Name
 	case v.IsInterface:
-		t += "interface{}"
+		t += "any"
 	default:
 		// TODO
 		fmt.Println("WARN: can't resolve goType")
@@ -197,12 +202,15 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			// a case for each method
 			g.l("case " + proxyName + method.Name + ":")
 			g.ind(1)
-			var callArgs []string
-			isSessionRequest := false
+			var (
+				callArgs         []string
+				isContextRequest bool
+				isSessionRequest bool
+			)
 			g.l("var (")
 			g.ind(1)
-			g.l("args []interface{}")
-			g.l("rets []interface{}")
+			g.l("args []any")
+			g.l("rets []any")
 			g.ind(-1)
 			g.l(")")
 			if len(method.Args) > 0 {
@@ -214,6 +222,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 				nonHTTPRelatedArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
 
 				isSessionRequest = len(method.Args)-len(nonHTTPRelatedArgs) == 2
+				isContextRequest = len(method.Args) > 0 && method.Args[0].Value.isContext()
 
 				for _, arg := range nonHTTPRelatedArgs {
 					argName := "arg_" + arg.Name
@@ -228,7 +237,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 						g.l(argDecl)
 					}
 					g.l(")")
-					g.l("args = []interface{}{" + strings.Join(args, ", ") + "}")
+					g.l("args = []any{" + strings.Join(args, ", ") + "}")
 					g.l("if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {")
 					g.ind(1)
 					g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
@@ -249,9 +258,12 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 				returnValueNames = append(returnValueNames, lcfirst(method.Name)+ucfirst(retArgName))
 			}
 			g.l("executionStart := time.Now()")
+
 			if isSessionRequest {
 				g.l("rw := gotsrpc.ResponseWriter{ResponseWriter: w}")
 				callArgs = append([]string{"&rw", "r"}, callArgs...)
+			} else if isContextRequest {
+				callArgs = append([]string{"r.Context()"}, callArgs...)
 			}
 			if len(returnValueNames) > 0 {
 				g.app(strings.Join(returnValueNames, ", ") + " := ")
@@ -262,7 +274,7 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			if isSessionRequest {
 				g.l("if rw.Status() == http.StatusOK {").ind(1)
 			}
-			g.l("rets = []interface{}{" + strings.Join(returnValueNames, ", ") + "}")
+			g.l("rets = []any{" + strings.Join(returnValueNames, ", ") + "}")
 			g.l("if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {")
 			g.ind(1)
 			g.l("gotsrpc.ErrorCouldNotReply(w)")
@@ -390,15 +402,16 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 		        Client: gotsrpc.NewClientWithHttpClient(client),
 	        }
 		}`)
+		g.nl()
 
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)
 			g.l(`func (tsc *` + clientName + `) ` + ms.renderSignature() + ` {`)
-			g.l(`args := []interface{}{` + strings.Join(ms.args, ", ") + `}`)
-			g.l(`reply := []interface{}{` + strings.Join(ms.rets, ", ") + `}`)
-			g.l(`clientErr = tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", args, reply)`)
-			g.l(`if clientErr != nil {`)
-			g.ind(1).l(`clientErr = pkg_errors.WithMessage(clientErr, "failed to call ` + packageName + `.` + service.Name + `GoTSRPCProxy ` + method.Name + `")`).ind(-1)
+			g.l(`rpcArgs := []any{` + strings.Join(ms.args, ", ") + `}`)
+			g.l(`rpcReply := []any{` + strings.Join(ms.rets, ", ") + `}`)
+			g.l(`rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", rpcArgs, rpcReply)`)
+			g.l(`if rpcErr != nil {`)
+			g.ind(1).l(`clientErr = pkg_errors.WithMessage(rpcErr, "failed to call ` + packageName + `.` + service.Name + `GoTSRPCProxy ` + method.Name + `")`).ind(-1)
 			g.l(`}`)
 			g.l(`return`)
 			g.l(`}`)
@@ -517,7 +530,7 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		`)
 		g.nl()
 		// Handler
-		g.l(`func (p *` + proxyName + `) handler(clientAddr string, request interface{}) (response interface{}) {`)
+		g.l(`func (p *` + proxyName + `) handler(clientAddr string, request any) (response any) {`)
 		g.l(`start := time.Now()`)
 		g.nl()
 		g.l(`reqType := reflect.TypeOf(request).String()`)
@@ -633,36 +646,40 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 		g.nl()
 		// Methods
 		for _, method := range service.Methods {
-			args := []string{}
-			params := []string{}
+			var (
+				args   []string
+				params []string
+			)
 			for _, a := range goMethodArgsWithoutHTTPContextRelatedArgs(method) {
 				args = append(args, ucfirst(a.Name)+`: `+a.Name)
 				params = append(params, a.Name+" "+a.Value.goType(aliases, fullPackageName))
 			}
-			rets := []string{}
-			returns := []string{}
+			var (
+				rets    []string
+				returns []string
+			)
 			for i, r := range method.Return {
 				name := r.Name
 				if len(name) == 0 {
 					name = fmt.Sprintf("ret%s_%d", method.Name, i)
 				}
-				rets = append(rets, "response."+ucfirst(name))
+				rets = append(rets, "rpcResp."+ucfirst(name))
 				returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
 			}
 			returns = append(returns, "clientErr error")
 			g.l(`func (tsc *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
-			g.l(`req := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
+			g.l(`rpcReq := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
 			if len(rets) > 0 {
-				g.l(`rpcCallRes, rpcCallErr := tsc.Client.Call(req)`)
+				g.l(`rpcRes, rpcErr := tsc.Client.Call(rpcReq)`)
 			} else {
-				g.l(`_, rpcCallErr := tsc.Client.Call(req)`)
+				g.l(`_, rpcErr := tsc.Client.Call(rpcReq)`)
 			}
-			g.l(`if rpcCallErr != nil {`)
-			g.l(`clientErr = rpcCallErr`)
+			g.l(`if rpcErr != nil {`)
+			g.l(`clientErr = rpcErr`)
 			g.l(`return`)
 			g.l(`}`)
 			if len(rets) > 0 {
-				g.l(`response := rpcCallRes.(` + service.Name + method.Name + `Response)`)
+				g.l(`rpcResp := rpcRes.(` + service.Name + method.Name + `Response)`)
 				g.l(`return ` + strings.Join(rets, ", ") + `, nil`)
 			} else {
 				g.l(`return nil`)
@@ -721,6 +738,9 @@ func goMethodArgsWithoutHTTPContextRelatedArgs(m *Method) (filteredArgs []*Field
 			continue
 		}
 		if argI == 1 && arg.Value.isHTTPRequest() {
+			continue
+		}
+		if argI == 0 && arg.Value.isContext() {
 			continue
 		}
 		filteredArgs = append(filteredArgs, arg)

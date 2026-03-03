@@ -59,15 +59,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	switch funcName {
 	case ServiceGoTSRPCProxyCustomError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		customErrorE := p.service.CustomError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{customErrorE}
+			rets = []any{customErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -77,15 +77,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		errorE := p.service.Error(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{errorE}
+			rets = []any{errorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -95,15 +95,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyMultiScalar:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		multiScalarE := p.service.MultiScalar(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{multiScalarE}
+			rets = []any{multiScalarE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -113,15 +113,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyScalar:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		scalarE := p.service.Scalar(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{scalarE}
+			rets = []any{scalarE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -131,15 +131,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyScalarError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		scalarErrorE := p.service.ScalarError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{scalarErrorE}
+			rets = []any{scalarErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -149,15 +149,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyStruct:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		structE := p.service.Struct(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{structE}
+			rets = []any{structE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -167,15 +167,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyStructError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		structErrorE := p.service.StructError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{structErrorE}
+			rets = []any{structErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -185,15 +185,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyTypedCustomError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedCustomErrorE := p.service.TypedCustomError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{typedCustomErrorE}
+			rets = []any{typedCustomErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -203,15 +203,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyTypedError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedErrorE := p.service.TypedError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{typedErrorE}
+			rets = []any{typedErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -221,15 +221,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyTypedScalarError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedScalarErrorE := p.service.TypedScalarError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{typedScalarErrorE}
+			rets = []any{typedScalarErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -239,15 +239,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyTypedWrappedError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedWrappedErrorE := p.service.TypedWrappedError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{typedWrappedErrorE}
+			rets = []any{typedWrappedErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -257,15 +257,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyWrappedError:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		wrappedErrorE := p.service.WrappedError(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{wrappedErrorE}
+			rets = []any{wrappedErrorE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return

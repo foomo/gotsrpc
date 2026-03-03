@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../gotsrpc.schema.json
 module:
   name: github.com/foomo/gotsrpc/v2
   path: ../../

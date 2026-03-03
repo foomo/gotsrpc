@@ -26,7 +26,8 @@ func init() {
 }
 
 func main() {
-	fs := http.FileServer(http.Dir("./client"))
+	ctx := context.Background()
+	fs := http.FileServer(http.Dir("./monitor/client"))
 	ws := service.NewDefaultServiceGoTSRPCProxy(&service.Handler{})
 
 	mux := http.NewServeMux()
@@ -41,18 +42,18 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
-		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
-		call()
+		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
+		call(ctx)
 	}()
 
 	panic(http.ListenAndServe("localhost:3000", mux)) //nolint:gosec
 }
 
-func call() {
+func call(ctx context.Context) {
 	c := service.NewDefaultServiceGoTSRPCClient("http://127.0.0.1:3000")
 
 	{
-		res, _ := c.Hello(context.Background(), "Hello World")
+		res, _ := c.Hello(ctx, "Hello World")
 		fmt.Println(res)
 	}
 }

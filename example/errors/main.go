@@ -22,7 +22,8 @@ import (
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("./client"))
+	ctx := context.Background()
+	fs := http.FileServer(http.Dir("./errors/client"))
 	fh := frontendsvs.NewDefaultServiceGoTSRPCProxy(frontend.New(backendsvs.NewDefaultServiceGoTSRPCClient("http://localhost:3000")))
 	bh := backendsvs.NewDefaultServiceGoTSRPCProxy(backend.New())
 
@@ -40,15 +41,14 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
-		_ = exec.Command("open", "http://127.0.0.1:3000").Run()
-		call()
+		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
+		call(ctx)
 	}()
 
 	panic(http.ListenAndServe("localhost:3000", mux)) //nolint:gosec
 }
 
-func call() {
-	ctx := context.Background()
+func call(ctx context.Context) {
 	c := backendsvs.NewDefaultServiceGoTSRPCClient("http://localhost:3000")
 
 	{

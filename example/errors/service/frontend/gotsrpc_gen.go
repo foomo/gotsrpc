@@ -53,15 +53,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	switch funcName {
 	case ServiceGoTSRPCProxyMultiple:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		multipleE := p.service.Multiple(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{multipleE}
+			rets = []any{multipleE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
@@ -71,15 +71,15 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxySimple:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		simpleE := p.service.Simple(&rw, r)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
-			rets = []interface{}{simpleE}
+			rets = []any{simpleE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return

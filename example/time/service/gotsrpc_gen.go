@@ -49,13 +49,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	switch funcName {
 	case ServiceGoTSRPCProxyTime:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_v time.Time
 		)
-		args = []interface{}{&arg_v}
+		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -63,7 +63,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		timeRet := p.service.Time(arg_v)
 		callStats.Execution = time.Since(executionStart)
-		rets = []interface{}{timeRet}
+		rets = []any{timeRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -72,13 +72,13 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	case ServiceGoTSRPCProxyTimeStruct:
 		var (
-			args []interface{}
-			rets []interface{}
+			args []any
+			rets []any
 		)
 		var (
 			arg_v TimeStruct
 		)
-		args = []interface{}{&arg_v}
+		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
@@ -86,7 +86,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		timeStructRet := p.service.TimeStruct(arg_v)
 		callStats.Execution = time.Since(executionStart)
-		rets = []interface{}{timeStructRet}
+		rets = []any{timeStructRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return

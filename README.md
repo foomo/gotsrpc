@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/foomo/gotsrpc?status.svg)](https://godoc.org/github.com/foomo/gotsrpc)
 
 <p align="center">
-  <img alt="gotsrpc" src=".github/assets/gotsrpc.png"/>
+  <img alt="gotsrpc" src="docs/public/logo.png" width="400" height="400"/>
 </p>
 
 # Go / TypeScript and Go / Go RPC
@@ -61,7 +61,9 @@ Release downloads:
 
 ## How to Contribute
 
-Please refer to the [CONTRIBUTING](.gihub/CONTRIBUTING.md) details and follow the [CODE_OF_CONDUCT](.gihub/CODE_OF_CONDUCT.md) and [SECURITY](.github/SECURITY.md) guidelines.
+Contributions are welcome! Please read the [contributing guide](CONTRIBUTING.md).
+
+![Contributors](https://contributors-table.vercel.app/image?repo=foomo/gotsrpc&width=50&columns=15)
 
 ## License
 

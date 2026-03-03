@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/foomo/gotsrpc/v2/config/config",
+  "$id": "https://raw.githubusercontent.com/foomo/gotsrpc/refs/heads/main/gotsrpc.schema.json",
   "$ref": "#/$defs/Config",
   "$defs": {
     "Config": {

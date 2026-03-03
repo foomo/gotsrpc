@@ -8,6 +8,7 @@ import (
 	"github.com/foomo/gotsrpc/v2"
 )
 
+// Deprecated: will be removed in the next release
 func InstrumentService(s http.HandlerFunc) (handler http.HandlerFunc) {
 	requestDuration := p.NewSummaryVec(p.SummaryOpts{ //nolint:promlinter
 		Namespace:  "gotsrpc",
@@ -36,6 +37,7 @@ func InstrumentService(s http.HandlerFunc) (handler http.HandlerFunc) {
 	})
 }
 
+// Deprecated: will be removed in the next release
 func InstrumentGoRPCService() gotsrpc.GoRPCCallStatsHandlerFun {
 	callsCounter := p.NewSummaryVec(p.SummaryOpts{
 		Namespace: "gorpc",

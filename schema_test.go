@@ -26,6 +26,7 @@ func TestSchema(t *testing.T) {
 	reflector.RequiredFromJSONSchemaTags = true
 	require.NoError(t, reflector.AddGoComments("github.com/foomo/gotsrpc/v2/config", "./"))
 	schema := reflector.Reflect(&config.Config{})
+	schema.ID = "https://raw.githubusercontent.com/foomo/gotsrpc/refs/heads/main/gotsrpc.schema.json"
 	actual, err := json.MarshalIndent(schema, "", "  ")
 	require.NoError(t, err)
 

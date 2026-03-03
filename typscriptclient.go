@@ -32,6 +32,10 @@ func renderTypescriptClient(service *Service, mappings config.TypeScriptMappings
 				trace("skipping first arg is a http.ResponseWriter")
 				argOffset = 1
 				continue
+			} else if index == 0 && arg.Value.isContext() {
+				trace("skipping first arg is a context.Context")
+				argOffset = 1
+				continue
 			}
 			if index == 1 && arg.Value.isHTTPRequest() {
 				trace("skipping second arg is a *http.Request")
