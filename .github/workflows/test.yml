@@ -26,11 +26,15 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           check-latest: true
-          go-version-file: go.mod
+          go-version-file: 'go.mod'
 
-      - uses: golangci/golangci-lint-action@v9
+      - name: Setup golangci-lint cache
+        uses: actions/cache@v5
         with:
-          install-mode: none
+          path: ~/.cache/golangci-lint
+          key: golangci-lint-${{ runner.os }}-${{ hashFiles('**/go.mod') }}
+          restore-keys: |
+            golangci-lint-${{ runner.os }}--
 
       - uses: actions/setup-node@v6
 
@@ -38,20 +42,17 @@ jobs:
         working-directory: example
         run: yarn install
 
-      - name: Run go mod tidy
+      - name: Run tidy
         run: make tidy && git diff --exit-code
+
+      - name: Run generate
+        run: |
+          make generate
+          make examples
+          git diff --exit-code
 
       - name: Run lint
         run: make lint
 
       - name: Run tests
         run: make test
-
-      - name: Make examples
-        run: |
-          make examples
-          git diff --exit-code
-
-      - uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}

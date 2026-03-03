@@ -62,9 +62,36 @@ lint.fix:
 
 .PHONY: test
 ## Run tests
-test:
+test: go.work
 	@echo "〉go test"
-	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race ./...) &&) true
+	#@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe ./...) &&) true
+
+.PHONY: test.race
+## Run tests with -race
+test.race: go.work
+	@echo "〉go test -race"
+	GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
+
+.PHONY: test.nocache
+## Run tests with -count=1
+test.nocache: go.work
+	@echo "〉go test -count=1"
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -count=1 work
+
+.PHONY: test.bench
+## Run tests with -bench
+test.bench: go.work
+	@echo "〉go test -bench"
+	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work > .benchmark.txt | benchstat benchmark.txt .benchmark.txt
+	@rm .benchstat.txt
+
+.PHONY: test.bench.update
+## Run tests with -bench & update baseline.txt
+test.bench.update: go.work
+	@echo "〉go test -bench (updating baseline)"
+	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work > benchmark.txt
+	@echo "✅ benchmark.txt updated"
 
 .PHONY: outdated
 ## Show outdated direct dependencies
@@ -115,6 +142,12 @@ example.$(1).debug: build.debug
 	@cd example/${1} && dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ../../bin/gotsrpc gotsrpc.yml
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
+
+.PHONY: generate
+## Run go generate
+generate:
+	@echo "〉go generate"
+	@go generate ./...
 
 .PHONY: examples
 ## Generate examples
