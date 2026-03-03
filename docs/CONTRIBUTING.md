@@ -36,7 +36,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) for clear
 
 ## Code of Conduct & Security
 
-Please be respectful and constructive in all interactions within our community and follow the [CODE_OF_CONDUCT](.gihub/CODE_OF_CONDUCT.md) and [SECURITY](.github/SECURITY.md) guidelines.
+Please be respectful and constructive in all interactions within our community and follow the [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) and [SECURITY](SECURITY.md) guidelines.
 
 ## Questions?
 

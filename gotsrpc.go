@@ -53,7 +53,7 @@ func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 
 	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
 	if errDecode := codec.NewDecoder(r.Body, handle).Decode(args); errDecode != nil {
-		_, _ = fmt.Fprintln(os.Stderr, errDecode.Error())
+		// _, _ = fmt.Fprintln(os.Stderr, errDecode.Error())
 		return errors.Wrap(errDecode, "could not decode arguments")
 	}
 	if callStats != nil {
@@ -97,14 +97,14 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 
 	if clientHandle.beforeEncodeReply != nil {
 		if err := clientHandle.beforeEncodeReply(&response); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err.Error())
+			// _, _ = fmt.Fprintln(os.Stderr, err.Error())
 			return errors.Wrap(err, "error during before encoder reply")
 		}
 	}
 
 	buf := new(bytes.Buffer)
 	if err := codec.NewEncoder(buf, clientHandle.handle).Encode(response); err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err.Error())
+		// _, _ = fmt.Fprintln(os.Stderr, err.Error())
 		return errors.Wrap(err, "could not encode data to accepted format")
 	}
 

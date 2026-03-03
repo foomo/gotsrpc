@@ -282,14 +282,14 @@ func updateCode(file string, code string) error {
 			file = path.Join(home, file[1:])
 		}
 	}
-	errMkdirAll := os.MkdirAll(path.Dir(file), 0755)
+	errMkdirAll := os.MkdirAll(path.Dir(file), 0755) //nolint:gosec // G703
 	if errMkdirAll != nil {
 		return errMkdirAll
 	}
-	oldCode, _ := os.ReadFile(file)
+	oldCode, _ := os.ReadFile(file) //nolint:gosec // G703
 	if string(oldCode) != code {
 		fmt.Println("	writing file", file)
-		return os.WriteFile(file, []byte(code), 0644) //nolint:gosec
+		return os.WriteFile(file, []byte(code), 0600)
 	}
 	fmt.Println("	update file not necessary - unchanged", file)
 	return nil
