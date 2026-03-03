@@ -3,6 +3,7 @@ package gotsrpc
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/foomo/gotsrpc/v2/config"
@@ -161,8 +162,9 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 
 		g.l(`
         type ` + proxyName + ` struct {
-	        EndPoint string
-	        service  ` + servicePointer + service.Name + `
+	        EndPoint    string
+	        service     ` + servicePointer + service.Name + `
+	        lastIsError map[string]bool
         }
 
         func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `) *` + proxyName + ` {
@@ -173,6 +175,15 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 	        return &` + proxyName + `{
 		        EndPoint: endpoint,
 		        service:  service,
+		        lastIsError: map[string]bool{`)
+		for _, method := range service.Methods {
+			lastIsError := "false"
+			if len(method.Return) > 0 && method.Return[len(method.Return)-1].Value.GoScalarType == "error" {
+				lastIsError = "true"
+			}
+			g.l(`			"` + method.Name + `": ` + lastIsError + `,`)
+		}
+		g.l(`		},
 	        }
         }
 
@@ -270,13 +281,12 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
-			g.l("callStats.ResponseTypes = reflect.TypeOf(p.service." + method.Name + ")")
 			g.l("callStats.Execution = time.Since(executionStart)")
 			if isSessionRequest {
 				g.l("if rw.Status() == http.StatusOK {").ind(1)
 			}
 			g.l("rets = []any{" + strings.Join(returnValueNames, ", ") + "}")
-			g.l("if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {")
+			g.l("if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {")
 			g.ind(1)
 			g.l("gotsrpc.ErrorCouldNotReply(w)")
 			g.l("return")
@@ -407,10 +417,11 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)
+			lastIsError := len(method.Return) > 0 && method.Return[len(method.Return)-1].Value.GoScalarType == "error"
 			g.l(`func (tsc *` + clientName + `) ` + ms.renderSignature() + ` {`)
 			g.l(`rpcArgs := []any{` + strings.Join(ms.args, ", ") + `}`)
 			g.l(`rpcReply := []any{` + strings.Join(ms.rets, ", ") + `}`)
-			g.l(`rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", rpcArgs, rpcReply)`)
+			g.l(`rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", rpcArgs, rpcReply, ` + strconv.FormatBool(lastIsError) + `)`)
 			g.l(`if rpcErr != nil {`)
 			g.ind(1).l(`clientErr = pkg_errors.WithMessage(rpcErr, "failed to call ` + packageName + `.` + service.Name + `GoTSRPCProxy ` + method.Name + `")`).ind(-1)
 			g.l(`}`)

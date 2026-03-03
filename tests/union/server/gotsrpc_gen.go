@@ -5,7 +5,6 @@ package server
 import (
 	io "io"
 	http "net/http"
-	"reflect"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -24,8 +23,9 @@ const (
 )
 
 type ServiceGoTSRPCProxy struct {
-	EndPoint string
-	service  Service
+	EndPoint    string
+	service     Service
+	lastIsError map[string]bool
 }
 
 func NewDefaultServiceGoTSRPCProxy(service Service) *ServiceGoTSRPCProxy {
@@ -36,6 +36,12 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 	return &ServiceGoTSRPCProxy{
 		EndPoint: endpoint,
 		service:  service,
+		lastIsError: map[string]bool{
+			"InlineStruct":    false,
+			"InlineStructPtr": false,
+			"UnionString":     false,
+			"UnionStruct":     false,
+		},
 	}
 }
 
@@ -63,11 +69,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructE := p.service.InlineStruct(&rw, r)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.InlineStruct)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{inlineStructE}
-			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}
@@ -82,11 +87,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructPtrE := p.service.InlineStructPtr(&rw, r)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.InlineStructPtr)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{inlineStructPtrE}
-			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}
@@ -101,11 +105,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStringE := p.service.UnionString(&rw, r)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.UnionString)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{unionStringE}
-			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}
@@ -120,11 +123,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		executionStart := time.Now()
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStructE := p.service.UnionStruct(&rw, r)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.UnionStruct)
 		callStats.Execution = time.Since(executionStart)
 		if rw.Status() == http.StatusOK {
 			rets = []any{unionStructE}
-			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}

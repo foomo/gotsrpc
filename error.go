@@ -21,6 +21,11 @@ type Error struct {
 
 // NewError returns a new instance
 func NewError(err error) *Error {
+	// guard against typed nil (e.g. (*MyError)(nil) assigned to error interface)
+	if reflect.ValueOf(err).IsZero() {
+		return nil
+	}
+
 	// check if already transformed
 	if v, ok := err.(*Error); ok { //nolint:errorlint
 		return v

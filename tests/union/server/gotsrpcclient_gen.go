@@ -42,7 +42,7 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 func (tsc *HTTPServiceGoTSRPCClient) InlineStruct(ctx go_context.Context) (e InlineStruct, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlineStruct", rpcArgs, rpcReply)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlineStruct", rpcArgs, rpcReply, false)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy InlineStruct")
 	}
@@ -52,7 +52,7 @@ func (tsc *HTTPServiceGoTSRPCClient) InlineStruct(ctx go_context.Context) (e Inl
 func (tsc *HTTPServiceGoTSRPCClient) InlineStructPtr(ctx go_context.Context) (e InlineStructPtr, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlineStructPtr", rpcArgs, rpcReply)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlineStructPtr", rpcArgs, rpcReply, false)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy InlineStructPtr")
 	}
@@ -62,7 +62,7 @@ func (tsc *HTTPServiceGoTSRPCClient) InlineStructPtr(ctx go_context.Context) (e 
 func (tsc *HTTPServiceGoTSRPCClient) UnionString(ctx go_context.Context) (e UnionString, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UnionString", rpcArgs, rpcReply)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UnionString", rpcArgs, rpcReply, false)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy UnionString")
 	}
@@ -72,7 +72,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UnionString(ctx go_context.Context) (e Unio
 func (tsc *HTTPServiceGoTSRPCClient) UnionStruct(ctx go_context.Context) (e UnionStruct, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&e}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UnionStruct", rpcArgs, rpcReply)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UnionStruct", rpcArgs, rpcReply, false)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy UnionStruct")
 	}

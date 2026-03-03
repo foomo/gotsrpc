@@ -5,7 +5,6 @@ package server
 import (
 	io "io"
 	http "net/http"
-	"reflect"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -23,8 +22,9 @@ const (
 )
 
 type ServiceGoTSRPCProxy struct {
-	EndPoint string
-	service  Service
+	EndPoint    string
+	service     Service
+	lastIsError map[string]bool
 }
 
 func NewDefaultServiceGoTSRPCProxy(service Service) *ServiceGoTSRPCProxy {
@@ -35,6 +35,16 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 	return &ServiceGoTSRPCProxy{
 		EndPoint: endpoint,
 		service:  service,
+		lastIsError: map[string]bool{
+			"VariantA": false,
+			"VariantB": false,
+			"VariantC": false,
+			"VariantD": false,
+			"VariantE": false,
+			"VariantF": false,
+			"VariantG": false,
+			"VariantH": false,
+		},
 	}
 }
 
@@ -69,10 +79,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantAR1 := p.service.VariantA(r.Context(), arg_i1)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantA)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantAR1}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -93,10 +102,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantBR1 := p.service.VariantB(r.Context(), arg_i1)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantB)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantBR1}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -117,10 +125,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantCR1 := p.service.VariantC(r.Context(), arg_i1)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantC)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantCR1}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -141,10 +148,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantDR1 := p.service.VariantD(r.Context(), arg_i1)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantD)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantDR1}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -165,10 +171,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantER1 := p.service.VariantE(r.Context(), arg_i1)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantE)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantER1}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -189,10 +194,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantFR1 := p.service.VariantF(r.Context(), arg_i1)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantF)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantFR1}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -213,10 +217,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantGR1 := p.service.VariantG(r.Context(), arg_i1)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantG)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantGR1}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -240,10 +243,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		variantHR1, variantHR2, variantHR3, variantHR4 := p.service.VariantH(r.Context(), arg_i1, arg_i2, arg_i3, arg_i4)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.VariantH)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{variantHR1, variantHR2, variantHR3, variantHR4}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}

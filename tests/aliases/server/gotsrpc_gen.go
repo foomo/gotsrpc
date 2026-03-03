@@ -5,7 +5,6 @@ package server
 import (
 	io "io"
 	http "net/http"
-	"reflect"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -29,8 +28,9 @@ const (
 )
 
 type ServiceGoTSRPCProxy struct {
-	EndPoint string
-	service  Service
+	EndPoint    string
+	service     Service
+	lastIsError map[string]bool
 }
 
 func NewDefaultServiceGoTSRPCProxy(service Service) *ServiceGoTSRPCProxy {
@@ -41,6 +41,22 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 	return &ServiceGoTSRPCProxy{
 		EndPoint: endpoint,
 		service:  service,
+		lastIsError: map[string]bool{
+			"CategoryValue":   false,
+			"DataRecordNil":   false,
+			"DataRecordValue": false,
+			"DetailValue":     false,
+			"EntriesValue":    false,
+			"EntryValue":      false,
+			"IndexValue":      false,
+			"LabelMapValue":   false,
+			"MapOfEntries":    false,
+			"PriorityValue":   false,
+			"RatingValue":     false,
+			"RegistryValue":   false,
+			"StatusValue":     false,
+			"TagsValue":       false,
+		},
 	}
 }
 
@@ -75,10 +91,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		categoryValueRet := p.service.CategoryValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.CategoryValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{categoryValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -99,10 +114,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		dataRecordNilRet := p.service.DataRecordNil(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.DataRecordNil)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{dataRecordNilRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -123,10 +137,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		dataRecordValueRet := p.service.DataRecordValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.DataRecordValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{dataRecordValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -147,10 +160,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		detailValueRet := p.service.DetailValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.DetailValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{detailValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -171,10 +183,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		entriesValueRet := p.service.EntriesValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.EntriesValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{entriesValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -195,10 +206,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		entryValueRet := p.service.EntryValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.EntryValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{entryValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -219,10 +229,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		indexValueRet := p.service.IndexValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.IndexValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{indexValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -243,10 +252,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		labelMapValueRet := p.service.LabelMapValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.LabelMapValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{labelMapValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -267,10 +275,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		mapOfEntriesRet := p.service.MapOfEntries(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.MapOfEntries)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{mapOfEntriesRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -291,10 +298,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		priorityValueRet := p.service.PriorityValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.PriorityValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{priorityValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -315,10 +321,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		ratingValueRet := p.service.RatingValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.RatingValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{ratingValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -339,10 +344,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		registryValueRet := p.service.RegistryValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.RegistryValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{registryValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -363,10 +367,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		statusValueRet := p.service.StatusValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.StatusValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{statusValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -387,10 +390,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		tagsValueRet := p.service.TagsValue(r.Context(), arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.TagsValue)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{tagsValueRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}

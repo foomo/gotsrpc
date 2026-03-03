@@ -88,7 +88,7 @@ func ClearStats(r *http.Request) {
 }
 
 // Reply although this is a public method - do not call it, it will be called by generated code
-func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
+func Reply(response []interface{}, lastIsError bool, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
 	serializationStart := time.Now()
 
 	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
@@ -96,7 +96,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	w.Header().Set("Content-Type", clientHandle.contentType)
 
 	if clientHandle.beforeEncodeReply != nil {
-		if err := clientHandle.beforeEncodeReply(stats.ResponseTypes, &response); err != nil {
+		if err := clientHandle.beforeEncodeReply(&response, lastIsError); err != nil {
 			// _, _ = fmt.Fprintln(os.Stderr, err.Error())
 			return errors.Wrap(err, "error during before encoder reply")
 		}

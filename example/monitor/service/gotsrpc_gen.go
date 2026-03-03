@@ -5,7 +5,6 @@ package service
 import (
 	io "io"
 	http "net/http"
-	"reflect"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -16,8 +15,9 @@ const (
 )
 
 type ServiceGoTSRPCProxy struct {
-	EndPoint string
-	service  Service
+	EndPoint    string
+	service     Service
+	lastIsError map[string]bool
 }
 
 func NewDefaultServiceGoTSRPCProxy(service Service) *ServiceGoTSRPCProxy {
@@ -28,6 +28,9 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 	return &ServiceGoTSRPCProxy{
 		EndPoint: endpoint,
 		service:  service,
+		lastIsError: map[string]bool{
+			"Hello": false,
+		},
 	}
 }
 
@@ -62,10 +65,9 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		helloRet := p.service.Hello(arg_v)
-		callStats.ResponseTypes = reflect.TypeOf(p.service.Hello)
 		callStats.Execution = time.Since(executionStart)
 		rets = []any{helloRet}
-		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}

@@ -1,7 +1,6 @@
 package gotsrpc
 
 import (
-	"reflect"
 	"time"
 )
 
@@ -17,5 +16,4 @@ type CallStats struct {
 	ErrorCode     int
 	ErrorType     string
 	ErrorMessage  string
-	ResponseTypes reflect.Type
 }

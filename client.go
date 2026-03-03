@@ -21,7 +21,7 @@ const (
 var _ Client = &bufferedClient{}
 
 type Client interface {
-	Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
+	Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}, lastIsError bool) (err error)
 	SetClientEncoding(encoding ClientEncoding)
 	SetTransportHttpClient(client *http.Client)
 	SetDefaultHeaders(headers http.Header)
@@ -76,7 +76,7 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:
 }
 
 // Call calls a method on the remote service
-func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) error {
+func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any, lastIsError bool) error {
 	// Marshall args
 	b := new(bytes.Buffer)
 
@@ -116,7 +116,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 
 	wrappedReply := reply
 	if clientHandle.beforeDecodeReply != nil {
-		if value, err := clientHandle.beforeDecodeReply(reply); err != nil {
+		if value, err := clientHandle.beforeDecodeReply(reply, lastIsError); err != nil {
 			return NewClientError(errors.Wrap(err, "failed to call beforeDecodeReply hook"))
 		} else {
 			wrappedReply = value
@@ -129,7 +129,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 
 	// replace error
 	if clientHandle.afterDecodeReply != nil {
-		if err := clientHandle.afterDecodeReply(&reply, wrappedReply); err != nil {
+		if err := clientHandle.afterDecodeReply(&reply, wrappedReply, lastIsError); err != nil {
 			return NewClientError(errors.Wrap(err, "failed to call afterDecodeReply hook"))
 		}
 	}
