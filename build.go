@@ -289,7 +289,7 @@ func updateCode(file string, code string) error {
 	oldCode, _ := os.ReadFile(file) //nolint:gosec // G703
 	if string(oldCode) != code {
 		fmt.Println("	writing file", file)
-		return os.WriteFile(file, []byte(code), 0600)
+		return os.WriteFile(file, []byte(code), 0600) //nolint:gosec // G703
 	}
 	fmt.Println("	update file not necessary - unchanged", file)
 	return nil
