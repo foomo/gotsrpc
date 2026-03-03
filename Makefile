@@ -147,7 +147,7 @@ $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 ## Run go generate
 generate:
 	@echo "〉go generate"
-	@go generate work
+	@go generate ./...
 
 .PHONY: examples
 ## Generate examples
