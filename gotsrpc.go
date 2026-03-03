@@ -1,7 +1,6 @@
 package gotsrpc
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -19,7 +18,6 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/ugorji/go/codec"
 
 	"github.com/foomo/gotsrpc/v2/config"
 )
@@ -51,9 +49,11 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	start := time.Now()
 
-	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
-	if errDecode := codec.NewDecoder(r.Body, handle).Decode(args); errDecode != nil {
-		// _, _ = fmt.Fprintln(os.Stderr, errDecode.Error())
+	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
+	dec := ch.getDecoder(r.Body)
+	errDecode := dec.Decode(args)
+	ch.putDecoder(dec)
+	if errDecode != nil {
 		return errors.Wrap(errDecode, "could not decode arguments")
 	}
 	if callStats != nil {
@@ -78,9 +78,8 @@ func RequestWithStatsContext(r *http.Request) *http.Request {
 func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
 	if value, ok := r.Context().Value(contextStatsKey).(*CallStats); ok && value != nil {
 		return value, true
-	} else {
-		return &CallStats{}, false
 	}
+	return nil, false
 }
 
 func ClearStats(r *http.Request) {
@@ -91,20 +90,23 @@ func ClearStats(r *http.Request) {
 func Reply(response []interface{}, lastIsError bool, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
 	serializationStart := time.Now()
 
-	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
+	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
 
-	w.Header().Set("Content-Type", clientHandle.contentType)
+	w.Header().Set("Content-Type", ch.contentType)
 
-	if clientHandle.beforeEncodeReply != nil {
-		if err := clientHandle.beforeEncodeReply(&response, lastIsError); err != nil {
-			// _, _ = fmt.Fprintln(os.Stderr, err.Error())
+	if ch.beforeEncodeReply != nil {
+		if err := ch.beforeEncodeReply(&response, lastIsError); err != nil {
 			return errors.Wrap(err, "error during before encoder reply")
 		}
 	}
 
-	buf := new(bytes.Buffer)
-	if err := codec.NewEncoder(buf, clientHandle.handle).Encode(response); err != nil {
-		// _, _ = fmt.Fprintln(os.Stderr, err.Error())
+	buf := getBuffer()
+	defer putBuffer(buf)
+
+	enc := ch.getEncoder(buf)
+	err := enc.Encode(response)
+	ch.putEncoder(enc)
+	if err != nil {
 		return errors.Wrap(err, "could not encode data to accepted format")
 	}
 

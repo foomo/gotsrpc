@@ -1,0 +1,1774 @@
+PASS
+ok  	github.com/foomo/gotsrpc/v2	1.665s
+?   	github.com/foomo/gotsrpc/v2/cmd/gotsrpc	[no test files]
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+/Users/franklin/Workingcopies/github.com/foomo/gotsrpc/config/demo
+PASS
+ok  	github.com/foomo/gotsrpc/v2/config	0.312s
+PASS
+ok  	github.com/foomo/gotsrpc/v2/example/basic	10.388s
+?   	github.com/foomo/gotsrpc/v2/example/basic/service	[no test files]
+?   	github.com/foomo/gotsrpc/v2/example/monitor	[no test files]
+?   	github.com/foomo/gotsrpc/v2/example/monitor/service	[no test files]
+?   	github.com/foomo/gotsrpc/v2/prometheus	[no test files]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [2.02ms]
+(pass) categoryValue [0.28ms]
+(pass) priorityValue [0.25ms]
+(pass) ratingValue [0.27ms]
+(pass) tagsValue [0.24ms]
+(pass) entriesValue [0.24ms]
+(pass) registryValue [0.20ms]
+(pass) indexValue [0.24ms]
+(pass) labelMapValue [0.18ms]
+(pass) entryValue [0.18ms]
+(pass) detailValue [0.19ms]
+(pass) dataRecordValue [0.27ms]
+(pass) mapOfEntries [0.17ms]
+(pass) dataRecordNil [0.16ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [12.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [2.50ms]
+(pass) categoryValue [0.26ms]
+(pass) priorityValue [0.30ms]
+(pass) ratingValue [0.22ms]
+(pass) tagsValue [0.19ms]
+(pass) entriesValue [0.21ms]
+(pass) registryValue [0.18ms]
+(pass) indexValue [0.19ms]
+(pass) labelMapValue [0.17ms]
+(pass) entryValue [0.18ms]
+(pass) detailValue [0.21ms]
+(pass) dataRecordValue [0.24ms]
+(pass) mapOfEntries [0.17ms]
+(pass) dataRecordNil [0.23ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [10.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [2.10ms]
+(pass) categoryValue [0.24ms]
+(pass) priorityValue [0.21ms]
+(pass) ratingValue [0.19ms]
+(pass) tagsValue [0.17ms]
+(pass) entriesValue [0.20ms]
+(pass) registryValue [0.17ms]
+(pass) indexValue [0.17ms]
+(pass) labelMapValue [0.15ms]
+(pass) entryValue [0.15ms]
+(pass) detailValue [0.18ms]
+(pass) dataRecordValue [0.20ms]
+(pass) mapOfEntries [0.17ms]
+(pass) dataRecordNil [0.16ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [9.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [1.57ms]
+(pass) categoryValue [0.18ms]
+(pass) priorityValue [0.18ms]
+(pass) ratingValue [0.17ms]
+(pass) tagsValue [0.18ms]
+(pass) entriesValue [0.20ms]
+(pass) registryValue [0.15ms]
+(pass) indexValue [0.16ms]
+(pass) labelMapValue [0.14ms]
+(pass) entryValue [0.13ms]
+(pass) detailValue [0.18ms]
+(pass) dataRecordValue [0.21ms]
+(pass) mapOfEntries [0.16ms]
+(pass) dataRecordNil [0.14ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [1.38ms]
+(pass) categoryValue [0.25ms]
+(pass) priorityValue [0.16ms]
+(pass) ratingValue [0.14ms]
+(pass) tagsValue [0.15ms]
+(pass) entriesValue [0.17ms]
+(pass) registryValue [0.16ms]
+(pass) indexValue [0.17ms]
+(pass) labelMapValue [0.12ms]
+(pass) entryValue [0.14ms]
+(pass) detailValue [0.14ms]
+(pass) dataRecordValue [0.18ms]
+(pass) mapOfEntries [0.13ms]
+(pass) dataRecordNil [0.13ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [1.52ms]
+(pass) categoryValue [0.24ms]
+(pass) priorityValue [0.18ms]
+(pass) ratingValue [0.19ms]
+(pass) tagsValue [0.17ms]
+(pass) entriesValue [0.20ms]
+(pass) registryValue [0.16ms]
+(pass) indexValue [0.16ms]
+(pass) labelMapValue [0.12ms]
+(pass) entryValue [0.13ms]
+(pass) detailValue [0.15ms]
+(pass) dataRecordValue [0.16ms]
+(pass) mapOfEntries [0.14ms]
+(pass) dataRecordNil [0.13ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [1.78ms]
+(pass) categoryValue [0.21ms]
+(pass) priorityValue [0.15ms]
+(pass) ratingValue [0.15ms]
+(pass) tagsValue [0.15ms]
+(pass) entriesValue [0.17ms]
+(pass) registryValue [0.17ms]
+(pass) indexValue [0.16ms]
+(pass) labelMapValue [0.13ms]
+(pass) entryValue [0.15ms]
+(pass) detailValue [0.15ms]
+(pass) dataRecordValue [0.18ms]
+(pass) mapOfEntries [0.12ms]
+(pass) dataRecordNil [0.13ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [1.11ms]
+(pass) categoryValue [0.28ms]
+(pass) priorityValue [0.20ms]
+(pass) ratingValue [0.15ms]
+(pass) tagsValue [0.18ms]
+(pass) entriesValue [0.19ms]
+(pass) registryValue [0.15ms]
+(pass) indexValue [0.15ms]
+(pass) labelMapValue [0.14ms]
+(pass) entryValue [0.14ms]
+(pass) detailValue [0.17ms]
+(pass) dataRecordValue [0.16ms]
+(pass) mapOfEntries [0.13ms]
+(pass) dataRecordNil [0.14ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [1.22ms]
+(pass) categoryValue [0.27ms]
+(pass) priorityValue [0.20ms]
+(pass) ratingValue [0.19ms]
+(pass) tagsValue [0.25ms]
+(pass) entriesValue [0.24ms]
+(pass) registryValue [0.16ms]
+(pass) indexValue [0.16ms]
+(pass) labelMapValue [0.16ms]
+(pass) entryValue [0.15ms]
+(pass) detailValue [0.16ms]
+(pass) dataRecordValue [0.19ms]
+(pass) mapOfEntries [0.14ms]
+(pass) dataRecordNil [0.14ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) statusValue [1.37ms]
+(pass) categoryValue [0.20ms]
+(pass) priorityValue [0.16ms]
+(pass) ratingValue [0.16ms]
+(pass) tagsValue [0.19ms]
+(pass) entriesValue [0.19ms]
+(pass) registryValue [0.16ms]
+(pass) indexValue [0.16ms]
+(pass) labelMapValue [0.16ms]
+(pass) entryValue [0.14ms]
+(pass) detailValue [0.18ms]
+(pass) dataRecordValue [0.28ms]
+(pass) mapOfEntries [0.19ms]
+(pass) dataRecordNil [0.13ms]
+
+ 14 pass
+ 0 fail
+ 31 expect() calls
+Ran 14 tests across 1 file. [7.00ms]
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/aliases	0.648s
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/aliases/server	0.468s
+goos: darwin
+goarch: arm64
+pkg: github.com/foomo/gotsrpc/v2/tests/benchmark
+cpu: Apple M4 Max
+BenchmarkNewError_Simple-16                  	35759649	        29.91 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	40661482	        29.29 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	41525124	        29.36 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	40070401	        29.95 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	39941419	        29.70 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	40926066	        29.84 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	40086240	        29.67 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	39925581	        29.69 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	39214512	        29.66 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Simple-16                  	40696647	        29.09 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Wrapped-16                 	13434433	        89.26 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	13341127	        89.47 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	13318287	        88.75 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	13358250	        90.25 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	13324616	        91.90 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	12926773	        91.62 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	12759486	        91.08 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	13272879	        91.80 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	12994782	        91.39 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Wrapped-16                 	12612102	        94.02 ns/op	     216 B/op	       3 allocs/op
+BenchmarkNewError_Struct-16                  	21418594	        57.24 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	20855524	        58.11 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	20479300	        57.85 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	21033058	        57.97 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	21038650	        57.51 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	21265017	        57.64 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	20826176	        61.71 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	21025058	        60.07 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	18807204	        59.68 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Struct-16                  	20782743	        57.71 ns/op	     160 B/op	       2 allocs/op
+BenchmarkNewError_Custom-16                  	38498504	        31.94 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	37070694	        31.45 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	36171951	        31.32 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	38669708	        31.38 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	36225913	        30.56 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	39468976	        30.63 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	38639823	        30.74 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	39212108	        30.41 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	39837716	        30.95 ns/op	      96 B/op	       1 allocs/op
+BenchmarkNewError_Custom-16                  	36008101	        31.64 ns/op	      96 B/op	       1 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.27 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.24 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.32 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.29 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.31 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.20 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        10.88 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.08 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_Is-16                         	100000000	        11.21 ns/op	       0 B/op	       0 allocs/op
+BenchmarkError_As-16                         	 8971602	       131.1 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9164598	       132.8 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9120356	       129.9 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9292246	       129.0 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9343635	       127.7 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9110037	       129.4 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9269692	       128.9 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9314590	       129.8 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9287017	       128.5 ns/op	     176 B/op	       5 allocs/op
+BenchmarkError_As-16                         	 9366370	       128.2 ns/op	     176 B/op	       5 allocs/op
+BenchmarkGoRPC_Empty-16                      	   29680	     39845 ns/op	     719 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   31327	     38752 ns/op	     710 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   30955	     39265 ns/op	     711 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   30913	     39228 ns/op	     711 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   31056	     39328 ns/op	     711 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   29361	     40599 ns/op	     716 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   30745	     39296 ns/op	     711 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   30459	     39808 ns/op	     712 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   30502	     39984 ns/op	     712 B/op	      11 allocs/op
+BenchmarkGoRPC_Empty-16                      	   30598	     39573 ns/op	     711 B/op	      11 allocs/op
+BenchmarkGoRPC_String-16                     	   31118	     38897 ns/op	     852 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   31522	     38302 ns/op	     852 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   31128	     39229 ns/op	     852 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   30988	     38526 ns/op	     853 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   31569	     38343 ns/op	     851 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   30952	     38732 ns/op	     853 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   31014	     38292 ns/op	     852 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   31256	     39036 ns/op	     852 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   30842	     38628 ns/op	     853 B/op	      17 allocs/op
+BenchmarkGoRPC_String-16                     	   31045	     38586 ns/op	     852 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   29943	     40211 ns/op	    1113 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   29336	     40978 ns/op	    1115 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   29626	     40200 ns/op	    1114 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   29948	     39939 ns/op	    1113 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   29959	     40640 ns/op	    1113 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   30294	     40539 ns/op	    1112 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   29202	     41113 ns/op	    1116 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   28080	     41741 ns/op	    1120 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   28317	     41363 ns/op	    1119 B/op	      17 allocs/op
+BenchmarkGoRPC_SimpleStruct-16               	   29979	     40318 ns/op	    1113 B/op	      17 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   28648	     41480 ns/op	    1214 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   29518	     40916 ns/op	    1211 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   29216	     41140 ns/op	    1212 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   28753	     41156 ns/op	    1214 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   28849	     41316 ns/op	    1213 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   29140	     41558 ns/op	    1212 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   29386	     40793 ns/op	    1211 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   29814	     40630 ns/op	    1210 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   28932	     41226 ns/op	    1213 B/op	      19 allocs/op
+BenchmarkGoRPC_NestedStruct-16               	   29108	     41372 ns/op	    1212 B/op	      19 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   29982	     39131 ns/op	     931 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31582	     38165 ns/op	     925 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31485	     37913 ns/op	     926 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31255	     38977 ns/op	     927 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   30891	     38397 ns/op	     928 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31450	     38386 ns/op	     926 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31633	     37829 ns/op	     925 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31825	     37717 ns/op	     925 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31322	     38898 ns/op	     926 B/op	      17 allocs/op
+BenchmarkGoRPC_MultiArgs-16                  	   31004	     38494 ns/op	     927 B/op	      17 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   30264	     39333 ns/op	    5142 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   30274	     38859 ns/op	    5143 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   30967	     38415 ns/op	    5139 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   28868	     40076 ns/op	    5147 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   30727	     38841 ns/op	    5140 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   31309	     39272 ns/op	    5138 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   31291	     38322 ns/op	    5138 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   30580	     38776 ns/op	    5140 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   31340	     38677 ns/op	    5138 B/op	      21 allocs/op
+BenchmarkGoRPC_ByteSlice-16                  	   31251	     38396 ns/op	    5137 B/op	      21 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31422	     37371 ns/op	    8755 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31882	     37930 ns/op	    8783 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31162	     38524 ns/op	    8850 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31501	     37492 ns/op	    8822 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31666	     37842 ns/op	    8841 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   32259	     37132 ns/op	    8771 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31837	     37944 ns/op	    8825 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31910	     37517 ns/op	    8789 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   31936	     37419 ns/op	    8743 B/op	     100 allocs/op
+BenchmarkGoTSRPC_Empty-16                    	   30901	     37924 ns/op	    8822 B/op	     100 allocs/op
+BenchmarkGoTSRPC_String-16                   	   30814	     38985 ns/op	    9583 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   30094	     40868 ns/op	    9666 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   29872	     39674 ns/op	    9692 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   29641	     40017 ns/op	    9649 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   29794	     40245 ns/op	    9657 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   30421	     39729 ns/op	    9700 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   30258	     40286 ns/op	    9625 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   29281	     40448 ns/op	    9654 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   29918	     39762 ns/op	    9635 B/op	     116 allocs/op
+BenchmarkGoTSRPC_String-16                   	   30825	     44499 ns/op	    9687 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   26430	     55950 ns/op	    9938 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   28368	     41467 ns/op	    9829 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   29061	     42395 ns/op	    9795 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   26785	     44442 ns/op	    9983 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   27582	     42272 ns/op	   10003 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   29342	     41329 ns/op	    9792 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   28845	     41939 ns/op	    9796 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   28070	     42506 ns/op	    9812 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   23874	     48203 ns/op	    9842 B/op	     116 allocs/op
+BenchmarkGoTSRPC_SimpleStruct-16             	   28372	     42016 ns/op	    9841 B/op	     116 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   28292	     42104 ns/op	    9827 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   28986	     41783 ns/op	    9922 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   28558	     41651 ns/op	    9762 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   29281	     44865 ns/op	    9885 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   28777	     42655 ns/op	    9815 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   28161	     41358 ns/op	    9865 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   29366	     41270 ns/op	    9814 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   29113	     41132 ns/op	    9834 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   29104	     41322 ns/op	    9804 B/op	     118 allocs/op
+BenchmarkGoTSRPC_NestedStruct-16             	   28524	     42104 ns/op	    9847 B/op	     118 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25693	     46615 ns/op	   13597 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25677	     47894 ns/op	   13753 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25011	     46715 ns/op	   13597 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25498	     46766 ns/op	   13617 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25869	     46746 ns/op	   13587 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   24645	     47674 ns/op	   13599 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25522	     48539 ns/op	   13577 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   24495	     48380 ns/op	   13740 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25558	     47358 ns/op	   13618 B/op	     182 allocs/op
+BenchmarkGoTSRPC_StructWithCollections-16    	   25449	     47508 ns/op	   13645 B/op	     182 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   29623	     40700 ns/op	    9811 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   28945	     40534 ns/op	    9814 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   28584	     40738 ns/op	    9815 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   29614	     40738 ns/op	    9870 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   28513	     41668 ns/op	    9890 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   29664	     39934 ns/op	    9840 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   30096	     40566 ns/op	    9783 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   29630	     40432 ns/op	    9876 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   29328	     40634 ns/op	    9819 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MultiArgs-16                	   27842	     41378 ns/op	    9838 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27526	     43231 ns/op	   11216 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   25789	     45178 ns/op	   11188 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27192	     44039 ns/op	   11076 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27411	     43695 ns/op	   11110 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27476	     43739 ns/op	   11114 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27751	     43824 ns/op	   11143 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   26961	     44599 ns/op	   11138 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27267	     43888 ns/op	   11091 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27208	     44523 ns/op	   11079 B/op	     138 allocs/op
+BenchmarkGoTSRPC_MixedArgs-16                	   27538	     43651 ns/op	   11218 B/op	     138 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   29479	     41419 ns/op	   10227 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   29457	     40410 ns/op	   10049 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   30344	     40075 ns/op	    9952 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   29504	     40425 ns/op	    9989 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   30002	     40054 ns/op	    9998 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   29414	     40961 ns/op	   10102 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   29070	     40585 ns/op	    9995 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   29781	     40388 ns/op	   10001 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   29491	     41390 ns/op	    9976 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringSlice-16              	   28874	     40826 ns/op	   10016 B/op	     126 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   28918	     41210 ns/op	   10413 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   28927	     41147 ns/op	   10457 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29910	     40060 ns/op	   10378 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29920	     40260 ns/op	   10358 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29463	     40684 ns/op	   10362 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29701	     41281 ns/op	   10396 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29342	     40785 ns/op	   10416 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29568	     40405 ns/op	   10364 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29356	     40759 ns/op	   10369 B/op	     116 allocs/op
+BenchmarkGoTSRPC_StringStringMap-16          	   29583	     40793 ns/op	   10327 B/op	     116 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   28070	     42772 ns/op	   12091 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   28182	     42649 ns/op	   12105 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   27675	     42795 ns/op	   12145 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   27880	     43257 ns/op	   12139 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   27858	     43140 ns/op	   12038 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   27430	     43630 ns/op	   12239 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   27806	     42714 ns/op	   12103 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   28353	     42234 ns/op	   12095 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   27765	     44469 ns/op	   12220 B/op	     140 allocs/op
+BenchmarkGoTSRPC_MapOfMaps-16                	   27842	     42440 ns/op	   12330 B/op	     140 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29089	     41391 ns/op	   12096 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29200	     40554 ns/op	   11967 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   28404	     41117 ns/op	   11988 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29587	     41265 ns/op	   12017 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29019	     42047 ns/op	   11975 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29282	     41155 ns/op	   11966 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29222	     40529 ns/op	   11975 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29798	     40742 ns/op	   11951 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29047	     41232 ns/op	   11965 B/op	     118 allocs/op
+BenchmarkGoTSRPC_ByteSlice-16                	   29589	     40885 ns/op	   11963 B/op	     118 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   29799	     40404 ns/op	   10281 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   29107	     40518 ns/op	   10243 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   29570	     41974 ns/op	   10273 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   28825	     41881 ns/op	   10383 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   28390	     41469 ns/op	   10373 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   29083	     41389 ns/op	   10361 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   29082	     41759 ns/op	   10299 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   30685	     40945 ns/op	   10372 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   29022	     42048 ns/op	   10341 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=10-16   	   29960	     40165 ns/op	   10141 B/op	     136 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   25939	     45903 ns/op	   15468 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   25566	     50505 ns/op	   15612 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   25359	     45098 ns/op	   15401 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   25161	     48173 ns/op	   15593 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   24427	     47758 ns/op	   15631 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   25317	     47319 ns/op	   15585 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   25420	     46796 ns/op	   15534 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   24126	     47954 ns/op	   15505 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   25756	     46125 ns/op	   15450 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=100-16  	   26101	     45755 ns/op	   15474 B/op	     318 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   12010	     99947 ns/op	   70044 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    107720 ns/op	   70652 B/op	    2123 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    104337 ns/op	   70264 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    101849 ns/op	   69957 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    109592 ns/op	   70517 B/op	    2123 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    105417 ns/op	   70426 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    104680 ns/op	   70398 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    103370 ns/op	   70209 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    102753 ns/op	   70133 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_StringSlice_Scale/n=1000-16 	   10000	    103559 ns/op	   70050 B/op	    2122 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24489	     48551 ns/op	   12045 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24877	     48095 ns/op	   11982 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   25273	     47934 ns/op	   12048 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24979	     48225 ns/op	   12060 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24812	     48702 ns/op	   12097 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24032	     49449 ns/op	   12100 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24589	     48768 ns/op	   12070 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24291	     49215 ns/op	   12113 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24828	     48563 ns/op	   11994 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=10-16   	   24765	     49106 ns/op	   12109 B/op	     240 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    121063 ns/op	   34501 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    119863 ns/op	   34477 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    119706 ns/op	   34291 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    117199 ns/op	   34224 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    120299 ns/op	   34498 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    121536 ns/op	   34442 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	    9780	    121140 ns/op	   34363 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    121164 ns/op	   34595 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	    9885	    118824 ns/op	   34525 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=100-16  	   10000	    118416 ns/op	   34133 B/op	    1323 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1722	    716293 ns/op	  291195 B/op	   12132 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1664	    725938 ns/op	  282192 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1659	    731067 ns/op	  282581 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1639	    732396 ns/op	  282401 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1518	    736783 ns/op	  283392 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1671	    730304 ns/op	  280593 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1639	    731108 ns/op	  281717 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1600	    730133 ns/op	  283146 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1671	    735421 ns/op	  281045 B/op	   12129 allocs/op
+BenchmarkGoTSRPC_SimpleSlice_Scale/n=1000-16 	    1678	    741020 ns/op	  283208 B/op	   12130 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   27357	     42831 ns/op	   11481 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   28419	     41978 ns/op	   11406 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   28753	     41704 ns/op	   11431 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   28206	     42598 ns/op	   11456 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   28562	     42342 ns/op	   11458 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   28251	     42660 ns/op	   11544 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   27656	     42574 ns/op	   11560 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   28440	     42804 ns/op	   11501 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   27888	     43395 ns/op	   11602 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=10-16         	   27780	     42692 ns/op	   11460 B/op	     162 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21540	     55211 ns/op	   24190 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21524	     55332 ns/op	   24181 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21136	     67492 ns/op	   24393 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   20745	     57020 ns/op	   24564 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21003	     56691 ns/op	   24336 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21849	     55187 ns/op	   24205 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21290	     56607 ns/op	   24276 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21768	     55601 ns/op	   24189 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   15462	     70614 ns/op	   24335 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=100-16        	   21187	     56420 ns/op	   24346 B/op	     523 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    5847	    195198 ns/op	  248042 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6193	    203629 ns/op	  248860 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    5967	    197538 ns/op	  247824 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6061	    197029 ns/op	  247503 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6105	    196575 ns/op	  247938 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6247	    192345 ns/op	  247174 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6036	    197928 ns/op	  246325 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6102	    193476 ns/op	  247033 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6097	    194826 ns/op	  248406 B/op	    4137 allocs/op
+BenchmarkGoTSRPC_StringStringMap_Scale/n=1000-16       	    6366	    195758 ns/op	  247129 B/op	    4137 allocs/op
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/benchmark	382.488s
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [2.04ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [2.14ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [2.08ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [5.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [2.02ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [2.17ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [5.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [1.78ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [5.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [1.86ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [5.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [1.90ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [1.95ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+world
+(pass) hello [2.18ms]
+
+ 1 pass
+ 0 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [6.00ms]
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/context	0.505s
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+foomo
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/context/server	0.360s
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.57ms]
+(pass) scalar [0.25ms]
+(pass) multiScalar [0.25ms]
+(pass) struct [0.16ms]
+(pass) typedError [0.14ms]
+(pass) structError [0.19ms]
+(pass) scalarError [0.16ms]
+(pass) customError [0.18ms]
+(pass) wrappedError [0.19ms]
+(pass) typedError [0.10ms]
+(pass) typedScalarError [0.11ms]
+(pass) typedCustomError [0.16ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.81ms]
+(pass) scalar [0.29ms]
+(pass) multiScalar [0.23ms]
+(pass) struct [0.20ms]
+(pass) typedError [0.17ms]
+(pass) structError [0.15ms]
+(pass) scalarError [0.14ms]
+(pass) customError [0.14ms]
+(pass) wrappedError [0.13ms]
+(pass) typedError [0.11ms]
+(pass) typedScalarError [0.13ms]
+(pass) typedCustomError [0.11ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.86ms]
+(pass) scalar [0.21ms]
+(pass) multiScalar [0.15ms]
+(pass) struct [0.13ms]
+(pass) typedError [0.14ms]
+(pass) structError [0.12ms]
+(pass) scalarError [0.12ms]
+(pass) customError [0.15ms]
+(pass) wrappedError [0.16ms]
+(pass) typedError [0.13ms]
+(pass) typedScalarError [0.12ms]
+(pass) typedCustomError [0.17ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.71ms]
+(pass) scalar [0.25ms]
+(pass) multiScalar [0.21ms]
+(pass) struct [0.14ms]
+(pass) typedError [0.19ms]
+(pass) structError [0.17ms]
+(pass) scalarError [0.17ms]
+(pass) customError [0.15ms]
+(pass) wrappedError [0.16ms]
+(pass) typedError [0.12ms]
+(pass) typedScalarError [0.15ms]
+(pass) typedCustomError [0.17ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.60ms]
+(pass) scalar [0.35ms]
+(pass) multiScalar [0.20ms]
+(pass) struct [0.18ms]
+(pass) typedError [0.17ms]
+(pass) structError [0.15ms]
+(pass) scalarError [0.18ms]
+(pass) customError [0.15ms]
+(pass) wrappedError [0.19ms]
+(pass) typedError [0.12ms]
+(pass) typedScalarError [0.13ms]
+(pass) typedCustomError [0.12ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.35ms]
+(pass) scalar [0.28ms]
+(pass) multiScalar [0.16ms]
+(pass) struct [0.16ms]
+(pass) typedError [0.17ms]
+(pass) structError [0.18ms]
+(pass) scalarError [0.15ms]
+(pass) customError [0.17ms]
+(pass) wrappedError [0.15ms]
+(pass) typedError [0.13ms]
+(pass) typedScalarError [0.13ms]
+(pass) typedCustomError [0.13ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.62ms]
+(pass) scalar [0.29ms]
+(pass) multiScalar [0.20ms]
+(pass) struct [0.15ms]
+(pass) typedError [0.15ms]
+(pass) structError [0.17ms]
+(pass) scalarError [0.14ms]
+(pass) customError [0.13ms]
+(pass) wrappedError [0.14ms]
+(pass) typedError [0.11ms]
+(pass) typedScalarError [0.18ms]
+(pass) typedCustomError [0.14ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.52ms]
+(pass) scalar [0.24ms]
+(pass) multiScalar [0.19ms]
+(pass) struct [0.15ms]
+(pass) typedError [0.13ms]
+(pass) structError [0.17ms]
+(pass) scalarError [0.14ms]
+(pass) customError [0.14ms]
+(pass) wrappedError [0.15ms]
+(pass) typedError [0.12ms]
+(pass) typedScalarError [0.12ms]
+(pass) typedCustomError [0.14ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.78ms]
+(pass) scalar [0.21ms]
+(pass) multiScalar [0.15ms]
+(pass) struct [0.11ms]
+(pass) typedError [0.10ms]
+(pass) structError [0.11ms]
+(pass) scalarError [0.14ms]
+(pass) customError [0.12ms]
+(pass) wrappedError [0.12ms]
+(pass) typedError [0.10ms]
+(pass) typedScalarError [0.12ms]
+(pass) typedCustomError [0.12ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) error [1.64ms]
+(pass) scalar [0.22ms]
+(pass) multiScalar [0.19ms]
+(pass) struct [0.16ms]
+(pass) typedError [0.15ms]
+(pass) structError [0.15ms]
+(pass) scalarError [0.14ms]
+(pass) customError [0.13ms]
+(pass) wrappedError [0.15ms]
+(pass) typedError [0.12ms]
+(pass) typedScalarError [0.13ms]
+(pass) typedCustomError [0.13ms]
+
+ 12 pass
+ 0 fail
+ 12 expect() calls
+Ran 12 tests across 1 file. [7.00ms]
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/errors	0.411s
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+custom error
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/errors/server	0.344s
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [4.19ms]
+(pass) variantB [0.47ms]
+(pass) variantC [0.17ms]
+(pass) variantC null [0.18ms]
+(pass) variantD [0.18ms]
+(pass) variantD null [0.14ms]
+(pass) variantE [0.21ms]
+(pass) variantE null [0.13ms]
+(pass) variantF [0.17ms]
+(pass) variantG [0.17ms]
+(pass) variantH [0.21ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [11.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.34ms]
+(pass) variantB [0.36ms]
+(pass) variantC [0.18ms]
+(pass) variantC null [0.13ms]
+(pass) variantD [0.21ms]
+(pass) variantD null [0.15ms]
+(pass) variantE [0.23ms]
+(pass) variantE null [0.16ms]
+(pass) variantF [0.18ms]
+(pass) variantG [0.28ms]
+(pass) variantH [0.23ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.71ms]
+(pass) variantB [0.21ms]
+(pass) variantC [0.20ms]
+(pass) variantC null [0.13ms]
+(pass) variantD [0.17ms]
+(pass) variantD null [0.13ms]
+(pass) variantE [0.16ms]
+(pass) variantE null [0.13ms]
+(pass) variantF [0.17ms]
+(pass) variantG [0.18ms]
+(pass) variantH [0.20ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.82ms]
+(pass) variantB [0.33ms]
+(pass) variantC [0.18ms]
+(pass) variantC null [0.17ms]
+(pass) variantD [0.19ms]
+(pass) variantD null [0.16ms]
+(pass) variantE [0.22ms]
+(pass) variantE null [0.14ms]
+(pass) variantF [0.20ms]
+(pass) variantG [0.21ms]
+(pass) variantH [0.22ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.55ms]
+(pass) variantB [0.24ms]
+(pass) variantC [0.18ms]
+(pass) variantC null [0.20ms]
+(pass) variantD [0.17ms]
+(pass) variantD null [0.14ms]
+(pass) variantE [0.16ms]
+(pass) variantE null [0.11ms]
+(pass) variantF [0.15ms]
+(pass) variantG [0.17ms]
+(pass) variantH [0.19ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.71ms]
+(pass) variantB [0.25ms]
+(pass) variantC [0.19ms]
+(pass) variantC null [0.15ms]
+(pass) variantD [0.18ms]
+(pass) variantD null [0.16ms]
+(pass) variantE [0.16ms]
+(pass) variantE null [0.11ms]
+(pass) variantF [0.14ms]
+(pass) variantG [0.16ms]
+(pass) variantH [0.18ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.88ms]
+(pass) variantB [0.25ms]
+(pass) variantC [0.21ms]
+(pass) variantC null [0.12ms]
+(pass) variantD [0.17ms]
+(pass) variantD null [0.15ms]
+(pass) variantE [0.16ms]
+(pass) variantE null [0.14ms]
+(pass) variantF [0.15ms]
+(pass) variantG [0.18ms]
+(pass) variantH [0.21ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.53ms]
+(pass) variantB [0.28ms]
+(pass) variantC [0.17ms]
+(pass) variantC null [0.12ms]
+(pass) variantD [0.17ms]
+(pass) variantD null [0.10ms]
+(pass) variantE [0.15ms]
+(pass) variantE null [0.13ms]
+(pass) variantF [0.17ms]
+(pass) variantG [0.16ms]
+(pass) variantH [0.19ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.70ms]
+(pass) variantB [0.23ms]
+(pass) variantC [0.15ms]
+(pass) variantC null [0.12ms]
+(pass) variantD [0.12ms]
+(pass) variantD null [0.10ms]
+(pass) variantE [0.14ms]
+(pass) variantE null [0.10ms]
+(pass) variantF [0.13ms]
+(pass) variantG [0.14ms]
+(pass) variantH [0.16ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) variantA [1.61ms]
+(pass) variantB [0.22ms]
+(pass) variantC [0.14ms]
+(pass) variantC null [0.14ms]
+(pass) variantD [0.18ms]
+(pass) variantD null [0.10ms]
+(pass) variantE [0.19ms]
+(pass) variantE null [0.10ms]
+(pass) variantF [0.16ms]
+(pass) variantG [0.17ms]
+(pass) variantH [0.18ms]
+
+ 11 pass
+ 0 fail
+ 24 expect() calls
+Ran 11 tests across 1 file. [7.00ms]
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/nullable	0.468s
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/nullable/server	0.357s
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.389 +0100 CET
+(pass) time [1.98ms]
+2026-03-03 16:16:34.391 +0100 CET
+(pass) timeStruct [0.24ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.404 +0100 CET
+(pass) time [0.94ms]
+2026-03-03 16:16:34.405 +0100 CET
+(pass) timeStruct [0.23ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [9.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.414 +0100 CET
+(pass) time [1.91ms]
+2026-03-03 16:16:34.416 +0100 CET
+(pass) timeStruct [0.23ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.424 +0100 CET
+(pass) time [1.68ms]
+2026-03-03 16:16:34.426 +0100 CET
+(pass) timeStruct [0.30ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.434 +0100 CET
+(pass) time [2.05ms]
+2026-03-03 16:16:34.436 +0100 CET
+(pass) timeStruct [0.37ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.445 +0100 CET
+(pass) time [1.90ms]
+2026-03-03 16:16:34.447 +0100 CET
+(pass) timeStruct [0.24ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.455 +0100 CET
+(pass) time [2.13ms]
+2026-03-03 16:16:34.457 +0100 CET
+(pass) timeStruct [0.29ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [5.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.465 +0100 CET
+(pass) time [1.91ms]
+2026-03-03 16:16:34.467 +0100 CET
+(pass) timeStruct [0.23ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.475 +0100 CET
+(pass) time [1.67ms]
+2026-03-03 16:16:34.476 +0100 CET
+(pass) timeStruct [0.31ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+2026-03-03 16:16:34.485 +0100 CET
+(pass) time [1.74ms]
+2026-03-03 16:16:34.486 +0100 CET
+(pass) timeStruct [0.29ms]
+
+ 2 pass
+ 0 fail
+ 3 expect() calls
+Ran 2 tests across 1 file. [6.00ms]
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/time	0.425s
+2026-03-03 16:16:34.823792 +0100 CET
+2026-03-03 16:16:34.8255 +0100 CET
+2026-03-03 15:16:34.825764 +0000 UTC
+2026-03-03 15:16:34.825764 +0000 UTC
+2026-03-03 16:16:34.827146 +0100 CET
+2026-03-03 16:16:34.827951 +0100 CET
+2026-03-03 15:16:34.828165 +0000 UTC
+2026-03-03 15:16:34.828165 +0000 UTC
+2026-03-03 16:16:34.828807 +0100 CET
+2026-03-03 16:16:34.829565 +0100 CET
+2026-03-03 15:16:34.82979 +0000 UTC
+2026-03-03 15:16:34.82979 +0000 UTC
+2026-03-03 16:16:34.830309 +0100 CET
+2026-03-03 16:16:34.830951 +0100 CET
+2026-03-03 15:16:34.831176 +0000 UTC
+2026-03-03 15:16:34.831176 +0000 UTC
+2026-03-03 16:16:34.831684 +0100 CET
+2026-03-03 16:16:34.832495 +0100 CET
+2026-03-03 15:16:34.832777 +0000 UTC
+2026-03-03 15:16:34.832777 +0000 UTC
+2026-03-03 16:16:34.833373 +0100 CET
+2026-03-03 16:16:34.834189 +0100 CET
+2026-03-03 15:16:34.834437 +0000 UTC
+2026-03-03 15:16:34.834437 +0000 UTC
+2026-03-03 16:16:34.835004 +0100 CET
+2026-03-03 16:16:34.83577 +0100 CET
+2026-03-03 15:16:34.835999 +0000 UTC
+2026-03-03 15:16:34.835999 +0000 UTC
+2026-03-03 16:16:34.836572 +0100 CET
+2026-03-03 16:16:34.837121 +0100 CET
+2026-03-03 15:16:34.837319 +0000 UTC
+2026-03-03 15:16:34.837319 +0000 UTC
+2026-03-03 16:16:34.837924 +0100 CET
+2026-03-03 16:16:34.838577 +0100 CET
+2026-03-03 15:16:34.838765 +0000 UTC
+2026-03-03 15:16:34.838765 +0000 UTC
+2026-03-03 16:16:34.839214 +0100 CET
+2026-03-03 16:16:34.839938 +0100 CET
+2026-03-03 15:16:34.840153 +0000 UTC
+2026-03-03 15:16:34.840153 +0000 UTC
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/time/server	0.353s
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [2.73ms]
+(pass) int [0.30ms]
+(pass) int64 [0.44ms]
+(pass) float64 [0.29ms]
+(pass) string [0.25ms]
+(pass) stringPtr [0.30ms]
+(pass) int64Ptr [0.20ms]
+(pass) boolPtr [0.18ms]
+(pass) simpleStruct [0.24ms]
+(pass) nestedStruct [0.22ms]
+(pass) structWithPointers [0.18ms]
+(pass) structWithCollections [0.29ms]
+(pass) stringSlice [0.17ms]
+(pass) int64Slice [0.16ms]
+(pass) simpleSlice [0.18ms]
+(pass) simplePtrSlice [0.20ms]
+(pass) stringSlice2D [0.22ms]
+(pass) stringStringMap [0.18ms]
+(pass) stringInt64Map [0.16ms]
+(pass) stringSimpleMap [0.16ms]
+(pass) stringSimplePtrMap [0.16ms]
+(pass) stringStringSliceMap [0.17ms]
+(pass) mapOfMaps [0.16ms]
+(pass) mapOfSimpleSlice [0.16ms]
+(pass) sliceOfMaps [0.17ms]
+(pass) multiArgs [0.20ms]
+(pass) mixedArgs [0.17ms]
+(pass) empty [0.13ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [15.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.95ms]
+(pass) int [0.23ms]
+(pass) int64 [0.17ms]
+(pass) float64 [0.15ms]
+(pass) string [0.18ms]
+(pass) stringPtr [0.16ms]
+(pass) int64Ptr [0.15ms]
+(pass) boolPtr [0.15ms]
+(pass) simpleStruct [0.23ms]
+(pass) nestedStruct [0.17ms]
+(pass) structWithPointers [0.19ms]
+(pass) structWithCollections [0.20ms]
+(pass) stringSlice [0.12ms]
+(pass) int64Slice [0.13ms]
+(pass) simpleSlice [0.17ms]
+(pass) simplePtrSlice [0.20ms]
+(pass) stringSlice2D [0.14ms]
+(pass) stringStringMap [0.16ms]
+(pass) stringInt64Map [0.15ms]
+(pass) stringSimpleMap [0.15ms]
+(pass) stringSimplePtrMap [0.14ms]
+(pass) stringStringSliceMap [0.13ms]
+(pass) mapOfMaps [0.12ms]
+(pass) mapOfSimpleSlice [0.13ms]
+(pass) sliceOfMaps [0.19ms]
+(pass) multiArgs [0.18ms]
+(pass) mixedArgs [0.17ms]
+(pass) empty [0.12ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [12.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.66ms]
+(pass) int [0.21ms]
+(pass) int64 [0.21ms]
+(pass) float64 [0.14ms]
+(pass) string [0.14ms]
+(pass) stringPtr [0.14ms]
+(pass) int64Ptr [0.14ms]
+(pass) boolPtr [0.13ms]
+(pass) simpleStruct [0.16ms]
+(pass) nestedStruct [0.13ms]
+(pass) structWithPointers [0.16ms]
+(pass) structWithCollections [0.24ms]
+(pass) stringSlice [0.13ms]
+(pass) int64Slice [0.14ms]
+(pass) simpleSlice [0.14ms]
+(pass) simplePtrSlice [0.13ms]
+(pass) stringSlice2D [0.12ms]
+(pass) stringStringMap [0.13ms]
+(pass) stringInt64Map [0.13ms]
+(pass) stringSimpleMap [0.15ms]
+(pass) stringSimplePtrMap [0.13ms]
+(pass) stringStringSliceMap [0.13ms]
+(pass) mapOfMaps [0.18ms]
+(pass) mapOfSimpleSlice [0.14ms]
+(pass) sliceOfMaps [0.14ms]
+(pass) multiArgs [0.17ms]
+(pass) mixedArgs [0.15ms]
+(pass) empty [0.12ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [10.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.39ms]
+(pass) int [0.24ms]
+(pass) int64 [0.20ms]
+(pass) float64 [0.13ms]
+(pass) string [0.14ms]
+(pass) stringPtr [0.12ms]
+(pass) int64Ptr [0.15ms]
+(pass) boolPtr [0.13ms]
+(pass) simpleStruct [0.17ms]
+(pass) nestedStruct [0.13ms]
+(pass) structWithPointers [0.14ms]
+(pass) structWithCollections [0.21ms]
+(pass) stringSlice [0.13ms]
+(pass) int64Slice [0.12ms]
+(pass) simpleSlice [0.12ms]
+(pass) simplePtrSlice [0.13ms]
+(pass) stringSlice2D [0.12ms]
+(pass) stringStringMap [0.11ms]
+(pass) stringInt64Map [0.12ms]
+(pass) stringSimpleMap [0.11ms]
+(pass) stringSimplePtrMap [0.11ms]
+(pass) stringStringSliceMap [0.12ms]
+(pass) mapOfMaps [0.14ms]
+(pass) mapOfSimpleSlice [0.12ms]
+(pass) sliceOfMaps [0.16ms]
+(pass) multiArgs [0.17ms]
+(pass) mixedArgs [0.15ms]
+(pass) empty [0.14ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [10.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.53ms]
+(pass) int [0.21ms]
+(pass) int64 [0.16ms]
+(pass) float64 [0.13ms]
+(pass) string [0.12ms]
+(pass) stringPtr [0.13ms]
+(pass) int64Ptr [0.13ms]
+(pass) boolPtr [0.14ms]
+(pass) simpleStruct [0.22ms]
+(pass) nestedStruct [0.16ms]
+(pass) structWithPointers [0.13ms]
+(pass) structWithCollections [0.16ms]
+(pass) stringSlice [0.13ms]
+(pass) int64Slice [0.13ms]
+(pass) simpleSlice [0.15ms]
+(pass) simplePtrSlice [0.13ms]
+(pass) stringSlice2D [0.14ms]
+(pass) stringStringMap [0.11ms]
+(pass) stringInt64Map [0.13ms]
+(pass) stringSimpleMap [0.17ms]
+(pass) stringSimplePtrMap [0.17ms]
+(pass) stringStringSliceMap [0.11ms]
+(pass) mapOfMaps [0.13ms]
+(pass) mapOfSimpleSlice [0.15ms]
+(pass) sliceOfMaps [0.17ms]
+(pass) multiArgs [0.23ms]
+(pass) mixedArgs [0.15ms]
+(pass) empty [0.11ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [10.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.48ms]
+(pass) int [0.25ms]
+(pass) int64 [0.18ms]
+(pass) float64 [0.16ms]
+(pass) string [0.13ms]
+(pass) stringPtr [0.13ms]
+(pass) int64Ptr [0.14ms]
+(pass) boolPtr [0.13ms]
+(pass) simpleStruct [0.16ms]
+(pass) nestedStruct [0.14ms]
+(pass) structWithPointers [0.14ms]
+(pass) structWithCollections [0.16ms]
+(pass) stringSlice [0.12ms]
+(pass) int64Slice [0.14ms]
+(pass) simpleSlice [0.13ms]
+(pass) simplePtrSlice [0.12ms]
+(pass) stringSlice2D [0.12ms]
+(pass) stringStringMap [0.13ms]
+(pass) stringInt64Map [0.11ms]
+(pass) stringSimpleMap [0.11ms]
+(pass) stringSimplePtrMap [0.12ms]
+(pass) stringStringSliceMap [0.12ms]
+(pass) mapOfMaps [0.12ms]
+(pass) mapOfSimpleSlice [0.12ms]
+(pass) sliceOfMaps [0.11ms]
+(pass) multiArgs [0.15ms]
+(pass) mixedArgs [0.14ms]
+(pass) empty [0.11ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [9.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [0.68ms]
+(pass) int [0.26ms]
+(pass) int64 [0.15ms]
+(pass) float64 [0.15ms]
+(pass) string [0.16ms]
+(pass) stringPtr [0.15ms]
+(pass) int64Ptr [0.14ms]
+(pass) boolPtr [0.13ms]
+(pass) simpleStruct [0.16ms]
+(pass) nestedStruct [0.14ms]
+(pass) structWithPointers [0.14ms]
+(pass) structWithCollections [0.18ms]
+(pass) stringSlice [0.12ms]
+(pass) int64Slice [0.14ms]
+(pass) simpleSlice [0.12ms]
+(pass) simplePtrSlice [0.14ms]
+(pass) stringSlice2D [0.12ms]
+(pass) stringStringMap [0.12ms]
+(pass) stringInt64Map [0.12ms]
+(pass) stringSimpleMap [0.14ms]
+(pass) stringSimplePtrMap [0.11ms]
+(pass) stringStringSliceMap [0.13ms]
+(pass) mapOfMaps [0.11ms]
+(pass) mapOfSimpleSlice [0.12ms]
+(pass) sliceOfMaps [0.13ms]
+(pass) multiArgs [0.18ms]
+(pass) mixedArgs [0.14ms]
+(pass) empty [0.12ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [9.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.33ms]
+(pass) int [0.24ms]
+(pass) int64 [0.18ms]
+(pass) float64 [0.15ms]
+(pass) string [0.15ms]
+(pass) stringPtr [0.15ms]
+(pass) int64Ptr [0.16ms]
+(pass) boolPtr [0.12ms]
+(pass) simpleStruct [0.14ms]
+(pass) nestedStruct [0.14ms]
+(pass) structWithPointers [0.13ms]
+(pass) structWithCollections [0.15ms]
+(pass) stringSlice [0.11ms]
+(pass) int64Slice [0.12ms]
+(pass) simpleSlice [0.12ms]
+(pass) simplePtrSlice [0.13ms]
+(pass) stringSlice2D [0.12ms]
+(pass) stringStringMap [0.12ms]
+(pass) stringInt64Map [0.12ms]
+(pass) stringSimpleMap [0.12ms]
+(pass) stringSimplePtrMap [0.12ms]
+(pass) stringStringSliceMap [0.13ms]
+(pass) mapOfMaps [0.13ms]
+(pass) mapOfSimpleSlice [0.13ms]
+(pass) sliceOfMaps [0.11ms]
+(pass) multiArgs [0.16ms]
+(pass) mixedArgs [0.13ms]
+(pass) empty [0.12ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [9.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.38ms]
+(pass) int [0.23ms]
+(pass) int64 [0.15ms]
+(pass) float64 [0.15ms]
+(pass) string [0.14ms]
+(pass) stringPtr [0.14ms]
+(pass) int64Ptr [0.16ms]
+(pass) boolPtr [0.12ms]
+(pass) simpleStruct [0.14ms]
+(pass) nestedStruct [0.12ms]
+(pass) structWithPointers [0.13ms]
+(pass) structWithCollections [0.15ms]
+(pass) stringSlice [0.12ms]
+(pass) int64Slice [0.11ms]
+(pass) simpleSlice [0.13ms]
+(pass) simplePtrSlice [0.11ms]
+(pass) stringSlice2D [0.11ms]
+(pass) stringStringMap [0.11ms]
+(pass) stringInt64Map [0.10ms]
+(pass) stringSimpleMap [0.11ms]
+(pass) stringSimplePtrMap [0.12ms]
+(pass) stringStringSliceMap [0.11ms]
+(pass) mapOfMaps [0.11ms]
+(pass) mapOfSimpleSlice [0.11ms]
+(pass) sliceOfMaps [0.13ms]
+(pass) multiArgs [0.14ms]
+(pass) mixedArgs [0.13ms]
+(pass) empty [0.10ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [9.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) bool [1.46ms]
+(pass) int [0.24ms]
+(pass) int64 [0.20ms]
+(pass) float64 [0.14ms]
+(pass) string [0.13ms]
+(pass) stringPtr [0.13ms]
+(pass) int64Ptr [0.12ms]
+(pass) boolPtr [0.12ms]
+(pass) simpleStruct [0.14ms]
+(pass) nestedStruct [0.12ms]
+(pass) structWithPointers [0.13ms]
+(pass) structWithCollections [0.15ms]
+(pass) stringSlice [0.19ms]
+(pass) int64Slice [0.12ms]
+(pass) simpleSlice [0.12ms]
+(pass) simplePtrSlice [0.11ms]
+(pass) stringSlice2D [0.10ms]
+(pass) stringStringMap [0.11ms]
+(pass) stringInt64Map [0.12ms]
+(pass) stringSimpleMap [0.14ms]
+(pass) stringSimplePtrMap [0.10ms]
+(pass) stringStringSliceMap [0.10ms]
+(pass) mapOfMaps [0.10ms]
+(pass) mapOfSimpleSlice [0.11ms]
+(pass) sliceOfMaps [0.10ms]
+(pass) multiArgs [0.15ms]
+(pass) mixedArgs [0.12ms]
+(pass) empty [0.10ms]
+
+ 28 pass
+ 0 fail
+ 32 expect() calls
+Ran 28 tests across 1 file. [9.00ms]
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/types	0.535s
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/types/server	0.386s
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [2.90ms]
+(pass) inlineStructPtr [0.32ms]
+(pass) unionString [0.29ms]
+(pass) unionStruct [0.28ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [10.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [2.15ms]
+(pass) inlineStructPtr [0.26ms]
+(pass) unionString [0.26ms]
+(pass) unionStruct [0.25ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [8.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [2.25ms]
+(pass) inlineStructPtr [0.21ms]
+(pass) unionString [0.19ms]
+(pass) unionStruct [0.17ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [2.03ms]
+(pass) inlineStructPtr [0.23ms]
+(pass) unionString [0.21ms]
+(pass) unionStruct [0.18ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [7.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [1.94ms]
+(pass) inlineStructPtr [0.22ms]
+(pass) unionString [0.21ms]
+(pass) unionStruct [0.19ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [2.18ms]
+(pass) inlineStructPtr [0.20ms]
+(pass) unionString [0.18ms]
+(pass) unionStruct [0.16ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [1.91ms]
+(pass) inlineStructPtr [0.32ms]
+(pass) unionString [0.31ms]
+(pass) unionStruct [0.24ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [1.68ms]
+(pass) inlineStructPtr [0.19ms]
+(pass) unionString [0.19ms]
+(pass) unionStruct [0.32ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [1.69ms]
+(pass) inlineStructPtr [0.27ms]
+(pass) unionString [0.19ms]
+(pass) unionStruct [0.20ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [6.00ms]
+bun test v1.3.9 (cf6cdbbb)
+
+client/client.test.ts:
+(pass) inlineStruct [1.57ms]
+(pass) inlineStructPtr [0.26ms]
+(pass) unionString [0.16ms]
+(pass) unionStruct [0.16ms]
+
+ 4 pass
+ 0 fail
+ 5 expect() calls
+Ran 4 tests across 1 file. [6.00ms]
+PASS
+ok  	github.com/foomo/gotsrpc/v2/tests/union	0.442s
+?   	github.com/foomo/gotsrpc/v2/tests/union/server	[no test files]

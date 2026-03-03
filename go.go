@@ -164,7 +164,6 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
         type ` + proxyName + ` struct {
 	        EndPoint    string
 	        service     ` + servicePointer + service.Name + `
-	        lastIsError map[string]bool
         }
 
         func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `) *` + proxyName + ` {
@@ -175,18 +174,10 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 	        return &` + proxyName + `{
 		        EndPoint: endpoint,
 		        service:  service,
-		        lastIsError: map[string]bool{`)
-		for _, method := range service.Methods {
-			lastIsError := "false"
-			if len(method.Return) > 0 && method.Return[len(method.Return)-1].Value.GoScalarType == "error" {
-				lastIsError = "true"
-			}
-			g.l(`			"` + method.Name + `": ` + lastIsError + `,`)
-		}
-		g.l(`		},
 	        }
-        }
+        }`)
 
+		g.l(`
         // ServeHTTP exposes your service
         func (p *` + proxyName + `) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	        if r.Method == http.MethodOptions {
@@ -200,9 +191,13 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 
 		g.l("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
 		g.l("callStats, _ := gotsrpc.GetStatsForRequest(r)")
+		g.l("if callStats != nil {")
+		g.ind(1)
 		g.l("callStats.Func = funcName")
 		g.l("callStats.Package = \"" + fullPackageName + "\"")
 		g.l("callStats.Service = \"" + service.Name + "\"")
+		g.ind(-1)
+		g.l("}")
 
 		g.l(`switch funcName {`)
 
@@ -281,12 +276,20 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			}
 			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.nl()
+			g.l("if callStats != nil {")
+			g.ind(1)
 			g.l("callStats.Execution = time.Since(executionStart)")
+			g.ind(-1)
+			g.l("}")
 			if isSessionRequest {
 				g.l("if rw.Status() == http.StatusOK {").ind(1)
 			}
+			lastIsError := "false"
+			if len(method.Return) > 0 && method.Return[len(method.Return)-1].Value.GoScalarType == "error" {
+				lastIsError = "true"
+			}
 			g.l("rets = []any{" + strings.Join(returnValueNames, ", ") + "}")
-			g.l("if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {")
+			g.l("if err := gotsrpc.Reply(rets, " + lastIsError + ", callStats, r, w); err != nil {")
 			g.ind(1)
 			g.l("gotsrpc.ErrorCouldNotReply(w)")
 			g.l("return")

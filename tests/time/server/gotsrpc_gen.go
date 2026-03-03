@@ -16,9 +16,8 @@ const (
 )
 
 type ServiceGoTSRPCProxy struct {
-	EndPoint    string
-	service     Service
-	lastIsError map[string]bool
+	EndPoint string
+	service  Service
 }
 
 func NewDefaultServiceGoTSRPCProxy(service Service) *ServiceGoTSRPCProxy {
@@ -29,10 +28,6 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string) *ServiceGoTSRPCPro
 	return &ServiceGoTSRPCProxy{
 		EndPoint: endpoint,
 		service:  service,
-		lastIsError: map[string]bool{
-			"Time":       false,
-			"TimeStruct": false,
-		},
 	}
 }
 
@@ -48,9 +43,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	callStats.Func = funcName
-	callStats.Package = "github.com/foomo/gotsrpc/v2/tests/time/server"
-	callStats.Service = "Service"
+	if callStats != nil {
+		callStats.Func = funcName
+		callStats.Package = "github.com/foomo/gotsrpc/v2/tests/time/server"
+		callStats.Service = "Service"
+	}
 	switch funcName {
 	case ServiceGoTSRPCProxyTime:
 		var (
@@ -67,9 +64,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		timeRet := p.service.Time(arg_v)
-		callStats.Execution = time.Since(executionStart)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
 		rets = []any{timeRet}
-		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, false, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}
@@ -90,9 +89,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		executionStart := time.Now()
 		timeStructRet := p.service.TimeStruct(arg_v)
-		callStats.Execution = time.Since(executionStart)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
 		rets = []any{timeStructRet}
-		if err := gotsrpc.Reply(rets, p.lastIsError[funcName], callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, false, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}

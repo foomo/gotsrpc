@@ -11,6 +11,8 @@ func init() {
 	jh := new(codec.JsonHandle)
 	jh.MapKeyAsString = true
 	jh.TimeFormat = []string{"unixmilli"}
+	jh.ReaderBufferSize = 4096
+	jh.WriterBufferSize = 4096
 	jsonClientHandle.handle = jh
 }
 

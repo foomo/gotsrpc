@@ -1,6 +1,9 @@
 package gotsrpc
 
 import (
+	"io"
+	"sync"
+
 	"github.com/mitchellh/mapstructure"
 	pkgerrors "github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
@@ -16,9 +19,35 @@ const (
 type clientHandle struct {
 	handle            codec.Handle
 	contentType       string
+	encoderPool       sync.Pool
+	decoderPool       sync.Pool
 	beforeEncodeReply func(*[]any, bool) error
 	beforeDecodeReply func([]any, bool) ([]any, error)
 	afterDecodeReply  func(*[]any, []any, bool) error
+}
+
+func (ch *clientHandle) getEncoder(w io.Writer) *codec.Encoder {
+	if enc, ok := ch.encoderPool.Get().(*codec.Encoder); ok {
+		enc.Reset(w)
+		return enc
+	}
+	return codec.NewEncoder(w, ch.handle)
+}
+
+func (ch *clientHandle) putEncoder(enc *codec.Encoder) {
+	ch.encoderPool.Put(enc)
+}
+
+func (ch *clientHandle) getDecoder(r io.Reader) *codec.Decoder {
+	if dec, ok := ch.decoderPool.Get().(*codec.Decoder); ok {
+		dec.Reset(r)
+		return dec
+	}
+	return codec.NewDecoder(r, ch.handle)
+}
+
+func (ch *clientHandle) putDecoder(dec *codec.Decoder) {
+	ch.decoderPool.Put(dec)
 }
 
 var (

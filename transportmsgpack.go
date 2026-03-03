@@ -22,6 +22,8 @@ func init() {
 	mh.MapType = reflect.TypeOf(map[string]interface{}(nil))
 	// attempting to set the promoted field in literal will cause a compiler error
 	mh.RawToString = true
+	mh.ReaderBufferSize = 4096
+	mh.WriterBufferSize = 4096
 	msgpackClientHandle.handle = mh
 	// WriteExt is not being called
 	// if err := SetJSONExt(time.Time{}, 2, timeExt); err != nil {

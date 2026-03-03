@@ -3,12 +3,10 @@ package gotsrpc
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/pkg/errors"
-	"github.com/ugorji/go/codec"
 )
 
 const (
@@ -77,18 +75,21 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:
 
 // Call calls a method on the remote service
 func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any, lastIsError bool) error {
-	// Marshall args
-	b := new(bytes.Buffer)
-
-	// If no arguments are set, remove
+	// Marshal args
+	var b *bytes.Buffer
 	if len(args) > 0 {
-		if err := codec.NewEncoder(b, c.handle.handle).Encode(args); err != nil {
+		b = getBuffer()
+		defer putBuffer(b)
+		enc := c.handle.getEncoder(b)
+		err := enc.Encode(args)
+		c.handle.putEncoder(enc)
+		if err != nil {
 			return NewClientError(errors.Wrap(err, "failed to encode arguments"))
 		}
 	}
 
 	// Create post url
-	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
+	postURL := url + endpoint + "/" + method
 
 	// Create request
 	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, c.headers.Clone())
@@ -102,7 +103,8 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	}
 	defer resp.Body.Close()
 
-	buf := new(bytes.Buffer)
+	buf := getBuffer()
+	defer putBuffer(buf)
 	if _, err := io.Copy(buf, resp.Body); err != nil {
 		return NewClientError(errors.Wrap(err, "failed to read response body"))
 	}
@@ -123,7 +125,10 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		}
 	}
 
-	if err := codec.NewDecoder(buf, clientHandle.handle).Decode(wrappedReply); err != nil {
+	dec := clientHandle.getDecoder(buf)
+	err := dec.Decode(wrappedReply)
+	clientHandle.putDecoder(dec)
+	if err != nil {
 		return NewClientError(errors.Wrap(err, "failed to decode response"))
 	}
 
