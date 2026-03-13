@@ -20,10 +20,6 @@ tmp/
 ## Docker
 !.dockerignore
 
-## Husky
-!.husky/
-!.husky.yaml
-
 ## Node ##
 **/node_modules/
 
@@ -38,3 +34,7 @@ tmp/
 
 ## Mise
 !.mise.toml
+
+## Vitepress
+node_modules/
+!docs/.vitepress

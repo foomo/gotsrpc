@@ -13,7 +13,7 @@ endef
 # --- Targets -----------------------------------------------------------------
 
 # This allows us to accept extra arguments
-%: .mise .husky go.work
+%: .mise .lefthook go.work
 	@:
 
 # Ensure go.work file
@@ -24,23 +24,22 @@ go.work:
 
 .PHONY: .mise
 # Install dependencies
-.mise: msg := $(br)$(br)Please ensure you have 'mise' installed and activated!$(br)$(br)$$ brew update$(br)$$ brew install mise$(br)$(br)See the documentation: https://mise.jdx.dev/getting-started.html$(br)$(br)
 .mise:
 ifeq (, $(shell command -v mise))
-	$(error ${msg})
+	$(error $(br)$(br)Please ensure you have 'mise' installed and activated!$(br)$(br)  $$ brew update$(br)  $$ brew install mise$(br)$(br)See the documentation: https://mise.jdx.dev/getting-started.html)
 endif
 	@mise install
 
-.PHONY: .husky
-# Configure git hooks for husky
-.husky:
-	@git config core.hooksPath .husky
+.PHONY: .lefthook
+# Configure git hooks for lefthook
+.lefthook:
+	@lefthook install --reset-hooks-path
 
 ### Tasks
 
 .PHONY: check
 ## Run lint & test
-check: tidy examples lint test
+check: tidy examples generate lint test
 
 .PHONY: tidy
 ## Run go mod tidy
