@@ -67,7 +67,7 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 func (tsc *HTTPServiceGoTSRPCClient) Bool(ctx go_context.Context, v bool) (retBool_0 bool, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retBool_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Bool", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Bool", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Bool")
 	}
@@ -77,7 +77,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Bool(ctx go_context.Context, v bool) (retBo
 func (tsc *HTTPServiceGoTSRPCClient) BoolPtr(ctx go_context.Context, v *bool) (retBoolPtr_0 *bool, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retBoolPtr_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolPtr", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolPtr", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy BoolPtr")
 	}
@@ -87,7 +87,7 @@ func (tsc *HTTPServiceGoTSRPCClient) BoolPtr(ctx go_context.Context, v *bool) (r
 func (tsc *HTTPServiceGoTSRPCClient) ByteSlice(ctx go_context.Context, v []byte) (retByteSlice_0 []byte, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retByteSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ByteSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ByteSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy ByteSlice")
 	}
@@ -97,7 +97,7 @@ func (tsc *HTTPServiceGoTSRPCClient) ByteSlice(ctx go_context.Context, v []byte)
 func (tsc *HTTPServiceGoTSRPCClient) Empty(ctx go_context.Context) (retEmpty_0 bool, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&retEmpty_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Empty", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Empty", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Empty")
 	}
@@ -107,7 +107,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Empty(ctx go_context.Context) (retEmpty_0 b
 func (tsc *HTTPServiceGoTSRPCClient) Float64(ctx go_context.Context, v float64) (retFloat64_0 float64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat64_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Float64")
 	}
@@ -117,7 +117,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64(ctx go_context.Context, v float64) 
 func (tsc *HTTPServiceGoTSRPCClient) Int(ctx go_context.Context, v int) (retInt_0 int, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Int")
 	}
@@ -127,7 +127,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int(ctx go_context.Context, v int) (retInt_
 func (tsc *HTTPServiceGoTSRPCClient) Int64(ctx go_context.Context, v int64) (retInt64_0 int64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Int64")
 	}
@@ -137,7 +137,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64(ctx go_context.Context, v int64) (ret
 func (tsc *HTTPServiceGoTSRPCClient) Int64Ptr(ctx go_context.Context, v *int64) (retInt64Ptr_0 *int64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64Ptr_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Ptr", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Ptr", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Int64Ptr")
 	}
@@ -147,7 +147,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64Ptr(ctx go_context.Context, v *int64) 
 func (tsc *HTTPServiceGoTSRPCClient) Int64Slice(ctx go_context.Context, v []int64) (retInt64Slice_0 []int64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64Slice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Slice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Int64Slice")
 	}
@@ -157,7 +157,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64Slice(ctx go_context.Context, v []int6
 func (tsc *HTTPServiceGoTSRPCClient) MapOfMaps(ctx go_context.Context, v map[string]map[string]string) (retMapOfMaps_0 map[string]map[string]string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retMapOfMaps_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapOfMaps", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapOfMaps", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy MapOfMaps")
 	}
@@ -167,7 +167,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MapOfMaps(ctx go_context.Context, v map[str
 func (tsc *HTTPServiceGoTSRPCClient) MapOfSimpleSlice(ctx go_context.Context, v map[string][]Simple) (retMapOfSimpleSlice_0 map[string][]Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retMapOfSimpleSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapOfSimpleSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapOfSimpleSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy MapOfSimpleSlice")
 	}
@@ -177,7 +177,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MapOfSimpleSlice(ctx go_context.Context, v 
 func (tsc *HTTPServiceGoTSRPCClient) MixedArgs(ctx go_context.Context, s Simple, items []string, m map[string]int64) (retMixedArgs_0 Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error) {
 	rpcArgs := []any{s, items, m}
 	rpcReply := []any{&retMixedArgs_0, &retMixedArgs_1, &retMixedArgs_2}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MixedArgs", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MixedArgs", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy MixedArgs")
 	}
@@ -187,7 +187,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MixedArgs(ctx go_context.Context, s Simple,
 func (tsc *HTTPServiceGoTSRPCClient) MultiArgs(ctx go_context.Context, a string, b int64, c bool) (retMultiArgs_0 string, retMultiArgs_1 int64, retMultiArgs_2 bool, clientErr error) {
 	rpcArgs := []any{a, b, c}
 	rpcReply := []any{&retMultiArgs_0, &retMultiArgs_1, &retMultiArgs_2}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MultiArgs", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MultiArgs", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy MultiArgs")
 	}
@@ -197,7 +197,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MultiArgs(ctx go_context.Context, a string,
 func (tsc *HTTPServiceGoTSRPCClient) NestedStruct(ctx go_context.Context, v Nested) (retNestedStruct_0 Nested, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retNestedStruct_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "NestedStruct", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "NestedStruct", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy NestedStruct")
 	}
@@ -207,7 +207,7 @@ func (tsc *HTTPServiceGoTSRPCClient) NestedStruct(ctx go_context.Context, v Nest
 func (tsc *HTTPServiceGoTSRPCClient) SimplePtrSlice(ctx go_context.Context, v []*Simple) (retSimplePtrSlice_0 []*Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retSimplePtrSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimplePtrSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimplePtrSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy SimplePtrSlice")
 	}
@@ -217,7 +217,7 @@ func (tsc *HTTPServiceGoTSRPCClient) SimplePtrSlice(ctx go_context.Context, v []
 func (tsc *HTTPServiceGoTSRPCClient) SimpleSlice(ctx go_context.Context, v []Simple) (retSimpleSlice_0 []Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retSimpleSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimpleSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimpleSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy SimpleSlice")
 	}
@@ -227,7 +227,7 @@ func (tsc *HTTPServiceGoTSRPCClient) SimpleSlice(ctx go_context.Context, v []Sim
 func (tsc *HTTPServiceGoTSRPCClient) SimpleStruct(ctx go_context.Context, v Simple) (retSimpleStruct_0 Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retSimpleStruct_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimpleStruct", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimpleStruct", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy SimpleStruct")
 	}
@@ -237,7 +237,7 @@ func (tsc *HTTPServiceGoTSRPCClient) SimpleStruct(ctx go_context.Context, v Simp
 func (tsc *HTTPServiceGoTSRPCClient) SliceOfMaps(ctx go_context.Context, v []map[string]string) (retSliceOfMaps_0 []map[string]string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retSliceOfMaps_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SliceOfMaps", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SliceOfMaps", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy SliceOfMaps")
 	}
@@ -247,7 +247,7 @@ func (tsc *HTTPServiceGoTSRPCClient) SliceOfMaps(ctx go_context.Context, v []map
 func (tsc *HTTPServiceGoTSRPCClient) String(ctx go_context.Context, v string) (retString_0 string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retString_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "String", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "String", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy String")
 	}
@@ -257,7 +257,7 @@ func (tsc *HTTPServiceGoTSRPCClient) String(ctx go_context.Context, v string) (r
 func (tsc *HTTPServiceGoTSRPCClient) StringInt64Map(ctx go_context.Context, v map[string]int64) (retStringInt64Map_0 map[string]int64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringInt64Map_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringInt64Map", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringInt64Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringInt64Map")
 	}
@@ -267,7 +267,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringInt64Map(ctx go_context.Context, v ma
 func (tsc *HTTPServiceGoTSRPCClient) StringPtr(ctx go_context.Context, v *string) (retStringPtr_0 *string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringPtr_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringPtr", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringPtr", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringPtr")
 	}
@@ -277,7 +277,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringPtr(ctx go_context.Context, v *string
 func (tsc *HTTPServiceGoTSRPCClient) StringSimpleMap(ctx go_context.Context, v map[string]Simple) (retStringSimpleMap_0 map[string]Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringSimpleMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSimpleMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSimpleMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringSimpleMap")
 	}
@@ -287,7 +287,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringSimpleMap(ctx go_context.Context, v m
 func (tsc *HTTPServiceGoTSRPCClient) StringSimplePtrMap(ctx go_context.Context, v map[string]*Simple) (retStringSimplePtrMap_0 map[string]*Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringSimplePtrMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSimplePtrMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSimplePtrMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringSimplePtrMap")
 	}
@@ -297,7 +297,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringSimplePtrMap(ctx go_context.Context, 
 func (tsc *HTTPServiceGoTSRPCClient) StringSlice(ctx go_context.Context, v []string) (retStringSlice_0 []string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringSlice")
 	}
@@ -307,7 +307,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringSlice(ctx go_context.Context, v []str
 func (tsc *HTTPServiceGoTSRPCClient) StringSlice2D(ctx go_context.Context, v [][]string) (retStringSlice2D_0 [][]string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringSlice2D_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSlice2D", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSlice2D", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringSlice2D")
 	}
@@ -317,7 +317,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringSlice2D(ctx go_context.Context, v [][
 func (tsc *HTTPServiceGoTSRPCClient) StringStringMap(ctx go_context.Context, v map[string]string) (retStringStringMap_0 map[string]string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringStringMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringStringMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringStringMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringStringMap")
 	}
@@ -327,7 +327,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringStringMap(ctx go_context.Context, v m
 func (tsc *HTTPServiceGoTSRPCClient) StringStringSliceMap(ctx go_context.Context, v map[string][]string) (retStringStringSliceMap_0 map[string][]string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringStringSliceMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringStringSliceMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringStringSliceMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringStringSliceMap")
 	}
@@ -337,7 +337,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringStringSliceMap(ctx go_context.Context
 func (tsc *HTTPServiceGoTSRPCClient) StructWithCollections(ctx go_context.Context, v WithCollections) (retStructWithCollections_0 WithCollections, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStructWithCollections_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StructWithCollections", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StructWithCollections", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StructWithCollections")
 	}
@@ -347,7 +347,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StructWithCollections(ctx go_context.Contex
 func (tsc *HTTPServiceGoTSRPCClient) StructWithPointers(ctx go_context.Context, v WithPointers) (retStructWithPointers_0 WithPointers, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStructWithPointers_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StructWithPointers", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StructWithPointers", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StructWithPointers")
 	}

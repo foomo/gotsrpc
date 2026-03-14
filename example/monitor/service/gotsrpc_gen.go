@@ -67,7 +67,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{helloRet}
-		if err := gotsrpc.Reply(rets, false, callStats, r, w); err != nil {
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
 		}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/foomo/gotsrpc/v2/tests/errors/server"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHandler(t *testing.T) {
@@ -20,6 +21,13 @@ func TestHandler(t *testing.T) {
 		t.Parallel()
 		err := h.Error(w, r)
 		assert.Error(t, err)
+	})
+
+	t.Run("Errors", func(t *testing.T) {
+		t.Parallel()
+		err1, err2 := h.Errors(w, r)
+		require.Error(t, err1)
+		assert.Error(t, err2)
 	})
 
 	t.Run("Scalar", func(t *testing.T) {

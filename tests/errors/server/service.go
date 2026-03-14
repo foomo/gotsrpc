@@ -6,6 +6,7 @@ import (
 
 type Service interface {
 	Error(w http.ResponseWriter, r *http.Request) (e error)
+	Errors(w http.ResponseWriter, r *http.Request) (e1 error, e2 error)
 	Scalar(w http.ResponseWriter, r *http.Request) (e *ScalarError)
 	MultiScalar(w http.ResponseWriter, r *http.Request) (e *MultiScalar)
 	Struct(w http.ResponseWriter, r *http.Request) (e *StructError)

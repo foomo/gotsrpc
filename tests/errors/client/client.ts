@@ -14,6 +14,10 @@ export class ServiceClient {
 	async error():Promise<github_com_foomo_gotsrpc_v2.Error> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2.Error}>("Error", []))[0]
 	}
+	async errors():Promise<{e1:github_com_foomo_gotsrpc_v2.Error; e2:github_com_foomo_gotsrpc_v2.Error}> {
+		const response = await this.transport<{0:github_com_foomo_gotsrpc_v2.Error; 1:github_com_foomo_gotsrpc_v2.Error}>("Errors", [])
+		return {e1 : response[0], e2 : response[1]};
+	}
 	async multiScalar():Promise<github_com_foomo_gotsrpc_v2_tests_errors_server.MultiScalar|null> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_errors_server.MultiScalar|null}>("MultiScalar", []))[0]
 	}

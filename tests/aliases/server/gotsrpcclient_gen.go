@@ -52,7 +52,7 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 func (tsc *HTTPServiceGoTSRPCClient) CategoryValue(ctx go_context.Context, v Category) (retCategoryValue_0 Category, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retCategoryValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CategoryValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "CategoryValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy CategoryValue")
 	}
@@ -62,7 +62,7 @@ func (tsc *HTTPServiceGoTSRPCClient) CategoryValue(ctx go_context.Context, v Cat
 func (tsc *HTTPServiceGoTSRPCClient) DataRecordNil(ctx go_context.Context, v DataRecord) (retDataRecordNil_0 DataRecord, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retDataRecordNil_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "DataRecordNil", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "DataRecordNil", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy DataRecordNil")
 	}
@@ -72,7 +72,7 @@ func (tsc *HTTPServiceGoTSRPCClient) DataRecordNil(ctx go_context.Context, v Dat
 func (tsc *HTTPServiceGoTSRPCClient) DataRecordValue(ctx go_context.Context, v DataRecord) (retDataRecordValue_0 DataRecord, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retDataRecordValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "DataRecordValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "DataRecordValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy DataRecordValue")
 	}
@@ -82,7 +82,7 @@ func (tsc *HTTPServiceGoTSRPCClient) DataRecordValue(ctx go_context.Context, v D
 func (tsc *HTTPServiceGoTSRPCClient) DetailValue(ctx go_context.Context, v Detail) (retDetailValue_0 Detail, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retDetailValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "DetailValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "DetailValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy DetailValue")
 	}
@@ -92,7 +92,7 @@ func (tsc *HTTPServiceGoTSRPCClient) DetailValue(ctx go_context.Context, v Detai
 func (tsc *HTTPServiceGoTSRPCClient) EntriesValue(ctx go_context.Context, v Entries) (retEntriesValue_0 Entries, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retEntriesValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "EntriesValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "EntriesValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy EntriesValue")
 	}
@@ -102,7 +102,7 @@ func (tsc *HTTPServiceGoTSRPCClient) EntriesValue(ctx go_context.Context, v Entr
 func (tsc *HTTPServiceGoTSRPCClient) EntryValue(ctx go_context.Context, v Entry) (retEntryValue_0 Entry, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retEntryValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "EntryValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "EntryValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy EntryValue")
 	}
@@ -112,7 +112,7 @@ func (tsc *HTTPServiceGoTSRPCClient) EntryValue(ctx go_context.Context, v Entry)
 func (tsc *HTTPServiceGoTSRPCClient) IndexValue(ctx go_context.Context, v Index) (retIndexValue_0 Index, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retIndexValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IndexValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IndexValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy IndexValue")
 	}
@@ -122,7 +122,7 @@ func (tsc *HTTPServiceGoTSRPCClient) IndexValue(ctx go_context.Context, v Index)
 func (tsc *HTTPServiceGoTSRPCClient) LabelMapValue(ctx go_context.Context, v LabelMap) (retLabelMapValue_0 LabelMap, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retLabelMapValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "LabelMapValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "LabelMapValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy LabelMapValue")
 	}
@@ -132,7 +132,7 @@ func (tsc *HTTPServiceGoTSRPCClient) LabelMapValue(ctx go_context.Context, v Lab
 func (tsc *HTTPServiceGoTSRPCClient) MapOfEntries(ctx go_context.Context, v map[Category][]Entry) (retMapOfEntries_0 map[Category][]Entry, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retMapOfEntries_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapOfEntries", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapOfEntries", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy MapOfEntries")
 	}
@@ -142,7 +142,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MapOfEntries(ctx go_context.Context, v map[
 func (tsc *HTTPServiceGoTSRPCClient) PriorityValue(ctx go_context.Context, v Priority) (retPriorityValue_0 Priority, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retPriorityValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "PriorityValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "PriorityValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy PriorityValue")
 	}
@@ -152,7 +152,7 @@ func (tsc *HTTPServiceGoTSRPCClient) PriorityValue(ctx go_context.Context, v Pri
 func (tsc *HTTPServiceGoTSRPCClient) RatingValue(ctx go_context.Context, v Rating) (retRatingValue_0 Rating, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retRatingValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "RatingValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "RatingValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy RatingValue")
 	}
@@ -162,7 +162,7 @@ func (tsc *HTTPServiceGoTSRPCClient) RatingValue(ctx go_context.Context, v Ratin
 func (tsc *HTTPServiceGoTSRPCClient) RegistryValue(ctx go_context.Context, v Registry) (retRegistryValue_0 Registry, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retRegistryValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "RegistryValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "RegistryValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy RegistryValue")
 	}
@@ -172,7 +172,7 @@ func (tsc *HTTPServiceGoTSRPCClient) RegistryValue(ctx go_context.Context, v Reg
 func (tsc *HTTPServiceGoTSRPCClient) StatusValue(ctx go_context.Context, v Status) (retStatusValue_0 Status, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStatusValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StatusValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StatusValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StatusValue")
 	}
@@ -182,7 +182,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StatusValue(ctx go_context.Context, v Statu
 func (tsc *HTTPServiceGoTSRPCClient) TagsValue(ctx go_context.Context, v Tags) (retTagsValue_0 Tags, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retTagsValue_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TagsValue", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "TagsValue", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy TagsValue")
 	}

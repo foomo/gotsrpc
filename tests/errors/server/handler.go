@@ -17,6 +17,10 @@ func (h *Handler) Error(w http.ResponseWriter, r *http.Request) (e error) {
 	return errors.New("error")
 }
 
+func (h *Handler) Errors(w http.ResponseWriter, r *http.Request) (e1 error, e2 error) {
+	return errors.New("error1"), errors.New("error2")
+}
+
 func (h *Handler) Scalar(w http.ResponseWriter, r *http.Request) (e *ScalarError) {
 	s := ScalarOne
 	return &s

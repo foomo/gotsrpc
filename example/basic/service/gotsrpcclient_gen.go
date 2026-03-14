@@ -101,7 +101,7 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 func (tsc *HTTPServiceGoTSRPCClient) Bool(ctx go_context.Context, v bool) (retBool_0 bool, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retBool_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Bool", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Bool", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Bool")
 	}
@@ -111,7 +111,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Bool(ctx go_context.Context, v bool) (retBo
 func (tsc *HTTPServiceGoTSRPCClient) BoolPtr(ctx go_context.Context, v bool) (retBoolPtr_0 *bool, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retBoolPtr_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolPtr", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolPtr", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy BoolPtr")
 	}
@@ -121,7 +121,7 @@ func (tsc *HTTPServiceGoTSRPCClient) BoolPtr(ctx go_context.Context, v bool) (re
 func (tsc *HTTPServiceGoTSRPCClient) BoolSlice(ctx go_context.Context, v []bool) (retBoolSlice_0 []bool, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retBoolSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "BoolSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy BoolSlice")
 	}
@@ -131,7 +131,7 @@ func (tsc *HTTPServiceGoTSRPCClient) BoolSlice(ctx go_context.Context, v []bool)
 func (tsc *HTTPServiceGoTSRPCClient) Context(ctx go_context.Context) (clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Context", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Context", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Context")
 	}
@@ -141,7 +141,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Context(ctx go_context.Context) (clientErr 
 func (tsc *HTTPServiceGoTSRPCClient) Empty(ctx go_context.Context) (clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Empty", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Empty", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Empty")
 	}
@@ -151,7 +151,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Empty(ctx go_context.Context) (clientErr er
 func (tsc *HTTPServiceGoTSRPCClient) Float32(ctx go_context.Context, v float32) (retFloat32_0 float32, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat32_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float32")
 	}
@@ -161,7 +161,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float32(ctx go_context.Context, v float32) 
 func (tsc *HTTPServiceGoTSRPCClient) Float32Map(ctx go_context.Context, v map[float32]any) (retFloat32Map_0 map[float32]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat32Map_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32Map", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float32Map")
 	}
@@ -171,7 +171,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float32Map(ctx go_context.Context, v map[fl
 func (tsc *HTTPServiceGoTSRPCClient) Float32Slice(ctx go_context.Context, v []float32) (retFloat32Slice_0 []float32, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat32Slice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32Slice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float32Slice")
 	}
@@ -181,7 +181,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float32Slice(ctx go_context.Context, v []fl
 func (tsc *HTTPServiceGoTSRPCClient) Float32Type(ctx go_context.Context, v Float32Type) (retFloat32Type_0 Float32Type, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat32Type_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32Type", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32Type", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float32Type")
 	}
@@ -191,7 +191,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float32Type(ctx go_context.Context, v Float
 func (tsc *HTTPServiceGoTSRPCClient) Float32TypeMap(ctx go_context.Context, v map[Float32TypeMapKey]Float32TypeMapValue) (retFloat32TypeMap_0 map[Float32TypeMapKey]Float32TypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat32TypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32TypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32TypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float32TypeMap")
 	}
@@ -201,7 +201,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float32TypeMap(ctx go_context.Context, v ma
 func (tsc *HTTPServiceGoTSRPCClient) Float32TypeMapTyped(ctx go_context.Context, v Float32TypeMapTyped) (retFloat32TypeMapTyped_0 Float32TypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat32TypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32TypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float32TypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float32TypeMapTyped")
 	}
@@ -211,7 +211,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float32TypeMapTyped(ctx go_context.Context,
 func (tsc *HTTPServiceGoTSRPCClient) Float64(ctx go_context.Context, v float64) (retFloat64_0 float64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat64_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float64")
 	}
@@ -221,7 +221,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64(ctx go_context.Context, v float64) 
 func (tsc *HTTPServiceGoTSRPCClient) Float64Map(ctx go_context.Context, v map[float64]any) (retFloat64Map_0 map[float64]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat64Map_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64Map", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float64Map")
 	}
@@ -231,7 +231,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64Map(ctx go_context.Context, v map[fl
 func (tsc *HTTPServiceGoTSRPCClient) Float64Slice(ctx go_context.Context, v []float64) (retFloat64Slice_0 []float64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat64Slice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64Slice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float64Slice")
 	}
@@ -241,7 +241,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64Slice(ctx go_context.Context, v []fl
 func (tsc *HTTPServiceGoTSRPCClient) Float64Type(ctx go_context.Context, v Float64Type) (retFloat64Type_0 Float64Type, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat64Type_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64Type", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64Type", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float64Type")
 	}
@@ -251,7 +251,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64Type(ctx go_context.Context, v Float
 func (tsc *HTTPServiceGoTSRPCClient) Float64TypeMap(ctx go_context.Context, v map[Float64TypeMapKey]Float64TypeMapValue) (retFloat64TypeMap_0 map[Float64TypeMapKey]Float64TypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat64TypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64TypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64TypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float64TypeMap")
 	}
@@ -261,7 +261,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64TypeMap(ctx go_context.Context, v ma
 func (tsc *HTTPServiceGoTSRPCClient) Float64TypeMapTyped(ctx go_context.Context, v Float64TypeMapTyped) (retFloat64TypeMapTyped_0 Float64TypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retFloat64TypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64TypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Float64TypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Float64TypeMapTyped")
 	}
@@ -271,7 +271,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64TypeMapTyped(ctx go_context.Context,
 func (tsc *HTTPServiceGoTSRPCClient) Int(ctx go_context.Context, v int) (retInt_0 int, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int")
 	}
@@ -281,7 +281,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int(ctx go_context.Context, v int) (retInt_
 func (tsc *HTTPServiceGoTSRPCClient) Int32(ctx go_context.Context, v int32) (retInt32_0 int32, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt32_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int32")
 	}
@@ -291,7 +291,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int32(ctx go_context.Context, v int32) (ret
 func (tsc *HTTPServiceGoTSRPCClient) Int32Map(ctx go_context.Context, v map[int32]any) (retInt32Map_0 map[int32]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt32Map_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32Map", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int32Map")
 	}
@@ -301,7 +301,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int32Map(ctx go_context.Context, v map[int3
 func (tsc *HTTPServiceGoTSRPCClient) Int32Slice(ctx go_context.Context, v []int32) (retInt32Slice_0 []int32, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt32Slice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32Slice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int32Slice")
 	}
@@ -311,7 +311,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int32Slice(ctx go_context.Context, v []int3
 func (tsc *HTTPServiceGoTSRPCClient) Int32Type(ctx go_context.Context, v Int32Type) (retInt32Type_0 Int32Type, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt32Type_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32Type", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32Type", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int32Type")
 	}
@@ -321,7 +321,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int32Type(ctx go_context.Context, v Int32Ty
 func (tsc *HTTPServiceGoTSRPCClient) Int32TypeMap(ctx go_context.Context, v map[Int32TypeMapKey]Int32TypeMapValue) (retInt32TypeMap_0 map[Int32TypeMapKey]Int32TypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt32TypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32TypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32TypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int32TypeMap")
 	}
@@ -331,7 +331,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int32TypeMap(ctx go_context.Context, v map[
 func (tsc *HTTPServiceGoTSRPCClient) Int32TypeMapTyped(ctx go_context.Context, v Int32TypeMapTyped) (retInt32TypeMapTyped_0 Int32TypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt32TypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32TypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int32TypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int32TypeMapTyped")
 	}
@@ -341,7 +341,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int32TypeMapTyped(ctx go_context.Context, v
 func (tsc *HTTPServiceGoTSRPCClient) Int64(ctx go_context.Context, v int64) (retInt64_0 int64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int64")
 	}
@@ -351,7 +351,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64(ctx go_context.Context, v int64) (ret
 func (tsc *HTTPServiceGoTSRPCClient) Int64Map(ctx go_context.Context, v map[int64]any) (retInt64Map_0 map[int64]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64Map_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Map", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int64Map")
 	}
@@ -361,7 +361,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64Map(ctx go_context.Context, v map[int6
 func (tsc *HTTPServiceGoTSRPCClient) Int64Slice(ctx go_context.Context, v []int64) (retInt64Slice_0 []int64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64Slice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Slice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int64Slice")
 	}
@@ -371,7 +371,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64Slice(ctx go_context.Context, v []int6
 func (tsc *HTTPServiceGoTSRPCClient) Int64Type(ctx go_context.Context, v Int64Type) (retInt64Type_0 Int64Type, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64Type_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Type", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64Type", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int64Type")
 	}
@@ -381,7 +381,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64Type(ctx go_context.Context, v Int64Ty
 func (tsc *HTTPServiceGoTSRPCClient) Int64TypeMap(ctx go_context.Context, v map[Int64TypeMapKey]Int64TypeMapValue) (retInt64TypeMap_0 map[Int64TypeMapKey]Int64TypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64TypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64TypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64TypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int64TypeMap")
 	}
@@ -391,7 +391,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64TypeMap(ctx go_context.Context, v map[
 func (tsc *HTTPServiceGoTSRPCClient) Int64TypeMapTyped(ctx go_context.Context, v Int64TypeMapTyped) (retInt64TypeMapTyped_0 Int64TypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt64TypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64TypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int64TypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Int64TypeMapTyped")
 	}
@@ -401,7 +401,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Int64TypeMapTyped(ctx go_context.Context, v
 func (tsc *HTTPServiceGoTSRPCClient) IntMap(ctx go_context.Context, v map[int]any) (retIntMap_0 map[int]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retIntMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy IntMap")
 	}
@@ -411,7 +411,7 @@ func (tsc *HTTPServiceGoTSRPCClient) IntMap(ctx go_context.Context, v map[int]an
 func (tsc *HTTPServiceGoTSRPCClient) IntSlice(ctx go_context.Context, v []int) (retIntSlice_0 []int, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retIntSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy IntSlice")
 	}
@@ -421,7 +421,7 @@ func (tsc *HTTPServiceGoTSRPCClient) IntSlice(ctx go_context.Context, v []int) (
 func (tsc *HTTPServiceGoTSRPCClient) IntType(ctx go_context.Context, v IntType) (retIntType_0 IntType, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retIntType_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntType", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntType", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy IntType")
 	}
@@ -431,7 +431,7 @@ func (tsc *HTTPServiceGoTSRPCClient) IntType(ctx go_context.Context, v IntType) 
 func (tsc *HTTPServiceGoTSRPCClient) IntTypeMap(ctx go_context.Context, v map[IntTypeMapKey]IntTypeMapValue) (retIntTypeMap_0 map[IntTypeMapKey]IntTypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retIntTypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntTypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntTypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy IntTypeMap")
 	}
@@ -441,7 +441,7 @@ func (tsc *HTTPServiceGoTSRPCClient) IntTypeMap(ctx go_context.Context, v map[In
 func (tsc *HTTPServiceGoTSRPCClient) IntTypeMapTyped(ctx go_context.Context, v IntTypeMapTyped) (retIntTypeMapTyped_0 IntTypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retIntTypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntTypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "IntTypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy IntTypeMapTyped")
 	}
@@ -451,7 +451,7 @@ func (tsc *HTTPServiceGoTSRPCClient) IntTypeMapTyped(ctx go_context.Context, v I
 func (tsc *HTTPServiceGoTSRPCClient) Interface(ctx go_context.Context, v any) (retInterface_0 any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInterface_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Interface", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Interface", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Interface")
 	}
@@ -461,7 +461,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Interface(ctx go_context.Context, v any) (r
 func (tsc *HTTPServiceGoTSRPCClient) InterfaceSlice(ctx go_context.Context, v []any) (retInterfaceSlice_0 []any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInterfaceSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InterfaceSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InterfaceSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy InterfaceSlice")
 	}
@@ -471,7 +471,7 @@ func (tsc *HTTPServiceGoTSRPCClient) InterfaceSlice(ctx go_context.Context, v []
 func (tsc *HTTPServiceGoTSRPCClient) NestedType(ctx go_context.Context, v NestedType) (retNestedType_0 NestedType, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retNestedType_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "NestedType", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "NestedType", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy NestedType")
 	}
@@ -481,7 +481,7 @@ func (tsc *HTTPServiceGoTSRPCClient) NestedType(ctx go_context.Context, v Nested
 func (tsc *HTTPServiceGoTSRPCClient) String(ctx go_context.Context, v string) (retString_0 string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retString_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "String", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "String", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy String")
 	}
@@ -491,7 +491,7 @@ func (tsc *HTTPServiceGoTSRPCClient) String(ctx go_context.Context, v string) (r
 func (tsc *HTTPServiceGoTSRPCClient) StringMap(ctx go_context.Context, v map[string]any) (retStringMap_0 map[string]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy StringMap")
 	}
@@ -501,7 +501,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringMap(ctx go_context.Context, v map[str
 func (tsc *HTTPServiceGoTSRPCClient) StringSlice(ctx go_context.Context, v []string) (retStringSlice_0 []string, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy StringSlice")
 	}
@@ -511,7 +511,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringSlice(ctx go_context.Context, v []str
 func (tsc *HTTPServiceGoTSRPCClient) StringType(ctx go_context.Context, v StringType) (retStringType_0 StringType, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringType_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringType", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringType", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy StringType")
 	}
@@ -521,7 +521,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringType(ctx go_context.Context, v String
 func (tsc *HTTPServiceGoTSRPCClient) StringTypeMap(ctx go_context.Context, v map[StringTypeMapKey]StringTypeMapValue) (retStringTypeMap_0 map[StringTypeMapKey]StringTypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringTypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringTypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringTypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy StringTypeMap")
 	}
@@ -531,7 +531,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringTypeMap(ctx go_context.Context, v map
 func (tsc *HTTPServiceGoTSRPCClient) StringTypeMapTyped(ctx go_context.Context, v StringTypeMapTyped) (retStringTypeMapTyped_0 StringTypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringTypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringTypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringTypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy StringTypeMapTyped")
 	}
@@ -541,7 +541,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringTypeMapTyped(ctx go_context.Context, 
 func (tsc *HTTPServiceGoTSRPCClient) Struct(ctx go_context.Context, v Struct) (retStruct_0 Struct, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStruct_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Struct", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Struct", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy Struct")
 	}
@@ -551,7 +551,7 @@ func (tsc *HTTPServiceGoTSRPCClient) Struct(ctx go_context.Context, v Struct) (r
 func (tsc *HTTPServiceGoTSRPCClient) UInt(ctx go_context.Context, v uint) (retUInt_0 uint, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt")
 	}
@@ -561,7 +561,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt(ctx go_context.Context, v uint) (retUI
 func (tsc *HTTPServiceGoTSRPCClient) UInt32(ctx go_context.Context, v uint32) (retUInt32_0 uint32, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt32_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt32")
 	}
@@ -571,7 +571,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt32(ctx go_context.Context, v uint32) (r
 func (tsc *HTTPServiceGoTSRPCClient) UInt32Map(ctx go_context.Context, v map[uint32]any) (retUInt32Map_0 map[uint32]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt32Map_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32Map", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt32Map")
 	}
@@ -581,7 +581,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt32Map(ctx go_context.Context, v map[uin
 func (tsc *HTTPServiceGoTSRPCClient) UInt32Slice(ctx go_context.Context, v []uint32) (retUInt32Slice_0 []uint32, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt32Slice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32Slice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt32Slice")
 	}
@@ -591,7 +591,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt32Slice(ctx go_context.Context, v []uin
 func (tsc *HTTPServiceGoTSRPCClient) UInt32Type(ctx go_context.Context, v UInt32Type) (retUInt32Type_0 UInt32Type, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt32Type_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32Type", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32Type", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt32Type")
 	}
@@ -601,7 +601,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt32Type(ctx go_context.Context, v UInt32
 func (tsc *HTTPServiceGoTSRPCClient) UInt32TypeMap(ctx go_context.Context, v map[UInt32TypeMapKey]UInt32TypeMapValue) (retUInt32TypeMap_0 map[UInt32TypeMapKey]UInt32TypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt32TypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32TypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32TypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt32TypeMap")
 	}
@@ -611,7 +611,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt32TypeMap(ctx go_context.Context, v map
 func (tsc *HTTPServiceGoTSRPCClient) UInt32TypeMapTyped(ctx go_context.Context, v UInt32TypeMapTyped) (retUInt32TypeMapTyped_0 UInt32TypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt32TypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32TypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt32TypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt32TypeMapTyped")
 	}
@@ -621,7 +621,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt32TypeMapTyped(ctx go_context.Context, 
 func (tsc *HTTPServiceGoTSRPCClient) UInt64(ctx go_context.Context, v uint64) (retUInt64_0 uint64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt64_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt64")
 	}
@@ -631,7 +631,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt64(ctx go_context.Context, v uint64) (r
 func (tsc *HTTPServiceGoTSRPCClient) UInt64Map(ctx go_context.Context, v map[uint64]any) (retUInt64Map_0 map[uint64]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt64Map_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64Map", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt64Map")
 	}
@@ -641,7 +641,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt64Map(ctx go_context.Context, v map[uin
 func (tsc *HTTPServiceGoTSRPCClient) UInt64Slice(ctx go_context.Context, v []uint64) (retUInt64Slice_0 []uint64, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt64Slice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64Slice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt64Slice")
 	}
@@ -651,7 +651,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt64Slice(ctx go_context.Context, v []uin
 func (tsc *HTTPServiceGoTSRPCClient) UInt64Type(ctx go_context.Context, v UInt64Type) (retUInt64Type_0 UInt64Type, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt64Type_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64Type", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64Type", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt64Type")
 	}
@@ -661,7 +661,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt64Type(ctx go_context.Context, v UInt64
 func (tsc *HTTPServiceGoTSRPCClient) UInt64TypeMap(ctx go_context.Context, v map[UInt64TypeMapKey]UInt64TypeMapValue) (retUInt64TypeMap_0 map[UInt64TypeMapKey]UInt64TypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt64TypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64TypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64TypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt64TypeMap")
 	}
@@ -671,7 +671,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt64TypeMap(ctx go_context.Context, v map
 func (tsc *HTTPServiceGoTSRPCClient) UInt64TypeMapTyped(ctx go_context.Context, v UInt64TypeMapTyped) (retUInt64TypeMapTyped_0 UInt64TypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUInt64TypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64TypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UInt64TypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UInt64TypeMapTyped")
 	}
@@ -681,7 +681,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UInt64TypeMapTyped(ctx go_context.Context, 
 func (tsc *HTTPServiceGoTSRPCClient) UIntMap(ctx go_context.Context, v map[uint]any) (retUIntMap_0 map[uint]any, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUIntMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UIntMap")
 	}
@@ -691,7 +691,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UIntMap(ctx go_context.Context, v map[uint]
 func (tsc *HTTPServiceGoTSRPCClient) UIntSlice(ctx go_context.Context, v []uint) (retUIntSlice_0 []uint, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUIntSlice_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntSlice", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntSlice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UIntSlice")
 	}
@@ -701,7 +701,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UIntSlice(ctx go_context.Context, v []uint)
 func (tsc *HTTPServiceGoTSRPCClient) UIntType(ctx go_context.Context, v UIntType) (retUIntType_0 UIntType, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUIntType_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntType", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntType", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UIntType")
 	}
@@ -711,7 +711,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UIntType(ctx go_context.Context, v UIntType
 func (tsc *HTTPServiceGoTSRPCClient) UIntTypeMap(ctx go_context.Context, v map[UIntTypeMapKey]UIntTypeMapValue) (retUIntTypeMap_0 map[UIntTypeMapKey]UIntTypeMapValue, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUIntTypeMap_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntTypeMap", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntTypeMap", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UIntTypeMap")
 	}
@@ -721,7 +721,7 @@ func (tsc *HTTPServiceGoTSRPCClient) UIntTypeMap(ctx go_context.Context, v map[U
 func (tsc *HTTPServiceGoTSRPCClient) UIntTypeMapTyped(ctx go_context.Context, v UIntTypeMapTyped) (retUIntTypeMapTyped_0 UIntTypeMapTyped, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retUIntTypeMapTyped_0}
-	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntTypeMapTyped", rpcArgs, rpcReply, false)
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "UIntTypeMapTyped", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call service.ServiceGoTSRPCProxy UIntTypeMapTyped")
 	}

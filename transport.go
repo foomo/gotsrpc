@@ -21,9 +21,9 @@ type clientHandle struct {
 	contentType       string
 	encoderPool       sync.Pool
 	decoderPool       sync.Pool
-	beforeEncodeReply func(*[]any, bool) error
-	beforeDecodeReply func([]any, bool) ([]any, error)
-	afterDecodeReply  func(*[]any, []any, bool) error
+	beforeEncodeReply func(*[]any, []int) error
+	beforeDecodeReply func([]any, []int) ([]any, error)
+	afterDecodeReply  func(*[]any, []any, []int) error
 }
 
 func (ch *clientHandle) getEncoder(w io.Writer) *codec.Encoder {
@@ -51,36 +51,34 @@ func (ch *clientHandle) putDecoder(dec *codec.Decoder) {
 }
 
 var (
-	defaultBeforeEncodeReply = func(resp *[]any, lastIsError bool) error {
-		if !lastIsError || len(*resp) == 0 {
-			return nil
-		}
-		last := len(*resp) - 1
-		if e, ok := (*resp)[last].(error); ok {
-			(*resp)[last] = NewError(e)
+	defaultBeforeEncodeReply = func(resp *[]any, errorIndices []int) error {
+		for _, i := range errorIndices {
+			if e, ok := (*resp)[i].(error); ok {
+				(*resp)[i] = NewError(e)
+			}
 		}
 		return nil
 	}
-	defaultBeforeDecodeReply = func(reply []any, lastIsError bool) ([]any, error) {
-		if !lastIsError || len(reply) == 0 {
+	defaultBeforeDecodeReply = func(reply []any, errorIndices []int) ([]any, error) {
+		if len(errorIndices) == 0 {
 			return reply, nil
 		}
 		ret := make([]any, len(reply))
 		copy(ret, reply)
-		var e *Error
-		ret[len(ret)-1] = e
+		for _, i := range errorIndices {
+			var e *Error
+			ret[i] = e
+		}
 		return ret, nil
 	}
-	defaultAfterDecodeReply = func(reply *[]any, wrappedReply []any, lastIsError bool) error {
-		if !lastIsError || len(wrappedReply) == 0 {
-			return nil
-		}
-		last := len(wrappedReply) - 1
-		if e, ok := wrappedReply[last].(*Error); ok && e != nil {
-			if y, ok := (*reply)[last].(*error); ok {
-				*y = e
-			} else if err := mapstructure.Decode(e.Data, (*reply)[last]); err != nil {
-				return pkgerrors.Wrap(err, "failed to decode wrapped error")
+	defaultAfterDecodeReply = func(reply *[]any, wrappedReply []any, errorIndices []int) error {
+		for _, i := range errorIndices {
+			if e, ok := wrappedReply[i].(*Error); ok && e != nil {
+				if y, ok := (*reply)[i].(*error); ok {
+					*y = e
+				} else if err := mapstructure.Decode(e.Data, (*reply)[i]); err != nil {
+					return pkgerrors.Wrap(err, "failed to decode wrapped error")
+				}
 			}
 		}
 		return nil

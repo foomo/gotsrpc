@@ -86,8 +86,24 @@ func ClearStats(r *http.Request) {
 	*r = *r.WithContext(context.WithValue(r.Context(), contextStatsKey, nil))
 }
 
+// errorReply is a marker wrapper that identifies error interface returns in response slices.
+type errorReply struct{ err error }
+
+// ErrorReply wraps an error return value so Reply can detect it at runtime.
+// Used by generated proxy code for methods whose last return type is the error interface.
+func ErrorReply(err error) any {
+	return &errorReply{err: err}
+}
+
 // Reply although this is a public method - do not call it, it will be called by generated code
-func Reply(response []interface{}, lastIsError bool, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
+func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
+	var errorIndices []int
+	for i, v := range response {
+		if er, ok := v.(*errorReply); ok {
+			errorIndices = append(errorIndices, i)
+			response[i] = er.err
+		}
+	}
 	serializationStart := time.Now()
 
 	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
@@ -95,7 +111,7 @@ func Reply(response []interface{}, lastIsError bool, stats *CallStats, r *http.R
 	w.Header().Set("Content-Type", ch.contentType)
 
 	if ch.beforeEncodeReply != nil {
-		if err := ch.beforeEncodeReply(&response, lastIsError); err != nil {
+		if err := ch.beforeEncodeReply(&response, errorIndices); err != nil {
 			return errors.Wrap(err, "error during before encoder reply")
 		}
 	}
@@ -119,9 +135,8 @@ func Reply(response []interface{}, lastIsError bool, stats *CallStats, r *http.R
 	if stats != nil {
 		stats.ResponseSize = buf.Len()
 		stats.Marshalling = time.Since(serializationStart)
-		if len(response) > 0 {
-			errResp := response[len(response)-1]
-			if v, ok := errResp.(error); ok && v != nil {
+		for _, i := range errorIndices {
+			if v, ok := response[i].(error); ok && v != nil {
 				if !reflect.ValueOf(v).IsZero() {
 					stats.ErrorCode = 1
 					stats.ErrorType = fmt.Sprintf("%T", v)

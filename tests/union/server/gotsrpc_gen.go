@@ -69,7 +69,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		if rw.Status() == http.StatusOK {
 			rets = []any{inlineStructE}
-			if err := gotsrpc.Reply(rets, false, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}
@@ -89,7 +89,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		if rw.Status() == http.StatusOK {
 			rets = []any{inlineStructPtrE}
-			if err := gotsrpc.Reply(rets, false, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}
@@ -109,7 +109,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		if rw.Status() == http.StatusOK {
 			rets = []any{unionStringE}
-			if err := gotsrpc.Reply(rets, false, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}
@@ -129,7 +129,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		if rw.Status() == http.StatusOK {
 			rets = []any{unionStructE}
-			if err := gotsrpc.Reply(rets, false, callStats, r, w); err != nil {
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return
 			}

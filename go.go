@@ -3,7 +3,6 @@ package gotsrpc
 import (
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/foomo/gotsrpc/v2/config"
@@ -284,12 +283,16 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 			if isSessionRequest {
 				g.l("if rw.Status() == http.StatusOK {").ind(1)
 			}
-			lastIsError := "false"
-			if len(method.Return) > 0 && method.Return[len(method.Return)-1].Value.GoScalarType == "error" {
-				lastIsError = "true"
+			// Wrap all error return values with ErrorReply
+			retsValues := make([]string, len(returnValueNames))
+			copy(retsValues, returnValueNames)
+			for i, ret := range method.Return {
+				if ret.Value.GoScalarType == "error" {
+					retsValues[i] = "gotsrpc.ErrorReply(" + retsValues[i] + ")"
+				}
 			}
-			g.l("rets = []any{" + strings.Join(returnValueNames, ", ") + "}")
-			g.l("if err := gotsrpc.Reply(rets, " + lastIsError + ", callStats, r, w); err != nil {")
+			g.l("rets = []any{" + strings.Join(retsValues, ", ") + "}")
+			g.l("if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {")
 			g.ind(1)
 			g.l("gotsrpc.ErrorCouldNotReply(w)")
 			g.l("return")
@@ -420,11 +423,10 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)
-			lastIsError := len(method.Return) > 0 && method.Return[len(method.Return)-1].Value.GoScalarType == "error"
 			g.l(`func (tsc *` + clientName + `) ` + ms.renderSignature() + ` {`)
 			g.l(`rpcArgs := []any{` + strings.Join(ms.args, ", ") + `}`)
 			g.l(`rpcReply := []any{` + strings.Join(ms.rets, ", ") + `}`)
-			g.l(`rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", rpcArgs, rpcReply, ` + strconv.FormatBool(lastIsError) + `)`)
+			g.l(`rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", rpcArgs, rpcReply)`)
 			g.l(`if rpcErr != nil {`)
 			g.ind(1).l(`clientErr = pkg_errors.WithMessage(rpcErr, "failed to call ` + packageName + `.` + service.Name + `GoTSRPCProxy ` + method.Name + `")`).ind(-1)
 			g.l(`}`)

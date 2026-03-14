@@ -25,14 +25,27 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		require.NoError(t, clientErr)
 
 		var expectedErr *gotsrpc.Error
-		assert.ErrorAs(t, serviceErr, &expectedErr)
+		require.ErrorAs(t, serviceErr, &expectedErr)
+	})
+
+	t.Run("Errors", func(t *testing.T) {
+		t.Parallel()
+		serviceErr1, serviceErr2, clientErr := c.Errors(t.Context())
+		require.NoError(t, clientErr)
+
+		var expectedErr *gotsrpc.Error
+		require.ErrorAs(t, serviceErr1, &expectedErr)
+
+		require.ErrorAs(t, serviceErr2, &expectedErr)
 	})
 
 	t.Run("Scalar", func(t *testing.T) {
 		t.Parallel()
 		serviceErr, clientErr := c.Scalar(t.Context())
 		require.NoError(t, clientErr)
-		assert.NotNil(t, serviceErr)
+		var err *server.ScalarError
+		require.ErrorAs(t, serviceErr, &err)
+		assert.Equal(t, "one", err.String())
 	})
 
 	t.Run("MultiScalar", func(t *testing.T) {

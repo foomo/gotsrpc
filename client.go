@@ -19,7 +19,7 @@ const (
 var _ Client = &bufferedClient{}
 
 type Client interface {
-	Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}, lastIsError bool) (err error)
+	Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
 	SetClientEncoding(encoding ClientEncoding)
 	SetTransportHttpClient(client *http.Client)
 	SetDefaultHeaders(headers http.Header)
@@ -74,7 +74,13 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:
 }
 
 // Call calls a method on the remote service
-func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any, lastIsError bool) error {
+func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) error {
+	var errorIndices []int
+	for i, v := range reply {
+		if isErrorPtr(v) {
+			errorIndices = append(errorIndices, i)
+		}
+	}
 	// Marshal args
 	var b *bytes.Buffer
 	if len(args) > 0 {
@@ -118,7 +124,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 
 	wrappedReply := reply
 	if clientHandle.beforeDecodeReply != nil {
-		if value, err := clientHandle.beforeDecodeReply(reply, lastIsError); err != nil {
+		if value, err := clientHandle.beforeDecodeReply(reply, errorIndices); err != nil {
 			return NewClientError(errors.Wrap(err, "failed to call beforeDecodeReply hook"))
 		} else {
 			wrappedReply = value
@@ -134,10 +140,15 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 
 	// replace error
 	if clientHandle.afterDecodeReply != nil {
-		if err := clientHandle.afterDecodeReply(&reply, wrappedReply, lastIsError); err != nil {
+		if err := clientHandle.afterDecodeReply(&reply, wrappedReply, errorIndices); err != nil {
 			return NewClientError(errors.Wrap(err, "failed to call afterDecodeReply hook"))
 		}
 	}
 
 	return nil
+}
+
+func isErrorPtr(v any) bool {
+	_, ok := v.(*error)
+	return ok
 }
