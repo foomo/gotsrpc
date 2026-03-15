@@ -1,7 +1,6 @@
 package gotsrpc
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"go/ast"
@@ -22,28 +21,8 @@ import (
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-type contextKey string
-
-const contextStatsKey contextKey = "gotsrpcStats"
-
 func GetCalledFunc(r *http.Request, endPoint string) string {
 	return strings.TrimPrefix(r.URL.Path, endPoint+"/")
-}
-
-func ErrorFuncNotFound(w http.ResponseWriter) {
-	http.Error(w, "method not found", http.StatusNotFound)
-}
-
-func ErrorCouldNotReply(w http.ResponseWriter) {
-	http.Error(w, "could not reply", http.StatusInternalServerError)
-}
-
-func ErrorCouldNotLoadArgs(w http.ResponseWriter) {
-	http.Error(w, "could not load args", http.StatusBadRequest)
-}
-
-func ErrorMethodNotAllowed(w http.ResponseWriter) {
-	http.Error(w, "you gotta POST", http.StatusMethodNotAllowed)
 }
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
@@ -68,31 +47,6 @@ func loadArgs(args interface{}, jsonBytes []byte) error {
 		return err
 	}
 	return nil
-}
-
-func RequestWithStatsContext(r *http.Request) *http.Request {
-	stats := &CallStats{}
-	return r.WithContext(context.WithValue(r.Context(), contextStatsKey, stats))
-}
-
-func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
-	if value, ok := r.Context().Value(contextStatsKey).(*CallStats); ok && value != nil {
-		return value, true
-	}
-	return nil, false
-}
-
-func ClearStats(r *http.Request) {
-	*r = *r.WithContext(context.WithValue(r.Context(), contextStatsKey, nil))
-}
-
-// errorReply is a marker wrapper that identifies error interface returns in response slices.
-type errorReply struct{ err error }
-
-// ErrorReply wraps an error return value so Reply can detect it at runtime.
-// Used by generated proxy code for methods whose last return type is the error interface.
-func ErrorReply(err error) any {
-	return &errorReply{err: err}
 }
 
 // Reply although this is a public method - do not call it, it will be called by generated code
@@ -206,20 +160,6 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 		errorStrings[dir] = err.Error()
 	}
 	return nil, nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
-}
-
-type byLen []string
-
-func (a byLen) Len() int {
-	return len(a)
-}
-
-func (a byLen) Less(i, j int) bool {
-	return len(a[i]) > len(a[j])
-}
-
-func (a byLen) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
 }
 
 func parsePackage(goPaths []string, gomod config.Namespace, packageName string) (pkg *ast.Package, err error) {
