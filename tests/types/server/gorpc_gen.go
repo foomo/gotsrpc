@@ -126,6 +126,13 @@ type (
 		RetNestedStruct_0 Nested
 	}
 
+	ServiceObjectIDRequest struct {
+		V ObjectID
+	}
+	ServiceObjectIDResponse struct {
+		RetObjectID_0 ObjectID
+	}
+
 	ServiceSimplePtrSliceRequest struct {
 		V []*Simple
 	}
@@ -261,6 +268,8 @@ func init() {
 	gob.Register(ServiceMultiArgsResponse{})
 	gob.Register(ServiceNestedStructRequest{})
 	gob.Register(ServiceNestedStructResponse{})
+	gob.Register(ServiceObjectIDRequest{})
+	gob.Register(ServiceObjectIDResponse{})
 	gob.Register(ServiceSimplePtrSliceRequest{})
 	gob.Register(ServiceSimplePtrSliceResponse{})
 	gob.Register(ServiceSimpleSliceRequest{})
@@ -386,6 +395,10 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceNestedStructRequest)
 		retNestedStruct_0 := p.service.NestedStruct(nil, req.V)
 		response = ServiceNestedStructResponse{RetNestedStruct_0: retNestedStruct_0}
+	case "ServiceObjectIDRequest":
+		req := request.(ServiceObjectIDRequest)
+		retObjectID_0 := p.service.ObjectID(nil, req.V)
+		response = ServiceObjectIDResponse{RetObjectID_0: retObjectID_0}
 	case "ServiceSimplePtrSliceRequest":
 		req := request.(ServiceSimplePtrSliceRequest)
 		retSimplePtrSlice_0 := p.service.SimplePtrSlice(nil, req.V)

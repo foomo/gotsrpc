@@ -20,6 +20,8 @@ type WithPointers struct {
 	Child    *Simple `json:"child"`
 }
 
+type ObjectID [12]byte
+
 type WithCollections struct {
 	Strings   []string          `json:"strings"`
 	Int64s    []int64           `json:"int64s"`

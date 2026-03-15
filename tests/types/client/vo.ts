@@ -7,6 +7,8 @@ export interface Nested {
 	name:string;
 	child:github_com_foomo_gotsrpc_v2_tests_types_server.Simple;
 }
+// github.com/foomo/gotsrpc/v2/tests/types/server.ObjectID
+export type ObjectID = Uint8Array & { readonly length: 12 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.Simple
 export interface Simple {
 	bool:boolean;

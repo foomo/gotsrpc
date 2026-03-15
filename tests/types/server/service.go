@@ -49,4 +49,5 @@ type Service interface {
 	// Edge cases
 	Empty(ctx context.Context) bool
 	ByteSlice(ctx context.Context, v []byte) []byte
+	ObjectID(ctx context.Context, v ObjectID) ObjectID
 }

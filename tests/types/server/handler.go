@@ -56,5 +56,6 @@ func (h *Handler) MixedArgs(_ context.Context, s Simple, items []string, m map[s
 	return s, items, m
 }
 
-func (h *Handler) Empty(_ context.Context) bool                 { return true }
-func (h *Handler) ByteSlice(_ context.Context, v []byte) []byte { return v }
+func (h *Handler) Empty(_ context.Context) bool                    { return true }
+func (h *Handler) ByteSlice(_ context.Context, v []byte) []byte    { return v }
+func (h *Handler) ObjectID(_ context.Context, v ObjectID) ObjectID { return v }

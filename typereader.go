@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -264,6 +265,13 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap) {
 	switch exprType := expr.(type) {
 	case *ast.ArrayType:
 		v.Array = &Array{Value: &Value{}}
+		if exprType.Len != nil {
+			if lit, ok := exprType.Len.(*ast.BasicLit); ok {
+				if n, err := strconv.Atoi(lit.Value); err == nil {
+					v.Array.Len = n
+				}
+			}
+		}
 
 		switch exprEltType := exprType.Elt.(type) {
 		case *ast.ArrayType:

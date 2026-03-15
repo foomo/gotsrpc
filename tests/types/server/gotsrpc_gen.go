@@ -25,6 +25,7 @@ const (
 	ServiceGoTSRPCProxyMixedArgs             = "MixedArgs"
 	ServiceGoTSRPCProxyMultiArgs             = "MultiArgs"
 	ServiceGoTSRPCProxyNestedStruct          = "NestedStruct"
+	ServiceGoTSRPCProxyObjectID              = "ObjectID"
 	ServiceGoTSRPCProxySimplePtrSlice        = "SimplePtrSlice"
 	ServiceGoTSRPCProxySimpleSlice           = "SimpleSlice"
 	ServiceGoTSRPCProxySimpleStruct          = "SimpleStruct"
@@ -416,6 +417,31 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{nestedStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyObjectID:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v ObjectID
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		executionStart := time.Now()
+		objectIDRet := p.service.ObjectID(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{objectIDRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return

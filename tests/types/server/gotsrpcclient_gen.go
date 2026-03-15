@@ -25,6 +25,7 @@ type ServiceGoTSRPCClient interface {
 	MixedArgs(ctx go_context.Context, s Simple, items []string, m map[string]int64) (retMixedArgs_0 Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error)
 	MultiArgs(ctx go_context.Context, a string, b int64, c bool) (retMultiArgs_0 string, retMultiArgs_1 int64, retMultiArgs_2 bool, clientErr error)
 	NestedStruct(ctx go_context.Context, v Nested) (retNestedStruct_0 Nested, clientErr error)
+	ObjectID(ctx go_context.Context, v ObjectID) (retObjectID_0 ObjectID, clientErr error)
 	SimplePtrSlice(ctx go_context.Context, v []*Simple) (retSimplePtrSlice_0 []*Simple, clientErr error)
 	SimpleSlice(ctx go_context.Context, v []Simple) (retSimpleSlice_0 []Simple, clientErr error)
 	SimpleStruct(ctx go_context.Context, v Simple) (retSimpleStruct_0 Simple, clientErr error)
@@ -200,6 +201,16 @@ func (tsc *HTTPServiceGoTSRPCClient) NestedStruct(ctx go_context.Context, v Nest
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "NestedStruct", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy NestedStruct")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) ObjectID(ctx go_context.Context, v ObjectID) (retObjectID_0 ObjectID, clientErr error) {
+	rpcArgs := []any{v}
+	rpcReply := []any{&retObjectID_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "ObjectID", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy ObjectID")
 	}
 	return
 }

@@ -184,6 +184,17 @@ func (tsc *ServiceGoRPCClient) NestedStruct(v Nested) (retNestedStruct_0 Nested,
 	return rpcResp.RetNestedStruct_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) ObjectID(v ObjectID) (retObjectID_0 ObjectID, clientErr error) {
+	rpcReq := ServiceObjectIDRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceObjectIDResponse)
+	return rpcResp.RetObjectID_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) SimplePtrSlice(v []*Simple) (retSimplePtrSlice_0 []*Simple, clientErr error) {
 	rpcReq := ServiceSimplePtrSliceRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)

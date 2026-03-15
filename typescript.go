@@ -2,6 +2,7 @@ package gotsrpc
 
 import (
 	"errors"
+	"fmt"
 	"go/ast"
 	"sort"
 	"strings"
@@ -41,12 +42,14 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			ts.app("|null")
 		}
 	case v.Array != nil:
-		if v.Array.Value.ScalarType != ScalarTypeByte {
+		if v.Array.Len > 0 && v.Array.Value.ScalarType == ScalarTypeByte {
+			ts.app(fmt.Sprintf("Uint8Array & { readonly length: %d }", v.Array.Len))
+		} else if v.Array.Value.ScalarType != ScalarTypeByte {
 			ts.app("Array<")
-		}
-		v.Array.Value.tsType(mappings, scalars, structs, ts, nil)
-		if v.Array.Value.ScalarType != ScalarTypeByte {
+			v.Array.Value.tsType(mappings, scalars, structs, ts, nil)
 			ts.app(">")
+		} else {
+			v.Array.Value.tsType(mappings, scalars, structs, ts, nil)
 		}
 		if jsonInfo == nil || !jsonInfo.OmitEmpty {
 			ts.app("|null")
@@ -138,9 +141,13 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 	ts.l("// " + str.FullName())
 	switch {
 	case str.Array != nil:
-		ts.app("export type " + str.Name + " = Array<")
-		str.Array.Value.tsType(mappings, scalars, structs, ts, nil)
-		ts.app(">")
+		if str.Array.Len > 0 && str.Array.Value.ScalarType == ScalarTypeByte {
+			ts.app("export type " + str.Name + " = Uint8Array & { readonly length: " + fmt.Sprintf("%d", str.Array.Len) + " }")
+		} else {
+			ts.app("export type " + str.Name + " = Array<")
+			str.Array.Value.tsType(mappings, scalars, structs, ts, nil)
+			ts.app(">")
+		}
 		ts.nl()
 	case str.Map != nil:
 		ts.app("export type " + str.Name + " = Record<")

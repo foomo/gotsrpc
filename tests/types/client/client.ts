@@ -51,6 +51,9 @@ export class ServiceClient {
 	async nestedStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.Nested):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.Nested> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.Nested}>("NestedStruct", [v]))[0]
 	}
+	async objectID(v:github_com_foomo_gotsrpc_v2_tests_types_server.ObjectID|null):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.ObjectID|null> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.ObjectID|null}>("ObjectID", [v]))[0]
+	}
 	async simplePtrSlice(v:Array<github_com_foomo_gotsrpc_v2_tests_types_server.Simple|null>|null):Promise<Array<github_com_foomo_gotsrpc_v2_tests_types_server.Simple|null>|null> {
 		return (await this.transport<{0:Array<github_com_foomo_gotsrpc_v2_tests_types_server.Simple|null>|null}>("SimplePtrSlice", [v]))[0]
 	}

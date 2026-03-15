@@ -142,7 +142,7 @@ test("mapOfSimpleSlice", async () => {
 });
 
 test("sliceOfMaps", async () => {
-	const v = [{ a: "1" }, { b: "2" }];
+	const v: (Record<string, string> | null)[] = [{ a: "1" }, { b: "2" }];
 	expect(await client.sliceOfMaps(v)).toEqual(v);
 });
 
@@ -170,4 +170,15 @@ test("mixedArgs", async () => {
 test("empty", async () => {
 	const ret = await client.empty();
 	expect(ret).toBe(true);
+});
+
+test("byteSlice", async () => {
+	const ret = await client.byteSlice(btoa("hello"))
+	expect(ret).toBe(btoa("hello"));
+});
+
+test("objectID", async () => {
+	const v = btoa(String.fromCharCode(...new Uint8Array(12).fill(42)));
+	const ret = await client.objectID(v as unknown as (Uint8Array & { readonly length: 12 }));
+	expect(ret).toBe(v as unknown as (Uint8Array & { readonly length: 12 }));
 });
