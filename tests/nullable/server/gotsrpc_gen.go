@@ -3,7 +3,6 @@
 package server
 
 import (
-	io "io"
 	http "net/http"
 	time "time"
 
@@ -45,7 +44,6 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
-	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
@@ -68,7 +66,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantAR1 := p.service.VariantA(r.Context(), arg_i1)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -93,7 +94,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantBR1 := p.service.VariantB(r.Context(), arg_i1)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -118,7 +122,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantCR1 := p.service.VariantC(r.Context(), arg_i1)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -143,7 +150,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantDR1 := p.service.VariantD(r.Context(), arg_i1)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -168,7 +178,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantER1 := p.service.VariantE(r.Context(), arg_i1)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -193,7 +206,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantFR1 := p.service.VariantF(r.Context(), arg_i1)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -218,7 +234,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantGR1 := p.service.VariantG(r.Context(), arg_i1)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -246,7 +265,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		variantHR1, variantHR2, variantHR3, variantHR4 := p.service.VariantH(r.Context(), arg_i1, arg_i2, arg_i3, arg_i4)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)

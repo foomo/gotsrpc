@@ -3,7 +3,6 @@
 package server
 
 import (
-	io "io"
 	http "net/http"
 	time "time"
 
@@ -46,7 +45,6 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
-	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
@@ -61,7 +59,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []any
 			rets []any
 		)
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructE := p.service.InlineStruct(&rw, r)
 		if callStats != nil {
@@ -81,7 +82,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []any
 			rets []any
 		)
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructPtrE := p.service.InlineStructPtr(&rw, r)
 		if callStats != nil {
@@ -101,7 +105,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []any
 			rets []any
 		)
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStringE := p.service.UnionString(&rw, r)
 		if callStats != nil {
@@ -121,7 +128,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []any
 			rets []any
 		)
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStructE := p.service.UnionStruct(&rw, r)
 		if callStats != nil {

@@ -3,7 +3,6 @@
 package service
 
 import (
-	io "io"
 	http "net/http"
 	time "time"
 
@@ -100,7 +99,6 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
-	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
@@ -123,7 +121,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		boolRet := p.service.Bool(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -148,7 +149,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		boolPtrRet := p.service.BoolPtr(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -173,7 +177,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		boolSliceRet := p.service.BoolSlice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -190,7 +197,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []any
 			rets []any
 		)
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		p.service.Context(&rw, r)
 		if callStats != nil {
@@ -210,7 +220,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []any
 			rets []any
 		)
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		p.service.Empty()
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -235,7 +248,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float32Ret := p.service.Float32(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -260,7 +276,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float32MapRet := p.service.Float32Map(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -285,7 +304,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float32SliceRet := p.service.Float32Slice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -310,7 +332,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float32TypeRet := p.service.Float32Type(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -335,7 +360,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float32TypeMapRet := p.service.Float32TypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -360,7 +388,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float32TypeMapTypedRet := p.service.Float32TypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -385,7 +416,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float64Ret := p.service.Float64(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -410,7 +444,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float64MapRet := p.service.Float64Map(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -435,7 +472,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float64SliceRet := p.service.Float64Slice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -460,7 +500,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float64TypeRet := p.service.Float64Type(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -485,7 +528,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float64TypeMapRet := p.service.Float64TypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -510,7 +556,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float64TypeMapTypedRet := p.service.Float64TypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -535,7 +584,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		intRet := p.service.Int(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -560,7 +612,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int32Ret := p.service.Int32(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -585,7 +640,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int32MapRet := p.service.Int32Map(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -610,7 +668,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int32SliceRet := p.service.Int32Slice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -635,7 +696,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int32TypeRet := p.service.Int32Type(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -660,7 +724,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int32TypeMapRet := p.service.Int32TypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -685,7 +752,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int32TypeMapTypedRet := p.service.Int32TypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -710,7 +780,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64Ret := p.service.Int64(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -735,7 +808,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64MapRet := p.service.Int64Map(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -760,7 +836,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64SliceRet := p.service.Int64Slice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -785,7 +864,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64TypeRet := p.service.Int64Type(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -810,7 +892,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64TypeMapRet := p.service.Int64TypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -835,7 +920,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64TypeMapTypedRet := p.service.Int64TypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -860,7 +948,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		intMapRet := p.service.IntMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -885,7 +976,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		intSliceRet := p.service.IntSlice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -910,7 +1004,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		intTypeRet := p.service.IntType(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -935,7 +1032,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		intTypeMapRet := p.service.IntTypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -960,7 +1060,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		intTypeMapTypedRet := p.service.IntTypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -985,7 +1088,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		interfaceRet := p.service.Interface(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1010,7 +1116,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		interfaceSliceRet := p.service.InterfaceSlice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1035,7 +1144,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		nestedTypeRet := p.service.NestedType(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1060,7 +1172,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringRet := p.service.String(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1085,7 +1200,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringMapRet := p.service.StringMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1110,7 +1228,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringSliceRet := p.service.StringSlice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1135,7 +1256,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringTypeRet := p.service.StringType(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1160,7 +1284,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringTypeMapRet := p.service.StringTypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1185,7 +1312,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringTypeMapTypedRet := p.service.StringTypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1210,7 +1340,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		structRet := p.service.Struct(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1235,7 +1368,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uIntRet := p.service.UInt(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1260,7 +1396,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt32Ret := p.service.UInt32(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1285,7 +1424,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt32MapRet := p.service.UInt32Map(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1310,7 +1452,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt32SliceRet := p.service.UInt32Slice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1335,7 +1480,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt32TypeRet := p.service.UInt32Type(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1360,7 +1508,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt32TypeMapRet := p.service.UInt32TypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1385,7 +1536,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt32TypeMapTypedRet := p.service.UInt32TypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1410,7 +1564,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt64Ret := p.service.UInt64(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1435,7 +1592,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt64MapRet := p.service.UInt64Map(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1460,7 +1620,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt64SliceRet := p.service.UInt64Slice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1485,7 +1648,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt64TypeRet := p.service.UInt64Type(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1510,7 +1676,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt64TypeMapRet := p.service.UInt64TypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1535,7 +1704,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uInt64TypeMapTypedRet := p.service.UInt64TypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1560,7 +1732,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uIntMapRet := p.service.UIntMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1585,7 +1760,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uIntSliceRet := p.service.UIntSlice(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1610,7 +1788,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uIntTypeRet := p.service.UIntType(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1635,7 +1816,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uIntTypeMapRet := p.service.UIntTypeMap(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -1660,7 +1844,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		uIntTypeMapTypedRet := p.service.UIntTypeMapTyped(arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)

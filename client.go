@@ -98,7 +98,11 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	postURL := url + endpoint + "/" + method
 
 	// Create request
-	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, c.headers.Clone())
+	var headers http.Header
+	if c.headers != nil {
+		headers = c.headers.Clone()
+	}
+	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, headers)
 	if errRequest != nil {
 		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
 	}
@@ -120,7 +124,10 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		return NewClientError(NewHTTPError(buf.String(), resp.StatusCode))
 	}
 
-	clientHandle := getHandlerForContentType(resp.Header.Get("Content-Type"))
+	clientHandle := c.handle
+	if ct := resp.Header.Get("Content-Type"); ct != "" && ct != c.handle.contentType {
+		clientHandle = getHandlerForContentType(ct)
+	}
 
 	wrappedReply := reply
 	if clientHandle.beforeDecodeReply != nil {

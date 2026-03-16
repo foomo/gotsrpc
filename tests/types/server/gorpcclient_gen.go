@@ -30,6 +30,50 @@ func (tsc *ServiceGoRPCClient) Stop() {
 	tsc.Client.Stop()
 }
 
+func (tsc *ServiceGoRPCClient) AllScalarMapsStruct(v AllScalarMaps) (retAllScalarMapsStruct_0 AllScalarMaps, clientErr error) {
+	rpcReq := ServiceAllScalarMapsStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceAllScalarMapsStructResponse)
+	return rpcResp.RetAllScalarMapsStruct_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) AllScalarPointersStruct(v AllScalarPointers) (retAllScalarPointersStruct_0 AllScalarPointers, clientErr error) {
+	rpcReq := ServiceAllScalarPointersStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceAllScalarPointersStructResponse)
+	return rpcResp.RetAllScalarPointersStruct_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) AllScalarSlicesStruct(v AllScalarSlices) (retAllScalarSlicesStruct_0 AllScalarSlices, clientErr error) {
+	rpcReq := ServiceAllScalarSlicesStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceAllScalarSlicesStructResponse)
+	return rpcResp.RetAllScalarSlicesStruct_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) AllScalarsStruct(v AllScalars) (retAllScalarsStruct_0 AllScalars, clientErr error) {
+	rpcReq := ServiceAllScalarsStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceAllScalarsStructResponse)
+	return rpcResp.RetAllScalarsStruct_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) Bool(v bool) (retBool_0 bool, clientErr error) {
 	rpcReq := ServiceBoolRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
@@ -74,6 +118,39 @@ func (tsc *ServiceGoRPCClient) Empty() (retEmpty_0 bool, clientErr error) {
 	return rpcResp.RetEmpty_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) Float32(v float32) (retFloat32_0 float32, clientErr error) {
+	rpcReq := ServiceFloat32Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceFloat32Response)
+	return rpcResp.RetFloat32_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Float32Ptr(v *float32) (retFloat32Ptr_0 *float32, clientErr error) {
+	rpcReq := ServiceFloat32PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceFloat32PtrResponse)
+	return rpcResp.RetFloat32Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Float32Slice(v []float32) (retFloat32Slice_0 []float32, clientErr error) {
+	rpcReq := ServiceFloat32SliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceFloat32SliceResponse)
+	return rpcResp.RetFloat32Slice_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) Float64(v float64) (retFloat64_0 float64, clientErr error) {
 	rpcReq := ServiceFloat64Request{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
@@ -94,6 +171,72 @@ func (tsc *ServiceGoRPCClient) Int(v int) (retInt_0 int, clientErr error) {
 	}
 	rpcResp := rpcRes.(ServiceIntResponse)
 	return rpcResp.RetInt_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int16(v int16) (retInt16_0 int16, clientErr error) {
+	rpcReq := ServiceInt16Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt16Response)
+	return rpcResp.RetInt16_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int16Ptr(v *int16) (retInt16Ptr_0 *int16, clientErr error) {
+	rpcReq := ServiceInt16PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt16PtrResponse)
+	return rpcResp.RetInt16Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int16Slice(v []int16) (retInt16Slice_0 []int16, clientErr error) {
+	rpcReq := ServiceInt16SliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt16SliceResponse)
+	return rpcResp.RetInt16Slice_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int32(v int32) (retInt32_0 int32, clientErr error) {
+	rpcReq := ServiceInt32Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt32Response)
+	return rpcResp.RetInt32_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int32Ptr(v *int32) (retInt32Ptr_0 *int32, clientErr error) {
+	rpcReq := ServiceInt32PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt32PtrResponse)
+	return rpcResp.RetInt32Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int32Slice(v []int32) (retInt32Slice_0 []int32, clientErr error) {
+	rpcReq := ServiceInt32SliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt32SliceResponse)
+	return rpcResp.RetInt32Slice_0, nil
 }
 
 func (tsc *ServiceGoRPCClient) Int64(v int64) (retInt64_0 int64, clientErr error) {
@@ -127,6 +270,39 @@ func (tsc *ServiceGoRPCClient) Int64Slice(v []int64) (retInt64Slice_0 []int64, c
 	}
 	rpcResp := rpcRes.(ServiceInt64SliceResponse)
 	return rpcResp.RetInt64Slice_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int8(v int8) (retInt8_0 int8, clientErr error) {
+	rpcReq := ServiceInt8Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt8Response)
+	return rpcResp.RetInt8_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int8Ptr(v *int8) (retInt8Ptr_0 *int8, clientErr error) {
+	rpcReq := ServiceInt8PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt8PtrResponse)
+	return rpcResp.RetInt8Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Int8Slice(v []int8) (retInt8Slice_0 []int8, clientErr error) {
+	rpcReq := ServiceInt8SliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInt8SliceResponse)
+	return rpcResp.RetInt8Slice_0, nil
 }
 
 func (tsc *ServiceGoRPCClient) MapOfMaps(v map[string]map[string]string) (retMapOfMaps_0 map[string]map[string]string, clientErr error) {
@@ -250,6 +426,39 @@ func (tsc *ServiceGoRPCClient) String(v string) (retString_0 string, clientErr e
 	return rpcResp.RetString_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) StringFloat32Map(v map[string]float32) (retStringFloat32Map_0 map[string]float32, clientErr error) {
+	rpcReq := ServiceStringFloat32MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringFloat32MapResponse)
+	return rpcResp.RetStringFloat32Map_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) StringInt16Map(v map[string]int16) (retStringInt16Map_0 map[string]int16, clientErr error) {
+	rpcReq := ServiceStringInt16MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringInt16MapResponse)
+	return rpcResp.RetStringInt16Map_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) StringInt32Map(v map[string]int32) (retStringInt32Map_0 map[string]int32, clientErr error) {
+	rpcReq := ServiceStringInt32MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringInt32MapResponse)
+	return rpcResp.RetStringInt32Map_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) StringInt64Map(v map[string]int64) (retStringInt64Map_0 map[string]int64, clientErr error) {
 	rpcReq := ServiceStringInt64MapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
@@ -259,6 +468,17 @@ func (tsc *ServiceGoRPCClient) StringInt64Map(v map[string]int64) (retStringInt6
 	}
 	rpcResp := rpcRes.(ServiceStringInt64MapResponse)
 	return rpcResp.RetStringInt64Map_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) StringInt8Map(v map[string]int8) (retStringInt8Map_0 map[string]int8, clientErr error) {
+	rpcReq := ServiceStringInt8MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringInt8MapResponse)
+	return rpcResp.RetStringInt8Map_0, nil
 }
 
 func (tsc *ServiceGoRPCClient) StringPtr(v *string) (retStringPtr_0 *string, clientErr error) {
@@ -338,6 +558,61 @@ func (tsc *ServiceGoRPCClient) StringStringSliceMap(v map[string][]string) (retS
 	return rpcResp.RetStringStringSliceMap_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) StringUint16Map(v map[string]uint16) (retStringUint16Map_0 map[string]uint16, clientErr error) {
+	rpcReq := ServiceStringUint16MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringUint16MapResponse)
+	return rpcResp.RetStringUint16Map_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) StringUint32Map(v map[string]uint32) (retStringUint32Map_0 map[string]uint32, clientErr error) {
+	rpcReq := ServiceStringUint32MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringUint32MapResponse)
+	return rpcResp.RetStringUint32Map_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) StringUint64Map(v map[string]uint64) (retStringUint64Map_0 map[string]uint64, clientErr error) {
+	rpcReq := ServiceStringUint64MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringUint64MapResponse)
+	return rpcResp.RetStringUint64Map_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) StringUint8Map(v map[string]uint8) (retStringUint8Map_0 map[string]uint8, clientErr error) {
+	rpcReq := ServiceStringUint8MapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringUint8MapResponse)
+	return rpcResp.RetStringUint8Map_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) StringUintMap(v map[string]uint) (retStringUintMap_0 map[string]uint, clientErr error) {
+	rpcReq := ServiceStringUintMapRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringUintMapResponse)
+	return rpcResp.RetStringUintMap_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) StructWithCollections(v WithCollections) (retStructWithCollections_0 WithCollections, clientErr error) {
 	rpcReq := ServiceStructWithCollectionsRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
@@ -358,4 +633,158 @@ func (tsc *ServiceGoRPCClient) StructWithPointers(v WithPointers) (retStructWith
 	}
 	rpcResp := rpcRes.(ServiceStructWithPointersResponse)
 	return rpcResp.RetStructWithPointers_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint(v uint) (retUint_0 uint, clientErr error) {
+	rpcReq := ServiceUintRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUintResponse)
+	return rpcResp.RetUint_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint16(v uint16) (retUint16_0 uint16, clientErr error) {
+	rpcReq := ServiceUint16Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint16Response)
+	return rpcResp.RetUint16_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint16Ptr(v *uint16) (retUint16Ptr_0 *uint16, clientErr error) {
+	rpcReq := ServiceUint16PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint16PtrResponse)
+	return rpcResp.RetUint16Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint16Slice(v []uint16) (retUint16Slice_0 []uint16, clientErr error) {
+	rpcReq := ServiceUint16SliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint16SliceResponse)
+	return rpcResp.RetUint16Slice_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint32(v uint32) (retUint32_0 uint32, clientErr error) {
+	rpcReq := ServiceUint32Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint32Response)
+	return rpcResp.RetUint32_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint32Ptr(v *uint32) (retUint32Ptr_0 *uint32, clientErr error) {
+	rpcReq := ServiceUint32PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint32PtrResponse)
+	return rpcResp.RetUint32Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint32Slice(v []uint32) (retUint32Slice_0 []uint32, clientErr error) {
+	rpcReq := ServiceUint32SliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint32SliceResponse)
+	return rpcResp.RetUint32Slice_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint64(v uint64) (retUint64_0 uint64, clientErr error) {
+	rpcReq := ServiceUint64Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint64Response)
+	return rpcResp.RetUint64_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint64Ptr(v *uint64) (retUint64Ptr_0 *uint64, clientErr error) {
+	rpcReq := ServiceUint64PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint64PtrResponse)
+	return rpcResp.RetUint64Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint64Slice(v []uint64) (retUint64Slice_0 []uint64, clientErr error) {
+	rpcReq := ServiceUint64SliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint64SliceResponse)
+	return rpcResp.RetUint64Slice_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint8(v uint8) (retUint8_0 uint8, clientErr error) {
+	rpcReq := ServiceUint8Request{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint8Response)
+	return rpcResp.RetUint8_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) Uint8Ptr(v *uint8) (retUint8Ptr_0 *uint8, clientErr error) {
+	rpcReq := ServiceUint8PtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUint8PtrResponse)
+	return rpcResp.RetUint8Ptr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) UintPtr(v *uint) (retUintPtr_0 *uint, clientErr error) {
+	rpcReq := ServiceUintPtrRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUintPtrResponse)
+	return rpcResp.RetUintPtr_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) UintSlice(v []uint) (retUintSlice_0 []uint, clientErr error) {
+	rpcReq := ServiceUintSliceRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceUintSliceResponse)
+	return rpcResp.RetUintSlice_0, nil
 }

@@ -7,6 +7,18 @@ export class ServiceClient {
 	constructor(
 		public transport:<T>(method: string, data?: any[]) => Promise<T>
 	) {}
+	async allScalarMapsStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarMaps):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarMaps> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarMaps}>("AllScalarMapsStruct", [v]))[0]
+	}
+	async allScalarPointersStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarPointers):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarPointers> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarPointers}>("AllScalarPointersStruct", [v]))[0]
+	}
+	async allScalarSlicesStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarSlices):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarSlices> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalarSlices}>("AllScalarSlicesStruct", [v]))[0]
+	}
+	async allScalarsStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalars):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.AllScalars> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.AllScalars}>("AllScalarsStruct", [v]))[0]
+	}
 	async bool(v:boolean):Promise<boolean> {
 		return (await this.transport<{0:boolean}>("Bool", [v]))[0]
 	}
@@ -19,11 +31,38 @@ export class ServiceClient {
 	async empty():Promise<boolean> {
 		return (await this.transport<{0:boolean}>("Empty", []))[0]
 	}
+	async float32(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Float32", [v]))[0]
+	}
+	async float32Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Float32Ptr", [v]))[0]
+	}
+	async float32Slice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("Float32Slice", [v]))[0]
+	}
 	async float64(v:number):Promise<number> {
 		return (await this.transport<{0:number}>("Float64", [v]))[0]
 	}
 	async int(v:number):Promise<number> {
 		return (await this.transport<{0:number}>("Int", [v]))[0]
+	}
+	async int16(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Int16", [v]))[0]
+	}
+	async int16Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Int16Ptr", [v]))[0]
+	}
+	async int16Slice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("Int16Slice", [v]))[0]
+	}
+	async int32(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Int32", [v]))[0]
+	}
+	async int32Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Int32Ptr", [v]))[0]
+	}
+	async int32Slice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("Int32Slice", [v]))[0]
 	}
 	async int64(v:number):Promise<number> {
 		return (await this.transport<{0:number}>("Int64", [v]))[0]
@@ -33,6 +72,15 @@ export class ServiceClient {
 	}
 	async int64Slice(v:Array<number>|null):Promise<Array<number>|null> {
 		return (await this.transport<{0:Array<number>|null}>("Int64Slice", [v]))[0]
+	}
+	async int8(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Int8", [v]))[0]
+	}
+	async int8Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Int8Ptr", [v]))[0]
+	}
+	async int8Slice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("Int8Slice", [v]))[0]
 	}
 	async mapOfMaps(v:Record<string,Record<string,string>|null>|null):Promise<Record<string,Record<string,string>|null>|null> {
 		return (await this.transport<{0:Record<string,Record<string,string>|null>|null}>("MapOfMaps", [v]))[0]
@@ -69,8 +117,20 @@ export class ServiceClient {
 	async string(v:string):Promise<string> {
 		return (await this.transport<{0:string}>("String", [v]))[0]
 	}
+	async stringFloat32Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringFloat32Map", [v]))[0]
+	}
+	async stringInt16Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringInt16Map", [v]))[0]
+	}
+	async stringInt32Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringInt32Map", [v]))[0]
+	}
 	async stringInt64Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
 		return (await this.transport<{0:Record<string,number>|null}>("StringInt64Map", [v]))[0]
+	}
+	async stringInt8Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringInt8Map", [v]))[0]
 	}
 	async stringPtr(v:string|null):Promise<string|null> {
 		return (await this.transport<{0:string|null}>("StringPtr", [v]))[0]
@@ -93,10 +153,67 @@ export class ServiceClient {
 	async stringStringSliceMap(v:Record<string,Array<string>|null>|null):Promise<Record<string,Array<string>|null>|null> {
 		return (await this.transport<{0:Record<string,Array<string>|null>|null}>("StringStringSliceMap", [v]))[0]
 	}
+	async stringUint16Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringUint16Map", [v]))[0]
+	}
+	async stringUint32Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringUint32Map", [v]))[0]
+	}
+	async stringUint64Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringUint64Map", [v]))[0]
+	}
+	async stringUint8Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringUint8Map", [v]))[0]
+	}
+	async stringUintMap(v:Record<string,number>|null):Promise<Record<string,number>|null> {
+		return (await this.transport<{0:Record<string,number>|null}>("StringUintMap", [v]))[0]
+	}
 	async structWithCollections(v:github_com_foomo_gotsrpc_v2_tests_types_server.WithCollections):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.WithCollections> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.WithCollections}>("StructWithCollections", [v]))[0]
 	}
 	async structWithPointers(v:github_com_foomo_gotsrpc_v2_tests_types_server.WithPointers):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.WithPointers> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.WithPointers}>("StructWithPointers", [v]))[0]
+	}
+	async uint(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Uint", [v]))[0]
+	}
+	async uint16(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Uint16", [v]))[0]
+	}
+	async uint16Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Uint16Ptr", [v]))[0]
+	}
+	async uint16Slice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("Uint16Slice", [v]))[0]
+	}
+	async uint32(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Uint32", [v]))[0]
+	}
+	async uint32Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Uint32Ptr", [v]))[0]
+	}
+	async uint32Slice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("Uint32Slice", [v]))[0]
+	}
+	async uint64(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Uint64", [v]))[0]
+	}
+	async uint64Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Uint64Ptr", [v]))[0]
+	}
+	async uint64Slice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("Uint64Slice", [v]))[0]
+	}
+	async uint8(v:number):Promise<number> {
+		return (await this.transport<{0:number}>("Uint8", [v]))[0]
+	}
+	async uint8Ptr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("Uint8Ptr", [v]))[0]
+	}
+	async uintPtr(v:number|null):Promise<number|null> {
+		return (await this.transport<{0:number|null}>("UintPtr", [v]))[0]
+	}
+	async uintSlice(v:Array<number>|null):Promise<Array<number>|null> {
+		return (await this.transport<{0:Array<number>|null}>("UintSlice", [v]))[0]
 	}
 }

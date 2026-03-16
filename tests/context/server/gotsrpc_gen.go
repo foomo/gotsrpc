@@ -3,7 +3,6 @@
 package server
 
 import (
-	io "io"
 	http "net/http"
 	time "time"
 
@@ -43,7 +42,6 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
-	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
@@ -66,7 +64,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		customErrorRet := p.service.CustomError(r.Context(), arg_msg)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -91,7 +92,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		errorRet := p.service.Error(r.Context(), arg_msg)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -116,7 +120,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		helloRet := p.service.Hello(r.Context(), arg_msg)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -141,7 +148,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		joinedErrorRet := p.service.JoinedError(r.Context(), arg_msg)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -166,7 +176,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		pkgErrorRet := p.service.PkgError(r.Context(), arg_msg)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -191,7 +204,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		wrappedErrorRet := p.service.WrappedError(r.Context(), arg_msg)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)

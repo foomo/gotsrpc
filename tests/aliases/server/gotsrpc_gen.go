@@ -3,7 +3,6 @@
 package server
 
 import (
-	io "io"
 	http "net/http"
 	time "time"
 
@@ -51,7 +50,6 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
-	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
@@ -74,7 +72,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		categoryValueRet := p.service.CategoryValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -99,7 +100,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		dataRecordNilRet := p.service.DataRecordNil(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -124,7 +128,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		dataRecordValueRet := p.service.DataRecordValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -149,7 +156,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		detailValueRet := p.service.DetailValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -174,7 +184,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		entriesValueRet := p.service.EntriesValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -199,7 +212,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		entryValueRet := p.service.EntryValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -224,7 +240,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		indexValueRet := p.service.IndexValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -249,7 +268,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		labelMapValueRet := p.service.LabelMapValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -274,7 +296,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		mapOfEntriesRet := p.service.MapOfEntries(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -299,7 +324,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		priorityValueRet := p.service.PriorityValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -324,7 +352,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		ratingValueRet := p.service.RatingValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -349,7 +380,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		registryValueRet := p.service.RegistryValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -374,7 +408,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		statusValueRet := p.service.StatusValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -399,7 +436,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		tagsValueRet := p.service.TagsValue(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)

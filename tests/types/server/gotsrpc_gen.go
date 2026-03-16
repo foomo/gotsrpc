@@ -3,7 +3,6 @@
 package server
 
 import (
-	io "io"
 	http "net/http"
 	time "time"
 
@@ -11,36 +10,75 @@ import (
 )
 
 const (
-	ServiceGoTSRPCProxyBool                  = "Bool"
-	ServiceGoTSRPCProxyBoolPtr               = "BoolPtr"
-	ServiceGoTSRPCProxyByteSlice             = "ByteSlice"
-	ServiceGoTSRPCProxyEmpty                 = "Empty"
-	ServiceGoTSRPCProxyFloat64               = "Float64"
-	ServiceGoTSRPCProxyInt                   = "Int"
-	ServiceGoTSRPCProxyInt64                 = "Int64"
-	ServiceGoTSRPCProxyInt64Ptr              = "Int64Ptr"
-	ServiceGoTSRPCProxyInt64Slice            = "Int64Slice"
-	ServiceGoTSRPCProxyMapOfMaps             = "MapOfMaps"
-	ServiceGoTSRPCProxyMapOfSimpleSlice      = "MapOfSimpleSlice"
-	ServiceGoTSRPCProxyMixedArgs             = "MixedArgs"
-	ServiceGoTSRPCProxyMultiArgs             = "MultiArgs"
-	ServiceGoTSRPCProxyNestedStruct          = "NestedStruct"
-	ServiceGoTSRPCProxyObjectID              = "ObjectID"
-	ServiceGoTSRPCProxySimplePtrSlice        = "SimplePtrSlice"
-	ServiceGoTSRPCProxySimpleSlice           = "SimpleSlice"
-	ServiceGoTSRPCProxySimpleStruct          = "SimpleStruct"
-	ServiceGoTSRPCProxySliceOfMaps           = "SliceOfMaps"
-	ServiceGoTSRPCProxyString                = "String"
-	ServiceGoTSRPCProxyStringInt64Map        = "StringInt64Map"
-	ServiceGoTSRPCProxyStringPtr             = "StringPtr"
-	ServiceGoTSRPCProxyStringSimpleMap       = "StringSimpleMap"
-	ServiceGoTSRPCProxyStringSimplePtrMap    = "StringSimplePtrMap"
-	ServiceGoTSRPCProxyStringSlice           = "StringSlice"
-	ServiceGoTSRPCProxyStringSlice2D         = "StringSlice2D"
-	ServiceGoTSRPCProxyStringStringMap       = "StringStringMap"
-	ServiceGoTSRPCProxyStringStringSliceMap  = "StringStringSliceMap"
-	ServiceGoTSRPCProxyStructWithCollections = "StructWithCollections"
-	ServiceGoTSRPCProxyStructWithPointers    = "StructWithPointers"
+	ServiceGoTSRPCProxyAllScalarMapsStruct     = "AllScalarMapsStruct"
+	ServiceGoTSRPCProxyAllScalarPointersStruct = "AllScalarPointersStruct"
+	ServiceGoTSRPCProxyAllScalarSlicesStruct   = "AllScalarSlicesStruct"
+	ServiceGoTSRPCProxyAllScalarsStruct        = "AllScalarsStruct"
+	ServiceGoTSRPCProxyBool                    = "Bool"
+	ServiceGoTSRPCProxyBoolPtr                 = "BoolPtr"
+	ServiceGoTSRPCProxyByteSlice               = "ByteSlice"
+	ServiceGoTSRPCProxyEmpty                   = "Empty"
+	ServiceGoTSRPCProxyFloat32                 = "Float32"
+	ServiceGoTSRPCProxyFloat32Ptr              = "Float32Ptr"
+	ServiceGoTSRPCProxyFloat32Slice            = "Float32Slice"
+	ServiceGoTSRPCProxyFloat64                 = "Float64"
+	ServiceGoTSRPCProxyInt                     = "Int"
+	ServiceGoTSRPCProxyInt16                   = "Int16"
+	ServiceGoTSRPCProxyInt16Ptr                = "Int16Ptr"
+	ServiceGoTSRPCProxyInt16Slice              = "Int16Slice"
+	ServiceGoTSRPCProxyInt32                   = "Int32"
+	ServiceGoTSRPCProxyInt32Ptr                = "Int32Ptr"
+	ServiceGoTSRPCProxyInt32Slice              = "Int32Slice"
+	ServiceGoTSRPCProxyInt64                   = "Int64"
+	ServiceGoTSRPCProxyInt64Ptr                = "Int64Ptr"
+	ServiceGoTSRPCProxyInt64Slice              = "Int64Slice"
+	ServiceGoTSRPCProxyInt8                    = "Int8"
+	ServiceGoTSRPCProxyInt8Ptr                 = "Int8Ptr"
+	ServiceGoTSRPCProxyInt8Slice               = "Int8Slice"
+	ServiceGoTSRPCProxyMapOfMaps               = "MapOfMaps"
+	ServiceGoTSRPCProxyMapOfSimpleSlice        = "MapOfSimpleSlice"
+	ServiceGoTSRPCProxyMixedArgs               = "MixedArgs"
+	ServiceGoTSRPCProxyMultiArgs               = "MultiArgs"
+	ServiceGoTSRPCProxyNestedStruct            = "NestedStruct"
+	ServiceGoTSRPCProxyObjectID                = "ObjectID"
+	ServiceGoTSRPCProxySimplePtrSlice          = "SimplePtrSlice"
+	ServiceGoTSRPCProxySimpleSlice             = "SimpleSlice"
+	ServiceGoTSRPCProxySimpleStruct            = "SimpleStruct"
+	ServiceGoTSRPCProxySliceOfMaps             = "SliceOfMaps"
+	ServiceGoTSRPCProxyString                  = "String"
+	ServiceGoTSRPCProxyStringFloat32Map        = "StringFloat32Map"
+	ServiceGoTSRPCProxyStringInt16Map          = "StringInt16Map"
+	ServiceGoTSRPCProxyStringInt32Map          = "StringInt32Map"
+	ServiceGoTSRPCProxyStringInt64Map          = "StringInt64Map"
+	ServiceGoTSRPCProxyStringInt8Map           = "StringInt8Map"
+	ServiceGoTSRPCProxyStringPtr               = "StringPtr"
+	ServiceGoTSRPCProxyStringSimpleMap         = "StringSimpleMap"
+	ServiceGoTSRPCProxyStringSimplePtrMap      = "StringSimplePtrMap"
+	ServiceGoTSRPCProxyStringSlice             = "StringSlice"
+	ServiceGoTSRPCProxyStringSlice2D           = "StringSlice2D"
+	ServiceGoTSRPCProxyStringStringMap         = "StringStringMap"
+	ServiceGoTSRPCProxyStringStringSliceMap    = "StringStringSliceMap"
+	ServiceGoTSRPCProxyStringUint16Map         = "StringUint16Map"
+	ServiceGoTSRPCProxyStringUint32Map         = "StringUint32Map"
+	ServiceGoTSRPCProxyStringUint64Map         = "StringUint64Map"
+	ServiceGoTSRPCProxyStringUint8Map          = "StringUint8Map"
+	ServiceGoTSRPCProxyStringUintMap           = "StringUintMap"
+	ServiceGoTSRPCProxyStructWithCollections   = "StructWithCollections"
+	ServiceGoTSRPCProxyStructWithPointers      = "StructWithPointers"
+	ServiceGoTSRPCProxyUint                    = "Uint"
+	ServiceGoTSRPCProxyUint16                  = "Uint16"
+	ServiceGoTSRPCProxyUint16Ptr               = "Uint16Ptr"
+	ServiceGoTSRPCProxyUint16Slice             = "Uint16Slice"
+	ServiceGoTSRPCProxyUint32                  = "Uint32"
+	ServiceGoTSRPCProxyUint32Ptr               = "Uint32Ptr"
+	ServiceGoTSRPCProxyUint32Slice             = "Uint32Slice"
+	ServiceGoTSRPCProxyUint64                  = "Uint64"
+	ServiceGoTSRPCProxyUint64Ptr               = "Uint64Ptr"
+	ServiceGoTSRPCProxyUint64Slice             = "Uint64Slice"
+	ServiceGoTSRPCProxyUint8                   = "Uint8"
+	ServiceGoTSRPCProxyUint8Ptr                = "Uint8Ptr"
+	ServiceGoTSRPCProxyUintPtr                 = "UintPtr"
+	ServiceGoTSRPCProxyUintSlice               = "UintSlice"
 )
 
 type ServiceGoTSRPCProxy struct {
@@ -67,7 +105,6 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
-	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
 	callStats, _ := gotsrpc.GetStatsForRequest(r)
@@ -77,6 +114,118 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		callStats.Service = "Service"
 	}
 	switch funcName {
+	case ServiceGoTSRPCProxyAllScalarMapsStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v AllScalarMaps
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		allScalarMapsStructRet := p.service.AllScalarMapsStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{allScalarMapsStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyAllScalarPointersStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v AllScalarPointers
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		allScalarPointersStructRet := p.service.AllScalarPointersStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{allScalarPointersStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyAllScalarSlicesStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v AllScalarSlices
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		allScalarSlicesStructRet := p.service.AllScalarSlicesStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{allScalarSlicesStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyAllScalarsStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v AllScalars
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		allScalarsStructRet := p.service.AllScalarsStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{allScalarsStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
 	case ServiceGoTSRPCProxyBool:
 		var (
 			args []any
@@ -90,7 +239,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		boolRet := p.service.Bool(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -115,7 +267,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		boolPtrRet := p.service.BoolPtr(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -140,7 +295,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		byteSliceRet := p.service.ByteSlice(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -157,12 +315,99 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			args []any
 			rets []any
 		)
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		emptyRet := p.service.Empty(r.Context())
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{emptyRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyFloat32:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v float32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		float32Ret := p.service.Float32(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{float32Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyFloat32Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *float32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		float32PtrRet := p.service.Float32Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{float32PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyFloat32Slice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []float32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		float32SliceRet := p.service.Float32Slice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{float32SliceRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -182,7 +427,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		float64Ret := p.service.Float64(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -207,12 +455,183 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		intRet := p.service.Int(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{intRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt16:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v int16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int16Ret := p.service.Int16(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int16Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt16Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *int16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int16PtrRet := p.service.Int16Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int16PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt16Slice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []int16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int16SliceRet := p.service.Int16Slice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int16SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt32:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v int32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int32Ret := p.service.Int32(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int32Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt32Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *int32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int32PtrRet := p.service.Int32Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int32PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt32Slice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []int32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int32SliceRet := p.service.Int32Slice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int32SliceRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -232,7 +651,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64Ret := p.service.Int64(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -257,7 +679,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64PtrRet := p.service.Int64Ptr(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -282,12 +707,99 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		int64SliceRet := p.service.Int64Slice(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int64SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt8:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v int8
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int8Ret := p.service.Int8(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int8Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt8Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *int8
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int8PtrRet := p.service.Int8Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int8PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInt8Slice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []int8
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		int8SliceRet := p.service.Int8Slice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{int8SliceRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -307,7 +819,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		mapOfMapsRet := p.service.MapOfMaps(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -332,7 +847,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		mapOfSimpleSliceRet := p.service.MapOfSimpleSlice(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -359,7 +877,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		mixedArgsRet, mixedArgsRet_1, mixedArgsRet_2 := p.service.MixedArgs(r.Context(), arg_s, arg_items, arg_m)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -386,7 +907,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		multiArgsRet, multiArgsRet_1, multiArgsRet_2 := p.service.MultiArgs(r.Context(), arg_a, arg_b, arg_c)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -411,7 +935,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		nestedStructRet := p.service.NestedStruct(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -436,7 +963,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		objectIDRet := p.service.ObjectID(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -461,7 +991,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		simplePtrSliceRet := p.service.SimplePtrSlice(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -486,7 +1019,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		simpleSliceRet := p.service.SimpleSlice(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -511,7 +1047,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		simpleStructRet := p.service.SimpleStruct(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -536,7 +1075,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		sliceOfMapsRet := p.service.SliceOfMaps(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -561,12 +1103,99 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringRet := p.service.String(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringFloat32Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]float32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringFloat32MapRet := p.service.StringFloat32Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringFloat32MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringInt16Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]int16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringInt16MapRet := p.service.StringInt16Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringInt16MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringInt32Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]int32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringInt32MapRet := p.service.StringInt32Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringInt32MapRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -586,12 +1215,43 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringInt64MapRet := p.service.StringInt64Map(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringInt64MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringInt8Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]int8
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringInt8MapRet := p.service.StringInt8Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringInt8MapRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -611,7 +1271,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringPtrRet := p.service.StringPtr(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -636,7 +1299,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringSimpleMapRet := p.service.StringSimpleMap(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -661,7 +1327,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringSimplePtrMapRet := p.service.StringSimplePtrMap(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -686,7 +1355,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringSliceRet := p.service.StringSlice(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -711,7 +1383,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringSlice2DRet := p.service.StringSlice2D(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -736,7 +1411,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringStringMapRet := p.service.StringStringMap(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -761,12 +1439,155 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		stringStringSliceMapRet := p.service.StringStringSliceMap(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringStringSliceMapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringUint16Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]uint16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringUint16MapRet := p.service.StringUint16Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringUint16MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringUint32Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]uint32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringUint32MapRet := p.service.StringUint32Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringUint32MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringUint64Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]uint64
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringUint64MapRet := p.service.StringUint64Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringUint64MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringUint8Map:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]uint8
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringUint8MapRet := p.service.StringUint8Map(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringUint8MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringUintMap:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v map[string]uint
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		stringUintMapRet := p.service.StringUintMap(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringUintMapRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -786,7 +1607,10 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		structWithCollectionsRet := p.service.StructWithCollections(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
@@ -811,12 +1635,407 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			gotsrpc.ErrorCouldNotLoadArgs(w)
 			return
 		}
-		executionStart := time.Now()
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
 		structWithPointersRet := p.service.StructWithPointers(r.Context(), arg_v)
 		if callStats != nil {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{structWithPointersRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v uint
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uintRet := p.service.Uint(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uintRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint16:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v uint16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint16Ret := p.service.Uint16(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint16Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint16Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *uint16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint16PtrRet := p.service.Uint16Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint16PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint16Slice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []uint16
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint16SliceRet := p.service.Uint16Slice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint16SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint32:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v uint32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint32Ret := p.service.Uint32(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint32Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint32Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *uint32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint32PtrRet := p.service.Uint32Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint32PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint32Slice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []uint32
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint32SliceRet := p.service.Uint32Slice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint32SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint64:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v uint64
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint64Ret := p.service.Uint64(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint64Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint64Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *uint64
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint64PtrRet := p.service.Uint64Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint64PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint64Slice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []uint64
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint64SliceRet := p.service.Uint64Slice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint64SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint8:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v uint8
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint8Ret := p.service.Uint8(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint8Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUint8Ptr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *uint8
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uint8PtrRet := p.service.Uint8Ptr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uint8PtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUintPtr:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v *uint
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uintPtrRet := p.service.UintPtr(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uintPtrRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyUintSlice:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v []uint
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		uintSliceRet := p.service.UintSlice(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{uintSliceRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return

@@ -1,11 +1,11 @@
-package benchmark_test
+package server_test
 
 import (
 	"context"
 	"net/http/httptest"
 	"testing"
 
-	server "github.com/foomo/gotsrpc/v2/tests/types/server"
+	"github.com/foomo/gotsrpc/v2/tests/types/server"
 )
 
 func setupGoTSRPC(b *testing.B) *server.HTTPServiceGoTSRPCClient {

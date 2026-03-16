@@ -21,6 +21,34 @@ type (
 		callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
 	}
 
+	ServiceAllScalarMapsStructRequest struct {
+		V AllScalarMaps
+	}
+	ServiceAllScalarMapsStructResponse struct {
+		RetAllScalarMapsStruct_0 AllScalarMaps
+	}
+
+	ServiceAllScalarPointersStructRequest struct {
+		V AllScalarPointers
+	}
+	ServiceAllScalarPointersStructResponse struct {
+		RetAllScalarPointersStruct_0 AllScalarPointers
+	}
+
+	ServiceAllScalarSlicesStructRequest struct {
+		V AllScalarSlices
+	}
+	ServiceAllScalarSlicesStructResponse struct {
+		RetAllScalarSlicesStruct_0 AllScalarSlices
+	}
+
+	ServiceAllScalarsStructRequest struct {
+		V AllScalars
+	}
+	ServiceAllScalarsStructResponse struct {
+		RetAllScalarsStruct_0 AllScalars
+	}
+
 	ServiceBoolRequest struct {
 		V bool
 	}
@@ -48,6 +76,27 @@ type (
 		RetEmpty_0 bool
 	}
 
+	ServiceFloat32Request struct {
+		V float32
+	}
+	ServiceFloat32Response struct {
+		RetFloat32_0 float32
+	}
+
+	ServiceFloat32PtrRequest struct {
+		V *float32
+	}
+	ServiceFloat32PtrResponse struct {
+		RetFloat32Ptr_0 *float32
+	}
+
+	ServiceFloat32SliceRequest struct {
+		V []float32
+	}
+	ServiceFloat32SliceResponse struct {
+		RetFloat32Slice_0 []float32
+	}
+
 	ServiceFloat64Request struct {
 		V float64
 	}
@@ -60,6 +109,48 @@ type (
 	}
 	ServiceIntResponse struct {
 		RetInt_0 int
+	}
+
+	ServiceInt16Request struct {
+		V int16
+	}
+	ServiceInt16Response struct {
+		RetInt16_0 int16
+	}
+
+	ServiceInt16PtrRequest struct {
+		V *int16
+	}
+	ServiceInt16PtrResponse struct {
+		RetInt16Ptr_0 *int16
+	}
+
+	ServiceInt16SliceRequest struct {
+		V []int16
+	}
+	ServiceInt16SliceResponse struct {
+		RetInt16Slice_0 []int16
+	}
+
+	ServiceInt32Request struct {
+		V int32
+	}
+	ServiceInt32Response struct {
+		RetInt32_0 int32
+	}
+
+	ServiceInt32PtrRequest struct {
+		V *int32
+	}
+	ServiceInt32PtrResponse struct {
+		RetInt32Ptr_0 *int32
+	}
+
+	ServiceInt32SliceRequest struct {
+		V []int32
+	}
+	ServiceInt32SliceResponse struct {
+		RetInt32Slice_0 []int32
 	}
 
 	ServiceInt64Request struct {
@@ -81,6 +172,27 @@ type (
 	}
 	ServiceInt64SliceResponse struct {
 		RetInt64Slice_0 []int64
+	}
+
+	ServiceInt8Request struct {
+		V int8
+	}
+	ServiceInt8Response struct {
+		RetInt8_0 int8
+	}
+
+	ServiceInt8PtrRequest struct {
+		V *int8
+	}
+	ServiceInt8PtrResponse struct {
+		RetInt8Ptr_0 *int8
+	}
+
+	ServiceInt8SliceRequest struct {
+		V []int8
+	}
+	ServiceInt8SliceResponse struct {
+		RetInt8Slice_0 []int8
 	}
 
 	ServiceMapOfMapsRequest struct {
@@ -168,11 +280,39 @@ type (
 		RetString_0 string
 	}
 
+	ServiceStringFloat32MapRequest struct {
+		V map[string]float32
+	}
+	ServiceStringFloat32MapResponse struct {
+		RetStringFloat32Map_0 map[string]float32
+	}
+
+	ServiceStringInt16MapRequest struct {
+		V map[string]int16
+	}
+	ServiceStringInt16MapResponse struct {
+		RetStringInt16Map_0 map[string]int16
+	}
+
+	ServiceStringInt32MapRequest struct {
+		V map[string]int32
+	}
+	ServiceStringInt32MapResponse struct {
+		RetStringInt32Map_0 map[string]int32
+	}
+
 	ServiceStringInt64MapRequest struct {
 		V map[string]int64
 	}
 	ServiceStringInt64MapResponse struct {
 		RetStringInt64Map_0 map[string]int64
+	}
+
+	ServiceStringInt8MapRequest struct {
+		V map[string]int8
+	}
+	ServiceStringInt8MapResponse struct {
+		RetStringInt8Map_0 map[string]int8
 	}
 
 	ServiceStringPtrRequest struct {
@@ -224,6 +364,41 @@ type (
 		RetStringStringSliceMap_0 map[string][]string
 	}
 
+	ServiceStringUint16MapRequest struct {
+		V map[string]uint16
+	}
+	ServiceStringUint16MapResponse struct {
+		RetStringUint16Map_0 map[string]uint16
+	}
+
+	ServiceStringUint32MapRequest struct {
+		V map[string]uint32
+	}
+	ServiceStringUint32MapResponse struct {
+		RetStringUint32Map_0 map[string]uint32
+	}
+
+	ServiceStringUint64MapRequest struct {
+		V map[string]uint64
+	}
+	ServiceStringUint64MapResponse struct {
+		RetStringUint64Map_0 map[string]uint64
+	}
+
+	ServiceStringUint8MapRequest struct {
+		V map[string]uint8
+	}
+	ServiceStringUint8MapResponse struct {
+		RetStringUint8Map_0 map[string]uint8
+	}
+
+	ServiceStringUintMapRequest struct {
+		V map[string]uint
+	}
+	ServiceStringUintMapResponse struct {
+		RetStringUintMap_0 map[string]uint
+	}
+
 	ServiceStructWithCollectionsRequest struct {
 		V WithCollections
 	}
@@ -237,9 +412,115 @@ type (
 	ServiceStructWithPointersResponse struct {
 		RetStructWithPointers_0 WithPointers
 	}
+
+	ServiceUintRequest struct {
+		V uint
+	}
+	ServiceUintResponse struct {
+		RetUint_0 uint
+	}
+
+	ServiceUint16Request struct {
+		V uint16
+	}
+	ServiceUint16Response struct {
+		RetUint16_0 uint16
+	}
+
+	ServiceUint16PtrRequest struct {
+		V *uint16
+	}
+	ServiceUint16PtrResponse struct {
+		RetUint16Ptr_0 *uint16
+	}
+
+	ServiceUint16SliceRequest struct {
+		V []uint16
+	}
+	ServiceUint16SliceResponse struct {
+		RetUint16Slice_0 []uint16
+	}
+
+	ServiceUint32Request struct {
+		V uint32
+	}
+	ServiceUint32Response struct {
+		RetUint32_0 uint32
+	}
+
+	ServiceUint32PtrRequest struct {
+		V *uint32
+	}
+	ServiceUint32PtrResponse struct {
+		RetUint32Ptr_0 *uint32
+	}
+
+	ServiceUint32SliceRequest struct {
+		V []uint32
+	}
+	ServiceUint32SliceResponse struct {
+		RetUint32Slice_0 []uint32
+	}
+
+	ServiceUint64Request struct {
+		V uint64
+	}
+	ServiceUint64Response struct {
+		RetUint64_0 uint64
+	}
+
+	ServiceUint64PtrRequest struct {
+		V *uint64
+	}
+	ServiceUint64PtrResponse struct {
+		RetUint64Ptr_0 *uint64
+	}
+
+	ServiceUint64SliceRequest struct {
+		V []uint64
+	}
+	ServiceUint64SliceResponse struct {
+		RetUint64Slice_0 []uint64
+	}
+
+	ServiceUint8Request struct {
+		V uint8
+	}
+	ServiceUint8Response struct {
+		RetUint8_0 uint8
+	}
+
+	ServiceUint8PtrRequest struct {
+		V *uint8
+	}
+	ServiceUint8PtrResponse struct {
+		RetUint8Ptr_0 *uint8
+	}
+
+	ServiceUintPtrRequest struct {
+		V *uint
+	}
+	ServiceUintPtrResponse struct {
+		RetUintPtr_0 *uint
+	}
+
+	ServiceUintSliceRequest struct {
+		V []uint
+	}
+	ServiceUintSliceResponse struct {
+		RetUintSlice_0 []uint
+	}
 )
 
 func init() {
+	gob.Register(ServiceAllScalarMapsStructRequest{})
+	gob.Register(ServiceAllScalarMapsStructResponse{})
+	gob.Register(ServiceAllScalarPointersStructRequest{})
+	gob.Register(ServiceAllScalarPointersStructResponse{})
+	gob.Register(ServiceAllScalarSlicesStructRequest{})
+	gob.Register(ServiceAllScalarSlicesStructResponse{})
+	gob.Register(ServiceAllScalarsStructRequest{})
+	gob.Register(ServiceAllScalarsStructResponse{})
 	gob.Register(ServiceBoolRequest{})
 	gob.Register(ServiceBoolResponse{})
 	gob.Register(ServiceBoolPtrRequest{})
@@ -248,16 +529,40 @@ func init() {
 	gob.Register(ServiceByteSliceResponse{})
 	gob.Register(ServiceEmptyRequest{})
 	gob.Register(ServiceEmptyResponse{})
+	gob.Register(ServiceFloat32Request{})
+	gob.Register(ServiceFloat32Response{})
+	gob.Register(ServiceFloat32PtrRequest{})
+	gob.Register(ServiceFloat32PtrResponse{})
+	gob.Register(ServiceFloat32SliceRequest{})
+	gob.Register(ServiceFloat32SliceResponse{})
 	gob.Register(ServiceFloat64Request{})
 	gob.Register(ServiceFloat64Response{})
 	gob.Register(ServiceIntRequest{})
 	gob.Register(ServiceIntResponse{})
+	gob.Register(ServiceInt16Request{})
+	gob.Register(ServiceInt16Response{})
+	gob.Register(ServiceInt16PtrRequest{})
+	gob.Register(ServiceInt16PtrResponse{})
+	gob.Register(ServiceInt16SliceRequest{})
+	gob.Register(ServiceInt16SliceResponse{})
+	gob.Register(ServiceInt32Request{})
+	gob.Register(ServiceInt32Response{})
+	gob.Register(ServiceInt32PtrRequest{})
+	gob.Register(ServiceInt32PtrResponse{})
+	gob.Register(ServiceInt32SliceRequest{})
+	gob.Register(ServiceInt32SliceResponse{})
 	gob.Register(ServiceInt64Request{})
 	gob.Register(ServiceInt64Response{})
 	gob.Register(ServiceInt64PtrRequest{})
 	gob.Register(ServiceInt64PtrResponse{})
 	gob.Register(ServiceInt64SliceRequest{})
 	gob.Register(ServiceInt64SliceResponse{})
+	gob.Register(ServiceInt8Request{})
+	gob.Register(ServiceInt8Response{})
+	gob.Register(ServiceInt8PtrRequest{})
+	gob.Register(ServiceInt8PtrResponse{})
+	gob.Register(ServiceInt8SliceRequest{})
+	gob.Register(ServiceInt8SliceResponse{})
 	gob.Register(ServiceMapOfMapsRequest{})
 	gob.Register(ServiceMapOfMapsResponse{})
 	gob.Register(ServiceMapOfSimpleSliceRequest{})
@@ -280,8 +585,16 @@ func init() {
 	gob.Register(ServiceSliceOfMapsResponse{})
 	gob.Register(ServiceStringRequest{})
 	gob.Register(ServiceStringResponse{})
+	gob.Register(ServiceStringFloat32MapRequest{})
+	gob.Register(ServiceStringFloat32MapResponse{})
+	gob.Register(ServiceStringInt16MapRequest{})
+	gob.Register(ServiceStringInt16MapResponse{})
+	gob.Register(ServiceStringInt32MapRequest{})
+	gob.Register(ServiceStringInt32MapResponse{})
 	gob.Register(ServiceStringInt64MapRequest{})
 	gob.Register(ServiceStringInt64MapResponse{})
+	gob.Register(ServiceStringInt8MapRequest{})
+	gob.Register(ServiceStringInt8MapResponse{})
 	gob.Register(ServiceStringPtrRequest{})
 	gob.Register(ServiceStringPtrResponse{})
 	gob.Register(ServiceStringSimpleMapRequest{})
@@ -296,10 +609,48 @@ func init() {
 	gob.Register(ServiceStringStringMapResponse{})
 	gob.Register(ServiceStringStringSliceMapRequest{})
 	gob.Register(ServiceStringStringSliceMapResponse{})
+	gob.Register(ServiceStringUint16MapRequest{})
+	gob.Register(ServiceStringUint16MapResponse{})
+	gob.Register(ServiceStringUint32MapRequest{})
+	gob.Register(ServiceStringUint32MapResponse{})
+	gob.Register(ServiceStringUint64MapRequest{})
+	gob.Register(ServiceStringUint64MapResponse{})
+	gob.Register(ServiceStringUint8MapRequest{})
+	gob.Register(ServiceStringUint8MapResponse{})
+	gob.Register(ServiceStringUintMapRequest{})
+	gob.Register(ServiceStringUintMapResponse{})
 	gob.Register(ServiceStructWithCollectionsRequest{})
 	gob.Register(ServiceStructWithCollectionsResponse{})
 	gob.Register(ServiceStructWithPointersRequest{})
 	gob.Register(ServiceStructWithPointersResponse{})
+	gob.Register(ServiceUintRequest{})
+	gob.Register(ServiceUintResponse{})
+	gob.Register(ServiceUint16Request{})
+	gob.Register(ServiceUint16Response{})
+	gob.Register(ServiceUint16PtrRequest{})
+	gob.Register(ServiceUint16PtrResponse{})
+	gob.Register(ServiceUint16SliceRequest{})
+	gob.Register(ServiceUint16SliceResponse{})
+	gob.Register(ServiceUint32Request{})
+	gob.Register(ServiceUint32Response{})
+	gob.Register(ServiceUint32PtrRequest{})
+	gob.Register(ServiceUint32PtrResponse{})
+	gob.Register(ServiceUint32SliceRequest{})
+	gob.Register(ServiceUint32SliceResponse{})
+	gob.Register(ServiceUint64Request{})
+	gob.Register(ServiceUint64Response{})
+	gob.Register(ServiceUint64PtrRequest{})
+	gob.Register(ServiceUint64PtrResponse{})
+	gob.Register(ServiceUint64SliceRequest{})
+	gob.Register(ServiceUint64SliceResponse{})
+	gob.Register(ServiceUint8Request{})
+	gob.Register(ServiceUint8Response{})
+	gob.Register(ServiceUint8PtrRequest{})
+	gob.Register(ServiceUint8PtrResponse{})
+	gob.Register(ServiceUintPtrRequest{})
+	gob.Register(ServiceUintPtrResponse{})
+	gob.Register(ServiceUintSliceRequest{})
+	gob.Register(ServiceUintSliceResponse{})
 }
 
 func NewServiceGoRPCProxy(addr string, service Service, tlsConfig *tls.Config) *ServiceGoRPCProxy {
@@ -340,6 +691,22 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	funcName := funcNameParts[len(funcNameParts)-1]
 
 	switch funcName {
+	case "ServiceAllScalarMapsStructRequest":
+		req := request.(ServiceAllScalarMapsStructRequest)
+		retAllScalarMapsStruct_0 := p.service.AllScalarMapsStruct(nil, req.V)
+		response = ServiceAllScalarMapsStructResponse{RetAllScalarMapsStruct_0: retAllScalarMapsStruct_0}
+	case "ServiceAllScalarPointersStructRequest":
+		req := request.(ServiceAllScalarPointersStructRequest)
+		retAllScalarPointersStruct_0 := p.service.AllScalarPointersStruct(nil, req.V)
+		response = ServiceAllScalarPointersStructResponse{RetAllScalarPointersStruct_0: retAllScalarPointersStruct_0}
+	case "ServiceAllScalarSlicesStructRequest":
+		req := request.(ServiceAllScalarSlicesStructRequest)
+		retAllScalarSlicesStruct_0 := p.service.AllScalarSlicesStruct(nil, req.V)
+		response = ServiceAllScalarSlicesStructResponse{RetAllScalarSlicesStruct_0: retAllScalarSlicesStruct_0}
+	case "ServiceAllScalarsStructRequest":
+		req := request.(ServiceAllScalarsStructRequest)
+		retAllScalarsStruct_0 := p.service.AllScalarsStruct(nil, req.V)
+		response = ServiceAllScalarsStructResponse{RetAllScalarsStruct_0: retAllScalarsStruct_0}
 	case "ServiceBoolRequest":
 		req := request.(ServiceBoolRequest)
 		retBool_0 := p.service.Bool(nil, req.V)
@@ -355,6 +722,18 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	case "ServiceEmptyRequest":
 		retEmpty_0 := p.service.Empty(nil)
 		response = ServiceEmptyResponse{RetEmpty_0: retEmpty_0}
+	case "ServiceFloat32Request":
+		req := request.(ServiceFloat32Request)
+		retFloat32_0 := p.service.Float32(nil, req.V)
+		response = ServiceFloat32Response{RetFloat32_0: retFloat32_0}
+	case "ServiceFloat32PtrRequest":
+		req := request.(ServiceFloat32PtrRequest)
+		retFloat32Ptr_0 := p.service.Float32Ptr(nil, req.V)
+		response = ServiceFloat32PtrResponse{RetFloat32Ptr_0: retFloat32Ptr_0}
+	case "ServiceFloat32SliceRequest":
+		req := request.(ServiceFloat32SliceRequest)
+		retFloat32Slice_0 := p.service.Float32Slice(nil, req.V)
+		response = ServiceFloat32SliceResponse{RetFloat32Slice_0: retFloat32Slice_0}
 	case "ServiceFloat64Request":
 		req := request.(ServiceFloat64Request)
 		retFloat64_0 := p.service.Float64(nil, req.V)
@@ -363,6 +742,30 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceIntRequest)
 		retInt_0 := p.service.Int(nil, req.V)
 		response = ServiceIntResponse{RetInt_0: retInt_0}
+	case "ServiceInt16Request":
+		req := request.(ServiceInt16Request)
+		retInt16_0 := p.service.Int16(nil, req.V)
+		response = ServiceInt16Response{RetInt16_0: retInt16_0}
+	case "ServiceInt16PtrRequest":
+		req := request.(ServiceInt16PtrRequest)
+		retInt16Ptr_0 := p.service.Int16Ptr(nil, req.V)
+		response = ServiceInt16PtrResponse{RetInt16Ptr_0: retInt16Ptr_0}
+	case "ServiceInt16SliceRequest":
+		req := request.(ServiceInt16SliceRequest)
+		retInt16Slice_0 := p.service.Int16Slice(nil, req.V)
+		response = ServiceInt16SliceResponse{RetInt16Slice_0: retInt16Slice_0}
+	case "ServiceInt32Request":
+		req := request.(ServiceInt32Request)
+		retInt32_0 := p.service.Int32(nil, req.V)
+		response = ServiceInt32Response{RetInt32_0: retInt32_0}
+	case "ServiceInt32PtrRequest":
+		req := request.(ServiceInt32PtrRequest)
+		retInt32Ptr_0 := p.service.Int32Ptr(nil, req.V)
+		response = ServiceInt32PtrResponse{RetInt32Ptr_0: retInt32Ptr_0}
+	case "ServiceInt32SliceRequest":
+		req := request.(ServiceInt32SliceRequest)
+		retInt32Slice_0 := p.service.Int32Slice(nil, req.V)
+		response = ServiceInt32SliceResponse{RetInt32Slice_0: retInt32Slice_0}
 	case "ServiceInt64Request":
 		req := request.(ServiceInt64Request)
 		retInt64_0 := p.service.Int64(nil, req.V)
@@ -375,6 +778,18 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceInt64SliceRequest)
 		retInt64Slice_0 := p.service.Int64Slice(nil, req.V)
 		response = ServiceInt64SliceResponse{RetInt64Slice_0: retInt64Slice_0}
+	case "ServiceInt8Request":
+		req := request.(ServiceInt8Request)
+		retInt8_0 := p.service.Int8(nil, req.V)
+		response = ServiceInt8Response{RetInt8_0: retInt8_0}
+	case "ServiceInt8PtrRequest":
+		req := request.(ServiceInt8PtrRequest)
+		retInt8Ptr_0 := p.service.Int8Ptr(nil, req.V)
+		response = ServiceInt8PtrResponse{RetInt8Ptr_0: retInt8Ptr_0}
+	case "ServiceInt8SliceRequest":
+		req := request.(ServiceInt8SliceRequest)
+		retInt8Slice_0 := p.service.Int8Slice(nil, req.V)
+		response = ServiceInt8SliceResponse{RetInt8Slice_0: retInt8Slice_0}
 	case "ServiceMapOfMapsRequest":
 		req := request.(ServiceMapOfMapsRequest)
 		retMapOfMaps_0 := p.service.MapOfMaps(nil, req.V)
@@ -419,10 +834,26 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceStringRequest)
 		retString_0 := p.service.String(nil, req.V)
 		response = ServiceStringResponse{RetString_0: retString_0}
+	case "ServiceStringFloat32MapRequest":
+		req := request.(ServiceStringFloat32MapRequest)
+		retStringFloat32Map_0 := p.service.StringFloat32Map(nil, req.V)
+		response = ServiceStringFloat32MapResponse{RetStringFloat32Map_0: retStringFloat32Map_0}
+	case "ServiceStringInt16MapRequest":
+		req := request.(ServiceStringInt16MapRequest)
+		retStringInt16Map_0 := p.service.StringInt16Map(nil, req.V)
+		response = ServiceStringInt16MapResponse{RetStringInt16Map_0: retStringInt16Map_0}
+	case "ServiceStringInt32MapRequest":
+		req := request.(ServiceStringInt32MapRequest)
+		retStringInt32Map_0 := p.service.StringInt32Map(nil, req.V)
+		response = ServiceStringInt32MapResponse{RetStringInt32Map_0: retStringInt32Map_0}
 	case "ServiceStringInt64MapRequest":
 		req := request.(ServiceStringInt64MapRequest)
 		retStringInt64Map_0 := p.service.StringInt64Map(nil, req.V)
 		response = ServiceStringInt64MapResponse{RetStringInt64Map_0: retStringInt64Map_0}
+	case "ServiceStringInt8MapRequest":
+		req := request.(ServiceStringInt8MapRequest)
+		retStringInt8Map_0 := p.service.StringInt8Map(nil, req.V)
+		response = ServiceStringInt8MapResponse{RetStringInt8Map_0: retStringInt8Map_0}
 	case "ServiceStringPtrRequest":
 		req := request.(ServiceStringPtrRequest)
 		retStringPtr_0 := p.service.StringPtr(nil, req.V)
@@ -451,6 +882,26 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceStringStringSliceMapRequest)
 		retStringStringSliceMap_0 := p.service.StringStringSliceMap(nil, req.V)
 		response = ServiceStringStringSliceMapResponse{RetStringStringSliceMap_0: retStringStringSliceMap_0}
+	case "ServiceStringUint16MapRequest":
+		req := request.(ServiceStringUint16MapRequest)
+		retStringUint16Map_0 := p.service.StringUint16Map(nil, req.V)
+		response = ServiceStringUint16MapResponse{RetStringUint16Map_0: retStringUint16Map_0}
+	case "ServiceStringUint32MapRequest":
+		req := request.(ServiceStringUint32MapRequest)
+		retStringUint32Map_0 := p.service.StringUint32Map(nil, req.V)
+		response = ServiceStringUint32MapResponse{RetStringUint32Map_0: retStringUint32Map_0}
+	case "ServiceStringUint64MapRequest":
+		req := request.(ServiceStringUint64MapRequest)
+		retStringUint64Map_0 := p.service.StringUint64Map(nil, req.V)
+		response = ServiceStringUint64MapResponse{RetStringUint64Map_0: retStringUint64Map_0}
+	case "ServiceStringUint8MapRequest":
+		req := request.(ServiceStringUint8MapRequest)
+		retStringUint8Map_0 := p.service.StringUint8Map(nil, req.V)
+		response = ServiceStringUint8MapResponse{RetStringUint8Map_0: retStringUint8Map_0}
+	case "ServiceStringUintMapRequest":
+		req := request.(ServiceStringUintMapRequest)
+		retStringUintMap_0 := p.service.StringUintMap(nil, req.V)
+		response = ServiceStringUintMapResponse{RetStringUintMap_0: retStringUintMap_0}
 	case "ServiceStructWithCollectionsRequest":
 		req := request.(ServiceStructWithCollectionsRequest)
 		retStructWithCollections_0 := p.service.StructWithCollections(nil, req.V)
@@ -459,6 +910,62 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceStructWithPointersRequest)
 		retStructWithPointers_0 := p.service.StructWithPointers(nil, req.V)
 		response = ServiceStructWithPointersResponse{RetStructWithPointers_0: retStructWithPointers_0}
+	case "ServiceUintRequest":
+		req := request.(ServiceUintRequest)
+		retUint_0 := p.service.Uint(nil, req.V)
+		response = ServiceUintResponse{RetUint_0: retUint_0}
+	case "ServiceUint16Request":
+		req := request.(ServiceUint16Request)
+		retUint16_0 := p.service.Uint16(nil, req.V)
+		response = ServiceUint16Response{RetUint16_0: retUint16_0}
+	case "ServiceUint16PtrRequest":
+		req := request.(ServiceUint16PtrRequest)
+		retUint16Ptr_0 := p.service.Uint16Ptr(nil, req.V)
+		response = ServiceUint16PtrResponse{RetUint16Ptr_0: retUint16Ptr_0}
+	case "ServiceUint16SliceRequest":
+		req := request.(ServiceUint16SliceRequest)
+		retUint16Slice_0 := p.service.Uint16Slice(nil, req.V)
+		response = ServiceUint16SliceResponse{RetUint16Slice_0: retUint16Slice_0}
+	case "ServiceUint32Request":
+		req := request.(ServiceUint32Request)
+		retUint32_0 := p.service.Uint32(nil, req.V)
+		response = ServiceUint32Response{RetUint32_0: retUint32_0}
+	case "ServiceUint32PtrRequest":
+		req := request.(ServiceUint32PtrRequest)
+		retUint32Ptr_0 := p.service.Uint32Ptr(nil, req.V)
+		response = ServiceUint32PtrResponse{RetUint32Ptr_0: retUint32Ptr_0}
+	case "ServiceUint32SliceRequest":
+		req := request.(ServiceUint32SliceRequest)
+		retUint32Slice_0 := p.service.Uint32Slice(nil, req.V)
+		response = ServiceUint32SliceResponse{RetUint32Slice_0: retUint32Slice_0}
+	case "ServiceUint64Request":
+		req := request.(ServiceUint64Request)
+		retUint64_0 := p.service.Uint64(nil, req.V)
+		response = ServiceUint64Response{RetUint64_0: retUint64_0}
+	case "ServiceUint64PtrRequest":
+		req := request.(ServiceUint64PtrRequest)
+		retUint64Ptr_0 := p.service.Uint64Ptr(nil, req.V)
+		response = ServiceUint64PtrResponse{RetUint64Ptr_0: retUint64Ptr_0}
+	case "ServiceUint64SliceRequest":
+		req := request.(ServiceUint64SliceRequest)
+		retUint64Slice_0 := p.service.Uint64Slice(nil, req.V)
+		response = ServiceUint64SliceResponse{RetUint64Slice_0: retUint64Slice_0}
+	case "ServiceUint8Request":
+		req := request.(ServiceUint8Request)
+		retUint8_0 := p.service.Uint8(nil, req.V)
+		response = ServiceUint8Response{RetUint8_0: retUint8_0}
+	case "ServiceUint8PtrRequest":
+		req := request.(ServiceUint8PtrRequest)
+		retUint8Ptr_0 := p.service.Uint8Ptr(nil, req.V)
+		response = ServiceUint8PtrResponse{RetUint8Ptr_0: retUint8Ptr_0}
+	case "ServiceUintPtrRequest":
+		req := request.(ServiceUintPtrRequest)
+		retUintPtr_0 := p.service.UintPtr(nil, req.V)
+		response = ServiceUintPtrResponse{RetUintPtr_0: retUintPtr_0}
+	case "ServiceUintSliceRequest":
+		req := request.(ServiceUintSliceRequest)
+		retUintSlice_0 := p.service.UintSlice(nil, req.V)
+		response = ServiceUintSliceResponse{RetUintSlice_0: retUintSlice_0}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())
 	}

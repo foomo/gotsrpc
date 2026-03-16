@@ -26,7 +26,10 @@ func GetCalledFunc(r *http.Request, endPoint string) string {
 }
 
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
-	start := time.Now()
+	var start time.Time
+	if callStats != nil {
+		start = time.Now()
+	}
 
 	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
 	dec := ch.getDecoder(r.Body)
@@ -58,7 +61,10 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 			response[i] = er.err
 		}
 	}
-	serializationStart := time.Now()
+	var serializationStart time.Time
+	if stats != nil {
+		serializationStart = time.Now()
+	}
 
 	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
 

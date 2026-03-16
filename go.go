@@ -117,7 +117,6 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 	aliases := map[string]string{
 		"time":                        "time",
 		"net/http":                    "http",
-		"io":                          "io",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 	}
 	for _, service := range services {
@@ -185,7 +184,6 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return
 	        }
-			defer io.Copy(io.Discard, r.Body) // Drain Request Body 
 		`)
 
 		g.l("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
@@ -262,7 +260,12 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 				}
 				returnValueNames = append(returnValueNames, lcfirst(method.Name)+ucfirst(retArgName))
 			}
-			g.l("executionStart := time.Now()")
+			g.l("var executionStart time.Time")
+			g.l("if callStats != nil {")
+			g.ind(1)
+			g.l("executionStart = time.Now()")
+			g.ind(-1)
+			g.l("}")
 
 			if isSessionRequest {
 				g.l("rw := gotsrpc.ResponseWriter{ResponseWriter: w}")
