@@ -4,8 +4,8 @@ github.com/buger/jsonparser v1.1.1 h1:2PnMjfWD7wBILjqQbt530v576A/cAbQvEW9gGIpYMU
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/foomo/go v0.3.0 h1:86i48T3Z52ZwDW4yH5p1DvYTovEZuWvCUl1GqEGq6oM=
-github.com/foomo/go v0.3.0/go.mod h1:bZ/DrRPjvjpsg093nIHuifyHLNcgjKppBXzBCwSTYrU=
+github.com/foomo/go v0.4.0 h1:9Qo5DLdoTI965sj6pDHm990Wzqk1RpbcGu0TZ4r2RNw=
+github.com/foomo/go v0.4.0/go.mod h1:bZ/DrRPjvjpsg093nIHuifyHLNcgjKppBXzBCwSTYrU=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
 github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
 github.com/invopop/jsonschema v0.13.0 h1:KvpoAJWEjR3uD9Kbm2HWJmqsEaHt8lBUpd0qHcIi21E=

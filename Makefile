@@ -81,15 +81,7 @@ test.nocache: go.work
 ## Run tests with -bench
 test.bench: go.work
 	@echo "〉go test -bench"
-	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work > .benchmark.txt | benchstat benchmark.txt .benchmark.txt
-	@rm .benchstat.txt
-
-.PHONY: test.bench.update
-## Run tests with -bench & update baseline.txt
-test.bench.update: go.work
-	@echo "〉go test -bench (updating baseline)"
-	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work > benchmark.txt
-	@echo "✅ benchmark.txt updated"
+	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work
 
 .PHONY: outdated
 ## Show outdated direct dependencies
