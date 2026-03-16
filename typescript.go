@@ -7,8 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/iancoleman/strcase"
-
+	stringsx "github.com/foomo/go/strings"
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
@@ -310,7 +309,7 @@ func renderTypescriptStructsToPackages(
 					sort.Strings(keys)
 					packageCodeMap[packageConstantTypeName].l("export enum " + packageConstantTypeName + " {").ind(1)
 					for _, k := range keys {
-						enum := strings.TrimPrefix(strcase.ToCamel(k), packageConstantTypeName)
+						enum := strings.TrimPrefix(stringsx.ToCamel(k), packageConstantTypeName)
 						packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValuesList[k].Value + ",")
 					}
 					packageCodeMap[packageConstantTypeName].ind(-1).l("}")
