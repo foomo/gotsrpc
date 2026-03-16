@@ -1,0 +1,18 @@
+module:
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
+
+targets:
+  time:
+    services:
+      /service: Service
+    package: github.com/foomo/gotsrpc/v2/tests/time/server
+    out: ./client/client.ts
+    gorpc: [ Service ]
+    tsrpc: [ Service ]
+
+mappings:
+  github.com/foomo/gotsrpc/v2/tests/time/server:
+    out: ./client/vo.ts
+  time:
+    out: ./client/vo-time.ts

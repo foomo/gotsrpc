@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../gotsrpc.schema.json
+module:
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
+
+targets:
+  union:
+    services:
+      /service: Service
+    package: github.com/foomo/gotsrpc/v2/tests/union/server
+    out: ./client/client.ts
+    tsrpc: [ Service ]
+
+mappings:
+  github.com/foomo/gotsrpc/v2/tests/union/server:
+    out: ./client/vo.ts

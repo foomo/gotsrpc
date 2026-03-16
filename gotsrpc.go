@@ -1,8 +1,6 @@
 package gotsrpc
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"go/ast"
@@ -19,41 +17,25 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/ugorji/go/codec"
 
 	"github.com/foomo/gotsrpc/v2/config"
 )
-
-type contextKey string
-
-const contextStatsKey contextKey = "gotsrpcStats"
 
 func GetCalledFunc(r *http.Request, endPoint string) string {
 	return strings.TrimPrefix(r.URL.Path, endPoint+"/")
 }
 
-func ErrorFuncNotFound(w http.ResponseWriter) {
-	http.Error(w, "method not found", http.StatusNotFound)
-}
-
-func ErrorCouldNotReply(w http.ResponseWriter) {
-	http.Error(w, "could not reply", http.StatusInternalServerError)
-}
-
-func ErrorCouldNotLoadArgs(w http.ResponseWriter) {
-	http.Error(w, "could not load args", http.StatusBadRequest)
-}
-
-func ErrorMethodNotAllowed(w http.ResponseWriter) {
-	http.Error(w, "you gotta POST", http.StatusMethodNotAllowed)
-}
-
 func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
-	start := time.Now()
+	var start time.Time
+	if callStats != nil {
+		start = time.Now()
+	}
 
-	handle := getHandlerForContentType(r.Header.Get("Content-Type")).handle
-	if errDecode := codec.NewDecoder(r.Body, handle).Decode(args); errDecode != nil {
-		// _, _ = fmt.Fprintln(os.Stderr, errDecode.Error())
+	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
+	dec := ch.getDecoder(r.Body)
+	errDecode := dec.Decode(args)
+	ch.putDecoder(dec)
+	if errDecode != nil {
 		return errors.Wrap(errDecode, "could not decode arguments")
 	}
 	if callStats != nil {
@@ -70,41 +52,37 @@ func loadArgs(args interface{}, jsonBytes []byte) error {
 	return nil
 }
 
-func RequestWithStatsContext(r *http.Request) *http.Request {
-	stats := &CallStats{}
-	return r.WithContext(context.WithValue(r.Context(), contextStatsKey, stats))
-}
-
-func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
-	if value, ok := r.Context().Value(contextStatsKey).(*CallStats); ok && value != nil {
-		return value, true
-	} else {
-		return &CallStats{}, false
-	}
-}
-
-func ClearStats(r *http.Request) {
-	*r = *r.WithContext(context.WithValue(r.Context(), contextStatsKey, nil))
-}
-
-// Reply despite the fact, that this is a public method - do not call it, it will be called by generated code
+// Reply although this is a public method - do not call it, it will be called by generated code
 func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
-	serializationStart := time.Now()
+	var errorIndices []int
+	for i, v := range response {
+		if er, ok := v.(*errorReply); ok {
+			errorIndices = append(errorIndices, i)
+			response[i] = er.err
+		}
+	}
+	var serializationStart time.Time
+	if stats != nil {
+		serializationStart = time.Now()
+	}
 
-	clientHandle := getHandlerForContentType(r.Header.Get("Content-Type"))
+	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
 
-	w.Header().Set("Content-Type", clientHandle.contentType)
+	w.Header().Set("Content-Type", ch.contentType)
 
-	if clientHandle.beforeEncodeReply != nil {
-		if err := clientHandle.beforeEncodeReply(&response); err != nil {
-			// _, _ = fmt.Fprintln(os.Stderr, err.Error())
+	if ch.beforeEncodeReply != nil {
+		if err := ch.beforeEncodeReply(&response, errorIndices); err != nil {
 			return errors.Wrap(err, "error during before encoder reply")
 		}
 	}
 
-	buf := new(bytes.Buffer)
-	if err := codec.NewEncoder(buf, clientHandle.handle).Encode(response); err != nil {
-		// _, _ = fmt.Fprintln(os.Stderr, err.Error())
+	buf := getBuffer()
+	defer putBuffer(buf)
+
+	enc := ch.getEncoder(buf)
+	err := enc.Encode(response)
+	ch.putEncoder(enc)
+	if err != nil {
 		return errors.Wrap(err, "could not encode data to accepted format")
 	}
 
@@ -117,9 +95,8 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	if stats != nil {
 		stats.ResponseSize = buf.Len()
 		stats.Marshalling = time.Since(serializationStart)
-		if len(response) > 0 {
-			errResp := response[len(response)-1]
-			if v, ok := errResp.(error); ok && v != nil {
+		for _, i := range errorIndices {
+			if v, ok := response[i].(error); ok && v != nil {
 				if !reflect.ValueOf(v).IsZero() {
 					stats.ErrorCode = 1
 					stats.ErrorType = fmt.Sprintf("%T", v)
@@ -189,20 +166,6 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 		errorStrings[dir] = err.Error()
 	}
 	return nil, nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
-}
-
-type byLen []string
-
-func (a byLen) Len() int {
-	return len(a)
-}
-
-func (a byLen) Less(i, j int) bool {
-	return len(a[i]) > len(a[j])
-}
-
-func (a byLen) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
 }
 
 func parsePackage(goPaths []string, gomod config.Namespace, packageName string) (pkg *ast.Package, err error) {

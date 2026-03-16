@@ -63,14 +63,13 @@ lint.fix:
 ## Run tests
 test: go.work
 	@echo "〉go test"
-	#@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
-	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe ./...) &&) true
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
 
 .PHONY: test.race
 ## Run tests with -race
 test.race: go.work
 	@echo "〉go test -race"
-	GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
 
 .PHONY: test.nocache
 ## Run tests with -count=1
@@ -82,15 +81,7 @@ test.nocache: go.work
 ## Run tests with -bench
 test.bench: go.work
 	@echo "〉go test -bench"
-	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work > .benchmark.txt | benchstat benchmark.txt .benchmark.txt
-	@rm .benchstat.txt
-
-.PHONY: test.bench.update
-## Run tests with -bench & update baseline.txt
-test.bench.update: go.work
-	@echo "〉go test -bench (updating baseline)"
-	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work > benchmark.txt
-	@echo "✅ benchmark.txt updated"
+	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work
 
 .PHONY: outdated
 ## Show outdated direct dependencies
@@ -124,7 +115,7 @@ install.debug:
 	@echo "〉installing gotsrpc (debug)"
 	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
 
-EXAMPLES=basic context errors monitor nullable union time types
+EXAMPLES=basic monitor
 define examples
 .PHONY: example.$(1)
 example.$(1):
@@ -146,7 +137,7 @@ $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
 ## Run go generate
 generate:
 	@echo "〉go generate"
-	@go generate ./...
+	@go generate work
 
 .PHONY: examples
 ## Generate examples

@@ -1,11 +1,11 @@
 package gotsrpc
 
 import (
-	"reflect"
-	"time"
+	"io"
+	"sync"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
 	"github.com/ugorji/go/codec"
 )
 
@@ -16,146 +16,74 @@ const (
 	EncodingJson    = ClientEncoding(1) //nolint:staticcheck
 )
 
-var errorType = reflect.TypeOf((*error)(nil)).Elem()
-
 type clientHandle struct {
 	handle            codec.Handle
 	contentType       string
-	beforeEncodeReply func(*[]any) error
-	beforeDecodeReply func([]any) ([]any, error)
-	afterDecodeReply  func(*[]any, []any) error
+	encoderPool       sync.Pool
+	decoderPool       sync.Pool
+	beforeEncodeReply func(*[]any, []int) error
+	beforeDecodeReply func([]any, []int) ([]any, error)
+	afterDecodeReply  func(*[]any, []any, []int) error
 }
 
-var msgpackClientHandle = &clientHandle{
-	contentType: "application/msgpack; charset=utf-8",
-	handle:      &codec.MsgpackHandle{},
-	// transform error type to sth that is transportable
-	beforeEncodeReply: func(resp *[]any) error {
-		for k, v := range *resp {
-			if e, ok := v.(error); ok {
-				if r := reflect.ValueOf(e); !r.IsZero() {
-					(*resp)[k] = NewError(e)
-				}
+func (ch *clientHandle) getEncoder(w io.Writer) *codec.Encoder {
+	if enc, ok := ch.encoderPool.Get().(*codec.Encoder); ok {
+		enc.Reset(w)
+		return enc
+	}
+	return codec.NewEncoder(w, ch.handle)
+}
+
+func (ch *clientHandle) putEncoder(enc *codec.Encoder) {
+	ch.encoderPool.Put(enc)
+}
+
+func (ch *clientHandle) getDecoder(r io.Reader) *codec.Decoder {
+	if dec, ok := ch.decoderPool.Get().(*codec.Decoder); ok {
+		dec.Reset(r)
+		return dec
+	}
+	return codec.NewDecoder(r, ch.handle)
+}
+
+func (ch *clientHandle) putDecoder(dec *codec.Decoder) {
+	ch.decoderPool.Put(dec)
+}
+
+var (
+	defaultBeforeEncodeReply = func(resp *[]any, errorIndices []int) error {
+		for _, i := range errorIndices {
+			if e, ok := (*resp)[i].(error); ok {
+				(*resp)[i] = NewError(e)
 			}
 		}
 		return nil
-	},
-	beforeDecodeReply: func(reply []any) ([]any, error) {
+	}
+	defaultBeforeDecodeReply = func(reply []any, errorIndices []int) ([]any, error) {
+		if len(errorIndices) == 0 {
+			return reply, nil
+		}
 		ret := make([]any, len(reply))
-		for k, v := range reply {
-			val := reflect.TypeOf(v)
-			if val.Kind() == reflect.Ptr {
-				val = val.Elem()
-			}
-			if val.Implements(errorType) {
-				var e *Error
-				ret[k] = e
-			} else {
-				ret[k] = v
-			}
+		copy(ret, reply)
+		for _, i := range errorIndices {
+			var e *Error
+			ret[i] = e
 		}
 		return ret, nil
-	},
-	afterDecodeReply: func(reply *[]any, wrappedReply []any) error {
-		for k, v := range wrappedReply {
-			if e, ok := v.(*Error); ok && e != nil {
-				if y, ok := (*reply)[k].(*error); ok {
+	}
+	defaultAfterDecodeReply = func(reply *[]any, wrappedReply []any, errorIndices []int) error {
+		for _, i := range errorIndices {
+			if e, ok := wrappedReply[i].(*Error); ok && e != nil {
+				if y, ok := (*reply)[i].(*error); ok {
 					*y = e
-				} else if err := mapstructure.Decode(e.Data, (*reply)[k]); err != nil {
-					return errors.Wrap(err, "failed to decode wrapped error")
+				} else if err := mapstructure.Decode(e.Data, (*reply)[i]); err != nil {
+					return pkgerrors.Wrap(err, "failed to decode wrapped error")
 				}
 			}
 		}
 		return nil
-	},
-}
-
-func init() {
-	mh := new(codec.MsgpackHandle)
-	// use map[string]interface{} instead of map[interface{}]interface{}
-	mh.MapType = reflect.TypeOf(map[string]interface{}(nil))
-	// attempting to set promoted field in literal will cause a compiler error
-	mh.RawToString = true
-	msgpackClientHandle.handle = mh
-	// WriteExt is not being called
-	// if err := SetJSONExt(time.Time{}, 2, timeExt); err != nil {
-	// 	 panic(err)
-	// }
-
-	jh := new(codec.JsonHandle)
-	jh.MapKeyAsString = true
-	jh.TimeNotBuiltin = true
-	if err := jh.SetInterfaceExt(reflect.TypeOf(time.Time{}), 1, timeExt); err != nil {
-		panic(err)
 	}
-	jsonClientHandle.handle = jh
-}
-
-var jsonClientHandle = &clientHandle{
-	handle:      &codec.JsonHandle{},
-	contentType: "application/json; charset=utf-8",
-	// transform error type to sth that is transportable
-	beforeEncodeReply: func(resp *[]any) error {
-		for k, v := range *resp {
-			if e, ok := v.(error); ok {
-				if r := reflect.ValueOf(e); !r.IsZero() {
-					(*resp)[k] = NewError(e)
-				}
-			}
-		}
-		return nil
-	},
-	beforeDecodeReply: func(reply []any) ([]any, error) {
-		ret := make([]any, len(reply))
-		for k, v := range reply {
-			val := reflect.TypeOf(v)
-			if val.Kind() == reflect.Ptr {
-				val = val.Elem()
-			}
-			if val.Implements(errorType) {
-				var e *Error
-				ret[k] = e
-			} else {
-				ret[k] = v
-			}
-		}
-		return ret, nil
-	},
-	afterDecodeReply: func(reply *[]any, wrappedReply []any) error {
-		for k, v := range wrappedReply {
-			if e, ok := v.(*Error); ok && e != nil {
-				if y, ok := (*reply)[k].(*error); ok {
-					*y = e
-				} else if err := mapstructure.Decode(e.Data, (*reply)[k]); err != nil {
-					return errors.Wrap(err, "failed to decode wrapped error")
-				}
-			}
-		}
-		return nil
-	},
-}
-
-func NewMSGPackEncoderBytes(b *[]byte) *codec.Encoder {
-	return codec.NewEncoderBytes(b, msgpackClientHandle.handle)
-}
-
-func NewMSGPackDecoderBytes(b []byte) *codec.Decoder {
-	return codec.NewDecoderBytes(b, msgpackClientHandle.handle)
-}
-
-func SetJSONExt(rt interface{}, tag uint64, ext codec.InterfaceExt) error {
-	if value, ok := jsonClientHandle.handle.(*codec.JsonHandle); ok {
-		return value.SetInterfaceExt(reflect.TypeOf(rt), tag, ext)
-	}
-	return errors.New("invalid handle type")
-}
-
-func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
-	if value, ok := msgpackClientHandle.handle.(*codec.MsgpackHandle); ok {
-		return value.SetBytesExt(reflect.TypeOf(rt), tag, ext)
-	}
-	return errors.New("invalid handle type")
-}
+)
 
 func getHandleForEncoding(encoding ClientEncoding) *clientHandle {
 	switch encoding {

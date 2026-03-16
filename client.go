@@ -3,12 +3,10 @@ package gotsrpc
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/pkg/errors"
-	"github.com/ugorji/go/codec"
 )
 
 const (
@@ -75,23 +73,36 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:
 	c.client = client
 }
 
-// Call calls a method on the remove service
+// Call calls a method on the remote service
 func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) error {
-	// Marshall args
-	b := new(bytes.Buffer)
-
-	// If no arguments are set, remove
+	var errorIndices []int
+	for i, v := range reply {
+		if isErrorPtr(v) {
+			errorIndices = append(errorIndices, i)
+		}
+	}
+	// Marshal args
+	var b *bytes.Buffer
 	if len(args) > 0 {
-		if err := codec.NewEncoder(b, c.handle.handle).Encode(args); err != nil {
+		b = getBuffer()
+		defer putBuffer(b)
+		enc := c.handle.getEncoder(b)
+		err := enc.Encode(args)
+		c.handle.putEncoder(enc)
+		if err != nil {
 			return NewClientError(errors.Wrap(err, "failed to encode arguments"))
 		}
 	}
 
 	// Create post url
-	postURL := fmt.Sprintf("%s%s/%s", url, endpoint, method)
+	postURL := url + endpoint + "/" + method
 
 	// Create request
-	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, c.headers.Clone())
+	var headers http.Header
+	if c.headers != nil {
+		headers = c.headers.Clone()
+	}
+	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, headers)
 	if errRequest != nil {
 		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
 	}
@@ -102,7 +113,8 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	}
 	defer resp.Body.Close()
 
-	buf := new(bytes.Buffer)
+	buf := getBuffer()
+	defer putBuffer(buf)
 	if _, err := io.Copy(buf, resp.Body); err != nil {
 		return NewClientError(errors.Wrap(err, "failed to read response body"))
 	}
@@ -112,27 +124,38 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		return NewClientError(NewHTTPError(buf.String(), resp.StatusCode))
 	}
 
-	clientHandle := getHandlerForContentType(resp.Header.Get("Content-Type"))
+	clientHandle := c.handle
+	if ct := resp.Header.Get("Content-Type"); ct != "" && ct != c.handle.contentType {
+		clientHandle = getHandlerForContentType(ct)
+	}
 
 	wrappedReply := reply
 	if clientHandle.beforeDecodeReply != nil {
-		if value, err := clientHandle.beforeDecodeReply(reply); err != nil {
+		if value, err := clientHandle.beforeDecodeReply(reply, errorIndices); err != nil {
 			return NewClientError(errors.Wrap(err, "failed to call beforeDecodeReply hook"))
 		} else {
 			wrappedReply = value
 		}
 	}
 
-	if err := codec.NewDecoder(buf, clientHandle.handle).Decode(wrappedReply); err != nil {
+	dec := clientHandle.getDecoder(buf)
+	err := dec.Decode(wrappedReply)
+	clientHandle.putDecoder(dec)
+	if err != nil {
 		return NewClientError(errors.Wrap(err, "failed to decode response"))
 	}
 
 	// replace error
 	if clientHandle.afterDecodeReply != nil {
-		if err := clientHandle.afterDecodeReply(&reply, wrappedReply); err != nil {
+		if err := clientHandle.afterDecodeReply(&reply, wrappedReply, errorIndices); err != nil {
 			return NewClientError(errors.Wrap(err, "failed to call afterDecodeReply hook"))
 		}
 	}
 
 	return nil
+}
+
+func isErrorPtr(v any) bool {
+	_, ok := v.(*error)
+	return ok
 }
