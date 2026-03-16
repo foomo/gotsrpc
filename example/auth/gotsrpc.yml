@@ -1,0 +1,20 @@
+module:
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
+
+targets:
+  auth:
+    services:
+      /auth: AuthService
+      /hello: HelloService
+    package: github.com/foomo/gotsrpc/v2/example/auth/service
+    out: ./client/src/client_gen.ts
+    tsrpc:
+      - AuthService
+      - HelloService
+
+mappings:
+  github.com/foomo/gotsrpc/v2/example/auth/service:
+    out: ./client/src/vo_gen.ts
+  time:
+    out: ./client/src/vo-time_gen.ts
