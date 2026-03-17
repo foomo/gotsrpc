@@ -22,8 +22,9 @@ type JSONInfo struct {
 }
 
 type StructType struct {
-	Name    string
-	Package string
+	Name     string
+	Package  string
+	TypeArgs []*Value `json:",omitempty"`
 }
 
 type Value struct {
@@ -38,6 +39,7 @@ type Value struct {
 	Map          *Map        `json:",omitempty"`
 	Array        *Array      `json:",omitempty"`
 	IsPtr        bool        `json:",omitempty"`
+	TypeParam    string      `json:",omitempty"`
 }
 
 type Array struct {
@@ -88,6 +90,7 @@ type Struct struct {
 	InlineFields []*Field
 	Map          *Map
 	Array        *Array
+	TypeParams   []string `json:",omitempty"`
 }
 
 type Scalar struct {

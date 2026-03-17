@@ -32,11 +32,23 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 		t += "[]" + v.Array.Value.goType(aliases, packageName)
 	case len(v.GoScalarType) > 0:
 		t += v.GoScalarType
+	case v.TypeParam != "":
+		t += v.TypeParam
 	case v.StructType != nil:
 		if packageName != v.StructType.Package && aliases[v.StructType.Package] != "" {
 			t += aliases[v.StructType.Package] + "."
 		}
 		t += v.StructType.Name
+		if len(v.StructType.TypeArgs) > 0 {
+			t += "["
+			for i, arg := range v.StructType.TypeArgs {
+				if i > 0 {
+					t += ", "
+				}
+				t += arg.goType(aliases, packageName)
+			}
+			t += "]"
+		}
 	case v.Map != nil:
 		t += `map[` + v.Map.Key.goType(aliases, packageName) + `]` + v.Map.Value.goType(aliases, packageName)
 	case v.Scalar != nil:
@@ -103,6 +115,9 @@ func extractImportValue(value *Value, fullPackageName string, aliases map[string
 	switch {
 	case value.StructType != nil:
 		extractImport(value.StructType.Package, fullPackageName, aliases)
+		for _, arg := range value.StructType.TypeArgs {
+			extractImportValue(arg, fullPackageName, aliases)
+		}
 	case value.Array != nil:
 		extractImportValue(value.Array.Value, fullPackageName, aliases)
 	case value.Map != nil:
