@@ -16,7 +16,79 @@ func (sl ServiceList) Len() int           { return len(sl) }
 func (sl ServiceList) Swap(i, j int)      { sl[i], sl[j] = sl[j], sl[i] }
 func (sl ServiceList) Less(i, j int) bool { return strings.Compare(sl[i].Name, sl[j].Name) > 0 }
 
-func readServiceFile(file *ast.File, packageName string, services ServiceList) error {
+// interfaceInfo holds a parsed interface type and its file imports.
+type interfaceInfo struct {
+	iface   *ast.InterfaceType
+	imports fileImportSpecMap
+}
+
+// collectPackageInterfaces scans all files in the package and builds a map
+// of interface names to their AST and file imports.
+func collectPackageInterfaces(pkg *ast.Package, packageName string) map[string]interfaceInfo {
+	result := map[string]interfaceInfo{}
+	for _, file := range pkg.Files {
+		fileImports := getFileImports(file, packageName)
+		for _, decl := range file.Decls {
+			genDecl, ok := decl.(*ast.GenDecl)
+			if !ok || genDecl.Tok != token.TYPE {
+				continue
+			}
+			for _, spec := range genDecl.Specs {
+				typeSpec, ok := spec.(*ast.TypeSpec)
+				if !ok {
+					continue
+				}
+				iface, ok := typeSpec.Type.(*ast.InterfaceType)
+				if !ok {
+					continue
+				}
+				result[typeSpec.Name.Name] = interfaceInfo{
+					iface:   iface,
+					imports: fileImports,
+				}
+			}
+		}
+	}
+	return result
+}
+
+// resolvedMethod pairs an AST function type with the file imports it was declared in.
+type resolvedMethod struct {
+	name    string
+	funcTyp *ast.FuncType
+	imports fileImportSpecMap
+}
+
+// resolveInterfaceMethods recursively collects all methods from an interface,
+// following embedded interfaces via the pkgInterfaces map. Uses visited for cycle protection.
+func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap, pkgInterfaces map[string]interfaceInfo, visited map[string]bool) []resolvedMethod {
+	var methods []resolvedMethod
+	for _, field := range iface.Methods.List {
+		switch ft := field.Type.(type) {
+		case *ast.FuncType:
+			if len(field.Names) == 0 {
+				continue
+			}
+			methods = append(methods, resolvedMethod{
+				name:    field.Names[0].Name,
+				funcTyp: ft,
+				imports: imports,
+			})
+		case *ast.Ident:
+			// Embedded interface reference
+			if visited[ft.Name] {
+				continue
+			}
+			visited[ft.Name] = true
+			if info, ok := pkgInterfaces[ft.Name]; ok {
+				methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited)...)
+			}
+		}
+	}
+	return methods
+}
+
+func readServiceFile(file *ast.File, packageName string, services ServiceList, pkgInterfaces map[string]interfaceInfo) error {
 	findService := func(serviceName string) (service *Service, ok bool) {
 		for _, service := range services {
 			if service.Name == serviceName {
@@ -67,20 +139,14 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 					if service, ok := findService(ident.Name); ok {
 						if iSpec, ok := typeSpec.Type.(*ast.InterfaceType); ok {
 							service.IsInterface = true
-							for _, fieldDecl := range iSpec.Methods.List {
-								if funcDecl, ok := fieldDecl.Type.(*ast.FuncType); ok {
-									if len(fieldDecl.Names) == 0 {
-										continue
-									}
-									mname := fieldDecl.Names[0]
-									trace(" on sth:", mname.Name)
-									// fmt.Println("interface:", ident.Name, "method:", mname.Name)
-									service.Methods = append(service.Methods, &Method{
-										Name:   mname.Name,
-										Args:   readFields(funcDecl.Params, fileImports),
-										Return: readFields(funcDecl.Results, fileImports),
-									})
-								}
+							resolved := resolveInterfaceMethods(iSpec, fileImports, pkgInterfaces, map[string]bool{ident.Name: true})
+							for _, m := range resolved {
+								trace(" on sth:", m.name)
+								service.Methods = append(service.Methods, &Method{
+									Name:   m.name,
+									Args:   readFields(m.funcTyp.Params, m.imports),
+									Return: readFields(m.funcTyp.Results, m.imports),
+								})
 							}
 						}
 					}
@@ -174,6 +240,8 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 			Endpoint: endpoint,
 		})
 	}
+	pkgInterfaces := collectPackageInterfaces(pkg, packageName)
+
 	pkgFiles := make([]string, 0, len(pkg.Files))
 	for k := range pkg.Files {
 		pkgFiles = append(pkgFiles, k)
@@ -182,7 +250,7 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 
 	for _, k := range pkgFiles {
 		file := pkg.Files[k]
-		err = readServiceFile(file, packageName, services)
+		err = readServiceFile(file, packageName, services, pkgInterfaces)
 		if err != nil {
 			return
 		}
