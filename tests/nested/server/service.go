@@ -4,15 +4,6 @@ import (
 	"context"
 )
 
-type Middle interface {
-	Base
-	GetMiddleName(ctx context.Context) string
-}
-
-type Extra interface {
-	GetAge(ctx context.Context) int
-}
-
 type ExtendedService interface {
 	Middle
 	Extra

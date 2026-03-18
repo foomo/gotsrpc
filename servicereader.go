@@ -18,8 +18,9 @@ func (sl ServiceList) Less(i, j int) bool { return strings.Compare(sl[i].Name, s
 
 // interfaceInfo holds a parsed interface type and its file imports.
 type interfaceInfo struct {
-	iface   *ast.InterfaceType
-	imports fileImportSpecMap
+	iface      *ast.InterfaceType
+	imports    fileImportSpecMap
+	typeParams []string
 }
 
 // collectPackageInterfaces scans all files in the package and builds a map
@@ -42,9 +43,18 @@ func collectPackageInterfaces(pkg *ast.Package, packageName string) map[string]i
 				if !ok {
 					continue
 				}
+				var typeParams []string
+				if typeSpec.TypeParams != nil {
+					for _, tp := range typeSpec.TypeParams.List {
+						for _, n := range tp.Names {
+							typeParams = append(typeParams, n.Name)
+						}
+					}
+				}
 				result[typeSpec.Name.Name] = interfaceInfo{
-					iface:   iface,
-					imports: fileImports,
+					iface:      iface,
+					imports:    fileImports,
+					typeParams: typeParams,
 				}
 			}
 		}
@@ -54,14 +64,26 @@ func collectPackageInterfaces(pkg *ast.Package, packageName string) map[string]i
 
 // resolvedMethod pairs an AST function type with the file imports it was declared in.
 type resolvedMethod struct {
-	name    string
-	funcTyp *ast.FuncType
-	imports fileImportSpecMap
+	name      string
+	funcTyp   *ast.FuncType
+	imports   fileImportSpecMap
+	typeSubst map[string]ast.Expr
+}
+
+// resolveExpr resolves an AST expression through a type substitution map.
+func resolveExpr(expr ast.Expr, typeSubst map[string]ast.Expr) ast.Expr {
+	if ident, ok := expr.(*ast.Ident); ok {
+		if sub, ok := typeSubst[ident.Name]; ok {
+			return sub
+		}
+	}
+	return expr
 }
 
 // resolveInterfaceMethods recursively collects all methods from an interface,
 // following embedded interfaces via the pkgInterfaces map. Uses visited for cycle protection.
-func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap, pkgInterfaces map[string]interfaceInfo, visited map[string]bool) []resolvedMethod {
+// typeSubst maps type parameter names to concrete type expressions.
+func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap, pkgInterfaces map[string]interfaceInfo, visited map[string]bool, typeSubst map[string]ast.Expr) []resolvedMethod {
 	var methods []resolvedMethod
 	for _, field := range iface.Methods.List {
 		switch ft := field.Type.(type) {
@@ -70,19 +92,63 @@ func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap
 				continue
 			}
 			methods = append(methods, resolvedMethod{
-				name:    field.Names[0].Name,
-				funcTyp: ft,
-				imports: imports,
+				name:      field.Names[0].Name,
+				funcTyp:   ft,
+				imports:   imports,
+				typeSubst: typeSubst,
 			})
 		case *ast.Ident:
-			// Embedded interface reference
+			// Embedded interface reference (non-generic)
 			if visited[ft.Name] {
 				continue
 			}
 			visited[ft.Name] = true
 			if info, ok := pkgInterfaces[ft.Name]; ok {
-				methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited)...)
+				methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, nil)...)
 			}
+		case *ast.IndexExpr:
+			// Generic embedded interface with single type arg: Base[string] or Base[T]
+			ident, ok := ft.X.(*ast.Ident)
+			if !ok {
+				continue
+			}
+			if visited[ident.Name] {
+				continue
+			}
+			visited[ident.Name] = true
+			info, ok := pkgInterfaces[ident.Name]
+			if !ok {
+				continue
+			}
+			// Build substitution map for the embedded interface's type params
+			newSubst := map[string]ast.Expr{}
+			resolvedArg := resolveExpr(ft.Index, typeSubst)
+			if len(info.typeParams) > 0 {
+				newSubst[info.typeParams[0]] = resolvedArg
+			}
+			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst)...)
+		case *ast.IndexListExpr:
+			// Generic embedded interface with multiple type args: Keyed[string, int]
+			ident, ok := ft.X.(*ast.Ident)
+			if !ok {
+				continue
+			}
+			if visited[ident.Name] {
+				continue
+			}
+			visited[ident.Name] = true
+			info, ok := pkgInterfaces[ident.Name]
+			if !ok {
+				continue
+			}
+			newSubst := map[string]ast.Expr{}
+			for i, idx := range ft.Indices {
+				resolvedArg := resolveExpr(idx, typeSubst)
+				if i < len(info.typeParams) {
+					newSubst[info.typeParams[i]] = resolvedArg
+				}
+			}
+			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst)...)
 		}
 	}
 	return methods
@@ -139,13 +205,23 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList, p
 					if service, ok := findService(ident.Name); ok {
 						if iSpec, ok := typeSpec.Type.(*ast.InterfaceType); ok {
 							service.IsInterface = true
-							resolved := resolveInterfaceMethods(iSpec, fileImports, pkgInterfaces, map[string]bool{ident.Name: true})
+							resolved := resolveInterfaceMethods(iSpec, fileImports, pkgInterfaces, map[string]bool{ident.Name: true}, nil)
 							for _, m := range resolved {
 								trace(" on sth:", m.name)
+								var tpNames []string
+								for k := range m.typeSubst {
+									tpNames = append(tpNames, k)
+								}
+								args := readFields(m.funcTyp.Params, m.imports, tpNames...)
+								ret := readFields(m.funcTyp.Results, m.imports, tpNames...)
+								if len(m.typeSubst) > 0 {
+									substituteTypeParams(args, m.typeSubst, m.imports)
+									substituteTypeParams(ret, m.typeSubst, m.imports)
+								}
 								service.Methods = append(service.Methods, &Method{
 									Name:   m.name,
-									Args:   readFields(m.funcTyp.Params, m.imports),
-									Return: readFields(m.funcTyp.Results, m.imports),
+									Args:   args,
+									Return: ret,
 								})
 							}
 						}
@@ -208,7 +284,7 @@ func getFileImports(file *ast.File, packageName string) (imports fileImportSpecM
 	return imports
 }
 
-func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields []*Field) {
+func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap, typeParams ...string) (fields []*Field) {
 	trace("reading fields")
 	fields = []*Field{}
 	if fieldList == nil {
@@ -216,7 +292,7 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	}
 
 	for _, param := range fieldList.List {
-		names, value, _ := readField(param, fileImports, nil)
+		names, value, _ := readField(param, fileImports, typeParams)
 		for _, name := range names {
 			fields = append(fields, &Field{
 				Name:  name,
@@ -226,6 +302,41 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	}
 	trace("done reading fields")
 	return
+}
+
+// substituteTypeParams replaces TypeParam entries in fields with concrete types from the substitution map.
+func substituteTypeParams(fields []*Field, subst map[string]ast.Expr, imports fileImportSpecMap) {
+	for _, f := range fields {
+		substituteValue(f.Value, subst, imports)
+	}
+}
+
+// substituteValue recursively replaces TypeParam references with concrete types.
+func substituteValue(v *Value, subst map[string]ast.Expr, imports fileImportSpecMap) {
+	if v == nil {
+		return
+	}
+	if v.TypeParam != "" {
+		if expr, ok := subst[v.TypeParam]; ok {
+			wasPtr := v.IsPtr
+			*v = Value{}
+			v.IsPtr = wasPtr
+			v.loadExpr(expr, imports, nil)
+		}
+		return
+	}
+	if v.Array != nil {
+		substituteValue(v.Array.Value, subst, imports)
+	}
+	if v.Map != nil {
+		substituteValue(v.Map.Key, subst, imports)
+		substituteValue(v.Map.Value, subst, imports)
+	}
+	if v.StructType != nil {
+		for _, arg := range v.StructType.TypeArgs {
+			substituteValue(arg, subst, imports)
+		}
+	}
 }
 
 func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services ServiceList, err error) {
@@ -775,21 +886,6 @@ func getStructTypesForField(value *Value) []*StructType {
 		types = append(types, getStructTypesForField(value.Array.Value)...)
 	}
 	return types
-}
-
-func getStructTypeForField(value *Value) *StructType {
-	// field.Value.StructType
-	var strType *StructType
-	switch {
-	case value.StructType != nil:
-		strType = value.StructType
-		// case field.Value.ArrayType
-	case value.Map != nil:
-		strType = getStructTypeForField(value.Map.Value)
-	case value.Array != nil:
-		strType = getStructTypeForField(value.Array.Value)
-	}
-	return strType
 }
 
 func getScalarForField(value *Value) []*Scalar {
