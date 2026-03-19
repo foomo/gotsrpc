@@ -7,9 +7,8 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "@types/bun": "latest",
+		"@types/node": "^20",
+		"typescript": "latest"
   }
 }
