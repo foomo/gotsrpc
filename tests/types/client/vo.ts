@@ -64,6 +64,10 @@ export interface Simple {
 	float64:number;
 	string:string;
 }
+// github.com/foomo/gotsrpc/v2/tests/types/server.StringObjectID
+export interface StringObjectID {
+	objectId:string;
+}
 // github.com/foomo/gotsrpc/v2/tests/types/server.WithCollections
 export interface WithCollections {
 	strings:Array<string>|null;

@@ -132,6 +132,9 @@ export class ServiceClient {
 	async stringInt8Map(v:Record<string,number>|null):Promise<Record<string,number>|null> {
 		return (await this.transport<{0:Record<string,number>|null}>("StringInt8Map", [v]))[0]
 	}
+	async stringObjectID(v:github_com_foomo_gotsrpc_v2_tests_types_server.StringObjectID):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.StringObjectID> {
+		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.StringObjectID}>("StringObjectID", [v]))[0]
+	}
 	async stringPtr(v:string|null):Promise<string|null> {
 		return (await this.transport<{0:string|null}>("StringPtr", [v]))[0]
 	}

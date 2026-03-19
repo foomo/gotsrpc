@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import transport from "../../lib/transport";
+import transport from "../../common/transport";
 import { ExtendedServiceClient } from "./client.ts";
 
 const client = new ExtendedServiceClient(

@@ -5,6 +5,7 @@ package server
 import (
 	tls "crypto/tls"
 
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -52,7 +53,7 @@ func (tsc *ServiceGoRPCClient) GetName() (retGetName_0 string, clientErr error) 
 	return rpcResp.RetGetName_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) GetValue() (retGetValue_0 Item, clientErr error) {
+func (tsc *ServiceGoRPCClient) GetValue() (retGetValue_0 github_com_foomo_gotsrpc_v2_tests_common.Item, clientErr error) {
 	rpcReq := ServiceGetValueRequest{}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -63,7 +64,7 @@ func (tsc *ServiceGoRPCClient) GetValue() (retGetValue_0 Item, clientErr error) 
 	return rpcResp.RetGetValue_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) GetWrapped() (retGetWrapped_0 Response[Item], clientErr error) {
+func (tsc *ServiceGoRPCClient) GetWrapped() (retGetWrapped_0 github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item], clientErr error) {
 	rpcReq := ServiceGetWrappedRequest{}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {

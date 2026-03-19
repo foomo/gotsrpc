@@ -11,6 +11,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -37,13 +38,13 @@ type (
 	ServiceGetValueRequest struct {
 	}
 	ServiceGetValueResponse struct {
-		RetGetValue_0 Item
+		RetGetValue_0 github_com_foomo_gotsrpc_v2_tests_common.Item
 	}
 
 	ServiceGetWrappedRequest struct {
 	}
 	ServiceGetWrappedResponse struct {
-		RetGetWrapped_0 Response[Item]
+		RetGetWrapped_0 github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 )
 

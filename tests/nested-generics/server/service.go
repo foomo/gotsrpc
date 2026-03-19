@@ -2,11 +2,13 @@ package server
 
 import (
 	"context"
+
+	"github.com/foomo/gotsrpc/v2/tests/common"
 )
 
 type Middle[T any] interface {
 	Base[T]
-	GetWrapped(ctx context.Context) Response[T]
+	GetWrapped(ctx context.Context) common.Response[T]
 }
 
 type Keyed[K comparable, V any] interface {
@@ -14,7 +16,7 @@ type Keyed[K comparable, V any] interface {
 }
 
 type Service interface {
-	Middle[Item]
+	Middle[common.Item]
 	Keyed[string, int]
 	GetName(ctx context.Context) string
 }

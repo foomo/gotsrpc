@@ -689,4 +689,13 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		require.NoError(t, clientErr)
 		assert.Equal(t, v, ret)
 	})
+
+	t.Run("StringObjectID", func(t *testing.T) {
+		t.Parallel()
+		var v server.StringObjectID
+		copy(v.ObjectID[:], "hello123456")
+		ret, clientErr := c.StringObjectID(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v.ObjectID, ret.ObjectID)
+	})
 }

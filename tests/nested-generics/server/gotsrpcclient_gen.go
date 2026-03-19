@@ -7,14 +7,15 @@ import (
 	go_net_http "net/http"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	pkg_errors "github.com/pkg/errors"
 )
 
 type ServiceGoTSRPCClient interface {
 	GetByKey(ctx go_context.Context, key string) (retGetByKey_0 int, clientErr error)
 	GetName(ctx go_context.Context) (retGetName_0 string, clientErr error)
-	GetValue(ctx go_context.Context) (retGetValue_0 Item, clientErr error)
-	GetWrapped(ctx go_context.Context) (retGetWrapped_0 Response[Item], clientErr error)
+	GetValue(ctx go_context.Context) (retGetValue_0 github_com_foomo_gotsrpc_v2_tests_common.Item, clientErr error)
+	GetWrapped(ctx go_context.Context) (retGetWrapped_0 github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item], clientErr error)
 }
 
 type HTTPServiceGoTSRPCClient struct {
@@ -59,7 +60,7 @@ func (tsc *HTTPServiceGoTSRPCClient) GetName(ctx go_context.Context) (retGetName
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) GetValue(ctx go_context.Context) (retGetValue_0 Item, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) GetValue(ctx go_context.Context) (retGetValue_0 github_com_foomo_gotsrpc_v2_tests_common.Item, clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&retGetValue_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "GetValue", rpcArgs, rpcReply)
@@ -69,7 +70,7 @@ func (tsc *HTTPServiceGoTSRPCClient) GetValue(ctx go_context.Context) (retGetVal
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) GetWrapped(ctx go_context.Context) (retGetWrapped_0 Response[Item], clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) GetWrapped(ctx go_context.Context) (retGetWrapped_0 github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item], clientErr error) {
 	rpcArgs := []any{}
 	rpcReply := []any{&retGetWrapped_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "GetWrapped", rpcArgs, rpcReply)

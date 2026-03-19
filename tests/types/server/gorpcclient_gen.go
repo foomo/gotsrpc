@@ -481,6 +481,17 @@ func (tsc *ServiceGoRPCClient) StringInt8Map(v map[string]int8) (retStringInt8Ma
 	return rpcResp.RetStringInt8Map_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) StringObjectID(v StringObjectID) (retStringObjectID_0 StringObjectID, clientErr error) {
+	rpcReq := ServiceStringObjectIDRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceStringObjectIDResponse)
+	return rpcResp.RetStringObjectID_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) StringPtr(v *string) (retStringPtr_0 *string, clientErr error) {
 	rpcReq := ServiceStringPtrRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)

@@ -4,6 +4,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/foomo/gotsrpc/v2/tests/common"
 	"github.com/foomo/gotsrpc/v2/tests/generics/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -33,7 +34,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SetItemResponse", func(t *testing.T) {
 		t.Parallel()
-		ret, clientErr := c.SetItemResponse(t.Context(), server.Response[server.Item]{Data: server.Item{ID: "1", Name: "x"}})
+		ret, clientErr := c.SetItemResponse(t.Context(), common.Response[common.Item]{Data: common.Item{ID: "1", Name: "x"}})
 		require.NoError(t, clientErr)
 		assert.True(t, ret)
 	})
