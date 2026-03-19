@@ -28,7 +28,7 @@ func TestInstrumentedService(t *testing.T) {
 		})
 
 		rsp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/test", nil)
+		req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", nil)
 
 		handler(rsp, req)
 

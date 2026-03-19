@@ -23,8 +23,24 @@ var tsTypeAliases = map[string]string{
 	"time.Time": "number",
 }
 
+func renderTSTypeArgs(typeArgs []*Value, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) {
+	if len(typeArgs) > 0 {
+		ts.app("<")
+		for i, arg := range typeArgs {
+			if i > 0 {
+				ts.app(",")
+			}
+			arg.tsType(mappings, scalars, structs, ts, nil)
+		}
+		ts.app(">")
+	}
+}
+
 func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
 	switch {
+	case v.TypeParam != "":
+		ts.app(v.TypeParam)
+		return
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
 		ts.app(jsonInfo.Type)
 	case v.Map != nil:
@@ -79,6 +95,7 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 				tsModule = mapping.TypeScriptModule
 			}
 			ts.app(tsModule + "." + v.StructType.Name)
+			renderTSTypeArgs(v.StructType.TypeArgs, mappings, scalars, structs, ts)
 			hiddenStruct, isHiddenStruct := structs[v.StructType.FullName()]
 			if isHiddenStruct && (hiddenStruct.Array != nil || hiddenStruct.Map != nil) && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 				ts.app("|null")
@@ -88,6 +105,7 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			return
 		}
 		ts.app(v.StructType.Name)
+		renderTSTypeArgs(v.StructType.TypeArgs, mappings, scalars, structs, ts)
 	case v.Struct != nil:
 		// v.Struct.Value.tsType(mappings, ts)
 		ts.l("{").ind(1)
@@ -136,20 +154,64 @@ func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, sca
 	}
 }
 
+// mapKeyTypeParams returns the set of type parameter names used as map keys
+// in the given struct's fields or as the struct-level map key.
+func mapKeyTypeParams(str *Struct) map[string]bool {
+	result := make(map[string]bool)
+	if str.Map != nil && str.Map.Key != nil && str.Map.Key.TypeParam != "" {
+		result[str.Map.Key.TypeParam] = true
+	}
+	for _, f := range str.Fields {
+		collectMapKeyTypeParams(f.Value, result)
+	}
+	return result
+}
+
+func collectMapKeyTypeParams(v *Value, result map[string]bool) {
+	if v == nil {
+		return
+	}
+	if v.Map != nil {
+		if v.Map.Key != nil && v.Map.Key.TypeParam != "" {
+			result[v.Map.Key.TypeParam] = true
+		}
+		collectMapKeyTypeParams(v.Map.Value, result)
+	}
+	if v.Array != nil {
+		collectMapKeyTypeParams(v.Array.Value, result)
+	}
+}
+
+func tsTypeParamsSuffix(typeParams []string, mapKeys map[string]bool) string {
+	if len(typeParams) == 0 {
+		return ""
+	}
+	parts := make([]string, len(typeParams))
+	for i, tp := range typeParams {
+		if mapKeys[tp] {
+			parts[i] = tp + " extends string | number | symbol"
+		} else {
+			parts[i] = tp
+		}
+	}
+	return "<" + strings.Join(parts, ", ") + ">"
+}
+
 func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
 	ts.l("// " + str.FullName())
+	typeParamsSuffix := tsTypeParamsSuffix(str.TypeParams, mapKeyTypeParams(str))
 	switch {
 	case str.Array != nil:
 		if str.Array.Len > 0 && str.Array.Value.ScalarType == ScalarTypeByte {
-			ts.app("export type " + str.Name + " = Uint8Array & { readonly length: " + fmt.Sprintf("%d", str.Array.Len) + " }")
+			ts.app("export type " + str.Name + typeParamsSuffix + " = Uint8Array & { readonly length: " + fmt.Sprintf("%d", str.Array.Len) + " }")
 		} else {
-			ts.app("export type " + str.Name + " = Array<")
+			ts.app("export type " + str.Name + typeParamsSuffix + " = Array<")
 			str.Array.Value.tsType(mappings, scalars, structs, ts, nil)
 			ts.app(">")
 		}
 		ts.nl()
 	case str.Map != nil:
-		ts.app("export type " + str.Name + " = Record<")
+		ts.app("export type " + str.Name + typeParamsSuffix + " = Record<")
 		if str.Map.Key != nil {
 			str.Map.Key.tsType(mappings, scalars, structs, ts, nil)
 		} else {
@@ -166,7 +228,7 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		}
 		switch {
 		case str.UnionFields[0].Value.StructType != nil:
-			ts.app("export type " + str.Name + " = ")
+			ts.app("export type " + str.Name + typeParamsSuffix + " = ")
 			var isUndefined bool
 			for i, unionField := range str.UnionFields {
 				if i > 0 {
@@ -182,7 +244,7 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 			}
 			ts.nl()
 		case str.UnionFields[0].Value.Scalar != nil:
-			ts.app("export const " + str.Name + " = ")
+			ts.app("export const " + str.Name + typeParamsSuffix + " = ")
 			ts.app("{ ")
 			for i, field := range str.UnionFields {
 				if i > 0 {
@@ -193,7 +255,7 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 			}
 			ts.app(" }")
 			ts.nl()
-			ts.app("export type " + str.Name + " = ")
+			ts.app("export type " + str.Name + typeParamsSuffix + " = ")
 			for i, field := range str.UnionFields {
 				if i > 0 {
 					ts.app(" | ")
@@ -206,7 +268,7 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		}
 	case len(str.InlineFields) > 0:
 		var extends bool
-		ts.app("export interface " + str.Name)
+		ts.app("export interface " + str.Name + typeParamsSuffix)
 		for i, inlineField := range str.InlineFields {
 			if inlineField.Value.Scalar != nil {
 				continue
@@ -255,7 +317,7 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		ts.ind(-1).l("}")
 		// }
 	default:
-		ts.l("export interface " + str.Name + " {").ind(1)
+		ts.l("export interface " + str.Name + typeParamsSuffix + " {").ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
 		ts.ind(-1).l("}")
 	}
