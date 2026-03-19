@@ -107,7 +107,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
 	}
 
-	resp, errDo := c.client.Do(request) //nolint:gosec // G704 - URL is constructed from trusted service configuration, not user input
+	resp, errDo := c.client.Do(request)
 	if errDo != nil {
 		return NewClientError(errors.Wrap(errDo, "failed to send request"))
 	}

@@ -1,7 +1,6 @@
 package tests_test
 
 import (
-	"os"
 	"os/exec"
 	"testing"
 
@@ -9,8 +8,13 @@ import (
 )
 
 func TestTypecheck(t *testing.T) {
-	cmd := exec.CommandContext(t.Context(), "bun", "run", "typecheck")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	install := exec.CommandContext(t.Context(), "bun", "install")
+	install.Stdout = t.Output()
+	install.Stderr = t.Output()
+	require.NoError(t, install.Run())
+
+	cmd := exec.CommandContext(t.Context(), "bun", "run", "-b", "typecheck")
+	cmd.Stdout = t.Output()
+	cmd.Stderr = t.Output()
 	require.NoError(t, cmd.Run())
 }
