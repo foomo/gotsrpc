@@ -709,21 +709,6 @@ func getStructTypesForField(value *Value) []*StructType {
 	return types
 }
 
-func getStructTypeForField(value *Value) *StructType {
-	// field.Value.StructType
-	var strType *StructType
-	switch {
-	case value.StructType != nil:
-		strType = value.StructType
-		// case field.Value.ArrayType
-	case value.Map != nil:
-		strType = getStructTypeForField(value.Map.Value)
-	case value.Array != nil:
-		strType = getStructTypeForField(value.Array.Value)
-	}
-	return strType
-}
-
 func getScalarForField(value *Value) []*Scalar {
 	// field.Value.StructType
 	var scalarTypes []*Scalar
