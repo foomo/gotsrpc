@@ -8,7 +8,7 @@ import (
 )
 
 func TestTypecheck(t *testing.T) {
-	cmd := exec.CommandContext(t.Context(), "bun", "-i", "run", "typecheck")
+	cmd := exec.CommandContext(t.Context(), "bun", "run", "-b", "typecheck")
 	cmd.Stdout = t.Output()
 	cmd.Stderr = t.Output()
 	require.NoError(t, cmd.Run())
