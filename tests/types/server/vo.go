@@ -67,7 +67,12 @@ type AllScalarMaps struct {
 	Float32Map map[string]float32 `json:"float32Map"`
 }
 
-type ObjectID [12]byte
+type (
+	ObjectID       [12]byte
+	StringObjectID struct {
+		ObjectID ObjectID `json:"objectId" gotsrpc:"type:string"`
+	}
+)
 
 type WithCollections struct {
 	Strings   []string          `json:"strings"`

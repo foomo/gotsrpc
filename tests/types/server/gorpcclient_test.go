@@ -526,4 +526,13 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		require.NoError(t, clientErr)
 		assert.Equal(t, v, ret)
 	})
+
+	t.Run("StringObjectID", func(t *testing.T) {
+		t.Parallel()
+		v := server.StringObjectID{}
+		copy(v.ObjectID[:], "hello123456")
+		ret, clientErr := c.StringObjectID(v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v.ObjectID, ret.ObjectID)
+	})
 }

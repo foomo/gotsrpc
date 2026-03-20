@@ -323,6 +323,15 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap, typeParam
 	case *ast.IndexExpr:
 		// Generic type with single type argument: T[X]
 		v.loadExpr(exprType.X, fileImports, typeParams)
+		// Cross-package types have ident.Obj==nil, so readAstType may
+		// create a Scalar instead of StructType. Promote for generics.
+		if v.StructType == nil && v.Scalar != nil {
+			v.StructType = &StructType{
+				Name:    v.Scalar.Name,
+				Package: v.Scalar.Package,
+			}
+			v.Scalar = nil
+		}
 		if v.StructType != nil {
 			arg := &Value{}
 			arg.loadExpr(exprType.Index, fileImports, typeParams)
@@ -331,6 +340,15 @@ func (v *Value) loadExpr(expr ast.Expr, fileImports fileImportSpecMap, typeParam
 	case *ast.IndexListExpr:
 		// Generic type with multiple type arguments: T[X, Y]
 		v.loadExpr(exprType.X, fileImports, typeParams)
+		// Cross-package types have ident.Obj==nil, so readAstType may
+		// create a Scalar instead of StructType. Promote for generics.
+		if v.StructType == nil && v.Scalar != nil {
+			v.StructType = &StructType{
+				Name:    v.Scalar.Name,
+				Package: v.Scalar.Package,
+			}
+			v.Scalar = nil
+		}
 		if v.StructType != nil {
 			for _, index := range exprType.Indices {
 				arg := &Value{}

@@ -48,9 +48,10 @@ dockers:
     goos: linux
     goarch: amd64
     dockerfile: Dockerfile
+    skip_push: auto
     image_templates:
       - '{{ if eq .Prerelease "" }}foomo/gotsrpc:latest-amd64{{ end }}'
-      - 'foomo/gotsrpc:{{ .Version }}-amd64'
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Version }}-amd64{{ end }}'
       - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}-amd64{{ end }}'
       - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}.{{ .Minor }}-amd64{{ end }}'
     build_flag_templates:
@@ -70,9 +71,10 @@ dockers:
     goos: linux
     goarch: arm64
     dockerfile: Dockerfile
+    skip_push: auto
     image_templates:
       - '{{ if eq .Prerelease "" }}foomo/gotsrpc:latest-arm64{{ end }}'
-      - 'foomo/gotsrpc:{{ .Version }}-arm64'
+      - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Version }}-arm64{{ end }}'
       - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}-arm64{{ end }}'
       - '{{ if eq .Prerelease "" }}foomo/gotsrpc:{{ .Major }}.{{ .Minor }}-arm64{{ end }}'
     build_flag_templates:

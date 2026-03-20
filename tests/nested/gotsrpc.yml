@@ -1,0 +1,16 @@
+module:
+  name: github.com/foomo/gotsrpc/v2
+  path: ../../
+
+targets:
+  nested:
+    services:
+      /service: ExtendedService
+    package: github.com/foomo/gotsrpc/v2/tests/nested/server
+    out: ./client/client.ts
+    gorpc: [ ExtendedService ]
+    tsrpc: [ ExtendedService ]
+
+mappings:
+  github.com/foomo/gotsrpc/v2/tests/nested/server:
+    out: ./client/vo.ts

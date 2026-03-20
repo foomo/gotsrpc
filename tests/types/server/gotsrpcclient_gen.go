@@ -52,6 +52,7 @@ type ServiceGoTSRPCClient interface {
 	StringInt32Map(ctx go_context.Context, v map[string]int32) (retStringInt32Map_0 map[string]int32, clientErr error)
 	StringInt64Map(ctx go_context.Context, v map[string]int64) (retStringInt64Map_0 map[string]int64, clientErr error)
 	StringInt8Map(ctx go_context.Context, v map[string]int8) (retStringInt8Map_0 map[string]int8, clientErr error)
+	StringObjectID(ctx go_context.Context, v StringObjectID) (retStringObjectID_0 StringObjectID, clientErr error)
 	StringPtr(ctx go_context.Context, v *string) (retStringPtr_0 *string, clientErr error)
 	StringSimpleMap(ctx go_context.Context, v map[string]Simple) (retStringSimpleMap_0 map[string]Simple, clientErr error)
 	StringSimplePtrMap(ctx go_context.Context, v map[string]*Simple) (retStringSimplePtrMap_0 map[string]*Simple, clientErr error)
@@ -510,6 +511,16 @@ func (tsc *HTTPServiceGoTSRPCClient) StringInt8Map(ctx go_context.Context, v map
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringInt8Map", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringInt8Map")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) StringObjectID(ctx go_context.Context, v StringObjectID) (retStringObjectID_0 StringObjectID, clientErr error) {
+	rpcArgs := []any{v}
+	rpcReply := []any{&retStringObjectID_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringObjectID", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy StringObjectID")
 	}
 	return
 }
