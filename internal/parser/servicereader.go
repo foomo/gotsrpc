@@ -13,6 +13,129 @@ import (
 	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
+func Read(
+	goPaths []string,
+	gomod config.Namespace,
+	packageName string,
+	serviceMap map[string]string,
+	missingTypes map[string]bool,
+	missingConstants map[string]bool,
+) (
+	pkgName string,
+	services model.ServiceList,
+	structs map[string]*model.Struct,
+	scalars map[string]*model.Scalar,
+	constantTypes map[string]map[string]interface{},
+	err error,
+) {
+	if len(serviceMap) == 0 {
+		err = errors.New("nothing to do service names are empty")
+		return
+	}
+	pkg, parseErr := parsePackage(goPaths, gomod, packageName)
+	if parseErr != nil {
+		err = parseErr
+		return
+	}
+	pkgName = pkg.Name
+	services, err = readServicesInPackage(pkg, packageName, serviceMap)
+	if err != nil {
+		return
+	}
+
+	for _, s := range services {
+		for _, m := range s.Methods {
+			collectStructTypes(m.Return, missingTypes)
+			collectStructTypes(m.Args, missingTypes)
+			collectScalarTypes(m.Return, missingTypes)
+			collectScalarTypes(m.Args, missingTypes)
+		}
+	}
+	trace("missing")
+	traceData(missingTypes)
+
+	structs = map[string]*model.Struct{}
+	scalars = map[string]*model.Scalar{}
+
+	collectErr := collectTypes(goPaths, gomod, missingTypes, structs, scalars)
+	if collectErr != nil {
+		err = errors.New("error while collecting structs: " + collectErr.Error())
+	}
+	trace("---------------- found structs -------------------")
+	traceData(structs)
+	trace("---------------- /found structs -------------------")
+	trace("---------------- found scalars -------------------")
+	traceData(scalars)
+	trace("---------------- /found scalars -------------------")
+	allConstantTypes := map[string]map[string]interface{}{}
+	for _, structDef := range structs {
+		if structDef != nil {
+			structPackage := structDef.Package
+			if _, ok := allConstantTypes[structPackage]; !ok {
+				if pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage); constPkgErr != nil {
+					err = constPkgErr
+					return
+				} else {
+					allConstantTypes[structPackage] = loadConstantTypes(pkg)
+				}
+			}
+		}
+	}
+	for _, scalarDef := range scalars {
+		if scalarDef != nil {
+			scalarPackage := scalarDef.Package
+			if _, ok := allConstantTypes[scalarPackage]; !ok {
+				if pkg, constPkgErr := parsePackage(goPaths, gomod, scalarPackage); constPkgErr != nil {
+					err = constPkgErr
+					return
+				} else {
+					allConstantTypes[scalarPackage] = loadConstantTypes(pkg)
+				}
+			}
+		}
+	}
+
+	flatStructs := map[string]bool{}
+	for _, s := range structs {
+		loadFlatStructs(s, flatStructs)
+	}
+
+	constantTypes = map[string]map[string]interface{}{}
+	for constantTypePackage, constantType := range allConstantTypes {
+		for constantTypeName, constantTypeVales := range constantType {
+			fullName := constantTypePackage + "." + constantTypeName
+			_, scalarOK := scalars[fullName]
+			_, structOK := flatStructs[fullName]
+			_, constantsOK := missingConstants[fullName]
+
+			if scalarOK || structOK || constantsOK {
+				missingConstants[fullName] = false
+				if _, ok := constantTypes[constantTypePackage]; !ok {
+					constantTypes[constantTypePackage] = map[string]interface{}{}
+				}
+				constantTypes[constantTypePackage][constantTypeName] = constantTypeVales
+			}
+		}
+	}
+
+	for missingConstant, missing := range missingConstants {
+		if missing {
+			err = errors.New("could not resolve constant: " + missingConstant)
+			return
+		}
+	}
+
+	// fix arg and return field lists
+	for _, service := range services {
+		for _, method := range service.Methods {
+			fixFieldStructs(method.Args, structs, scalars)
+			fixFieldStructs(method.Return, structs, scalars)
+		}
+	}
+	traceData("---------------------------", services)
+	return
+}
+
 func readServiceFile(file *ast.File, packageName string, services model.ServiceList) error {
 	findService := func(serviceName string) (service *model.Service, ok bool) {
 		for _, service := range services {
@@ -197,129 +320,6 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 		}
 	}
 	return constantTypes
-}
-
-func Read(
-	goPaths []string,
-	gomod config.Namespace,
-	packageName string,
-	serviceMap map[string]string,
-	missingTypes map[string]bool,
-	missingConstants map[string]bool,
-) (
-	pkgName string,
-	services model.ServiceList,
-	structs map[string]*model.Struct,
-	scalars map[string]*model.Scalar,
-	constantTypes map[string]map[string]interface{},
-	err error,
-) {
-	if len(serviceMap) == 0 {
-		err = errors.New("nothing to do service names are empty")
-		return
-	}
-	pkg, parseErr := parsePackage(goPaths, gomod, packageName)
-	if parseErr != nil {
-		err = parseErr
-		return
-	}
-	pkgName = pkg.Name
-	services, err = readServicesInPackage(pkg, packageName, serviceMap)
-	if err != nil {
-		return
-	}
-
-	for _, s := range services {
-		for _, m := range s.Methods {
-			collectStructTypes(m.Return, missingTypes)
-			collectStructTypes(m.Args, missingTypes)
-			collectScalarTypes(m.Return, missingTypes)
-			collectScalarTypes(m.Args, missingTypes)
-		}
-	}
-	trace("missing")
-	traceData(missingTypes)
-
-	structs = map[string]*model.Struct{}
-	scalars = map[string]*model.Scalar{}
-
-	collectErr := collectTypes(goPaths, gomod, missingTypes, structs, scalars)
-	if collectErr != nil {
-		err = errors.New("error while collecting structs: " + collectErr.Error())
-	}
-	trace("---------------- found structs -------------------")
-	traceData(structs)
-	trace("---------------- /found structs -------------------")
-	trace("---------------- found scalars -------------------")
-	traceData(scalars)
-	trace("---------------- /found scalars -------------------")
-	allConstantTypes := map[string]map[string]interface{}{}
-	for _, structDef := range structs {
-		if structDef != nil {
-			structPackage := structDef.Package
-			if _, ok := allConstantTypes[structPackage]; !ok {
-				if pkg, constPkgErr := parsePackage(goPaths, gomod, structPackage); constPkgErr != nil {
-					err = constPkgErr
-					return
-				} else {
-					allConstantTypes[structPackage] = loadConstantTypes(pkg)
-				}
-			}
-		}
-	}
-	for _, scalarDef := range scalars {
-		if scalarDef != nil {
-			scalarPackage := scalarDef.Package
-			if _, ok := allConstantTypes[scalarPackage]; !ok {
-				if pkg, constPkgErr := parsePackage(goPaths, gomod, scalarPackage); constPkgErr != nil {
-					err = constPkgErr
-					return
-				} else {
-					allConstantTypes[scalarPackage] = loadConstantTypes(pkg)
-				}
-			}
-		}
-	}
-
-	flatStructs := map[string]bool{}
-	for _, s := range structs {
-		loadFlatStructs(s, flatStructs)
-	}
-
-	constantTypes = map[string]map[string]interface{}{}
-	for constantTypePackage, constantType := range allConstantTypes {
-		for constantTypeName, constantTypeVales := range constantType {
-			fullName := constantTypePackage + "." + constantTypeName
-			_, scalarOK := scalars[fullName]
-			_, structOK := flatStructs[fullName]
-			_, constantsOK := missingConstants[fullName]
-
-			if scalarOK || structOK || constantsOK {
-				missingConstants[fullName] = false
-				if _, ok := constantTypes[constantTypePackage]; !ok {
-					constantTypes[constantTypePackage] = map[string]interface{}{}
-				}
-				constantTypes[constantTypePackage][constantTypeName] = constantTypeVales
-			}
-		}
-	}
-
-	for missingConstant, missing := range missingConstants {
-		if missing {
-			err = errors.New("could not resolve constant: " + missingConstant)
-			return
-		}
-	}
-
-	// fix arg and return field lists
-	for _, service := range services {
-		for _, method := range service.Methods {
-			fixFieldStructs(method.Args, structs, scalars)
-			fixFieldStructs(method.Return, structs, scalars)
-		}
-	}
-	traceData("---------------------------", services)
-	return
 }
 
 func loadFlatStructs(s *model.Struct, flatStructs map[string]bool) {
@@ -553,11 +553,7 @@ func depsSatisfied(s *model.Struct, missingTypes map[string]bool, structs map[st
 	return !needsWork(s.FullName())
 }
 
-func getTypesInPackage(
-	goPaths []string,
-	gomod config.Namespace,
-	packageName string,
-) (
+func getTypesInPackage(goPaths []string, gomod config.Namespace, packageName string) (
 	structs map[string]*model.Struct,
 	scalars map[string]*model.Scalar,
 	err error,

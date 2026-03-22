@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -16,53 +17,6 @@ import (
 	"github.com/foomo/gotsrpc/v2/internal/codegen"
 	"github.com/foomo/gotsrpc/v2/internal/parser"
 )
-
-func deriveCommonJSMapping(conf *config.Config) {
-	replacer := strings.NewReplacer(".", "_", "/", "_", "-", "_")
-	for _, mapping := range conf.Mappings {
-		mapping.TypeScriptModule = replacer.Replace(mapping.GoPackage)
-	}
-}
-
-func relativeFilePath(a, b string) (r string, e error) {
-	r, e = filepath.Rel(path.Dir(a), b)
-	if e != nil {
-		return
-	}
-	r = strings.TrimSuffix(r, ".ts")
-	return
-}
-
-func commonJSImports(conf *config.Config, c *codegen.Code, tsFilename string, code string) {
-	packageNames := make([]string, 0, len(conf.Mappings))
-	for packageName := range conf.Mappings {
-		packageNames = append(packageNames, packageName)
-	}
-	sort.Strings(packageNames)
-	for _, packageName := range packageNames {
-		importMapping := conf.Mappings[packageName]
-
-		if len(code) > 0 && !strings.Contains(code, importMapping.TypeScriptModule+".") {
-			continue
-		}
-
-		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out)
-		if relativeErr != nil {
-			fmt.Println("can not derive a relative path between", tsFilename, "and", importMapping.Out, relativeErr)
-			os.Exit(1)
-		}
-		c.L("import * as " + importMapping.TypeScriptModule + " from './" + relativePath + "'; // " + tsFilename + " to " + importMapping.Out)
-	}
-}
-
-func getPathForTarget(gomod config.Namespace, goPath string, target *config.Target) (outputPath string) {
-	if gomod.Name != "" && strings.HasPrefix(target.Package, gomod.Name) {
-		relative := strings.TrimPrefix(target.Package, gomod.Name)
-		return path.Join(gomod.Path, relative)
-	} else {
-		return path.Join(goPath, "src", target.Package)
-	}
-}
 
 func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 	deriveCommonJSMapping(conf)
@@ -249,26 +203,25 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 		for structName := range mappedStructsMap {
 			structNames = append(structNames, structName)
 		}
-		sort.Strings(structNames)
-		// // sort and keep enums on top
-		// slices.SortFunc(structNames, func(e1 string, e2 string) int {
-		// 	es1, ok1 := mappedStructsMap[e1]
-		// 	es2, ok2 := mappedStructsMap[e2]
-		// 	if !ok1 || !ok2 {
-		// 		return strings.Compare(e1, e2)
-		// 	}
-		// 	es1E := strings.Contains(es1.String(), "export enum ")
-		// 	es2E := strings.Contains(es2.String(), "export enum ")
-		//
-		// 	switch {
-		// 	case es1E && !es2E:
-		// 		return -1
-		// 	case !es1E && es2E:
-		// 		return 1
-		// 	default:
-		// 		return strings.Compare(e1, e2)
-		// 	}
-		// })
+		// sort and keep enums on top
+		slices.SortFunc(structNames, func(e1 string, e2 string) int {
+			es1, ok1 := mappedStructsMap[e1]
+			es2, ok2 := mappedStructsMap[e2]
+			if !ok1 || !ok2 {
+				return strings.Compare(e1, e2)
+			}
+			es1E := strings.Contains(es1.String(), "export enum ")
+			es2E := strings.Contains(es2.String(), "export enum ")
+
+			switch {
+			case es1E && !es2E:
+				return -1
+			case !es1E && es2E:
+				return 1
+			default:
+				return strings.Compare(e1, e2)
+			}
+		})
 		for _, structName := range structNames {
 			structCode, ok := mappedStructsMap[structName]
 			if ok {
@@ -291,6 +244,53 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 	}
 }
 
+func deriveCommonJSMapping(conf *config.Config) {
+	replacer := strings.NewReplacer(".", "_", "/", "_", "-", "_")
+	for _, mapping := range conf.Mappings {
+		mapping.TypeScriptModule = replacer.Replace(mapping.GoPackage)
+	}
+}
+
+func relativeFilePath(a, b string) (r string, e error) {
+	r, e = filepath.Rel(path.Dir(a), b)
+	if e != nil {
+		return
+	}
+	r = strings.TrimSuffix(r, ".ts")
+	return
+}
+
+func commonJSImports(conf *config.Config, c *codegen.Code, tsFilename string, code string) {
+	packageNames := make([]string, 0, len(conf.Mappings))
+	for packageName := range conf.Mappings {
+		packageNames = append(packageNames, packageName)
+	}
+	sort.Strings(packageNames)
+	for _, packageName := range packageNames {
+		importMapping := conf.Mappings[packageName]
+
+		if len(code) > 0 && !strings.Contains(code, importMapping.TypeScriptModule+".") {
+			continue
+		}
+
+		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out)
+		if relativeErr != nil {
+			fmt.Println("can not derive a relative path between", tsFilename, "and", importMapping.Out, relativeErr)
+			os.Exit(1)
+		}
+		c.L("import * as " + importMapping.TypeScriptModule + " from './" + relativePath + "'; // " + tsFilename + " to " + importMapping.Out)
+	}
+}
+
+func getPathForTarget(gomod config.Namespace, goPath string, target *config.Target) (outputPath string) {
+	if gomod.Name != "" && strings.HasPrefix(target.Package, gomod.Name) {
+		relative := strings.TrimPrefix(target.Package, gomod.Name)
+		return path.Join(gomod.Path, relative)
+	} else {
+		return path.Join(goPath, "src", target.Package)
+	}
+}
+
 func updateCode(file string, code string) error {
 	if len(file) > 0 {
 		if file[0] == '~' {
@@ -301,14 +301,14 @@ func updateCode(file string, code string) error {
 			file = path.Join(home, file[1:])
 		}
 	}
-	errMkdirAll := os.MkdirAll(path.Dir(file), 0755) //nolint:gosec // G703
+	errMkdirAll := os.MkdirAll(path.Dir(file), 0755) //nolint:gosec
 	if errMkdirAll != nil {
 		return errMkdirAll
 	}
-	oldCode, _ := os.ReadFile(file) //nolint:gosec // G703
+	oldCode, _ := os.ReadFile(file) //nolint:gosec
 	if string(oldCode) != code {
 		fmt.Println("	writing file", file)
-		return os.WriteFile(file, []byte(code), 0600) //nolint:gosec // G703
+		return os.WriteFile(file, []byte(code), 0600) //nolint:gosec
 	}
 	fmt.Println("	update file not necessary - unchanged", file)
 	return nil

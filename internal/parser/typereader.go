@@ -11,22 +11,6 @@ import (
 	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
-type importSpec struct {
-	alias string
-	name  string
-	path  string
-}
-
-type fileImportSpecMap map[string]importSpec
-
-func (fileImports fileImportSpecMap) getPackagePath(packageName string) string {
-	is, ok := fileImports[packageName]
-	if ok {
-		packageName = is.path
-	}
-	return packageName
-}
-
 func standardImportName(importPath string) string {
 	pathParts := strings.Split(importPath, "/")
 	return pathParts[len(pathParts)-1]

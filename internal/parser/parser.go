@@ -71,20 +71,6 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 	return nil, nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
 }
 
-type byLen []string
-
-func (a byLen) Len() int {
-	return len(a)
-}
-
-func (a byLen) Less(i, j int) bool {
-	return len(a[i]) > len(a[j])
-}
-
-func (a byLen) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
 func parsePackage(goPaths []string, gomod config.Namespace, packageName string) (pkg *ast.Package, err error) {
 	pkgs, fset, err := parseDir(goPaths, gomod, packageName)
 	if err != nil {
