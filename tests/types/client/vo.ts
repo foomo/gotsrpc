@@ -59,7 +59,7 @@ export interface InlinedMixed extends github_com_foomo_gotsrpc_v2_tests_common.S
 	name:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.InlinedMultiple
-export interface InlinedMultiple extends github_com_foomo_gotsrpc_v2_tests_common.Simple , github_com_foomo_gotsrpc_v2_tests_common.Other {
+export interface InlinedMultiple extends github_com_foomo_gotsrpc_v2_tests_common.Simple, github_com_foomo_gotsrpc_v2_tests_common.Other {
 	name:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.InlinedPtr

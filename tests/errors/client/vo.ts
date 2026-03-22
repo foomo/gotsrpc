@@ -3,7 +3,7 @@
 import * as github_com_foomo_gotsrpc_v2_tests_errors_server from './vo'; // ./client/vo.ts to ./client/vo.ts
 
 // github.com/foomo/gotsrpc/v2/tests/errors/server.MultiScalar
-export interface MultiScalar extends github_com_foomo_gotsrpc_v2_tests_errors_server.ScalarA , github_com_foomo_gotsrpc_v2_tests_errors_server.ScalarB {
+export interface MultiScalar extends github_com_foomo_gotsrpc_v2_tests_errors_server.ScalarA, github_com_foomo_gotsrpc_v2_tests_errors_server.ScalarB {
 }
 // github.com/foomo/gotsrpc/v2/tests/errors/server.ScalarA
 export enum ScalarA {

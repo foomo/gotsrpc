@@ -204,9 +204,8 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 			if inlineField.Value.IsPtr {
 				ts.App(">")
 			}
-			ts.App(" ")
 		}
-		ts.App("{")
+		ts.App(" {")
 		ts.NL()
 		ts.Ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
