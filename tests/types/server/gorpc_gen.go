@@ -11,6 +11,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -102,6 +103,34 @@ type (
 	}
 	ServiceFloat64Response struct {
 		RetFloat64_0 float64
+	}
+
+	ServiceInlinedMixedStructRequest struct {
+		V InlinedMixed
+	}
+	ServiceInlinedMixedStructResponse struct {
+		RetInlinedMixedStruct_0 InlinedMixed
+	}
+
+	ServiceInlinedMultipleStructRequest struct {
+		V InlinedMultiple
+	}
+	ServiceInlinedMultipleStructResponse struct {
+		RetInlinedMultipleStruct_0 InlinedMultiple
+	}
+
+	ServiceInlinedPtrStructRequest struct {
+		V InlinedPtr
+	}
+	ServiceInlinedPtrStructResponse struct {
+		RetInlinedPtrStruct_0 InlinedPtr
+	}
+
+	ServiceInlinedStructRequest struct {
+		V Inlined
+	}
+	ServiceInlinedStructResponse struct {
+		RetInlinedStruct_0 Inlined
 	}
 
 	ServiceIntRequest struct {
@@ -203,19 +232,19 @@ type (
 	}
 
 	ServiceMapOfSimpleSliceRequest struct {
-		V map[string][]Simple
+		V map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceMapOfSimpleSliceResponse struct {
-		RetMapOfSimpleSlice_0 map[string][]Simple
+		RetMapOfSimpleSlice_0 map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceMixedArgsRequest struct {
-		S     Simple
+		S     github_com_foomo_gotsrpc_v2_tests_common.Simple
 		Items []string
 		M     map[string]int64
 	}
 	ServiceMixedArgsResponse struct {
-		RetMixedArgs_0 Simple
+		RetMixedArgs_0 github_com_foomo_gotsrpc_v2_tests_common.Simple
 		RetMixedArgs_1 []string
 		RetMixedArgs_2 map[string]int64
 	}
@@ -232,10 +261,10 @@ type (
 	}
 
 	ServiceNestedStructRequest struct {
-		V Nested
+		V github_com_foomo_gotsrpc_v2_tests_common.Nested
 	}
 	ServiceNestedStructResponse struct {
-		RetNestedStruct_0 Nested
+		RetNestedStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Nested
 	}
 
 	ServiceObjectIDRequest struct {
@@ -246,24 +275,24 @@ type (
 	}
 
 	ServiceSimplePtrSliceRequest struct {
-		V []*Simple
+		V []*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceSimplePtrSliceResponse struct {
-		RetSimplePtrSlice_0 []*Simple
+		RetSimplePtrSlice_0 []*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceSimpleSliceRequest struct {
-		V []Simple
+		V []github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceSimpleSliceResponse struct {
-		RetSimpleSlice_0 []Simple
+		RetSimpleSlice_0 []github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceSimpleStructRequest struct {
-		V Simple
+		V github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceSimpleStructResponse struct {
-		RetSimpleStruct_0 Simple
+		RetSimpleStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceSliceOfMapsRequest struct {
@@ -323,17 +352,17 @@ type (
 	}
 
 	ServiceStringSimpleMapRequest struct {
-		V map[string]Simple
+		V map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceStringSimpleMapResponse struct {
-		RetStringSimpleMap_0 map[string]Simple
+		RetStringSimpleMap_0 map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceStringSimplePtrMapRequest struct {
-		V map[string]*Simple
+		V map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceStringSimplePtrMapResponse struct {
-		RetStringSimplePtrMap_0 map[string]*Simple
+		RetStringSimplePtrMap_0 map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceStringSliceRequest struct {
@@ -537,6 +566,14 @@ func init() {
 	gob.Register(ServiceFloat32SliceResponse{})
 	gob.Register(ServiceFloat64Request{})
 	gob.Register(ServiceFloat64Response{})
+	gob.Register(ServiceInlinedMixedStructRequest{})
+	gob.Register(ServiceInlinedMixedStructResponse{})
+	gob.Register(ServiceInlinedMultipleStructRequest{})
+	gob.Register(ServiceInlinedMultipleStructResponse{})
+	gob.Register(ServiceInlinedPtrStructRequest{})
+	gob.Register(ServiceInlinedPtrStructResponse{})
+	gob.Register(ServiceInlinedStructRequest{})
+	gob.Register(ServiceInlinedStructResponse{})
 	gob.Register(ServiceIntRequest{})
 	gob.Register(ServiceIntResponse{})
 	gob.Register(ServiceInt16Request{})
@@ -738,6 +775,22 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceFloat64Request)
 		retFloat64_0 := p.service.Float64(nil, req.V)
 		response = ServiceFloat64Response{RetFloat64_0: retFloat64_0}
+	case "ServiceInlinedMixedStructRequest":
+		req := request.(ServiceInlinedMixedStructRequest)
+		retInlinedMixedStruct_0 := p.service.InlinedMixedStruct(nil, req.V)
+		response = ServiceInlinedMixedStructResponse{RetInlinedMixedStruct_0: retInlinedMixedStruct_0}
+	case "ServiceInlinedMultipleStructRequest":
+		req := request.(ServiceInlinedMultipleStructRequest)
+		retInlinedMultipleStruct_0 := p.service.InlinedMultipleStruct(nil, req.V)
+		response = ServiceInlinedMultipleStructResponse{RetInlinedMultipleStruct_0: retInlinedMultipleStruct_0}
+	case "ServiceInlinedPtrStructRequest":
+		req := request.(ServiceInlinedPtrStructRequest)
+		retInlinedPtrStruct_0 := p.service.InlinedPtrStruct(nil, req.V)
+		response = ServiceInlinedPtrStructResponse{RetInlinedPtrStruct_0: retInlinedPtrStruct_0}
+	case "ServiceInlinedStructRequest":
+		req := request.(ServiceInlinedStructRequest)
+		retInlinedStruct_0 := p.service.InlinedStruct(nil, req.V)
+		response = ServiceInlinedStructResponse{RetInlinedStruct_0: retInlinedStruct_0}
 	case "ServiceIntRequest":
 		req := request.(ServiceIntRequest)
 		retInt_0 := p.service.Int(nil, req.V)

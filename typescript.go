@@ -28,6 +28,10 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
 		ts.app(jsonInfo.Type)
 	case v.Map != nil:
+		enumKey := v.Map.Key != nil && v.Map.Key.Scalar != nil
+		if enumKey {
+			ts.app("Partial<")
+		}
 		ts.app("Record<")
 		if v.Map.Key != nil {
 			v.Map.Key.tsType(mappings, scalars, structs, ts, nil)
@@ -37,6 +41,9 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 		ts.app(",")
 		v.Map.Value.tsType(mappings, scalars, structs, ts, nil)
 		ts.app(">")
+		if enumKey {
+			ts.app(">")
+		}
 		if jsonInfo == nil || !jsonInfo.OmitEmpty {
 			ts.app("|null")
 		}
@@ -149,7 +156,12 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		}
 		ts.nl()
 	case str.Map != nil:
-		ts.app("export type " + str.Name + " = Record<")
+		enumKey := str.Map.Key != nil && str.Map.Key.Scalar != nil
+		if enumKey {
+			ts.app("export type " + str.Name + " = Partial<Record<")
+		} else {
+			ts.app("export type " + str.Name + " = Record<")
+		}
 		if str.Map.Key != nil {
 			str.Map.Key.tsType(mappings, scalars, structs, ts, nil)
 		} else {
@@ -157,7 +169,11 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		}
 		ts.app(",")
 		str.Map.Value.tsType(mappings, scalars, structs, ts, nil)
-		ts.app(">")
+		if enumKey {
+			ts.app(">>")
+		} else {
+			ts.app(">")
+		}
 		ts.nl()
 	// special handling of inline only structs
 	case len(str.UnionFields) > 0:
@@ -209,7 +225,9 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		ts.app("export interface " + str.Name)
 		for i, inlineField := range str.InlineFields {
 			if inlineField.Value.Scalar != nil {
-				continue
+				if _, isStruct := structs[inlineField.Value.Scalar.Package+"."+inlineField.Value.Scalar.Name]; !isStruct {
+					continue
+				}
 			}
 			if !extends {
 				ts.app(" extends ")
@@ -231,6 +249,9 @@ func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, sca
 		ts.ind(1)
 		for _, inlineField := range str.InlineFields {
 			if inlineField.Value.Scalar != nil {
+				if _, isStruct := structs[inlineField.Value.Scalar.Package+"."+inlineField.Value.Scalar.Name]; isStruct {
+					continue // already handled as extends
+				}
 				if inlineField.JSONInfo != nil && inlineField.JSONInfo.Ignore {
 					continue
 				}

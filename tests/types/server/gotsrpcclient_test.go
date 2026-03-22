@@ -4,6 +4,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/foomo/gotsrpc/v2/tests/common"
 	"github.com/foomo/gotsrpc/v2/tests/types/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -276,7 +277,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SimpleStruct", func(t *testing.T) {
 		t.Parallel()
-		v := server.Simple{
+		v := common.Simple{
 			Bool: true, Int: 42, Int64: 100, Float64: 2.718, String: "test",
 		}
 		ret, clientErr := c.SimpleStruct(t.Context(), v)
@@ -286,11 +287,22 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("NestedStruct", func(t *testing.T) {
 		t.Parallel()
-		v := server.Nested{
+		v := common.Nested{
 			Name:  "parent",
-			Child: server.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Child: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
 		}
 		ret, clientErr := c.NestedStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v, ret)
+	})
+
+	t.Run("InlinedStruct", func(t *testing.T) {
+		t.Parallel()
+		v := server.Inlined{
+			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Name:   "parent",
+		}
+		ret, clientErr := c.InlinedStruct(t.Context(), v)
 		require.NoError(t, clientErr)
 		assert.Equal(t, v, ret)
 	})
@@ -300,7 +312,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		str := "hello"
 		i := int64(42)
 		b := true
-		child := server.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"}
+		child := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"}
 		v := server.WithPointers{
 			StrPtr: &str, Int64Ptr: &i, BoolPtr: &b, Child: &child,
 		}
@@ -321,10 +333,10 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		v := server.WithCollections{
 			Strings:   []string{"a", "b"},
 			Int64s:    []int64{1, 2, 3},
-			Items:     []server.Simple{{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item"}},
-			ItemPtrs:  []*server.Simple{{Bool: false, Int: 10, Int64: 20, Float64: 30.0, String: "ptr"}},
+			Items:     []common.Simple{{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item"}},
+			ItemPtrs:  []*common.Simple{{Bool: false, Int: 10, Int64: 20, Float64: 30.0, String: "ptr"}},
 			StringMap: map[string]string{"key": "val"},
-			StructMap: map[string]server.Simple{"s": {Bool: true, Int: 5, Int64: 6, Float64: 7.0, String: "map"}},
+			StructMap: map[string]common.Simple{"s": {Bool: true, Int: 5, Int64: 6, Float64: 7.0, String: "map"}},
 		}
 		ret, clientErr := c.StructWithCollections(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -356,7 +368,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SimpleSlice", func(t *testing.T) {
 		t.Parallel()
-		v := []server.Simple{
+		v := []common.Simple{
 			{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"},
 			{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two"},
 		}
@@ -367,9 +379,9 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SimplePtrSlice", func(t *testing.T) {
 		t.Parallel()
-		s1 := server.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"}
-		s2 := server.Simple{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two"}
-		v := []*server.Simple{&s1, &s2}
+		s1 := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"}
+		s2 := common.Simple{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two"}
+		v := []*common.Simple{&s1, &s2}
 		ret, clientErr := c.SimplePtrSlice(t.Context(), v)
 		require.NoError(t, clientErr)
 		require.Len(t, ret, 2)
@@ -494,7 +506,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringSimpleMap", func(t *testing.T) {
 		t.Parallel()
-		v := map[string]server.Simple{
+		v := map[string]common.Simple{
 			"one": {Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"},
 		}
 		ret, clientErr := c.StringSimpleMap(t.Context(), v)
@@ -504,8 +516,8 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringSimplePtrMap", func(t *testing.T) {
 		t.Parallel()
-		s := server.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "val"}
-		v := map[string]*server.Simple{"k": &s}
+		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "val"}
+		v := map[string]*common.Simple{"k": &s}
 		ret, clientErr := c.StringSimplePtrMap(t.Context(), v)
 		require.NoError(t, clientErr)
 		require.Contains(t, ret, "k")
@@ -629,7 +641,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("MapOfSimpleSlice", func(t *testing.T) {
 		t.Parallel()
-		v := map[string][]server.Simple{
+		v := map[string][]common.Simple{
 			"group": {{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item"}},
 		}
 		ret, clientErr := c.MapOfSimpleSlice(t.Context(), v)
@@ -656,7 +668,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("MixedArgs", func(t *testing.T) {
 		t.Parallel()
-		s := server.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "mix"}
+		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "mix"}
 		items := []string{"a", "b"}
 		m := map[string]int64{"x": 10}
 		retS, retItems, retM, clientErr := c.MixedArgs(t.Context(), s, items, m)

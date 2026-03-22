@@ -7,6 +7,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 )
 
 const (
@@ -22,6 +23,10 @@ const (
 	ServiceGoTSRPCProxyFloat32Ptr              = "Float32Ptr"
 	ServiceGoTSRPCProxyFloat32Slice            = "Float32Slice"
 	ServiceGoTSRPCProxyFloat64                 = "Float64"
+	ServiceGoTSRPCProxyInlinedMixedStruct      = "InlinedMixedStruct"
+	ServiceGoTSRPCProxyInlinedMultipleStruct   = "InlinedMultipleStruct"
+	ServiceGoTSRPCProxyInlinedPtrStruct        = "InlinedPtrStruct"
+	ServiceGoTSRPCProxyInlinedStruct           = "InlinedStruct"
 	ServiceGoTSRPCProxyInt                     = "Int"
 	ServiceGoTSRPCProxyInt16                   = "Int16"
 	ServiceGoTSRPCProxyInt16Ptr                = "Int16Ptr"
@@ -442,6 +447,118 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
+	case ServiceGoTSRPCProxyInlinedMixedStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v InlinedMixed
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		inlinedMixedStructRet := p.service.InlinedMixedStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedMixedStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInlinedMultipleStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v InlinedMultiple
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		inlinedMultipleStructRet := p.service.InlinedMultipleStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedMultipleStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInlinedPtrStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v InlinedPtr
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		inlinedPtrStructRet := p.service.InlinedPtrStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedPtrStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInlinedStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v Inlined
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStats != nil {
+			executionStart = time.Now()
+		}
+		inlinedStructRet := p.service.InlinedStruct(r.Context(), arg_v)
+		if callStats != nil {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
 	case ServiceGoTSRPCProxyInt:
 		var (
 			args []any
@@ -840,7 +957,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v map[string][]Simple
+			arg_v map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -868,7 +985,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_s     Simple
+			arg_s     github_com_foomo_gotsrpc_v2_tests_common.Simple
 			arg_items []string
 			arg_m     map[string]int64
 		)
@@ -928,7 +1045,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v Nested
+			arg_v github_com_foomo_gotsrpc_v2_tests_common.Nested
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -984,7 +1101,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v []*Simple
+			arg_v []*github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1012,7 +1129,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v []Simple
+			arg_v []github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1040,7 +1157,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v Simple
+			arg_v github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1292,7 +1409,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v map[string]Simple
+			arg_v map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1320,7 +1437,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v map[string]*Simple
+			arg_v map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {

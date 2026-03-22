@@ -44,15 +44,6 @@ export class ServiceClient {
 	async float64(v:number):Promise<number> {
 		return (await this.transport<{0:number}>("Float64", [v]))[0]
 	}
-	async inlinedMixedStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.InlinedMixed):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.InlinedMixed> {
-		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.InlinedMixed}>("InlinedMixedStruct", [v]))[0]
-	}
-	async inlinedMultipleStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.InlinedMultiple):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.InlinedMultiple> {
-		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.InlinedMultiple}>("InlinedMultipleStruct", [v]))[0]
-	}
-	async inlinedPtrStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.InlinedPtr):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.InlinedPtr> {
-		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.InlinedPtr}>("InlinedPtrStruct", [v]))[0]
-	}
 	async inlinedStruct(v:github_com_foomo_gotsrpc_v2_tests_types_server.Inlined):Promise<github_com_foomo_gotsrpc_v2_tests_types_server.Inlined> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_types_server.Inlined}>("InlinedStruct", [v]))[0]
 	}

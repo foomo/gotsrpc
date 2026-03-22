@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import transport from "../../lib/transport";
+import transport from "../../common/transport";
 import { ServiceClient } from "./client.ts";
 import { ACustomType, type Base } from "./vo.ts";
 

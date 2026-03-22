@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/foomo/gotsrpc/v2/tests/common"
 	"github.com/foomo/gotsrpc/v2/tests/types/server"
 )
 
@@ -42,7 +43,7 @@ func BenchmarkGoTSRPC_String(b *testing.B) {
 func BenchmarkGoTSRPC_SimpleStruct(b *testing.B) {
 	c := setupGoTSRPC(b)
 	ctx := context.Background()
-	v := server.Simple{
+	v := common.Simple{
 		Bool:    true,
 		Int:     42,
 		Int64:   123456789,
@@ -61,9 +62,9 @@ func BenchmarkGoTSRPC_SimpleStruct(b *testing.B) {
 func BenchmarkGoTSRPC_NestedStruct(b *testing.B) {
 	c := setupGoTSRPC(b)
 	ctx := context.Background()
-	v := server.Nested{
+	v := common.Nested{
 		Name: "parent",
-		Child: server.Simple{
+		Child: common.Simple{
 			Bool:    true,
 			Int:     42,
 			Int64:   123456789,
@@ -86,14 +87,14 @@ func BenchmarkGoTSRPC_StructWithCollections(b *testing.B) {
 	v := server.WithCollections{
 		Strings: []string{"a", "b", "c"},
 		Int64s:  []int64{1, 2, 3},
-		Items: []server.Simple{
+		Items: []common.Simple{
 			{Bool: true, Int: 1, Int64: 1, Float64: 1.0, String: "one"},
 		},
-		ItemPtrs: []*server.Simple{
+		ItemPtrs: []*common.Simple{
 			{Bool: false, Int: 2, Int64: 2, Float64: 2.0, String: "two"},
 		},
 		StringMap: map[string]string{"key": "value"},
-		StructMap: map[string]server.Simple{
+		StructMap: map[string]common.Simple{
 			"item": {Bool: true, Int: 3, Int64: 3, Float64: 3.0, String: "three"},
 		},
 	}
@@ -121,7 +122,7 @@ func BenchmarkGoTSRPC_MultiArgs(b *testing.B) {
 func BenchmarkGoTSRPC_MixedArgs(b *testing.B) {
 	c := setupGoTSRPC(b)
 	ctx := context.Background()
-	s := server.Simple{Bool: true, Int: 1, Int64: 1, Float64: 1.0, String: "one"}
+	s := common.Simple{Bool: true, Int: 1, Int64: 1, Float64: 1.0, String: "one"}
 	items := []string{"a", "b", "c"}
 	m := map[string]int64{"x": 1, "y": 2}
 	b.ResetTimer()
