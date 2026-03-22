@@ -1,9 +1,13 @@
-package codegen
+package codegen_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/foomo/gotsrpc/v2/internal/codegen"
+)
 
 func TestSplit(t *testing.T) {
-	res := Split("git.bestbytes.net/foo-bar", []string{".", "/", "-"})
+	res := codegen.Split("git.bestbytes.net/foo-bar", []string{".", "/", "-"})
 	for i, expected := range []string{"git", "bestbytes", "net", "foo", "bar"} {
 		actual := res[i]
 		if actual != expected {

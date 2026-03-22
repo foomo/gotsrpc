@@ -1,16 +1,17 @@
-package gotsrpc
+package gotsrpc_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/foomo/gotsrpc/v2"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInstrumentedService(t *testing.T) {
 	middleware := func(w http.ResponseWriter, r *http.Request) {
-		if s, ok := GetStatsForRequest(r); ok && s != nil {
+		if s, ok := gotsrpc.GetStatsForRequest(r); ok && s != nil {
 			s.Func = "func"
 			s.Package = "package"
 			s.Service = "service"
@@ -19,7 +20,7 @@ func TestInstrumentedService(t *testing.T) {
 
 	t.Run("stats", func(t *testing.T) {
 		count := 0
-		handler := InstrumentedService(middleware, func(s *CallStats) {
+		handler := gotsrpc.InstrumentedService(middleware, func(s *gotsrpc.CallStats) {
 			assert.Equal(t, "func", s.Func)
 			assert.Equal(t, "package", s.Package)
 			assert.Equal(t, "service", s.Service)

@@ -12,7 +12,6 @@ linters:
   disable:
     # Project specific linters
     - containedctx # containedctx is a linter that detects struct contained context.Context field [fast: false, auto-fix: false]
-    - testpackage
     - staticcheck
     - paralleltest
     - nakedret
