@@ -11,14 +11,10 @@ linters:
   default: all
   disable:
     # Project specific linters
-    - containedctx # containedctx is a linter that detects struct contained context.Context field [fast: false, auto-fix: false]
-    - staticcheck
     - paralleltest
-    - nakedret
     - nakedret
     - goconst
     - forbidigo
-    - gosmopolitan
     - nonamedreturns
     - godoclint
     # Discouraged linters
@@ -63,6 +59,9 @@ linters:
 
   # https://golangci-lint.run/docs/linters/
   settings:
+    # https://golangci-lint.run/docs/linters/configuration/#staticcheck
+    staticcheck:
+      checks: [ all, -ST1003, -SA1019 ]
     # https://golangci-lint.run/docs/linters/configuration/#exhaustive
     exhaustive:
       default-signifies-exhaustive: true

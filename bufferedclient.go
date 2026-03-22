@@ -23,7 +23,7 @@ func (c *bufferedClient) SetClientEncoding(encoding ClientEncoding) {
 	c.handle = getHandleForEncoding(encoding)
 }
 
-func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:staticcheck
+func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 	c.client = client
 }
 
