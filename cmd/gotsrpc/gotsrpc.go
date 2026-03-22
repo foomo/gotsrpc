@@ -10,8 +10,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2"
 	"github.com/foomo/gotsrpc/v2/config"
+	"github.com/foomo/gotsrpc/v2/internal/build"
+	"github.com/foomo/gotsrpc/v2/internal/codegen"
+	"github.com/foomo/gotsrpc/v2/internal/parser"
 )
 
 var (
@@ -65,7 +67,8 @@ func main() {
 		usage()
 		os.Exit(1)
 	default:
-		gotsrpc.ReaderTrace = *flagDebug
+		parser.ReaderTrace = *flagDebug
+		codegen.Trace = *flagDebug
 	}
 
 	var goRoot string
@@ -89,5 +92,5 @@ func main() {
 		os.Exit(2)
 	}
 
-	gotsrpc.Build(conf, goPath, goRoot)
+	build.Build(conf, goPath, goRoot)
 }

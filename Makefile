@@ -81,7 +81,7 @@ test.nocache: go.work
 ## Run tests with -bench
 test.bench: go.work
 	@echo "〉go test -bench"
-	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work
+	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem . -run ^$ | tee benchmarks.out
 
 .PHONY: outdated
 ## Show outdated direct dependencies

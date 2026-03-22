@@ -1,4 +1,4 @@
-package gotsrpc
+package codegen
 
 import (
 	"errors"
@@ -9,9 +9,10 @@ import (
 	"github.com/iancoleman/strcase"
 
 	"github.com/foomo/gotsrpc/v2/config"
+	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
-func (f *Field) tsName() string {
+func fieldTSName(f *model.Field) string {
 	n := f.Name
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
 		n = f.JSONInfo.Name
@@ -23,33 +24,33 @@ var tsTypeAliases = map[string]string{
 	"time.Time": "number",
 }
 
-func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code, jsonInfo *JSONInfo) {
+func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, ts *Code, jsonInfo *model.JSONInfo) {
 	switch {
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
-		ts.app(jsonInfo.Type)
+		ts.App(jsonInfo.Type)
 	case v.Map != nil:
-		ts.app("Record<")
+		ts.App("Record<")
 		if v.Map.Key != nil {
-			v.Map.Key.tsType(mappings, scalars, structs, ts, nil)
+			valueTSType(v.Map.Key, mappings, scalars, structs, ts, nil)
 		} else {
-			ts.app(v.Map.KeyType)
+			ts.App(v.Map.KeyType)
 		}
-		ts.app(",")
-		v.Map.Value.tsType(mappings, scalars, structs, ts, nil)
-		ts.app(">")
+		ts.App(",")
+		valueTSType(v.Map.Value, mappings, scalars, structs, ts, nil)
+		ts.App(">")
 		if jsonInfo == nil || !jsonInfo.OmitEmpty {
-			ts.app("|null")
+			ts.App("|null")
 		}
 	case v.Array != nil:
-		if v.Array.Value.ScalarType != ScalarTypeByte {
-			ts.app("Array<")
+		if v.Array.Value.ScalarType != model.ScalarTypeByte {
+			ts.App("Array<")
 		}
-		v.Array.Value.tsType(mappings, scalars, structs, ts, nil)
-		if v.Array.Value.ScalarType != ScalarTypeByte {
-			ts.app(">")
+		valueTSType(v.Array.Value, mappings, scalars, structs, ts, nil)
+		if v.Array.Value.ScalarType != model.ScalarTypeByte {
+			ts.App(">")
 		}
 		if jsonInfo == nil || !jsonInfo.OmitEmpty {
-			ts.app("|null")
+			ts.App("|null")
 		}
 	case v.Scalar != nil:
 		if v.Scalar.Package != "" {
@@ -62,13 +63,13 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			if value, ok := tsTypeAliases[tsType]; ok {
 				tsType = value
 			}
-			ts.app(tsType)
+			ts.App(tsType)
 			if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
-				ts.app("|null")
+				ts.App("|null")
 			}
 			return
 		}
-		ts.app(tsTypeFromScalarType(v.Scalar.Type))
+		ts.App(tsTypeFromScalarType(v.Scalar.Type))
 	case v.StructType != nil:
 		if v.StructType.Package != "" {
 			mapping, ok := mappings[v.StructType.Package]
@@ -76,160 +77,158 @@ func (v *Value) tsType(mappings config.TypeScriptMappings, scalars map[string]*S
 			if ok {
 				tsModule = mapping.TypeScriptModule
 			}
-			ts.app(tsModule + "." + v.StructType.Name)
+			ts.App(tsModule + "." + v.StructType.Name)
 			hiddenStruct, isHiddenStruct := structs[v.StructType.FullName()]
 			if isHiddenStruct && (hiddenStruct.Array != nil || hiddenStruct.Map != nil) && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
-				ts.app("|null")
+				ts.App("|null")
 			} else if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
-				ts.app("|null")
+				ts.App("|null")
 			}
 			return
 		}
-		ts.app(v.StructType.Name)
+		ts.App(v.StructType.Name)
 	case v.Struct != nil:
-		// v.Struct.Value.tsType(mappings, ts)
-		ts.l("{").ind(1)
+		ts.L("{").Ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalars, structs, ts)
-		ts.ind(-1).app("}")
+		ts.Ind(-1).App("}")
 		if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
-			ts.app("|null")
+			ts.App("|null")
 		}
 	case len(v.ScalarType) > 0:
-		ts.app(tsTypeFromScalarType(v.ScalarType))
+		ts.App(tsTypeFromScalarType(v.ScalarType))
 		if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
-			ts.app("|null")
+			ts.App("|null")
 		}
 	default:
-		ts.app("any")
+		ts.App("any")
 	}
 }
 
-func tsTypeFromScalarType(scalarType ScalarType) string {
+func tsTypeFromScalarType(scalarType model.ScalarType) string {
 	switch scalarType { //nolint:exhaustive
-	case ScalarTypeError:
+	case model.ScalarTypeError:
 		return "github_com_foomo_gotsrpc_v2.Error"
-	case ScalarTypeByte:
+	case model.ScalarTypeByte:
 		return "string"
-	case ScalarTypeBool:
+	case model.ScalarTypeBool:
 		return "boolean"
 	}
 	return string(scalarType)
 }
 
-func renderStructFields(fields []*Field, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) {
+func renderStructFields(fields []*model.Field, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, ts *Code) {
 	for _, f := range fields {
 		if len(f.Name) == 0 {
 			continue
 		} else if f.JSONInfo != nil && f.JSONInfo.Ignore {
 			continue
 		}
-		ts.app(f.tsName())
+		ts.App(fieldTSName(f))
 		if f.JSONInfo != nil && f.JSONInfo.OmitEmpty {
-			ts.app("?")
+			ts.App("?")
 		}
-		ts.app(":")
-		f.Value.tsType(mappings, scalars, structs, ts, f.JSONInfo)
-		ts.app(";")
-		ts.nl()
+		ts.App(":")
+		valueTSType(f.Value, mappings, scalars, structs, ts, f.JSONInfo)
+		ts.App(";")
+		ts.NL()
 	}
 }
 
-func renderTypescriptStruct(str *Struct, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, ts *code) error {
-	ts.l("// " + str.FullName())
+func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, ts *Code) error {
+	ts.L("// " + str.FullName())
 	switch {
 	case str.Array != nil:
-		ts.app("export type " + str.Name + " = Array<")
-		str.Array.Value.tsType(mappings, scalars, structs, ts, nil)
-		ts.app(">")
-		ts.nl()
+		ts.App("export type " + str.Name + " = Array<")
+		valueTSType(str.Array.Value, mappings, scalars, structs, ts, nil)
+		ts.App(">")
+		ts.NL()
 	case str.Map != nil:
-		ts.app("export type " + str.Name + " = Record<")
+		ts.App("export type " + str.Name + " = Record<")
 		if str.Map.Key != nil {
-			str.Map.Key.tsType(mappings, scalars, structs, ts, nil)
+			valueTSType(str.Map.Key, mappings, scalars, structs, ts, nil)
 		} else {
-			ts.app(str.Map.KeyType)
+			ts.App(str.Map.KeyType)
 		}
-		ts.app(",")
-		str.Map.Value.tsType(mappings, scalars, structs, ts, nil)
-		ts.app(">")
-		ts.nl()
-	// special handling of inline only structs
+		ts.App(",")
+		valueTSType(str.Map.Value, mappings, scalars, structs, ts, nil)
+		ts.App(">")
+		ts.NL()
 	case len(str.UnionFields) > 0:
 		if len(str.Fields) > 0 || len(str.InlineFields) > 0 {
 			return errors.New("no fields or inline fields are supported when using union")
 		}
 		switch {
 		case str.UnionFields[0].Value.StructType != nil:
-			ts.app("export type " + str.Name + " = ")
+			ts.App("export type " + str.Name + " = ")
 			var isUndefined bool
 			for i, unionField := range str.UnionFields {
 				if i > 0 {
-					ts.app(" | ")
+					ts.App(" | ")
 				}
-				unionField.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+				valueTSType(unionField.Value, mappings, scalars, structs, ts, &model.JSONInfo{OmitEmpty: true})
 				if unionField.Value.IsPtr {
 					isUndefined = true
 				}
 			}
 			if isUndefined {
-				ts.app(" | undefined")
+				ts.App(" | undefined")
 			}
-			ts.nl()
+			ts.NL()
 		case str.UnionFields[0].Value.Scalar != nil:
-			ts.app("export const " + str.Name + " = ")
-			ts.app("{ ")
+			ts.App("export const " + str.Name + " = ")
+			ts.App("{ ")
 			for i, field := range str.UnionFields {
 				if i > 0 {
-					ts.app(", ")
+					ts.App(", ")
 				}
-				ts.app("...")
-				field.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+				ts.App("...")
+				valueTSType(field.Value, mappings, scalars, structs, ts, &model.JSONInfo{OmitEmpty: true})
 			}
-			ts.app(" }")
-			ts.nl()
-			ts.app("export type " + str.Name + " = typeof " + str.Name)
-			ts.nl()
+			ts.App(" }")
+			ts.NL()
+			ts.App("export type " + str.Name + " = typeof " + str.Name)
+			ts.NL()
 		default:
 			return errors.New("could not resolve this union type")
 		}
 	case len(str.InlineFields) > 0:
-		ts.app("export interface " + str.Name + " extends ")
+		ts.App("export interface " + str.Name + " extends ")
 		for i, inlineField := range str.InlineFields {
 			if i > 0 {
-				ts.app(", ")
+				ts.App(", ")
 			}
 			if inlineField.Value.IsPtr {
-				ts.app("Partial<")
+				ts.App("Partial<")
 			}
-			inlineField.Value.tsType(mappings, scalars, structs, ts, &JSONInfo{OmitEmpty: true})
+			valueTSType(inlineField.Value, mappings, scalars, structs, ts, &model.JSONInfo{OmitEmpty: true})
 			if inlineField.Value.IsPtr {
-				ts.app(">")
+				ts.App(">")
 			}
-			ts.app(" ")
+			ts.App(" ")
 		}
-		ts.app("{")
-		ts.nl()
-		ts.ind(1)
+		ts.App("{")
+		ts.NL()
+		ts.Ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
-		ts.ind(-1).l("}")
+		ts.Ind(-1).L("}")
 	default:
-		ts.l("export interface " + str.Name + " {").ind(1)
+		ts.L("export interface " + str.Name + " {").Ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
-		ts.ind(-1).l("}")
+		ts.Ind(-1).L("}")
 	}
 	return nil
 }
 
-func renderTypescriptStructsToPackages(
-	structs map[string]*Struct,
+func RenderTypescriptStructsToPackages(
+	structs map[string]*model.Struct,
 	mappings config.TypeScriptMappings,
 	constantTypes map[string]map[string]interface{},
-	scalarTypes map[string]*Scalar,
-	mappedTypeScript map[string]map[string]*code,
+	scalarTypes map[string]*model.Scalar,
+	mappedTypeScript map[string]map[string]*Code,
 ) (err error) {
-	codeMap := map[string]map[string]*code{}
+	codeMap := map[string]map[string]*Code{}
 	for _, mapping := range mappings {
-		codeMap[mapping.GoPackage] = map[string]*code{} // newCode().l("module " + mapping.TypeScriptModule + " {").ind(1)
+		codeMap[mapping.GoPackage] = map[string]*Code{}
 	}
 	for name, str := range structs {
 		if str == nil {
@@ -241,7 +240,7 @@ func renderTypescriptStructsToPackages(
 			err = errors.New("missing code mapping for go package : " + str.Package + " => you have to add a mapping from this go package to a TypeScript module in your build-config.yml in the mappings section")
 			return
 		}
-		packageCodeMap[str.Name] = newCode("	")
+		packageCodeMap[str.Name] = NewCode("	")
 		err = renderTypescriptStruct(str, mappings, scalarTypes, structs, packageCodeMap[str.Name])
 		if err != nil {
 			return
@@ -256,8 +255,8 @@ func renderTypescriptStructsToPackages(
 				return
 			}
 			for packageConstantTypeName, packageConstantTypeValues := range packageConstantTypes {
-				packageCodeMap[packageConstantTypeName] = newCode("	")
-				packageCodeMap[packageConstantTypeName].l("// " + packageName + "." + packageConstantTypeName)
+				packageCodeMap[packageConstantTypeName] = NewCode("	")
+				packageCodeMap[packageConstantTypeName].L("// " + packageName + "." + packageConstantTypeName)
 
 				if packageConstantTypeValuesList, ok := packageConstantTypeValues.(map[string]*ast.BasicLit); ok {
 					keys := make([]string, 0, len(packageConstantTypeValuesList))
@@ -265,14 +264,14 @@ func renderTypescriptStructsToPackages(
 						keys = append(keys, k)
 					}
 					sort.Strings(keys)
-					packageCodeMap[packageConstantTypeName].l("export enum " + packageConstantTypeName + " {").ind(1)
+					packageCodeMap[packageConstantTypeName].L("export enum " + packageConstantTypeName + " {").Ind(1)
 					for _, k := range keys {
 						enum := strings.TrimPrefix(strcase.ToCamel(k), packageConstantTypeName)
-						packageCodeMap[packageConstantTypeName].l(enum + " = " + packageConstantTypeValuesList[k].Value + ",")
+						packageCodeMap[packageConstantTypeName].L(enum + " = " + packageConstantTypeValuesList[k].Value + ",")
 					}
-					packageCodeMap[packageConstantTypeName].ind(-1).l("}")
+					packageCodeMap[packageConstantTypeName].Ind(-1).L("}")
 				} else if packageConstantTypeValuesString, ok := packageConstantTypeValues.(string); ok {
-					packageCodeMap[packageConstantTypeName].l("export type " + packageConstantTypeName + " = " + packageConstantTypeValuesString)
+					packageCodeMap[packageConstantTypeName].L("export type " + packageConstantTypeName + " = " + packageConstantTypeValuesString)
 				}
 			}
 		}
@@ -280,7 +279,7 @@ func renderTypescriptStructsToPackages(
 	ensureCodeInPackage := func(goPackage string) {
 		_, ok := mappedTypeScript[goPackage]
 		if !ok {
-			mappedTypeScript[goPackage] = map[string]*code{}
+			mappedTypeScript[goPackage] = map[string]*Code{}
 		}
 	}
 	for _, mapping := range mappings {
@@ -292,7 +291,7 @@ func renderTypescriptStructsToPackages(
 	return nil
 }
 
-func split(str string, seps []string) []string {
+func Split(str string, seps []string) []string {
 	var res []string
 	strs := []string{str}
 	for _, sep := range seps {
@@ -306,11 +305,9 @@ func split(str string, seps []string) []string {
 	return res
 }
 
-func RenderTypeScriptServices(services ServiceList, mappings config.TypeScriptMappings, scalars map[string]*Scalar, structs map[string]*Struct, target *config.Target) (typeScript string, err error) {
-	ts := newCode("	")
+func RenderTypeScriptServices(services model.ServiceList, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, target *config.Target) (typeScript string, err error) {
+	ts := NewCode("	")
 	for _, service := range services {
-		// Check if we should render this service as ts rcp
-		// Note: remove once there's a separate gorcp generator
 		if !target.IsTSRPC(service.Name) {
 			continue
 		}
@@ -319,10 +316,10 @@ func RenderTypeScriptServices(services ServiceList, mappings config.TypeScriptMa
 			return
 		}
 	}
-	typeScript = ts.string()
+	typeScript = ts.String()
 	return
 }
 
-func getTSHeaderComment() string {
+func GetTSHeaderComment() string {
 	return "/* eslint:disable */\n// Code generated by gotsrpc https://github.com/foomo/gotsrpc/v2 - DO NOT EDIT.\n"
 }

@@ -1,4 +1,4 @@
-package gotsrpc
+package parser
 
 import (
 	"errors"
@@ -10,14 +10,11 @@ import (
 	"strings"
 
 	"github.com/foomo/gotsrpc/v2/config"
+	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
-func (sl ServiceList) Len() int           { return len(sl) }
-func (sl ServiceList) Swap(i, j int)      { sl[i], sl[j] = sl[j], sl[i] }
-func (sl ServiceList) Less(i, j int) bool { return strings.Compare(sl[i].Name, sl[j].Name) > 0 }
-
-func readServiceFile(file *ast.File, packageName string, services ServiceList) error {
-	findService := func(serviceName string) (service *Service, ok bool) {
+func readServiceFile(file *ast.File, packageName string, services model.ServiceList) error {
+	findService := func(serviceName string) (service *model.Service, ok bool) {
 		for _, service := range services {
 			if service.Name == serviceName {
 				return service, true
@@ -39,13 +36,12 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 							service, ok := findService(ident.Name)
 							firstCharOfMethodName := funcDecl.Name.Name[0:1]
 							if !ok || strings.ToLower(firstCharOfMethodName) == firstCharOfMethodName {
-								// skip this method
 								continue
 							}
 
 							trace("	on sth:", ident.Name)
 
-							service.Methods = append(service.Methods, &Method{
+							service.Methods = append(service.Methods, &model.Method{
 								Name:   funcDecl.Name.Name,
 								Args:   readFields(funcDecl.Type.Params, fileImports),
 								Return: readFields(funcDecl.Type.Results, fileImports),
@@ -74,8 +70,7 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 									}
 									mname := fieldDecl.Names[0]
 									trace(" on sth:", mname.Name)
-									// fmt.Println("interface:", ident.Name, "method:", mname.Name)
-									service.Methods = append(service.Methods, &Method{
+									service.Methods = append(service.Methods, &model.Method{
 										Name:   mname.Name,
 										Args:   readFields(funcDecl.Params, fileImports),
 										Return: readFields(funcDecl.Results, fileImports),
@@ -94,57 +89,9 @@ func readServiceFile(file *ast.File, packageName string, services ServiceList) e
 	return nil
 }
 
-type importSpec struct {
-	alias string
-	name  string
-	path  string
-}
-
-type fileImportSpecMap map[string]importSpec
-
-func (fileImports fileImportSpecMap) getPackagePath(packageName string) string {
-	importSpec, ok := fileImports[packageName]
-	if ok {
-		packageName = importSpec.path
-	}
-	return packageName
-}
-
-func standardImportName(importPath string) string {
-	pathParts := strings.Split(importPath, "/")
-	return pathParts[len(pathParts)-1]
-}
-
-func getFileImports(file *ast.File, packageName string) (imports fileImportSpecMap) {
-	imports = fileImportSpecMap{"": importSpec{alias: "", name: "", path: packageName}}
-	for _, decl := range file.Decls {
-		if genDecl, ok := decl.(*ast.GenDecl); ok {
-			if genDecl.Tok == token.IMPORT {
-				trace("got an import", genDecl.Specs)
-				for _, spec := range genDecl.Specs {
-					if spec, ok := spec.(*ast.ImportSpec); ok {
-						importPath := spec.Path.Value[1 : len(spec.Path.Value)-1]
-						importName := spec.Name.String()
-						if importName == "" || importName == "<nil>" {
-							importName = standardImportName(importPath)
-						}
-						imports[importName] = importSpec{
-							alias: importName,
-							name:  standardImportName(importPath),
-							path:  importPath,
-						}
-						// trace("  import   >>>>>>>>>>>>>>>>>>>>", importName, importPath)
-					}
-				}
-			}
-		}
-	}
-	return imports
-}
-
-func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields []*Field) {
+func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields []*model.Field) {
 	trace("reading fields")
-	fields = []*Field{}
+	fields = []*model.Field{}
 	if fieldList == nil {
 		return
 	}
@@ -152,7 +99,7 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	for _, param := range fieldList.List {
 		names, value, _ := readField(param, fileImports)
 		for _, name := range names {
-			fields = append(fields, &Field{
+			fields = append(fields, &model.Field{
 				Name:  name,
 				Value: value,
 			})
@@ -162,15 +109,15 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	return
 }
 
-func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services ServiceList, err error) {
+func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services model.ServiceList, err error) {
 	if pkg == nil {
 		return nil, errors.New("package cannot be nil")
 	}
-	services = ServiceList{}
+	services = model.ServiceList{}
 	for endpoint, serviceName := range serviceMap {
-		services = append(services, &Service{
+		services = append(services, &model.Service{
 			Name:     serviceName,
-			Methods:  []*Method{},
+			Methods:  []*model.Method{},
 			Endpoint: endpoint,
 		})
 	}
@@ -261,9 +208,9 @@ func Read(
 	missingConstants map[string]bool,
 ) (
 	pkgName string,
-	services ServiceList,
-	structs map[string]*Struct,
-	scalars map[string]*Scalar,
+	services model.ServiceList,
+	structs map[string]*model.Struct,
+	scalars map[string]*model.Scalar,
 	constantTypes map[string]map[string]interface{},
 	err error,
 ) {
@@ -293,8 +240,8 @@ func Read(
 	trace("missing")
 	traceData(missingTypes)
 
-	structs = map[string]*Struct{}
-	scalars = map[string]*Scalar{}
+	structs = map[string]*model.Struct{}
+	scalars = map[string]*model.Scalar{}
 
 	collectErr := collectTypes(goPaths, gomod, missingTypes, structs, scalars)
 	if collectErr != nil {
@@ -375,7 +322,7 @@ func Read(
 	return
 }
 
-func loadFlatStructs(s *Struct, flatStructs map[string]bool) {
+func loadFlatStructs(s *model.Struct, flatStructs map[string]bool) {
 	if s.Map != nil {
 		if s.Map.Key != nil {
 			loadFlatStructsValue(s.Map.Key, flatStructs)
@@ -392,7 +339,7 @@ func loadFlatStructs(s *Struct, flatStructs map[string]bool) {
 	flatStructs[s.FullName()] = true
 }
 
-func loadFlatStructsValue(s *Value, flatStructs map[string]bool) {
+func loadFlatStructsValue(s *model.Value, flatStructs map[string]bool) {
 	if s.Map != nil {
 		if s.Map.Key != nil {
 			loadFlatStructsValue(s.Map.Key, flatStructs)
@@ -408,10 +355,10 @@ func loadFlatStructsValue(s *Value, flatStructs map[string]bool) {
 		flatStructs[s.Scalar.FullName()] = true
 	}
 }
-func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[string]*Scalar) {
+
+func fixFieldStructs(fields []*model.Field, structs map[string]*model.Struct, scalars map[string]*model.Scalar) {
 	for _, f := range fields {
 		if f.Value.StructType != nil {
-			// do we have that struct or is it a hidden scalar
 			name := f.Value.StructType.FullName()
 			s, strctExists := structs[name]
 			if strctExists {
@@ -427,9 +374,9 @@ func fixFieldStructs(fields []*Field, structs map[string]*Struct, scalars map[st
 	}
 }
 
-func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) error {
-	scannedPackageStructs := map[string]map[string]*Struct{}
-	scannedPackageScalars := map[string]map[string]*Scalar{}
+func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[string]bool, structs map[string]*model.Struct, scalars map[string]*model.Scalar) error {
+	scannedPackageStructs := map[string]map[string]*model.Struct{}
+	scannedPackageScalars := map[string]map[string]*model.Scalar{}
 	missingTypeNames := func() []string {
 		var missing []string
 		for name, isMissing := range missingTypes {
@@ -437,7 +384,6 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 				missing = append(missing, name)
 			}
 		}
-		// fmt.Println("missing types", len(missingTypes), "missing", len(missing))
 		return missing
 	}
 	lastNumMissing := len(missingTypeNames())
@@ -450,8 +396,6 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 			}
 			fullNameParts := strings.Split(fullName, ".")
 			fullNameParts = fullNameParts[:len(fullNameParts)-1]
-
-			// path := fullNameParts[:len(fullNameParts)-1][0]
 
 			packageName := strings.Join(fullNameParts, ".")
 
@@ -507,7 +451,6 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 		}
 		newNumMissingTypes := len(missingTypeNames())
 		if newNumMissingTypes > 0 && newNumMissingTypes == lastNumMissing {
-			// packageStructs, structOK := scannedPackageStructs[packageName]
 			for scalarName, scalars := range scannedPackageScalars {
 				fmt.Println("scanned scalars ", scalarName)
 				for _, scalar := range scalars {
@@ -527,21 +470,21 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 	return nil
 }
 
-func typesPending(structs map[string]*Struct, scalars map[string]*Scalar, missingTypes map[string]bool) bool {
+func typesPending(structs map[string]*model.Struct, scalars map[string]*model.Scalar, missingTypes map[string]bool) bool {
 	for _, missing := range missingTypes {
 		if missing {
 			return true
 		}
 	}
 	for _, structType := range structs {
-		if !structType.DepsSatisfied(missingTypes, structs, scalars) {
+		if !depsSatisfied(structType, missingTypes, structs, scalars) {
 			return true
 		}
 	}
 	return false
 }
 
-func needsWorkValue(value *Value, needsWork func(fullName string) bool) bool {
+func needsWorkValue(value *model.Value, needsWork func(fullName string) bool) bool {
 	switch {
 	case value.Scalar != nil:
 		if needsWork(value.Scalar.FullName()) {
@@ -563,12 +506,11 @@ func needsWorkValue(value *Value, needsWork func(fullName string) bool) bool {
 	return false
 }
 
-func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]*Struct, scalars map[string]*Scalar) bool {
+func depsSatisfied(s *model.Struct, missingTypes map[string]bool, structs map[string]*model.Struct, scalars map[string]*model.Scalar) bool {
 	needsWork := func(fullName string) bool {
 		strct, strctOK := structs[fullName]
 		scalar, scalarOK := scalars[fullName]
 		if !strctOK && !scalarOK {
-			// hey there is more todo
 			missingTypes[fullName] = true
 			trace("need work ----------------------" + fullName)
 			return true
@@ -580,31 +522,11 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 		return false
 	}
 
-	needWorksFields := func(fields []*Field) bool {
+	needWorksFields := func(fields []*model.Field) bool {
 		for _, field := range fields {
 			if needsWorkValue(field.Value, needsWork) {
 				return false
 			}
-
-			// var fieldStructType *StructType = nil
-			// if field.Value.StructType != nil {
-			// 	fieldStructType = field.Value.StructType
-			// } else if field.Value.Array != nil && field.Value.Array.Value.StructType != nil {
-			// 	fieldStructType = field.Value.Array.Value.StructType
-			// } else if field.Value.Map != nil && field.Value.Map.Value.StructType != nil {
-			// 	fieldStructType = field.Value.Map.Value.StructType
-			// } else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
-			// 	return false
-			// } else if field.Value.Array != nil && field.Value.Array.Value.Scalar != nil && needsWork(field.Value.Array.Value.Scalar.FullName()) {
-			// 	return false
-			// } else if field.Value.Map != nil && field.Value.Map.Value.Scalar != nil && needsWork(field.Value.Map.Value.Scalar.FullName()) {
-			// 	return false
-			// }
-			// if fieldStructType != nil {
-			// 	if needsWork(fieldStructType.FullName()) {
-			// 		return false
-			// 	}
-			// }
 		}
 		return true
 	}
@@ -615,22 +537,6 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 	} else if ok := needWorksFields(s.UnionFields); !ok {
 		return false
 	}
-	// // special handling of union only structs
-	// if len(s.Fields) == 0 {
-	//	for _, field := range s.UnionFields {
-	//		var fieldStructType *StructType = nil
-	//		if field.Value.StructType != nil {
-	//			fieldStructType = field.Value.StructType
-	//		} else if field.Value.Scalar != nil && needsWork(field.Value.Scalar.FullName()) {
-	//			return false
-	//		}
-	//		if fieldStructType != nil {
-	//			if needsWork(fieldStructType.FullName()) {
-	//				return false
-	//			}
-	//		}
-	//	}
-	// }
 	if s.Array != nil {
 		if s.Array.Value != nil && needsWorkValue(s.Array.Value, needsWork) {
 			return false
@@ -647,29 +553,13 @@ func (s *Struct) DepsSatisfied(missingTypes map[string]bool, structs map[string]
 	return !needsWork(s.FullName())
 }
 
-func (s *Struct) FullName() string {
-	fullName := s.Package + "." + s.Name
-	if len(fullName) == 0 {
-		fullName = s.Name
-	}
-	return fullName
-}
-
-func (st *StructType) FullName() string {
-	fullName := st.Package + "." + st.Name
-	if len(fullName) == 0 {
-		fullName = st.Name
-	}
-	return fullName
-}
-
 func getTypesInPackage(
 	goPaths []string,
 	gomod config.Namespace,
 	packageName string,
 ) (
-	structs map[string]*Struct,
-	scalars map[string]*Scalar,
+	structs map[string]*model.Struct,
+	scalars map[string]*model.Scalar,
 	err error,
 ) {
 	pkg, err := parsePackage(goPaths, gomod, packageName)
@@ -683,13 +573,11 @@ func getTypesInPackage(
 	return structs, scalars, nil
 }
 
-func getStructTypeForField(value *Value) *StructType {
-	// field.Value.StructType
-	var strType *StructType
+func getStructTypeForField(value *model.Value) *model.StructType {
+	var strType *model.StructType
 	switch {
 	case value.StructType != nil:
 		strType = value.StructType
-		// case field.Value.ArrayType
 	case value.Map != nil:
 		strType = getStructTypeForField(value.Map.Value)
 	case value.Array != nil:
@@ -698,13 +586,11 @@ func getStructTypeForField(value *Value) *StructType {
 	return strType
 }
 
-func getScalarForField(value *Value) []*Scalar {
-	// field.Value.StructType
-	var scalarTypes []*Scalar
+func getScalarForField(value *model.Value) []*model.Scalar {
+	var scalarTypes []*model.Scalar
 	switch {
 	case value.Scalar != nil:
 		scalarTypes = append(scalarTypes, value.Scalar)
-		// case field.Value.ArrayType
 	case value.Map != nil:
 		if value.Map.Key != nil {
 			if v := getScalarForField(value.Map.Key); v != nil {
@@ -718,7 +604,7 @@ func getScalarForField(value *Value) []*Scalar {
 	return scalarTypes
 }
 
-func collectScalarTypes(fields []*Field, scalarTypes map[string]bool) {
+func collectScalarTypes(fields []*model.Field, scalarTypes map[string]bool) {
 	for _, field := range fields {
 		for _, scalarType := range getScalarForField(field.Value) {
 			if scalarType != nil {
@@ -737,7 +623,7 @@ func collectScalarTypes(fields []*Field, scalarTypes map[string]bool) {
 	}
 }
 
-func collectStructTypes(fields []*Field, structTypes map[string]bool) {
+func collectStructTypes(fields []*model.Field, structTypes map[string]bool) {
 	for _, field := range fields {
 		strType := getStructTypeForField(field.Value)
 		if strType != nil {
@@ -754,5 +640,3 @@ func collectStructTypes(fields []*Field, structTypes map[string]bool) {
 		}
 	}
 }
-
-// func collectStructs(goPath, structs)
