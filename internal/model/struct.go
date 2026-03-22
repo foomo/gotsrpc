@@ -16,5 +16,6 @@ func (s *Struct) FullName() string {
 	if len(fullName) == 0 {
 		fullName = s.Name
 	}
+
 	return fullName
 }

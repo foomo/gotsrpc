@@ -30,6 +30,7 @@ func (c *bufferedClient) SetTransportHttpClient(client *http.Client) { //nolint:
 // Call calls a method on the remote service
 func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) error {
 	var errorIndices []int
+
 	for i, v := range reply {
 		if isErrorPtr(v) {
 			errorIndices = append(errorIndices, i)
@@ -40,9 +41,11 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	if len(args) > 0 {
 		b = getBuffer()
 		defer putBuffer(b)
+
 		enc := c.handle.getEncoder(b)
 		err := enc.Encode(args)
 		c.handle.putEncoder(enc)
+
 		if err != nil {
 			return NewClientError(errors.Wrap(err, "failed to encode arguments"))
 		}
@@ -56,6 +59,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	if c.headers != nil {
 		headers = c.headers.Clone()
 	}
+
 	request, errRequest := newRequest(ctx, postURL, c.handle.contentType, b, headers)
 	if errRequest != nil {
 		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
@@ -69,6 +73,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 
 	buf := getBuffer()
 	defer putBuffer(buf)
+
 	if _, err := io.Copy(buf, resp.Body); err != nil {
 		return NewClientError(errors.Wrap(err, "failed to read response body"))
 	}
@@ -95,6 +100,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 	dec := clientHandle.getDecoder(buf)
 	err := dec.Decode(wrappedReply)
 	clientHandle.putDecoder(dec)
+
 	if err != nil {
 		return NewClientError(errors.Wrap(err, "failed to decode response"))
 	}

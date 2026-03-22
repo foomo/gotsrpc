@@ -18,6 +18,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantA", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Base{B1: "hello", D1: server.ACustomTypeOne}
 		ret, clientErr := c.VariantA(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -26,6 +27,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantB", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.BCustomType("test")
 		ret, clientErr := c.VariantB(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -34,6 +36,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantC", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.BCustomTypes{"a", "b"}
 		ret, clientErr := c.VariantC(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -42,6 +45,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantD", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.BCustomTypesMap{"x": "y"}
 		ret, clientErr := c.VariantD(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -50,6 +54,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantE", func(t *testing.T) {
 		t.Parallel()
+
 		v := &server.Base{B1: "ptr"}
 		ret, clientErr := c.VariantE(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -66,6 +71,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantF", func(t *testing.T) {
 		t.Parallel()
+
 		v := []*server.Base{{B1: "one"}, {B1: "two"}}
 		ret, clientErr := c.VariantF(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -76,6 +82,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantG", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]*server.Base{"k": {B1: "val"}}
 		ret, clientErr := c.VariantG(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -86,6 +93,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("VariantH", func(t *testing.T) {
 		t.Parallel()
+
 		i1 := server.Base{B1: "one"}
 		i2 := &server.Base{B1: "two"}
 		i3 := []*server.Base{{B1: "three"}}

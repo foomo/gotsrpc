@@ -33,13 +33,16 @@ func newRequest(ctx context.Context, url string, contentType string, buffer *byt
 	if buffer == nil {
 		buffer = &bytes.Buffer{}
 	}
+
 	request, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, url, buffer)
 	if errRequest != nil {
 		return nil, errors.Wrap(errRequest, "could not create a request")
 	}
+
 	if len(headers) > 0 {
 		request.Header = headers
 	}
+
 	request.Header.Set("Content-Type", contentType)
 	request.Header.Set("Accept", contentType)
 	request.Header.Set(HeaderServiceToService, "true")

@@ -18,17 +18,21 @@ func standardImportName(importPath string) string {
 
 func getFileImports(file *ast.File, packageName string) (imports fileImportSpecMap) {
 	imports = fileImportSpecMap{"": importSpec{alias: "", name: "", path: packageName}}
+
 	for _, decl := range file.Decls {
 		if genDecl, ok := decl.(*ast.GenDecl); ok {
 			if genDecl.Tok == token.IMPORT {
 				trace("got an import", genDecl.Specs)
+
 				for _, spec := range genDecl.Specs {
 					if spec, ok := spec.(*ast.ImportSpec); ok {
 						importPath := spec.Path.Value[1 : len(spec.Path.Value)-1]
+
 						importName := spec.Name.String()
 						if importName == "" || importName == "<nil>" {
 							importName = standardImportName(importPath)
 						}
+
 						imports[importName] = importSpec{
 							alias: importName,
 							name:  standardImportName(importPath),
@@ -39,6 +43,7 @@ func getFileImports(file *ast.File, packageName string) (imports fileImportSpecM
 			}
 		}
 	}
+
 	return imports
 }
 
@@ -46,6 +51,7 @@ func extractJSONInfo(tag string) *model.JSONInfo {
 	structTag := reflect.StructTag(tag)
 
 	jsonTags := strings.Split(structTag.Get("json"), ",")
+
 	gotsrpcTags := strings.Split(structTag.Get("gotsrpc"), ",")
 	if len(jsonTags) == 0 && len(gotsrpcTags) == 0 {
 		return nil
@@ -54,6 +60,7 @@ func extractJSONInfo(tag string) *model.JSONInfo {
 	for k, value := range jsonTags {
 		jsonTags[k] = strings.TrimSpace(value)
 	}
+
 	for k, value := range gotsrpcTags {
 		gotsrpcTags[k] = strings.TrimSpace(value)
 	}
@@ -75,6 +82,7 @@ func extractJSONInfo(tag string) *model.JSONInfo {
 			name = jsonTags[0]
 		}
 	}
+
 	if len(jsonTags) > 1 {
 		for _, value := range jsonTags[1:] {
 			switch value {
@@ -129,6 +137,7 @@ func getScalarFromAstIdent(ident *ast.Ident) model.ScalarType {
 		} else if ident.Obj == nil {
 			return model.ScalarType(ident.Name)
 		}
+
 		return model.ScalarTypeNone
 	}
 }
@@ -139,11 +148,13 @@ func getTypesFromAstType(ident *ast.Ident) (structType string, scalarType model.
 	case model.ScalarTypeNone:
 		structType = ident.Name
 	}
+
 	return
 }
 
 func readAstType(v *model.Value, fieldIdent *ast.Ident, fileImports fileImportSpecMap, packageName string) {
 	structType, scalarType := getTypesFromAstType(fieldIdent)
+
 	v.ScalarType = scalarType
 	if len(structType) > 0 {
 		v.StructType = &model.StructType{
@@ -166,6 +177,7 @@ func readAstType(v *model.Value, fieldIdent *ast.Ident, fileImports fileImportSp
 
 func readAstStarExpr(v *model.Value, starExpr *ast.StarExpr, fileImports fileImportSpecMap) {
 	v.IsPtr = true
+
 	switch starExprType := starExpr.X.(type) {
 	case *ast.Ident:
 		readAstType(v, starExprType, fileImports, "")
@@ -181,6 +193,7 @@ func readAstStarExpr(v *model.Value, starExpr *ast.StarExpr, fileImports fileImp
 func readAstMapType(m *model.Map, mapType *ast.MapType, fileImports fileImportSpecMap) {
 	trace("		map key", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
 	trace("		map value", mapType.Value, reflect.ValueOf(mapType.Value).Type().String())
+
 	switch keyType := mapType.Key.(type) {
 	case *ast.Ident:
 		_, scalarType := getTypesFromAstType(keyType)
@@ -193,6 +206,7 @@ func readAstMapType(m *model.Map, mapType *ast.MapType, fileImports fileImportSp
 		readAstSelectorExpr(m.Key, keyType, fileImports)
 	default:
 	}
+
 	loadValueExpr(m.Value, mapType.Value, fileImports)
 }
 
@@ -200,6 +214,7 @@ func readAstSelectorExpr(v *model.Value, selectorExpr *ast.SelectorExpr, fileImp
 	switch selExpType := selectorExpr.X.(type) {
 	case *ast.Ident:
 		readAstType(v, selectorExpr.Sel, fileImports, selExpType.Name)
+
 		if v.StructType != nil {
 			v.StructType.Package = fileImports.getPackagePath(v.StructType.Name)
 			v.StructType.Name = selectorExpr.Sel.Name
@@ -222,6 +237,7 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap)
 	switch exprType := expr.(type) {
 	case *ast.ArrayType:
 		v.Array = &model.Array{Value: &model.Value{}}
+
 		if exprType.Len != nil {
 			if lit, ok := exprType.Len.(*ast.BasicLit); ok {
 				if n, err := strconv.Atoi(lit.Value); err == nil {
@@ -279,16 +295,20 @@ func readField(astField *ast.Field, fileImports fileImportSpecMap) (names []stri
 			names = append(names, name.Name)
 		}
 	}
+
 	v = &model.Value{}
 	loadValueExpr(v, astField.Type, fileImports)
+
 	if astField.Tag != nil {
 		jsonInfo = extractJSONInfo(astField.Tag.Value[1 : len(astField.Tag.Value)-1])
 	}
+
 	return
 }
 
 func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (fields []*model.Field, inlineFields []*model.Field, unionFields []*model.Field) {
 	fields = []*model.Field{}
+
 	for _, field := range fieldList {
 		if names, value, jsonInfo := readField(field, fileImports); value != nil {
 			for _, name := range names {
@@ -305,6 +325,7 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 							Value:    value,
 							JSONInfo: jsonInfo,
 						})
+
 						continue
 					}
 				} else if strings.Compare(strings.ToLower(name[:1]), name[:1]) == 0 {
@@ -315,8 +336,10 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 						Value:    value,
 						JSONInfo: jsonInfo,
 					})
+
 					continue
 				}
+
 				fields = append(fields, &model.Field{
 					Name:     name,
 					Value:    value,
@@ -325,6 +348,7 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap) (field
 			}
 		}
 	}
+
 	return
 }
 
@@ -348,6 +372,7 @@ func extractErrorTypes(file *ast.File, packageName string, errorTypes map[string
 			}
 		}
 	}
+
 	return
 }
 
@@ -366,6 +391,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 						Package: packageName,
 					}
 					trace("StructType", obj.Name)
+
 					fields, inlineFields, unionFields := readFieldList(typeSpecType.Fields.List, fileImports)
 					structs[structName].Fields = fields
 					structs[structName].InlineFields = inlineFields
@@ -412,14 +438,18 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 			}
 		}
 	}
+
 	return nil
 }
 
 func readStructs(pkg *ast.Package, packageName string) (structs map[string]*model.Struct, scalars map[string]*model.Scalar, err error) {
 	structs = map[string]*model.Struct{}
+
 	trace("reading files in package", packageName)
+
 	scalars = map[string]*model.Scalar{}
 	errorTypes := map[string]bool{}
+
 	for _, file := range pkg.Files {
 		err = extractTypes(file, packageName, structs, scalars)
 		if err != nil {
@@ -431,11 +461,13 @@ func readStructs(pkg *ast.Package, packageName string) (structs map[string]*mode
 			return
 		}
 	}
+
 	for name, structType := range structs {
 		_, isErrorType := errorTypes[name]
 		if isErrorType {
 			structType.IsError = true
 		}
 	}
+
 	return
 }

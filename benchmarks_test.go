@@ -23,6 +23,7 @@ func setupGoRPC(b *testing.B) *server.ServiceGoRPCClient {
 	if err != nil {
 		b.Fatal(err)
 	}
+
 	addr := l.Addr().String()
 	if err := l.Close(); err != nil {
 		b.Fatal(err)
@@ -32,6 +33,7 @@ func setupGoRPC(b *testing.B) *server.ServiceGoRPCClient {
 	if err := s.Start(); err != nil {
 		b.Fatal(err)
 	}
+
 	b.Cleanup(s.Stop)
 
 	c := server.NewServiceGoRPCClient(addr, nil)
@@ -43,8 +45,10 @@ func setupGoRPC(b *testing.B) *server.ServiceGoRPCClient {
 
 func setupGoTSRPC(b *testing.B) *server.HTTPServiceGoTSRPCClient {
 	b.Helper()
+
 	s := httptest.NewServer(server.NewDefaultServiceGoTSRPCProxy(&server.Handler{}))
 	b.Cleanup(s.Close)
+
 	return server.NewDefaultServiceGoTSRPCClient(s.URL)
 }
 
@@ -72,6 +76,7 @@ func Benchmark_Empty(b *testing.B) {
 
 func Benchmark_String(b *testing.B) {
 	b.ReportAllocs()
+
 	v := "hello world"
 
 	b.Run("GoRPC", func(b *testing.B) {
@@ -95,6 +100,7 @@ func Benchmark_String(b *testing.B) {
 
 func Benchmark_SimpleStruct(b *testing.B) {
 	b.ReportAllocs()
+
 	v := common.Simple{
 		Bool:    true,
 		Int:     42,
@@ -124,6 +130,7 @@ func Benchmark_SimpleStruct(b *testing.B) {
 
 func Benchmark_NestedStruct(b *testing.B) {
 	b.ReportAllocs()
+
 	v := common.Nested{
 		Name: "parent",
 		Child: common.Simple{
@@ -156,6 +163,7 @@ func Benchmark_NestedStruct(b *testing.B) {
 
 func Benchmark_StructWithCollections(b *testing.B) {
 	b.ReportAllocs()
+
 	v := server.WithCollections{
 		Strings: []string{"a", "b", "c"},
 		Int64s:  []int64{1, 2, 3},

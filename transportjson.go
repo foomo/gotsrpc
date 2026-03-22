@@ -31,5 +31,6 @@ func SetJSONExt(rt interface{}, tag uint64, ext codec.InterfaceExt) error {
 	if value, ok := jsonHandle.handle.(*codec.JsonHandle); ok {
 		return value.SetInterfaceExt(reflect.TypeOf(rt), tag, ext)
 	}
+
 	return errors.New("invalid handle type")
 }

@@ -117,6 +117,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("AllScalarsStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.AllScalars{
 			Int8: 127, Int16: 32767, Int32: 2147483647,
 			Uint: 42, Uint8: 255, Uint16: 65535, Uint32: 4294967295, Uint64: 9876543210,
@@ -137,6 +138,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringPtr", func(t *testing.T) {
 		t.Parallel()
+
 		v := "test"
 		ret, clientErr := c.StringPtr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -146,6 +148,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int64Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := int64(42)
 		ret, clientErr := c.Int64Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -155,6 +158,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("BoolPtr", func(t *testing.T) {
 		t.Parallel()
+
 		v := true
 		ret, clientErr := c.BoolPtr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -164,6 +168,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int8Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := int8(127)
 		ret, clientErr := c.Int8Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -173,6 +178,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int16Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := int16(32767)
 		ret, clientErr := c.Int16Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -182,6 +188,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int32Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := int32(2147483647)
 		ret, clientErr := c.Int32Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -191,6 +198,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("UintPtr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint(42)
 		ret, clientErr := c.UintPtr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -200,6 +208,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Uint8Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint8(255)
 		ret, clientErr := c.Uint8Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -209,6 +218,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Uint16Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint16(65535)
 		ret, clientErr := c.Uint16Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -218,6 +228,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Uint32Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint32(4294967295)
 		ret, clientErr := c.Uint32Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -227,6 +238,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Uint64Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint64(9876543210)
 		ret, clientErr := c.Uint64Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -236,6 +248,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Float32Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := float32(3.14)
 		ret, clientErr := c.Float32Ptr(t.Context(), &v)
 		require.NoError(t, clientErr)
@@ -245,6 +258,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("AllScalarPointersStruct", func(t *testing.T) {
 		t.Parallel()
+
 		i8, i16, i32 := int8(127), int16(32767), int32(2147483647)
 		u, u8, u16, u32, u64 := uint(42), uint8(255), uint16(65535), uint32(4294967295), uint64(9876543210)
 		f32 := float32(3.14)
@@ -277,6 +291,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SimpleStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := common.Simple{
 			Bool: true, Int: 42, Int64: 100, Float64: 2.718, String: "test",
 		}
@@ -287,6 +302,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("NestedStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := common.Nested{
 			Name:  "parent",
 			Child: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
@@ -298,6 +314,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("InlinedStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Inlined{
 			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
 			Name:   "parent",
@@ -309,6 +326,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StructWithPointers", func(t *testing.T) {
 		t.Parallel()
+
 		str := "hello"
 		i := int64(42)
 		b := true
@@ -330,6 +348,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StructWithCollections", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.WithCollections{
 			Strings:   []string{"a", "b"},
 			Int64s:    []int64{1, 2, 3},
@@ -352,6 +371,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []string{"a", "b", "c"}
 		ret, clientErr := c.StringSlice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -360,6 +380,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int64Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []int64{10, 20, 30}
 		ret, clientErr := c.Int64Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -368,6 +389,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SimpleSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []common.Simple{
 			{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"},
 			{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two"},
@@ -379,6 +401,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SimplePtrSlice", func(t *testing.T) {
 		t.Parallel()
+
 		s1 := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"}
 		s2 := common.Simple{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two"}
 		v := []*common.Simple{&s1, &s2}
@@ -393,6 +416,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringSlice2D", func(t *testing.T) {
 		t.Parallel()
+
 		v := [][]string{{"a", "b"}, {"c", "d"}}
 		ret, clientErr := c.StringSlice2D(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -401,6 +425,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int8Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []int8{-128, 0, 127}
 		ret, clientErr := c.Int8Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -409,6 +434,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int16Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []int16{-32768, 0, 32767}
 		ret, clientErr := c.Int16Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -417,6 +443,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Int32Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []int32{-2147483648, 0, 2147483647}
 		ret, clientErr := c.Int32Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -425,6 +452,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("UintSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint{0, 42, 100}
 		ret, clientErr := c.UintSlice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -433,6 +461,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Uint16Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint16{0, 1000, 65535}
 		ret, clientErr := c.Uint16Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -441,6 +470,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Uint32Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint32{0, 1000, 4294967295}
 		ret, clientErr := c.Uint32Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -449,6 +479,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Uint64Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint64{0, 1000, 9876543210}
 		ret, clientErr := c.Uint64Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -457,6 +488,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("Float32Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []float32{1.1, 2.2, 3.3}
 		ret, clientErr := c.Float32Slice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -468,6 +500,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("AllScalarSlicesStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.AllScalarSlices{
 			Int8s: []int8{-1, 0, 1}, Int16s: []int16{-1, 0, 1}, Int32s: []int32{-1, 0, 1},
 			Uints: []uint{0, 1, 2}, Uint16s: []uint16{0, 1, 2},
@@ -490,6 +523,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringStringMap", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]string{"a": "1", "b": "2"}
 		ret, clientErr := c.StringStringMap(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -498,6 +532,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringInt64Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]int64{"x": 10, "y": 20}
 		ret, clientErr := c.StringInt64Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -506,6 +541,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringSimpleMap", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]common.Simple{
 			"one": {Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"},
 		}
@@ -516,6 +552,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringSimplePtrMap", func(t *testing.T) {
 		t.Parallel()
+
 		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "val"}
 		v := map[string]*common.Simple{"k": &s}
 		ret, clientErr := c.StringSimplePtrMap(t.Context(), v)
@@ -527,6 +564,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringStringSliceMap", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string][]string{"colors": {"red", "blue"}, "sizes": {"s", "m"}}
 		ret, clientErr := c.StringStringSliceMap(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -535,6 +573,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringInt8Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]int8{"a": 1, "b": -1}
 		ret, clientErr := c.StringInt8Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -543,6 +582,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringInt16Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]int16{"a": 100, "b": -100}
 		ret, clientErr := c.StringInt16Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -551,6 +591,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringInt32Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]int32{"a": 100000, "b": -100000}
 		ret, clientErr := c.StringInt32Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -559,6 +600,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringUintMap", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint{"a": 0, "b": 42}
 		ret, clientErr := c.StringUintMap(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -567,6 +609,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringUint8Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint8{"a": 0, "b": 255}
 		ret, clientErr := c.StringUint8Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -575,6 +618,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringUint16Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint16{"a": 0, "b": 65535}
 		ret, clientErr := c.StringUint16Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -583,6 +627,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringUint32Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint32{"a": 0, "b": 4294967295}
 		ret, clientErr := c.StringUint32Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -591,6 +636,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringUint64Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint64{"a": 0, "b": 9876543210}
 		ret, clientErr := c.StringUint64Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -599,6 +645,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("StringFloat32Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]float32{"a": 1.1, "b": 2.2}
 		ret, clientErr := c.StringFloat32Map(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -610,6 +657,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("AllScalarMapsStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.AllScalarMaps{
 			Int8Map: map[string]int8{"x": 1}, Int16Map: map[string]int16{"x": 1},
 			Int32Map: map[string]int32{"x": 1}, UintMap: map[string]uint{"x": 1},
@@ -633,6 +681,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("MapOfMaps", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]map[string]string{"outer": {"inner": "val"}}
 		ret, clientErr := c.MapOfMaps(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -641,6 +690,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("MapOfSimpleSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string][]common.Simple{
 			"group": {{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item"}},
 		}
@@ -651,6 +701,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("SliceOfMaps", func(t *testing.T) {
 		t.Parallel()
+
 		v := []map[string]string{{"a": "1"}, {"b": "2"}}
 		ret, clientErr := c.SliceOfMaps(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -668,6 +719,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("MixedArgs", func(t *testing.T) {
 		t.Parallel()
+
 		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "mix"}
 		items := []string{"a", "b"}
 		m := map[string]int64{"x": 10}
@@ -687,6 +739,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("ByteSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []byte("hello world")
 		ret, clientErr := c.ByteSlice(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -695,6 +748,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("ObjectID", func(t *testing.T) {
 		t.Parallel()
+
 		var v server.ObjectID
 		copy(v[:], "hello123456")
 		ret, clientErr := c.ObjectID(t.Context(), v)

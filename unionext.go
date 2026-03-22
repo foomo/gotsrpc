@@ -15,6 +15,7 @@ func RegisterUnionExt(v ...interface{}) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -29,11 +30,13 @@ func (x *UnionExt) ConvertExt(v interface{}) interface{} {
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}
+
 	for i := 0; i < val.NumField(); i++ {
 		if field := val.Field(i); !field.IsZero() {
 			return field.Interface()
 		}
 	}
+
 	return nil
 }
 

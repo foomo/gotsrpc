@@ -42,13 +42,16 @@ func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	dec := ch.getDecoder(r.Body)
 	errDecode := dec.Decode(args)
 	ch.putDecoder(dec)
+
 	if errDecode != nil {
 		return errors.Wrap(errDecode, "could not decode arguments")
 	}
+
 	if callStats != nil {
 		callStats.Unmarshalling = time.Since(start)
 		callStats.RequestSize = int(r.ContentLength)
 	}
+
 	return nil
 }
 
@@ -56,18 +59,21 @@ func loadArgs(args interface{}, jsonBytes []byte) error {
 	if err := json.Unmarshal(jsonBytes, &args); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 // Reply although this is a public method - do not call it, it will be called by generated code
 func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
 	var errorIndices []int
+
 	for i, v := range response {
 		if er, ok := v.(*errorReply); ok {
 			errorIndices = append(errorIndices, i)
 			response[i] = er.err
 		}
 	}
+
 	var serializationStart time.Time
 	if stats != nil {
 		serializationStart = time.Now()
@@ -89,6 +95,7 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	enc := ch.getEncoder(buf)
 	err := enc.Encode(response)
 	ch.putEncoder(enc)
+
 	if err != nil {
 		return errors.Wrap(err, "could not encode data to accepted format")
 	}
@@ -102,11 +109,13 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 	if stats != nil {
 		stats.ResponseSize = buf.Len()
 		stats.Marshalling = time.Since(serializationStart)
+
 		for _, i := range errorIndices {
 			if v, ok := response[i].(error); ok && v != nil {
 				if !reflect.ValueOf(v).IsZero() {
 					stats.ErrorCode = 1
 					stats.ErrorType = fmt.Sprintf("%T", v)
+
 					stats.ErrorMessage = v.Error()
 					if v, ok := v.(interface {
 						ErrorCode() int
@@ -117,5 +126,6 @@ func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.Res
 			}
 		}
 	}
+
 	return nil
 }

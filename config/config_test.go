@@ -33,7 +33,9 @@ func TestLoadConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	goPackage := "foo/bar"
+
 	foo, ok := c.Mappings[goPackage]
 	if !ok {
 		t.Fatal("foo/bar not found")
@@ -42,6 +44,7 @@ func TestLoadConfig(t *testing.T) {
 	if foo.GoPackage != goPackage {
 		t.Fatal("wrong go package value")
 	}
+
 	if foo.Out != "path/to/ts" || foo.TypeScriptModule != "Sample.Module" {
 		t.Fatal("unexpected data", foo)
 	}
@@ -52,18 +55,23 @@ func TestLoadConfig(t *testing.T) {
 	if !ok {
 		t.Fatal("demo target not found")
 	}
+
 	if demoTarget.Out != "/tmp/my-service.ts" {
 		t.Fatal("demo target out is wrong")
 	}
+
 	if demoTarget.Package != "github.com/foomo/gotsrpc/v2/demo" {
 		t.Fatal("wrong target package")
 	}
+
 	if demoTarget.TypeScriptModule != "My.Service" {
 		t.Fatal("wromg ts module")
 	}
+
 	if len(demoTarget.Services) != 1 {
 		t.Fatal("wrong number of services")
 	}
+
 	if demoTarget.Services["/service/demo"] != "Service" {
 		t.Fatal("first service is wrong")
 	}

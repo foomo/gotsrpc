@@ -23,6 +23,7 @@ func traceData(args ...interface{}) {
 				trace(arg)
 				continue
 			}
+
 			trace(string(yamlBytes))
 		}
 	}

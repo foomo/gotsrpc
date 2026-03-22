@@ -40,5 +40,6 @@ func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
 	if value, ok := msgpackHandle.handle.(*codec.MsgpackHandle); ok {
 		return value.SetBytesExt(reflect.TypeOf(rt), tag, ext)
 	}
+
 	return errors.New("invalid handle type")
 }

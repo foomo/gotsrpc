@@ -16,10 +16,12 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 	require.NoError(t, l.Close())
 
 	s := server.NewServiceGoRPCProxy(l.Addr().String(), &server.Handler{}, nil)
+
 	require.NoError(t, s.Start())
 	defer s.Stop()
 
 	c := server.NewServiceGoRPCClient(l.Addr().String(), nil)
+
 	c.Start()
 	defer c.Stop()
 

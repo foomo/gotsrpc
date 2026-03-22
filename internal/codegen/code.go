@@ -23,12 +23,14 @@ func (c *Code) Ind(inc int) *Code {
 	if c.indent < 0 {
 		c.indent = 0
 	}
+
 	return c
 }
 
 func (c *Code) NL() *Code {
 	c.lines = append(c.lines, strings.Repeat(c.tab, c.indent)+c.line)
 	c.line = ""
+
 	return c
 }
 
@@ -47,5 +49,6 @@ func (c *Code) String() string {
 		c.lines = append(c.lines, c.line)
 		c.line = ""
 	}
+
 	return strings.Join(c.lines, "\n")
 }

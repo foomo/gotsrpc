@@ -24,6 +24,7 @@ func TestInstrumentedService(t *testing.T) {
 			assert.Equal(t, "package", s.Package)
 			assert.Equal(t, "service", s.Service)
 			assert.NotNil(t, s)
+
 			count++
 		})
 

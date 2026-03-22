@@ -24,44 +24,61 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 
 	for _, method := range service.Methods {
 		ts.App("async " + lcfirst(method.Name) + "(")
+
 		var callArgs []string
+
 		argOffset := 0
+
 		for index, arg := range method.Args {
 			if index == 0 && valueIsHTTPResponseWriter(arg.Value) {
 				trace("skipping first arg is a http.ResponseWriter")
+
 				argOffset = 1
+
 				continue
 			} else if index == 0 && valueIsContext(arg.Value) {
 				trace("skipping first arg is a context.Context")
+
 				argOffset = 1
+
 				continue
 			}
+
 			if index == 1 && valueIsHTTPRequest(arg.Value) {
 				trace("skipping second arg is a *http.Request")
+
 				argOffset = 2
+
 				continue
 			}
 		}
+
 		argCount := 0
+
 		for index, arg := range method.Args {
 			if index < argOffset {
 				continue
 			}
+
 			if index > argOffset {
 				ts.App(", ")
 			}
+
 			ts.App(fieldTSName(arg))
 			ts.App(":")
 			valueTSType(arg.Value, mappings, scalars, structs, ts, arg.JSONInfo)
 			callArgs = append(callArgs, arg.Name)
 			argCount++
 		}
+
 		ts.App("):")
 
 		returnTypeTS := NewCode("	")
 		returnTypeTS.App("{")
+
 		innerReturnTypeTS := NewCode("	")
 		innerReturnTypeTS.App("{")
+
 		firstReturnType := ""
 		countReturns := 0
 		countInnerReturns := 0
@@ -78,6 +95,7 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 					retArgName += "_" + fmt.Sprint(index)
 				}
 			}
+
 			if index > 0 {
 				returnTypeTS.App("; ")
 				innerReturnTypeTS.App("; ")
@@ -92,16 +110,24 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 				valueTSType(retField.Value, mappings, scalars, structs, firstReturnTypeTS, retField.JSONInfo)
 				firstReturnType = firstReturnTypeTS.String()
 			}
+
 			countReturns++
+
 			returnTypeTS.App(retArgName)
 			returnTypeTS.App(":")
+
 			responseObject += responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]"
+
 			valueTSType(retField.Value, mappings, scalars, structs, returnTypeTS, retField.JSONInfo)
+
 			responseObjectPrefix = ", "
 		}
+
 		responseObject += "};"
+
 		returnTypeTS.App("}")
 		innerReturnTypeTS.App("}")
+
 		if countReturns == 0 {
 			ts.App("Promise<void> {")
 		} else if countReturns == 1 {
@@ -109,6 +135,7 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 		} else if countReturns > 1 {
 			ts.App("Promise<" + returnTypeTS.String() + "> {")
 		}
+
 		ts.NL()
 
 		ts.Ind(1)
@@ -119,6 +146,7 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 		}
 
 		call := "this.transport<" + innerCallTypeString + ">(\"" + method.Name + "\", [" + strings.Join(callArgs, ", ") + "])"
+
 		switch countReturns {
 		case 0:
 			ts.L("await " + call)
@@ -133,7 +161,9 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 		ts.App("}")
 		ts.NL()
 	}
+
 	ts.Ind(-1)
 	ts.L("}")
+
 	return nil
 }

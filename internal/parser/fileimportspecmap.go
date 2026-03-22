@@ -7,5 +7,6 @@ func (m fileImportSpecMap) getPackagePath(packageName string) string {
 	if ok {
 		packageName = is.path
 	}
+
 	return packageName
 }

@@ -24,6 +24,7 @@ func (ch *transportHandle) getEncoder(w io.Writer) *codec.Encoder {
 		enc.Reset(w)
 		return enc
 	}
+
 	return codec.NewEncoder(w, ch.handle)
 }
 
@@ -36,6 +37,7 @@ func (ch *transportHandle) getDecoder(r io.Reader) *codec.Decoder {
 		dec.Reset(r)
 		return dec
 	}
+
 	return codec.NewDecoder(r, ch.handle)
 }
 
@@ -55,6 +57,7 @@ var (
 
 func registerTransportHandle(encoding ClientEncoding, h *transportHandle) {
 	handlesByEncoding[encoding] = h
+
 	handlesByContentType[h.contentType] = h
 	if defaultTransportHandle == nil {
 		defaultTransportHandle = h
@@ -76,6 +79,7 @@ func newErrorEncodeHook() func(*[]any, []int) error {
 				(*resp)[i] = NewError(e)
 			}
 		}
+
 		return nil
 	}
 }
@@ -85,12 +89,16 @@ func newErrorDecodeHook() func([]any, []int) ([]any, error) {
 		if len(errorIndices) == 0 {
 			return reply, nil
 		}
+
 		ret := make([]any, len(reply))
 		copy(ret, reply)
+
 		for _, i := range errorIndices {
 			var e *Error
+
 			ret[i] = e
 		}
+
 		return ret, nil
 	}
 }
@@ -106,6 +114,7 @@ func newErrorAfterDecodeHook() func(*[]any, []any, []int) error {
 				}
 			}
 		}
+
 		return nil
 	}
 }
@@ -118,6 +127,7 @@ func getHandleForEncoding(encoding ClientEncoding) *transportHandle {
 	if h, ok := handlesByEncoding[encoding]; ok {
 		return h
 	}
+
 	return defaultTransportHandle
 }
 
@@ -125,5 +135,6 @@ func getHandlerForContentType(contentType string) *transportHandle {
 	if h, ok := handlesByContentType[contentType]; ok {
 		return h
 	}
+
 	return defaultTransportHandle
 }

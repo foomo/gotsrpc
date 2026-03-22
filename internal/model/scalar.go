@@ -11,5 +11,6 @@ func (st *Scalar) FullName() string {
 	if len(fullName) == 0 {
 		fullName = st.Name
 	}
+
 	return fullName
 }

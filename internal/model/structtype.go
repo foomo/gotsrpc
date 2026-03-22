@@ -10,5 +10,6 @@ func (st *StructType) FullName() string {
 	if len(fullName) == 0 {
 		fullName = st.Name
 	}
+
 	return fullName
 }

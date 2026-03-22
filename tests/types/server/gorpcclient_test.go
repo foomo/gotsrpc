@@ -27,6 +27,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Bool", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Bool(true)
 		require.NoError(t, clientErr)
 		assert.True(t, ret)
@@ -34,6 +35,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Int(42)
 		require.NoError(t, clientErr)
 		assert.Equal(t, 42, ret)
@@ -41,6 +43,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int64", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Int64(int64(9876543210))
 		require.NoError(t, clientErr)
 		assert.Equal(t, int64(9876543210), ret)
@@ -48,6 +51,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Float64", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Float64(3.14159)
 		require.NoError(t, clientErr)
 		assert.InDelta(t, 3.14159, ret, 1e-10)
@@ -55,6 +59,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("String", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.String("hello world")
 		require.NoError(t, clientErr)
 		assert.Equal(t, "hello world", ret)
@@ -62,6 +67,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int8", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Int8(127)
 		require.NoError(t, clientErr)
 		assert.Equal(t, int8(127), ret)
@@ -69,6 +75,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int16", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Int16(32767)
 		require.NoError(t, clientErr)
 		assert.Equal(t, int16(32767), ret)
@@ -76,6 +83,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int32", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Int32(2147483647)
 		require.NoError(t, clientErr)
 		assert.Equal(t, int32(2147483647), ret)
@@ -83,6 +91,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Uint(42)
 		require.NoError(t, clientErr)
 		assert.Equal(t, uint(42), ret)
@@ -90,6 +99,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint8", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Uint8(255)
 		require.NoError(t, clientErr)
 		assert.Equal(t, uint8(255), ret)
@@ -97,6 +107,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint16", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Uint16(65535)
 		require.NoError(t, clientErr)
 		assert.Equal(t, uint16(65535), ret)
@@ -104,6 +115,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint32", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Uint32(4294967295)
 		require.NoError(t, clientErr)
 		assert.Equal(t, uint32(4294967295), ret)
@@ -111,6 +123,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint64", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Uint64(9876543210)
 		require.NoError(t, clientErr)
 		assert.Equal(t, uint64(9876543210), ret)
@@ -118,6 +131,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Float32", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Float32(3.14)
 		require.NoError(t, clientErr)
 		assert.InDelta(t, float32(3.14), ret, 1e-5)
@@ -125,6 +139,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("AllScalarsStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.AllScalars{
 			Int8: 127, Int16: 32767, Int32: 2147483647,
 			Uint: 42, Uint8: 255, Uint16: 65535, Uint32: 4294967295, Uint64: 9876543210,
@@ -145,6 +160,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringPtr", func(t *testing.T) {
 		t.Parallel()
+
 		v := "test"
 		ret, clientErr := c.StringPtr(&v)
 		require.NoError(t, clientErr)
@@ -154,6 +170,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int8Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := int8(127)
 		ret, clientErr := c.Int8Ptr(&v)
 		require.NoError(t, clientErr)
@@ -163,6 +180,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int16Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := int16(32767)
 		ret, clientErr := c.Int16Ptr(&v)
 		require.NoError(t, clientErr)
@@ -172,6 +190,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int32Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := int32(2147483647)
 		ret, clientErr := c.Int32Ptr(&v)
 		require.NoError(t, clientErr)
@@ -181,6 +200,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("UintPtr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint(42)
 		ret, clientErr := c.UintPtr(&v)
 		require.NoError(t, clientErr)
@@ -190,6 +210,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint8Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint8(255)
 		ret, clientErr := c.Uint8Ptr(&v)
 		require.NoError(t, clientErr)
@@ -199,6 +220,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint16Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint16(65535)
 		ret, clientErr := c.Uint16Ptr(&v)
 		require.NoError(t, clientErr)
@@ -208,6 +230,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint32Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint32(4294967295)
 		ret, clientErr := c.Uint32Ptr(&v)
 		require.NoError(t, clientErr)
@@ -217,6 +240,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint64Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := uint64(9876543210)
 		ret, clientErr := c.Uint64Ptr(&v)
 		require.NoError(t, clientErr)
@@ -226,6 +250,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Float32Ptr", func(t *testing.T) {
 		t.Parallel()
+
 		v := float32(3.14)
 		ret, clientErr := c.Float32Ptr(&v)
 		require.NoError(t, clientErr)
@@ -235,6 +260,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("AllScalarPointersStruct", func(t *testing.T) {
 		t.Parallel()
+
 		i8, i16, i32 := int8(127), int16(32767), int32(2147483647)
 		u, u8, u16, u32, u64 := uint(42), uint8(255), uint16(65535), uint32(4294967295), uint64(9876543210)
 		f32 := float32(3.14)
@@ -267,6 +293,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("SimpleStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := common.Simple{Bool: true, Int: 42, Int64: 100, Float64: 2.718, String: "test"}
 		ret, clientErr := c.SimpleStruct(v)
 		require.NoError(t, clientErr)
@@ -275,6 +302,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("NestedStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := common.Nested{
 			Name:  "parent",
 			Child: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
@@ -286,6 +314,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("InlinedStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Inlined{
 			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
 			Name:   "parent",
@@ -297,6 +326,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []string{"a", "b", "c"}
 		ret, clientErr := c.StringSlice(v)
 		require.NoError(t, clientErr)
@@ -305,6 +335,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int8Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []int8{-128, 0, 127}
 		ret, clientErr := c.Int8Slice(v)
 		require.NoError(t, clientErr)
@@ -313,6 +344,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int16Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []int16{-32768, 0, 32767}
 		ret, clientErr := c.Int16Slice(v)
 		require.NoError(t, clientErr)
@@ -321,6 +353,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Int32Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []int32{-2147483648, 0, 2147483647}
 		ret, clientErr := c.Int32Slice(v)
 		require.NoError(t, clientErr)
@@ -329,6 +362,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("UintSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint{0, 42, 100}
 		ret, clientErr := c.UintSlice(v)
 		require.NoError(t, clientErr)
@@ -337,6 +371,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint16Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint16{0, 1000, 65535}
 		ret, clientErr := c.Uint16Slice(v)
 		require.NoError(t, clientErr)
@@ -345,6 +380,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint32Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint32{0, 1000, 4294967295}
 		ret, clientErr := c.Uint32Slice(v)
 		require.NoError(t, clientErr)
@@ -353,6 +389,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Uint64Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []uint64{0, 1000, 9876543210}
 		ret, clientErr := c.Uint64Slice(v)
 		require.NoError(t, clientErr)
@@ -361,6 +398,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Float32Slice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []float32{1.1, 2.2, 3.3}
 		ret, clientErr := c.Float32Slice(v)
 		require.NoError(t, clientErr)
@@ -372,6 +410,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("AllScalarSlicesStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.AllScalarSlices{
 			Int8s: []int8{-1, 0, 1}, Int16s: []int16{-1, 0, 1}, Int32s: []int32{-1, 0, 1},
 			Uints: []uint{0, 1, 2}, Uint16s: []uint16{0, 1, 2},
@@ -394,6 +433,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringStringMap", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]string{"a": "1", "b": "2"}
 		ret, clientErr := c.StringStringMap(v)
 		require.NoError(t, clientErr)
@@ -402,6 +442,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringInt8Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]int8{"a": 1, "b": -1}
 		ret, clientErr := c.StringInt8Map(v)
 		require.NoError(t, clientErr)
@@ -410,6 +451,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringInt16Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]int16{"a": 100, "b": -100}
 		ret, clientErr := c.StringInt16Map(v)
 		require.NoError(t, clientErr)
@@ -418,6 +460,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringInt32Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]int32{"a": 100000, "b": -100000}
 		ret, clientErr := c.StringInt32Map(v)
 		require.NoError(t, clientErr)
@@ -426,6 +469,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringUintMap", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint{"a": 0, "b": 42}
 		ret, clientErr := c.StringUintMap(v)
 		require.NoError(t, clientErr)
@@ -434,6 +478,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringUint8Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint8{"a": 0, "b": 255}
 		ret, clientErr := c.StringUint8Map(v)
 		require.NoError(t, clientErr)
@@ -442,6 +487,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringUint16Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint16{"a": 0, "b": 65535}
 		ret, clientErr := c.StringUint16Map(v)
 		require.NoError(t, clientErr)
@@ -450,6 +496,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringUint32Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint32{"a": 0, "b": 4294967295}
 		ret, clientErr := c.StringUint32Map(v)
 		require.NoError(t, clientErr)
@@ -458,6 +505,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringUint64Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]uint64{"a": 0, "b": 9876543210}
 		ret, clientErr := c.StringUint64Map(v)
 		require.NoError(t, clientErr)
@@ -466,6 +514,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("StringFloat32Map", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]float32{"a": 1.1, "b": 2.2}
 		ret, clientErr := c.StringFloat32Map(v)
 		require.NoError(t, clientErr)
@@ -477,6 +526,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("AllScalarMapsStruct", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.AllScalarMaps{
 			Int8Map: map[string]int8{"x": 1}, Int16Map: map[string]int16{"x": 1},
 			Int32Map: map[string]int32{"x": 1}, UintMap: map[string]uint{"x": 1},
@@ -500,6 +550,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("MapOfMaps", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[string]map[string]string{"outer": {"inner": "val"}}
 		ret, clientErr := c.MapOfMaps(v)
 		require.NoError(t, clientErr)
@@ -508,6 +559,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("MultiArgs", func(t *testing.T) {
 		t.Parallel()
+
 		retA, retB, retC, clientErr := c.MultiArgs("hello", int64(42), true)
 		require.NoError(t, clientErr)
 		assert.Equal(t, "hello", retA)
@@ -517,6 +569,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("Empty", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.Empty()
 		require.NoError(t, clientErr)
 		assert.True(t, ret)
@@ -524,6 +577,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("ByteSlice", func(t *testing.T) {
 		t.Parallel()
+
 		v := []byte("hello world")
 		ret, clientErr := c.ByteSlice(v)
 		require.NoError(t, clientErr)
@@ -532,6 +586,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("ObjectID", func(t *testing.T) {
 		t.Parallel()
+
 		var v server.ObjectID
 		copy(v[:], "hello123456")
 		ret, clientErr := c.ObjectID(v)
