@@ -40,7 +40,7 @@ export interface Entry {
 	tags?:github_com_foomo_gotsrpc_v2_tests_aliases_server.Tags;
 }
 // github.com/foomo/gotsrpc/v2/tests/aliases/server.Index
-export type Index = Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>
+export type Index = Partial<Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>>
 // github.com/foomo/gotsrpc/v2/tests/aliases/server.LabelMap
 export type LabelMap = Record<string,string>
 // github.com/foomo/gotsrpc/v2/tests/aliases/server.Metadata

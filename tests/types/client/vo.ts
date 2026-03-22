@@ -50,25 +50,20 @@ export interface AllScalars {
 	float32:number;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.Inlined
-export interface Inlined {
-	Simple:github_com_foomo_gotsrpc_v2_tests_common.Simple;
+export interface Inlined extends github_com_foomo_gotsrpc_v2_tests_common.Simple {
 	name:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.InlinedMixed
-export interface InlinedMixed {
-	Simple:github_com_foomo_gotsrpc_v2_tests_common.Simple;
+export interface InlinedMixed extends github_com_foomo_gotsrpc_v2_tests_common.Simple {
 	extra:github_com_foomo_gotsrpc_v2_tests_common.Other|null;
 	name:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.InlinedMultiple
-export interface InlinedMultiple {
-	Simple:github_com_foomo_gotsrpc_v2_tests_common.Simple;
-	Other:github_com_foomo_gotsrpc_v2_tests_common.Other;
+export interface InlinedMultiple extends github_com_foomo_gotsrpc_v2_tests_common.Simple, github_com_foomo_gotsrpc_v2_tests_common.Other {
 	name:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.InlinedPtr
-export interface InlinedPtr {
-	Simple?:github_com_foomo_gotsrpc_v2_tests_common.Simple;
+export interface InlinedPtr extends Partial<github_com_foomo_gotsrpc_v2_tests_common.Simple> {
 	name:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.ObjectID

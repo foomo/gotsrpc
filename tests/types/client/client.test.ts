@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import transport from "../../common/transport";
 import { ServiceClient } from "./client.ts";
+import type {InlinedMultiple} from "./vo.ts";
 
 const client = new ServiceClient(
 	transport(`${process.env.GOTSRPC_SERVER_URL}${ServiceClient.defaultEndpoint}`)

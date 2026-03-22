@@ -10,13 +10,13 @@ export enum ACustomType {
 // github.com/foomo/gotsrpc/v2/tests/nullable/server.ACustomTypes
 export type ACustomTypes = Array<github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType>
 // github.com/foomo/gotsrpc/v2/tests/nullable/server.ACustomTypesMap
-export type ACustomTypesMap = Record<github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType,github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType>
+export type ACustomTypesMap = Partial<Record<github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType,github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType>>
 // github.com/foomo/gotsrpc/v2/tests/nullable/server.BCustomType
 export type BCustomType = string
 // github.com/foomo/gotsrpc/v2/tests/nullable/server.BCustomTypes
 export type BCustomTypes = Array<github_com_foomo_gotsrpc_v2_tests_nullable_server.BCustomType>
 // github.com/foomo/gotsrpc/v2/tests/nullable/server.BCustomTypesMap
-export type BCustomTypesMap = Record<github_com_foomo_gotsrpc_v2_tests_nullable_server.BCustomType,github_com_foomo_gotsrpc_v2_tests_nullable_server.BCustomType>
+export type BCustomTypesMap = Partial<Record<github_com_foomo_gotsrpc_v2_tests_nullable_server.BCustomType,github_com_foomo_gotsrpc_v2_tests_nullable_server.BCustomType>>
 // github.com/foomo/gotsrpc/v2/tests/nullable/server.Base
 export interface Base {
 	a1:github_com_foomo_gotsrpc_v2_tests_nullable_server.Nested;

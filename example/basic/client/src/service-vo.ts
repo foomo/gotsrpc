@@ -13,7 +13,7 @@ export enum Float32TypeMapKey {
 	Float32BTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.Float32TypeMapTyped
-export type Float32TypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapValue>
+export type Float32TypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.Float32TypeMapValue
 export enum Float32TypeMapValue {
 	Float32ATypeMapValue = 1,
@@ -30,7 +30,7 @@ export enum Float64TypeMapKey {
 	Float64BTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.Float64TypeMapTyped
-export type Float64TypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapValue>
+export type Float64TypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.Float64TypeMapValue
 export enum Float64TypeMapValue {
 	Float64ATypeMapValue = 1,
@@ -47,7 +47,7 @@ export enum Int32TypeMapKey {
 	Int32BTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.Int32TypeMapTyped
-export type Int32TypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapValue>
+export type Int32TypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.Int32TypeMapValue
 export enum Int32TypeMapValue {
 	Int32ATypeMapValue = 1,
@@ -64,7 +64,7 @@ export enum Int64TypeMapKey {
 	Int64BTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.Int64TypeMapTyped
-export type Int64TypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapValue>
+export type Int64TypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.Int64TypeMapValue
 export enum Int64TypeMapValue {
 	Int64ATypeMapValue = 1,
@@ -81,14 +81,14 @@ export enum IntTypeMapKey {
 	IntBTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.IntTypeMapTyped
-export type IntTypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapValue>
+export type IntTypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.IntTypeMapValue
 export enum IntTypeMapValue {
 	IntATypeMapValue = 1,
 	IntBTypeMapValue = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.NestedType
-export type NestedType = Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeKey,Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeSubKey,Array<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeSubType|null>|null>|null>
+export type NestedType = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeKey,Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeSubKey,Array<github_com_foomo_gotsrpc_v2_example_basic_service.NestedTypeSubType|null>|null>>|null>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.NestedTypeKey
 export type NestedTypeKey = string
 // github.com/foomo/gotsrpc/v2/example/basic/service.NestedTypeSubKey
@@ -107,7 +107,7 @@ export enum StringTypeMapKey {
 	StringBTypeMapKey = "B",
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.StringTypeMapTyped
-export type StringTypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapValue>
+export type StringTypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.StringTypeMapValue
 export enum StringTypeMapValue {
 	StringATypeMapValue = "A",
@@ -125,15 +125,15 @@ export interface Struct {
 	Float64:number;
 	String:string;
 	Interface:any;
-	IntTypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapValue>|null;
-	Int32TypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapValue>|null;
-	Int64TypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapValue>|null;
-	UIntTypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapValue>|null;
-	UInt32TypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapValue>|null;
-	UInt64TypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapValue>|null;
-	Float32TypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapValue>|null;
-	Float64TypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapValue>|null;
-	StringTypeMapTyped:Record<github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapValue>|null;
+	IntTypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.IntTypeMapValue>>|null;
+	Int32TypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int32TypeMapValue>>|null;
+	Int64TypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Int64TypeMapValue>>|null;
+	UIntTypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapValue>>|null;
+	UInt32TypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapValue>>|null;
+	UInt64TypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapValue>>|null;
+	Float32TypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float32TypeMapValue>>|null;
+	Float64TypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.Float64TypeMapValue>>|null;
+	StringTypeMapTyped:Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.StringTypeMapValue>>|null;
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.UInt32Type
 export enum UInt32Type {
@@ -146,7 +146,7 @@ export enum UInt32TypeMapKey {
 	UInt32BTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.UInt32TypeMapTyped
-export type UInt32TypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapValue>
+export type UInt32TypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt32TypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.UInt32TypeMapValue
 export enum UInt32TypeMapValue {
 	UInt32ATypeMapValue = 1,
@@ -163,7 +163,7 @@ export enum UInt64TypeMapKey {
 	UInt64BTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.UInt64TypeMapTyped
-export type UInt64TypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapValue>
+export type UInt64TypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UInt64TypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.UInt64TypeMapValue
 export enum UInt64TypeMapValue {
 	UInt64ATypeMapValue = 1,
@@ -180,7 +180,7 @@ export enum UIntTypeMapKey {
 	UIntBTypeMapKey = 2,
 }
 // github.com/foomo/gotsrpc/v2/example/basic/service.UIntTypeMapTyped
-export type UIntTypeMapTyped = Record<github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapValue>
+export type UIntTypeMapTyped = Partial<Record<github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapKey,github_com_foomo_gotsrpc_v2_example_basic_service.UIntTypeMapValue>>
 // github.com/foomo/gotsrpc/v2/example/basic/service.UIntTypeMapValue
 export enum UIntTypeMapValue {
 	UIntATypeMapValue = 1,

@@ -38,7 +38,6 @@ tmp/
 ## Lefthook
 !.lefthook.yaml
 
-
 ## Vitepress
 node_modules/
 !docs/.vitepress

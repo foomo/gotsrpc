@@ -29,6 +29,10 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
 		ts.App(jsonInfo.Type)
 	case v.Map != nil:
+		enumKey := v.Map.Key != nil && v.Map.Key.Scalar != nil
+		if enumKey {
+			ts.App("Partial<")
+		}
 		ts.App("Record<")
 		if v.Map.Key != nil {
 			valueTSType(v.Map.Key, mappings, scalars, structs, ts, nil)
@@ -38,6 +42,9 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 		ts.App(",")
 		valueTSType(v.Map.Value, mappings, scalars, structs, ts, nil)
 		ts.App(">")
+		if enumKey {
+			ts.App(">")
+		}
 		if jsonInfo == nil || !jsonInfo.OmitEmpty {
 			ts.App("|null")
 		}
@@ -149,7 +156,12 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 		}
 		ts.NL()
 	case str.Map != nil:
-		ts.App("export type " + str.Name + " = Record<")
+		enumKey := str.Map.Key != nil && str.Map.Key.Scalar != nil
+		if enumKey {
+			ts.App("export type " + str.Name + " = Partial<Record<")
+		} else {
+			ts.App("export type " + str.Name + " = Record<")
+		}
 		if str.Map.Key != nil {
 			valueTSType(str.Map.Key, mappings, scalars, structs, ts, nil)
 		} else {
@@ -157,8 +169,13 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 		}
 		ts.App(",")
 		valueTSType(str.Map.Value, mappings, scalars, structs, ts, nil)
-		ts.App(">")
+		if enumKey {
+			ts.App(">>")
+		} else {
+			ts.App(">")
+		}
 		ts.NL()
+	// special handling of inline only structs
 	case len(str.UnionFields) > 0:
 		if len(str.Fields) > 0 || len(str.InlineFields) > 0 {
 			return errors.New("no fields or inline fields are supported when using union")
@@ -208,7 +225,9 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 		ts.App("export interface " + str.Name)
 		for i, inlineField := range str.InlineFields {
 			if inlineField.Value.Scalar != nil {
-				continue
+				if _, isStruct := structs[inlineField.Value.Scalar.Package+"."+inlineField.Value.Scalar.Name]; !isStruct {
+					continue
+				}
 			}
 			if !extends {
 				ts.App(" extends ")
@@ -230,6 +249,9 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 		ts.Ind(1)
 		for _, inlineField := range str.InlineFields {
 			if inlineField.Value.Scalar != nil {
+				if _, isStruct := structs[inlineField.Value.Scalar.Package+"."+inlineField.Value.Scalar.Name]; isStruct {
+					continue // already handled as extends
+				}
 				if inlineField.JSONInfo != nil && inlineField.JSONInfo.Ignore {
 					continue
 				}
