@@ -162,6 +162,26 @@ test("nestedStruct", async () => {
 	expect(await client.nestedStruct(v)).toEqual(v);
 });
 
+test("inlinedStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent" };
+	expect(await client.inlinedStruct(v)).toEqual(v);
+});
+
+test("inlinedPtrStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent" };
+	expect(await client.inlinedPtrStruct(v)).toEqual(v);
+});
+
+test("inlinedMultipleStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent",  label: "label"};
+	expect(await client.inlinedMultipleStruct(v)).toEqual(v);
+});
+
+test("inlinedMixedStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", extra: { label: "label" }, name: "name" };
+	expect(await client.inlinedMixedStruct(v)).toEqual(v);
+});
+
 test("structWithPointers", async () => {
 	const v = { strPtr: "hello", int64Ptr: 42, boolPtr: true, child: { bool: true, int: 1, int64: 2, float64: 3.0, string: "child" } };
 	expect(await client.structWithPointers(v)).toEqual(v);
