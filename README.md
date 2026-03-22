@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/foomo/gotsrpc?status.svg)](https://godoc.org/github.com/foomo/gotsrpc)
 
 <p align="center">
-  <img alt="gotsrpc" src=".github/assets/gotsrpc.png"/>
+  <img alt="gotsrpc" src="docs/public/logo.png" width="400" height="400"/>
 </p>
 
 # Go / TypeScript and Go / Go RPC

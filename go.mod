@@ -17,6 +17,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
+require github.com/valyala/gorpc v0.0.0-20160519171614-908281bef774
+
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect

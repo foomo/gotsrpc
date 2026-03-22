@@ -1,3 +1,0 @@
-#!/bin/sh
-
-husky hook $(basename "$0") $*

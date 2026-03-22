@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "tests",
+  "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "latest"
+  }
+}

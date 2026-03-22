@@ -13,7 +13,7 @@ endef
 # --- Targets -----------------------------------------------------------------
 
 # This allows us to accept extra arguments
-%: .mise .husky go.work
+%: .mise .lefthook go.work
 	@:
 
 # Ensure go.work file
@@ -24,23 +24,22 @@ go.work:
 
 .PHONY: .mise
 # Install dependencies
-.mise: msg := $(br)$(br)Please ensure you have 'mise' installed and activated!$(br)$(br)$$ brew update$(br)$$ brew install mise$(br)$(br)See the documentation: https://mise.jdx.dev/getting-started.html$(br)$(br)
 .mise:
 ifeq (, $(shell command -v mise))
-	$(error ${msg})
+	$(error $(br)$(br)Please ensure you have 'mise' installed and activated!$(br)$(br)  $$ brew update$(br)  $$ brew install mise$(br)$(br)See the documentation: https://mise.jdx.dev/getting-started.html)
 endif
 	@mise install
 
-.PHONY: .husky
-# Configure git hooks for husky
-.husky:
-	@git config core.hooksPath .husky
+.PHONY: .lefthook
+# Configure git hooks for lefthook
+.lefthook:
+	@lefthook install --reset-hooks-path
 
 ### Tasks
 
 .PHONY: check
 ## Run lint & test
-check: tidy examples lint test
+check: tidy examples generate lint test
 
 .PHONY: tidy
 ## Run go mod tidy
@@ -62,9 +61,27 @@ lint.fix:
 
 .PHONY: test
 ## Run tests
-test:
+test: go.work
 	@echo "〉go test"
-	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race ./...) &&) true
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe work
+
+.PHONY: test.race
+## Run tests with -race
+test.race: go.work
+	@echo "〉go test -race"
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -race work
+
+.PHONY: test.nocache
+## Run tests with -count=1
+test.nocache: go.work
+	@echo "〉go test -count=1"
+	@GO_TEST_TAGS=-skip go test -coverprofile=coverage.out -tags=safe -count=1 work
+
+.PHONY: test.bench
+## Run tests with -bench
+test.bench: go.work
+	@echo "〉go test -bench"
+	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem -count=10 work
 
 .PHONY: outdated
 ## Show outdated direct dependencies
@@ -98,7 +115,7 @@ install.debug:
 	@echo "〉installing gotsrpc (debug)"
 	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
 
-EXAMPLES=basic context errors monitor nullable union time types
+EXAMPLES=basic monitor
 define examples
 .PHONY: example.$(1)
 example.$(1):
@@ -115,6 +132,12 @@ example.$(1).debug: build.debug
 	@cd example/${1} && dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ../../bin/gotsrpc gotsrpc.yml
 endef
 $(foreach p,$(EXAMPLES),$(eval $(call examples,$(p))))
+
+.PHONY: generate
+## Run go generate
+generate:
+	@echo "〉go generate"
+	@go generate work
 
 .PHONY: examples
 ## Generate examples
