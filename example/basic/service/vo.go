@@ -211,7 +211,7 @@ type Struct struct {
 	Float32             float32
 	Float64             float64
 	String              string
-	Interface           interface{}
+	Interface           any
 	IntTypeMapTyped     map[IntTypeMapKey]IntTypeMapValue
 	Int32TypeMapTyped   map[Int32TypeMapKey]Int32TypeMapValue
 	Int64TypeMapTyped   map[Int64TypeMapKey]Int64TypeMapValue

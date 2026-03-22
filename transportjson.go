@@ -27,7 +27,7 @@ func init() {
 	setDefaultTransportHandle(jsonHandle)
 }
 
-func SetJSONExt(rt interface{}, tag uint64, ext codec.InterfaceExt) error {
+func SetJSONExt(rt any, tag uint64, ext codec.InterfaceExt) error {
 	if value, ok := jsonHandle.handle.(*codec.JsonHandle); ok {
 		return value.SetInterfaceExt(reflect.TypeOf(rt), tag, ext)
 	}

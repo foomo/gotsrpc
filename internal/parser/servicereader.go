@@ -25,7 +25,7 @@ func Read(
 	services model.ServiceList,
 	structs map[string]*model.Struct,
 	scalars map[string]*model.Scalar,
-	constantTypes map[string]map[string]interface{},
+	constantTypes map[string]map[string]any,
 	err error,
 ) {
 	if len(serviceMap) == 0 {
@@ -73,7 +73,7 @@ func Read(
 	traceData(scalars)
 	trace("---------------- /found scalars -------------------")
 
-	allConstantTypes := map[string]map[string]interface{}{}
+	allConstantTypes := map[string]map[string]any{}
 
 	for _, structDef := range structs {
 		if structDef != nil {
@@ -108,7 +108,7 @@ func Read(
 		loadFlatStructs(s, flatStructs)
 	}
 
-	constantTypes = map[string]map[string]interface{}{}
+	constantTypes = map[string]map[string]any{}
 
 	for constantTypePackage, constantType := range allConstantTypes {
 		for constantTypeName, constantTypeVales := range constantType {
@@ -121,7 +121,7 @@ func Read(
 				missingConstants[fullName] = false
 
 				if _, ok := constantTypes[constantTypePackage]; !ok {
-					constantTypes[constantTypePackage] = map[string]interface{}{}
+					constantTypes[constantTypePackage] = map[string]any{}
 				}
 
 				constantTypes[constantTypePackage][constantTypeName] = constantTypeVales
@@ -293,13 +293,13 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 	return
 }
 
-func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
-	constantTypes := map[string]interface{}{}
+func loadConstantTypes(pkg *ast.Package) map[string]any {
+	constantTypes := map[string]any{}
 
 	for _, file := range pkg.Files {
 		for _, decl := range file.Decls {
 			if genDecl, ok := decl.(*ast.GenDecl); ok {
-				switch genDecl.Tok { //nolint:exhaustive
+				switch genDecl.Tok {
 				case token.TYPE:
 					trace("got a type", genDecl.Specs)
 
@@ -352,6 +352,8 @@ func loadConstantTypes(pkg *ast.Package) map[string]interface{} {
 							}
 						}
 					}
+				default:
+					trace("ignoring", genDecl.Tok)
 				}
 			}
 		}

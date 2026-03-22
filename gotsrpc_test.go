@@ -8,7 +8,7 @@ func TestLoadArgs(t *testing.T) {
 	jsonBytes := []byte(`["a", ["a", "b", "c"]]`)
 	foo := ""
 	bar := []string{}
-	args := []interface{}{&foo, &bar}
+	args := []any{&foo, &bar}
 
 	errLoad := loadArgs(&args, jsonBytes)
 	if errLoad != nil {
@@ -32,12 +32,12 @@ func TestLoadInterfaceArgs(t *testing.T) {
 	jsonBytes := []byte(`["a", ["a", "b", "c"], 1.3]`)
 
 	var (
-		foo    interface{}
-		bar    []interface{}
-		floaty interface{}
+		foo    any
+		bar    []any
+		floaty any
 	)
 
-	args := []interface{}{&foo, &bar, &floaty}
+	args := []any{&foo, &bar, &floaty}
 
 	errLoad := loadArgs(&args, jsonBytes)
 	if errLoad != nil {

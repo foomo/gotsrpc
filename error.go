@@ -76,7 +76,7 @@ func NewError(err error) *Error {
 }
 
 // As interface
-func (e *Error) As(err interface{}) bool {
+func (e *Error) As(err any) bool {
 	if e == nil || err == nil {
 		return false
 	}

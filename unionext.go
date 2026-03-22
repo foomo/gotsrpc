@@ -9,7 +9,7 @@ type UnionExt struct{}
 
 var unionExt = &UnionExt{}
 
-func RegisterUnionExt(v ...interface{}) error {
+func RegisterUnionExt(v ...any) error {
 	for _, i := range v {
 		if err := SetJSONExt(i, 1, unionExt); err != nil {
 			return err
@@ -19,20 +19,20 @@ func RegisterUnionExt(v ...interface{}) error {
 	return nil
 }
 
-func MustRegisterUnionExt(v ...interface{}) {
+func MustRegisterUnionExt(v ...any) {
 	if err := RegisterUnionExt(v...); err != nil {
 		panic(err)
 	}
 }
 
-func (x *UnionExt) ConvertExt(v interface{}) interface{} {
+func (x *UnionExt) ConvertExt(v any) any {
 	val := reflect.ValueOf(v)
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}
 
-	for i := 0; i < val.NumField(); i++ {
-		if field := val.Field(i); !field.IsZero() {
+	for _, field := range val.Fields() {
+		if !field.IsZero() {
 			return field.Interface()
 		}
 	}
@@ -40,6 +40,6 @@ func (x *UnionExt) ConvertExt(v interface{}) interface{} {
 	return nil
 }
 
-func (x *UnionExt) UpdateExt(dst interface{}, src interface{}) {
+func (x *UnionExt) UpdateExt(dst any, src any) {
 	fmt.Println("")
 }

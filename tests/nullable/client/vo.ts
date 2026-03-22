@@ -27,7 +27,7 @@ export interface Base {
 	b3:string|null;
 	c1:any;
 	c2?:any;
-	c3:any;
+	c3:any|null;
 	d1:github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType;
 	d2?:github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType;
 	d3:github_com_foomo_gotsrpc_v2_tests_nullable_server.ACustomType|null;

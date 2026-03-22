@@ -18,7 +18,7 @@ var msgpackHandle = &transportHandle{
 func init() {
 	mh := new(codec.MsgpackHandle)
 	// use map[string]interface{} instead of map[interface{}]interface{}
-	mh.MapType = reflect.TypeOf(map[string]interface{}(nil))
+	mh.MapType = reflect.TypeFor[map[string]any]()
 	// attempting to set the promoted field in literal will cause a compiler error
 	mh.RawToString = true
 	mh.ReaderBufferSize = 4096
@@ -36,7 +36,7 @@ func NewMSGPackDecoderBytes(b []byte) *codec.Decoder {
 	return codec.NewDecoderBytes(b, msgpackHandle.handle)
 }
 
-func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
+func SetMSGPackExt(rt any, tag uint64, ext codec.BytesExt) error {
 	if value, ok := msgpackHandle.handle.(*codec.MsgpackHandle); ok {
 		return value.SetBytesExt(reflect.TypeOf(rt), tag, ext)
 	}

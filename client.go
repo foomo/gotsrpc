@@ -11,7 +11,7 @@ import (
 var _ Client = &bufferedClient{}
 
 type Client interface {
-	Call(ctx context.Context, url string, endpoint string, method string, args []interface{}, reply []interface{}) (err error)
+	Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) (err error)
 	SetClientEncoding(encoding ClientEncoding)
 	SetTransportHttpClient(client *http.Client)
 	SetDefaultHeaders(headers http.Header)

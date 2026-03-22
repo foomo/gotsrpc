@@ -32,7 +32,7 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 	http.Error(w, "you gotta POST", http.StatusMethodNotAllowed)
 }
 
-func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
+func LoadArgs(args any, callStats *CallStats, r *http.Request) error {
 	var start time.Time
 	if callStats != nil {
 		start = time.Now()
@@ -55,7 +55,7 @@ func LoadArgs(args interface{}, callStats *CallStats, r *http.Request) error {
 	return nil
 }
 
-func loadArgs(args interface{}, jsonBytes []byte) error {
+func loadArgs(args any, jsonBytes []byte) error {
 	if err := json.Unmarshal(jsonBytes, &args); err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func loadArgs(args interface{}, jsonBytes []byte) error {
 }
 
 // Reply although this is a public method - do not call it, it will be called by generated code
-func Reply(response []interface{}, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
+func Reply(response []any, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
 	var errorIndices []int
 
 	for i, v := range response {

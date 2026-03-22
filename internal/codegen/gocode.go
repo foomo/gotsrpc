@@ -66,17 +66,17 @@ func ucfirst(str string) string {
 }
 
 func strfirst(str string, strfunc func(string) string) string {
-	res := ""
+	var res strings.Builder
 
 	for i, char := range str {
 		if i == 0 {
-			res += strfunc(string(char))
+			res.WriteString(strfunc(string(char)))
 		} else {
-			res += string(char)
+			res.WriteRune(char)
 		}
 	}
 
-	return res
+	return res.String()
 }
 
 func extractImport(packageName string, fullPackageName string, aliases map[string]string) {
@@ -601,7 +601,7 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
 			nonHTTPRelatedMethodArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
 
 			diffNONHTTPRelatedMethodArgs := len(method.Args) - len(nonHTTPRelatedMethodArgs)
-			for i := 0; i < diffNONHTTPRelatedMethodArgs; i++ {
+			for range diffNONHTTPRelatedMethodArgs {
 				argParams = append(argParams, "nil")
 			}
 
@@ -870,9 +870,9 @@ func renderInit(unions map[string][]string, aliases map[string]string, packageNa
 }
 
 func renderImports(aliases map[string]string, packageName string) string {
-	imports := ""
+	var imports strings.Builder
 	for importPath, alias := range aliases {
-		imports += alias + " \"" + importPath + "\"\n"
+		imports.WriteString(alias + " \"" + importPath + "\"\n")
 	}
 
 	return `
@@ -881,7 +881,7 @@ func renderImports(aliases map[string]string, packageName string) string {
 		package ` + packageName + `
 
 		import (
-			` + imports + `
+			` + imports.String() + `
 		)
 	`
 }

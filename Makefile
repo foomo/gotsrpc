@@ -39,7 +39,7 @@ endif
 
 .PHONY: check
 ## Run lint & test
-check: tidy examples generate lint test
+check: tidy examples generate lint test.race
 
 .PHONY: tidy
 ## Run go mod tidy

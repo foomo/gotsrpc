@@ -83,7 +83,9 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 		countReturns := 0
 		countInnerReturns := 0
 		responseObjectPrefix := ""
-		responseObject := "return {"
+
+		var responseObject strings.Builder
+		responseObject.WriteString("return {")
 
 		for index, retField := range method.Return {
 			countInnerReturns++
@@ -116,14 +118,14 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 			returnTypeTS.App(retArgName)
 			returnTypeTS.App(":")
 
-			responseObject += responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]"
+			responseObject.WriteString(responseObjectPrefix + retArgName + " : response[" + strconv.Itoa(index) + "]")
 
 			valueTSType(retField.Value, mappings, scalars, structs, returnTypeTS, retField.JSONInfo)
 
 			responseObjectPrefix = ", "
 		}
 
-		responseObject += "};"
+		responseObject.WriteString("};")
 
 		returnTypeTS.App("}")
 		innerReturnTypeTS.App("}")
@@ -154,7 +156,7 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 			ts.L("return (await " + call + ")[0]")
 		default:
 			ts.L("const response = await " + call)
-			ts.L(responseObject)
+			ts.L(responseObject.String())
 		}
 
 		ts.Ind(-1)

@@ -21,7 +21,6 @@ linters:
     - forbidigo
     - gosmopolitan
     - nonamedreturns
-    - modernize
     - godoclint
     # Discouraged linters
     - noinlineerr # Disallows inline error handling (`if err := ...; err != nil {`).

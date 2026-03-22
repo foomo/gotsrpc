@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 
 	"golang.org/x/mod/modfile"
 	"gopkg.in/yaml.v2"
@@ -28,13 +29,7 @@ type Target struct {
 }
 
 func (t *Target) IsGoRPC(service string) bool {
-	for _, value := range t.GoRPC {
-		if value == service {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(t.GoRPC, service)
 }
 
 func (t *Target) IsTSRPC(service string) bool {
@@ -42,13 +37,7 @@ func (t *Target) IsTSRPC(service string) bool {
 		return true
 	}
 
-	for _, value := range t.TSRPC {
-		if value == service {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(t.TSRPC, service)
 }
 
 type Mapping struct {

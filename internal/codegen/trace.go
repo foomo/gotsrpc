@@ -8,7 +8,7 @@ import (
 // Trace enables debug output for code generation.
 var Trace = false
 
-func trace(args ...interface{}) {
+func trace(args ...any) {
 	if Trace {
 		_, _ = fmt.Fprintln(os.Stderr, args...)
 	}

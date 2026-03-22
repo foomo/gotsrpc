@@ -9,13 +9,13 @@ import (
 
 var ReaderTrace = false
 
-func trace(args ...interface{}) {
+func trace(args ...any) {
 	if ReaderTrace {
 		_, _ = fmt.Fprintln(os.Stderr, args...)
 	}
 }
 
-func traceData(args ...interface{}) {
+func traceData(args ...any) {
 	if ReaderTrace {
 		for _, arg := range args {
 			yamlBytes, errMarshal := yaml.Marshal(arg)

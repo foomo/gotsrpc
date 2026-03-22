@@ -341,7 +341,7 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 func RenderTypescriptStructsToPackages(
 	structs map[string]*model.Struct,
 	mappings config.TypeScriptMappings,
-	constantTypes map[string]map[string]interface{},
+	constantTypes map[string]map[string]any,
 	scalarTypes map[string]*model.Scalar,
 	mappedTypeScript map[string]map[string]*Code,
 ) (err error) {

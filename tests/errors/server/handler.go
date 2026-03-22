@@ -47,7 +47,7 @@ func (h *Handler) StructError(w http.ResponseWriter, r *http.Request) (e error) 
 }
 
 func (h *Handler) ScalarError(w http.ResponseWriter, r *http.Request) (e error) {
-	return NewMyScalarError(MyScalarErrorOne)
+	return new(MyScalarErrorOne)
 }
 
 func (h *Handler) CustomError(w http.ResponseWriter, r *http.Request) (e error) {
