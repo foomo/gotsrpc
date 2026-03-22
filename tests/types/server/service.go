@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+
+	"github.com/foomo/gotsrpc/v2/tests/common"
 )
 
 type Service interface {
@@ -36,16 +38,20 @@ type Service interface {
 	Float32Ptr(ctx context.Context, v *float32) *float32
 
 	// Structs
-	SimpleStruct(ctx context.Context, v Simple) Simple
-	NestedStruct(ctx context.Context, v Nested) Nested
+	SimpleStruct(ctx context.Context, v common.Simple) common.Simple
+	NestedStruct(ctx context.Context, v common.Nested) common.Nested
+	InlinedStruct(ctx context.Context, v Inlined) Inlined
+	InlinedPtrStruct(ctx context.Context, v InlinedPtr) InlinedPtr
+	InlinedMultipleStruct(ctx context.Context, v InlinedMultiple) InlinedMultiple
+	InlinedMixedStruct(ctx context.Context, v InlinedMixed) InlinedMixed
 	StructWithPointers(ctx context.Context, v WithPointers) WithPointers
 	StructWithCollections(ctx context.Context, v WithCollections) WithCollections
 
 	// Slices
 	StringSlice(ctx context.Context, v []string) []string
 	Int64Slice(ctx context.Context, v []int64) []int64
-	SimpleSlice(ctx context.Context, v []Simple) []Simple
-	SimplePtrSlice(ctx context.Context, v []*Simple) []*Simple
+	SimpleSlice(ctx context.Context, v []common.Simple) []common.Simple
+	SimplePtrSlice(ctx context.Context, v []*common.Simple) []*common.Simple
 	StringSlice2D(ctx context.Context, v [][]string) [][]string
 	Int8Slice(ctx context.Context, v []int8) []int8
 	Int16Slice(ctx context.Context, v []int16) []int16
@@ -59,8 +65,8 @@ type Service interface {
 	// Maps
 	StringStringMap(ctx context.Context, v map[string]string) map[string]string
 	StringInt64Map(ctx context.Context, v map[string]int64) map[string]int64
-	StringSimpleMap(ctx context.Context, v map[string]Simple) map[string]Simple
-	StringSimplePtrMap(ctx context.Context, v map[string]*Simple) map[string]*Simple
+	StringSimpleMap(ctx context.Context, v map[string]common.Simple) map[string]common.Simple
+	StringSimplePtrMap(ctx context.Context, v map[string]*common.Simple) map[string]*common.Simple
 	StringStringSliceMap(ctx context.Context, v map[string][]string) map[string][]string
 	StringInt8Map(ctx context.Context, v map[string]int8) map[string]int8
 	StringInt16Map(ctx context.Context, v map[string]int16) map[string]int16
@@ -74,12 +80,12 @@ type Service interface {
 
 	// Complex nested
 	MapOfMaps(ctx context.Context, v map[string]map[string]string) map[string]map[string]string
-	MapOfSimpleSlice(ctx context.Context, v map[string][]Simple) map[string][]Simple
+	MapOfSimpleSlice(ctx context.Context, v map[string][]common.Simple) map[string][]common.Simple
 	SliceOfMaps(ctx context.Context, v []map[string]string) []map[string]string
 
 	// Multi-args
 	MultiArgs(ctx context.Context, a string, b int64, c bool) (string, int64, bool)
-	MixedArgs(ctx context.Context, s Simple, items []string, m map[string]int64) (Simple, []string, map[string]int64)
+	MixedArgs(ctx context.Context, s common.Simple, items []string, m map[string]int64) (common.Simple, []string, map[string]int64)
 
 	// Struct with all scalars
 	AllScalarsStruct(ctx context.Context, v AllScalars) AllScalars

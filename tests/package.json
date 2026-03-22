@@ -3,10 +3,11 @@
   "name": "tests",
   "type": "module",
   "module": "src/index.ts",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "scripts": {
+    "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": {
-    "typescript": "^5"
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "latest"
   }
 }

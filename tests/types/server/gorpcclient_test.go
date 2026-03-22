@@ -4,6 +4,7 @@ import (
 	"net"
 	"testing"
 
+	"github.com/foomo/gotsrpc/v2/tests/common"
 	"github.com/foomo/gotsrpc/v2/tests/types/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -266,7 +267,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("SimpleStruct", func(t *testing.T) {
 		t.Parallel()
-		v := server.Simple{Bool: true, Int: 42, Int64: 100, Float64: 2.718, String: "test"}
+		v := common.Simple{Bool: true, Int: 42, Int64: 100, Float64: 2.718, String: "test"}
 		ret, clientErr := c.SimpleStruct(v)
 		require.NoError(t, clientErr)
 		assert.Equal(t, v, ret)
@@ -274,11 +275,22 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("NestedStruct", func(t *testing.T) {
 		t.Parallel()
-		v := server.Nested{
+		v := common.Nested{
 			Name:  "parent",
-			Child: server.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Child: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
 		}
 		ret, clientErr := c.NestedStruct(v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v, ret)
+	})
+
+	t.Run("InlinedStruct", func(t *testing.T) {
+		t.Parallel()
+		v := server.Inlined{
+			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Name:   "parent",
+		}
+		ret, clientErr := c.InlinedStruct(v)
 		require.NoError(t, clientErr)
 		assert.Equal(t, v, ret)
 	})

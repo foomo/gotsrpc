@@ -5,6 +5,7 @@ package server
 import (
 	tls "crypto/tls"
 
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -162,6 +163,50 @@ func (tsc *ServiceGoRPCClient) Float64(v float64) (retFloat64_0 float64, clientE
 	return rpcResp.RetFloat64_0, nil
 }
 
+func (tsc *ServiceGoRPCClient) InlinedMixedStruct(v InlinedMixed) (retInlinedMixedStruct_0 InlinedMixed, clientErr error) {
+	rpcReq := ServiceInlinedMixedStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInlinedMixedStructResponse)
+	return rpcResp.RetInlinedMixedStruct_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) InlinedMultipleStruct(v InlinedMultiple) (retInlinedMultipleStruct_0 InlinedMultiple, clientErr error) {
+	rpcReq := ServiceInlinedMultipleStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInlinedMultipleStructResponse)
+	return rpcResp.RetInlinedMultipleStruct_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) InlinedPtrStruct(v InlinedPtr) (retInlinedPtrStruct_0 InlinedPtr, clientErr error) {
+	rpcReq := ServiceInlinedPtrStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInlinedPtrStructResponse)
+	return rpcResp.RetInlinedPtrStruct_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) InlinedStruct(v Inlined) (retInlinedStruct_0 Inlined, clientErr error) {
+	rpcReq := ServiceInlinedStructRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceInlinedStructResponse)
+	return rpcResp.RetInlinedStruct_0, nil
+}
+
 func (tsc *ServiceGoRPCClient) Int(v int) (retInt_0 int, clientErr error) {
 	rpcReq := ServiceIntRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
@@ -316,7 +361,7 @@ func (tsc *ServiceGoRPCClient) MapOfMaps(v map[string]map[string]string) (retMap
 	return rpcResp.RetMapOfMaps_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) MapOfSimpleSlice(v map[string][]Simple) (retMapOfSimpleSlice_0 map[string][]Simple, clientErr error) {
+func (tsc *ServiceGoRPCClient) MapOfSimpleSlice(v map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple) (retMapOfSimpleSlice_0 map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcReq := ServiceMapOfSimpleSliceRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -327,7 +372,7 @@ func (tsc *ServiceGoRPCClient) MapOfSimpleSlice(v map[string][]Simple) (retMapOf
 	return rpcResp.RetMapOfSimpleSlice_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) MixedArgs(s Simple, items []string, m map[string]int64) (retMixedArgs_0 Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error) {
+func (tsc *ServiceGoRPCClient) MixedArgs(s github_com_foomo_gotsrpc_v2_tests_common.Simple, items []string, m map[string]int64) (retMixedArgs_0 github_com_foomo_gotsrpc_v2_tests_common.Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error) {
 	rpcReq := ServiceMixedArgsRequest{S: s, Items: items, M: m}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -349,7 +394,7 @@ func (tsc *ServiceGoRPCClient) MultiArgs(a string, b int64, c bool) (retMultiArg
 	return rpcResp.RetMultiArgs_0, rpcResp.RetMultiArgs_1, rpcResp.RetMultiArgs_2, nil
 }
 
-func (tsc *ServiceGoRPCClient) NestedStruct(v Nested) (retNestedStruct_0 Nested, clientErr error) {
+func (tsc *ServiceGoRPCClient) NestedStruct(v github_com_foomo_gotsrpc_v2_tests_common.Nested) (retNestedStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Nested, clientErr error) {
 	rpcReq := ServiceNestedStructRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -371,7 +416,7 @@ func (tsc *ServiceGoRPCClient) ObjectID(v ObjectID) (retObjectID_0 ObjectID, cli
 	return rpcResp.RetObjectID_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) SimplePtrSlice(v []*Simple) (retSimplePtrSlice_0 []*Simple, clientErr error) {
+func (tsc *ServiceGoRPCClient) SimplePtrSlice(v []*github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimplePtrSlice_0 []*github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcReq := ServiceSimplePtrSliceRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -382,7 +427,7 @@ func (tsc *ServiceGoRPCClient) SimplePtrSlice(v []*Simple) (retSimplePtrSlice_0 
 	return rpcResp.RetSimplePtrSlice_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) SimpleSlice(v []Simple) (retSimpleSlice_0 []Simple, clientErr error) {
+func (tsc *ServiceGoRPCClient) SimpleSlice(v []github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimpleSlice_0 []github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcReq := ServiceSimpleSliceRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -393,7 +438,7 @@ func (tsc *ServiceGoRPCClient) SimpleSlice(v []Simple) (retSimpleSlice_0 []Simpl
 	return rpcResp.RetSimpleSlice_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) SimpleStruct(v Simple) (retSimpleStruct_0 Simple, clientErr error) {
+func (tsc *ServiceGoRPCClient) SimpleStruct(v github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimpleStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcReq := ServiceSimpleStructRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -492,7 +537,7 @@ func (tsc *ServiceGoRPCClient) StringPtr(v *string) (retStringPtr_0 *string, cli
 	return rpcResp.RetStringPtr_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) StringSimpleMap(v map[string]Simple) (retStringSimpleMap_0 map[string]Simple, clientErr error) {
+func (tsc *ServiceGoRPCClient) StringSimpleMap(v map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple) (retStringSimpleMap_0 map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcReq := ServiceStringSimpleMapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -503,7 +548,7 @@ func (tsc *ServiceGoRPCClient) StringSimpleMap(v map[string]Simple) (retStringSi
 	return rpcResp.RetStringSimpleMap_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) StringSimplePtrMap(v map[string]*Simple) (retStringSimplePtrMap_0 map[string]*Simple, clientErr error) {
+func (tsc *ServiceGoRPCClient) StringSimplePtrMap(v map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple) (retStringSimplePtrMap_0 map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcReq := ServiceStringSimplePtrMapRequest{V: v}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {

@@ -57,7 +57,7 @@ func newRequest(ctx context.Context, url string, contentType string, buffer *byt
 
 type bufferedClient struct {
 	client  *http.Client
-	handle  *clientHandle
+	handle  *transportHandle
 	headers http.Header
 }
 

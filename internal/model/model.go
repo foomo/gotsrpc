@@ -1,4 +1,6 @@
-package gotsrpc
+package model
+
+import "strings"
 
 type ScalarType string
 
@@ -67,11 +69,15 @@ type Service struct {
 
 type ServiceMethods []*Method
 
-type ServiceList []*Service
-
 func (sm ServiceMethods) Len() int           { return len(sm) }
 func (sm ServiceMethods) Swap(i, j int)      { sm[i], sm[j] = sm[j], sm[i] }
 func (sm ServiceMethods) Less(i, j int) bool { return sm[i].Name < sm[j].Name }
+
+type ServiceList []*Service
+
+func (sl ServiceList) Len() int           { return len(sl) }
+func (sl ServiceList) Swap(i, j int)      { sl[i], sl[j] = sl[j], sl[i] }
+func (sl ServiceList) Less(i, j int) bool { return strings.Compare(sl[i].Name, sl[j].Name) > 0 }
 
 type Method struct {
 	Name   string
@@ -97,6 +103,22 @@ type Scalar struct {
 }
 
 func (st *Scalar) FullName() string {
+	fullName := st.Package + "." + st.Name
+	if len(fullName) == 0 {
+		fullName = st.Name
+	}
+	return fullName
+}
+
+func (s *Struct) FullName() string {
+	fullName := s.Package + "." + s.Name
+	if len(fullName) == 0 {
+		fullName = s.Name
+	}
+	return fullName
+}
+
+func (st *StructType) FullName() string {
 	fullName := st.Package + "." + st.Name
 	if len(fullName) == 0 {
 		fullName = st.Name

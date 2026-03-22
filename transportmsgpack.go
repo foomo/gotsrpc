@@ -7,13 +7,12 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
-var msgpackClientHandle = &clientHandle{
-	contentType: "application/msgpack; charset=utf-8",
-	handle:      &codec.MsgpackHandle{},
-	// transform the error type to sth that is transportable
-	beforeEncodeReply: defaultBeforeEncodeReply,
-	beforeDecodeReply: defaultBeforeDecodeReply,
-	afterDecodeReply:  defaultAfterDecodeReply,
+var msgpackHandle = &transportHandle{
+	contentType:       "application/msgpack; charset=utf-8",
+	handle:            &codec.MsgpackHandle{},
+	beforeEncodeReply: newErrorEncodeHook(),
+	beforeDecodeReply: newErrorDecodeHook(),
+	afterDecodeReply:  newErrorAfterDecodeHook(),
 }
 
 func init() {
@@ -24,23 +23,21 @@ func init() {
 	mh.RawToString = true
 	mh.ReaderBufferSize = 4096
 	mh.WriterBufferSize = 4096
-	msgpackClientHandle.handle = mh
-	// WriteExt is not being called
-	// if err := SetJSONExt(time.Time{}, 2, timeExt); err != nil {
-	// 	 panic(err)
-	// }
+	msgpackHandle.handle = mh
+
+	registerTransportHandle(EncodingMsgpack, msgpackHandle)
 }
 
 func NewMSGPackEncoderBytes(b *[]byte) *codec.Encoder {
-	return codec.NewEncoderBytes(b, msgpackClientHandle.handle)
+	return codec.NewEncoderBytes(b, msgpackHandle.handle)
 }
 
 func NewMSGPackDecoderBytes(b []byte) *codec.Decoder {
-	return codec.NewDecoderBytes(b, msgpackClientHandle.handle)
+	return codec.NewDecoderBytes(b, msgpackHandle.handle)
 }
 
 func SetMSGPackExt(rt interface{}, tag uint64, ext codec.BytesExt) error {
-	if value, ok := msgpackClientHandle.handle.(*codec.MsgpackHandle); ok {
+	if value, ok := msgpackHandle.handle.(*codec.MsgpackHandle); ok {
 		return value.SetBytesExt(reflect.TypeOf(rt), tag, ext)
 	}
 	return errors.New("invalid handle type")
