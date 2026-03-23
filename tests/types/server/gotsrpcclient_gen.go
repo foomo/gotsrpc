@@ -7,6 +7,7 @@ import (
 	go_net_http "net/http"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	pkg_errors "github.com/pkg/errors"
 )
 
@@ -23,6 +24,10 @@ type ServiceGoTSRPCClient interface {
 	Float32Ptr(ctx go_context.Context, v *float32) (retFloat32Ptr_0 *float32, clientErr error)
 	Float32Slice(ctx go_context.Context, v []float32) (retFloat32Slice_0 []float32, clientErr error)
 	Float64(ctx go_context.Context, v float64) (retFloat64_0 float64, clientErr error)
+	InlinedMixedStruct(ctx go_context.Context, v InlinedMixed) (retInlinedMixedStruct_0 InlinedMixed, clientErr error)
+	InlinedMultipleStruct(ctx go_context.Context, v InlinedMultiple) (retInlinedMultipleStruct_0 InlinedMultiple, clientErr error)
+	InlinedPtrStruct(ctx go_context.Context, v InlinedPtr) (retInlinedPtrStruct_0 InlinedPtr, clientErr error)
+	InlinedStruct(ctx go_context.Context, v Inlined) (retInlinedStruct_0 Inlined, clientErr error)
 	Int(ctx go_context.Context, v int) (retInt_0 int, clientErr error)
 	Int16(ctx go_context.Context, v int16) (retInt16_0 int16, clientErr error)
 	Int16Ptr(ctx go_context.Context, v *int16) (retInt16Ptr_0 *int16, clientErr error)
@@ -37,14 +42,14 @@ type ServiceGoTSRPCClient interface {
 	Int8Ptr(ctx go_context.Context, v *int8) (retInt8Ptr_0 *int8, clientErr error)
 	Int8Slice(ctx go_context.Context, v []int8) (retInt8Slice_0 []int8, clientErr error)
 	MapOfMaps(ctx go_context.Context, v map[string]map[string]string) (retMapOfMaps_0 map[string]map[string]string, clientErr error)
-	MapOfSimpleSlice(ctx go_context.Context, v map[string][]Simple) (retMapOfSimpleSlice_0 map[string][]Simple, clientErr error)
-	MixedArgs(ctx go_context.Context, s Simple, items []string, m map[string]int64) (retMixedArgs_0 Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error)
+	MapOfSimpleSlice(ctx go_context.Context, v map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple) (retMapOfSimpleSlice_0 map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error)
+	MixedArgs(ctx go_context.Context, s github_com_foomo_gotsrpc_v2_tests_common.Simple, items []string, m map[string]int64) (retMixedArgs_0 github_com_foomo_gotsrpc_v2_tests_common.Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error)
 	MultiArgs(ctx go_context.Context, a string, b int64, c bool) (retMultiArgs_0 string, retMultiArgs_1 int64, retMultiArgs_2 bool, clientErr error)
-	NestedStruct(ctx go_context.Context, v Nested) (retNestedStruct_0 Nested, clientErr error)
+	NestedStruct(ctx go_context.Context, v github_com_foomo_gotsrpc_v2_tests_common.Nested) (retNestedStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Nested, clientErr error)
 	ObjectID(ctx go_context.Context, v ObjectID) (retObjectID_0 ObjectID, clientErr error)
-	SimplePtrSlice(ctx go_context.Context, v []*Simple) (retSimplePtrSlice_0 []*Simple, clientErr error)
-	SimpleSlice(ctx go_context.Context, v []Simple) (retSimpleSlice_0 []Simple, clientErr error)
-	SimpleStruct(ctx go_context.Context, v Simple) (retSimpleStruct_0 Simple, clientErr error)
+	SimplePtrSlice(ctx go_context.Context, v []*github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimplePtrSlice_0 []*github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error)
+	SimpleSlice(ctx go_context.Context, v []github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimpleSlice_0 []github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error)
+	SimpleStruct(ctx go_context.Context, v github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimpleStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error)
 	SliceOfMaps(ctx go_context.Context, v []map[string]string) (retSliceOfMaps_0 []map[string]string, clientErr error)
 	String(ctx go_context.Context, v string) (retString_0 string, clientErr error)
 	StringFloat32Map(ctx go_context.Context, v map[string]float32) (retStringFloat32Map_0 map[string]float32, clientErr error)
@@ -54,8 +59,8 @@ type ServiceGoTSRPCClient interface {
 	StringInt8Map(ctx go_context.Context, v map[string]int8) (retStringInt8Map_0 map[string]int8, clientErr error)
 	StringObjectID(ctx go_context.Context, v StringObjectID) (retStringObjectID_0 StringObjectID, clientErr error)
 	StringPtr(ctx go_context.Context, v *string) (retStringPtr_0 *string, clientErr error)
-	StringSimpleMap(ctx go_context.Context, v map[string]Simple) (retStringSimpleMap_0 map[string]Simple, clientErr error)
-	StringSimplePtrMap(ctx go_context.Context, v map[string]*Simple) (retStringSimplePtrMap_0 map[string]*Simple, clientErr error)
+	StringSimpleMap(ctx go_context.Context, v map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple) (retStringSimpleMap_0 map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error)
+	StringSimplePtrMap(ctx go_context.Context, v map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple) (retStringSimplePtrMap_0 map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error)
 	StringSlice(ctx go_context.Context, v []string) (retStringSlice_0 []string, clientErr error)
 	StringSlice2D(ctx go_context.Context, v [][]string) (retStringSlice2D_0 [][]string, clientErr error)
 	StringStringMap(ctx go_context.Context, v map[string]string) (retStringStringMap_0 map[string]string, clientErr error)
@@ -225,6 +230,46 @@ func (tsc *HTTPServiceGoTSRPCClient) Float64(ctx go_context.Context, v float64) 
 	return
 }
 
+func (tsc *HTTPServiceGoTSRPCClient) InlinedMixedStruct(ctx go_context.Context, v InlinedMixed) (retInlinedMixedStruct_0 InlinedMixed, clientErr error) {
+	rpcArgs := []any{v}
+	rpcReply := []any{&retInlinedMixedStruct_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlinedMixedStruct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy InlinedMixedStruct")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) InlinedMultipleStruct(ctx go_context.Context, v InlinedMultiple) (retInlinedMultipleStruct_0 InlinedMultiple, clientErr error) {
+	rpcArgs := []any{v}
+	rpcReply := []any{&retInlinedMultipleStruct_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlinedMultipleStruct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy InlinedMultipleStruct")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) InlinedPtrStruct(ctx go_context.Context, v InlinedPtr) (retInlinedPtrStruct_0 InlinedPtr, clientErr error) {
+	rpcArgs := []any{v}
+	rpcReply := []any{&retInlinedPtrStruct_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlinedPtrStruct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy InlinedPtrStruct")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) InlinedStruct(ctx go_context.Context, v Inlined) (retInlinedStruct_0 Inlined, clientErr error) {
+	rpcArgs := []any{v}
+	rpcReply := []any{&retInlinedStruct_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlinedStruct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy InlinedStruct")
+	}
+	return
+}
+
 func (tsc *HTTPServiceGoTSRPCClient) Int(ctx go_context.Context, v int) (retInt_0 int, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retInt_0}
@@ -365,7 +410,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MapOfMaps(ctx go_context.Context, v map[str
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) MapOfSimpleSlice(ctx go_context.Context, v map[string][]Simple) (retMapOfSimpleSlice_0 map[string][]Simple, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) MapOfSimpleSlice(ctx go_context.Context, v map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple) (retMapOfSimpleSlice_0 map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retMapOfSimpleSlice_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MapOfSimpleSlice", rpcArgs, rpcReply)
@@ -375,7 +420,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MapOfSimpleSlice(ctx go_context.Context, v 
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) MixedArgs(ctx go_context.Context, s Simple, items []string, m map[string]int64) (retMixedArgs_0 Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) MixedArgs(ctx go_context.Context, s github_com_foomo_gotsrpc_v2_tests_common.Simple, items []string, m map[string]int64) (retMixedArgs_0 github_com_foomo_gotsrpc_v2_tests_common.Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error) {
 	rpcArgs := []any{s, items, m}
 	rpcReply := []any{&retMixedArgs_0, &retMixedArgs_1, &retMixedArgs_2}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "MixedArgs", rpcArgs, rpcReply)
@@ -395,7 +440,7 @@ func (tsc *HTTPServiceGoTSRPCClient) MultiArgs(ctx go_context.Context, a string,
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) NestedStruct(ctx go_context.Context, v Nested) (retNestedStruct_0 Nested, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) NestedStruct(ctx go_context.Context, v github_com_foomo_gotsrpc_v2_tests_common.Nested) (retNestedStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Nested, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retNestedStruct_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "NestedStruct", rpcArgs, rpcReply)
@@ -415,7 +460,7 @@ func (tsc *HTTPServiceGoTSRPCClient) ObjectID(ctx go_context.Context, v ObjectID
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) SimplePtrSlice(ctx go_context.Context, v []*Simple) (retSimplePtrSlice_0 []*Simple, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) SimplePtrSlice(ctx go_context.Context, v []*github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimplePtrSlice_0 []*github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retSimplePtrSlice_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimplePtrSlice", rpcArgs, rpcReply)
@@ -425,7 +470,7 @@ func (tsc *HTTPServiceGoTSRPCClient) SimplePtrSlice(ctx go_context.Context, v []
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) SimpleSlice(ctx go_context.Context, v []Simple) (retSimpleSlice_0 []Simple, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) SimpleSlice(ctx go_context.Context, v []github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimpleSlice_0 []github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retSimpleSlice_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimpleSlice", rpcArgs, rpcReply)
@@ -435,7 +480,7 @@ func (tsc *HTTPServiceGoTSRPCClient) SimpleSlice(ctx go_context.Context, v []Sim
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) SimpleStruct(ctx go_context.Context, v Simple) (retSimpleStruct_0 Simple, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) SimpleStruct(ctx go_context.Context, v github_com_foomo_gotsrpc_v2_tests_common.Simple) (retSimpleStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retSimpleStruct_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SimpleStruct", rpcArgs, rpcReply)
@@ -535,7 +580,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringPtr(ctx go_context.Context, v *string
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) StringSimpleMap(ctx go_context.Context, v map[string]Simple) (retStringSimpleMap_0 map[string]Simple, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) StringSimpleMap(ctx go_context.Context, v map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple) (retStringSimpleMap_0 map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringSimpleMap_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSimpleMap", rpcArgs, rpcReply)
@@ -545,7 +590,7 @@ func (tsc *HTTPServiceGoTSRPCClient) StringSimpleMap(ctx go_context.Context, v m
 	return
 }
 
-func (tsc *HTTPServiceGoTSRPCClient) StringSimplePtrMap(ctx go_context.Context, v map[string]*Simple) (retStringSimplePtrMap_0 map[string]*Simple, clientErr error) {
+func (tsc *HTTPServiceGoTSRPCClient) StringSimplePtrMap(ctx go_context.Context, v map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple) (retStringSimplePtrMap_0 map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error) {
 	rpcArgs := []any{v}
 	rpcReply := []any{&retStringSimplePtrMap_0}
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "StringSimplePtrMap", rpcArgs, rpcReply)

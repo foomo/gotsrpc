@@ -16,7 +16,12 @@ var (
 type Handler struct{}
 
 func (h *Handler) Hello(ctx context.Context, args string) string {
+	if ctx.Err() != nil {
+		return "context error"
+	}
+
 	fmt.Println(args)
+
 	return "Hello " + args
 }
 

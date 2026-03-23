@@ -40,6 +40,7 @@ func NewError(err error) *Error {
 
 	// retrieve error details
 	errType := reflect.TypeOf(err)
+
 	errElem := errType
 	if errType.Kind() == reflect.Ptr {
 		errElem = errType.Elem()
@@ -60,6 +61,7 @@ func NewError(err error) *Error {
 			for i, e := range errs {
 				inst.ErrCauses[i] = NewError(e)
 			}
+
 			return inst
 		}
 	}
@@ -74,10 +76,11 @@ func NewError(err error) *Error {
 }
 
 // As interface
-func (e *Error) As(err interface{}) bool {
+func (e *Error) As(err any) bool {
 	if e == nil || err == nil {
 		return false
 	}
+
 	if reflect.TypeOf(err).Elem().String() == e.Type {
 		if decodeErr := mapstructure.Decode(e.Data, &err); decodeErr != nil {
 			fmt.Printf("ERROR: failed to decode error data\n%+v", decodeErr)
@@ -86,6 +89,7 @@ func (e *Error) As(err interface{}) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -94,6 +98,7 @@ func (e *Error) Cause() error {
 	if e.ErrCause != nil {
 		return e.ErrCause
 	}
+
 	return e
 }
 
@@ -107,6 +112,7 @@ func (e *Error) Format(s fmt.State, verb rune) {
 				_, _ = fmt.Fprintf(s, "Data: %v\n", e.Data)
 			}
 		}
+
 		fallthrough
 	case 's', 'q':
 		_, _ = io.WriteString(s, e.Error())
@@ -118,18 +124,22 @@ func (e *Error) Unwrap() []error {
 	if e == nil {
 		return nil
 	}
+
 	var errs []error
 	if e.ErrCause != nil {
 		errs = append(errs, e.ErrCause)
 	}
+
 	for _, c := range e.ErrCauses {
 		if c != nil {
 			errs = append(errs, c)
 		}
 	}
+
 	if len(errs) == 0 {
 		return nil
 	}
+
 	return errs
 }
 
@@ -140,6 +150,7 @@ func (e *Error) Is(err error) bool {
 	}
 
 	errType := reflect.TypeOf(err)
+
 	errElem := errType
 	if errType.Kind() == reflect.Ptr {
 		errElem = errType.Elem()
@@ -160,5 +171,6 @@ func (e *Error) Error() string {
 	if e.ErrCause != nil {
 		msg += ": " + e.ErrCause.Error()
 	}
+
 	return msg
 }

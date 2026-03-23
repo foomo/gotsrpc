@@ -1,4 +1,4 @@
-package gotsrpc
+package codegen
 
 import (
 	"fmt"
@@ -6,30 +6,32 @@ import (
 	"strings"
 
 	"github.com/foomo/gotsrpc/v2/config"
+	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
-func (v *Value) isHTTPResponseWriter() bool {
+func valueIsHTTPResponseWriter(v *model.Value) bool {
 	return (v.StructType != nil && v.StructType.Name == "ResponseWriter" && v.StructType.Package == "net/http") ||
 		(v.Scalar != nil && v.Scalar.Name == "ResponseWriter" && v.Scalar.Package == "net/http")
 }
 
-func (v *Value) isHTTPRequest() bool {
+func valueIsHTTPRequest(v *model.Value) bool {
 	return (v.IsPtr && v.StructType != nil && v.StructType.Name == "Request" && v.StructType.Package == "net/http") ||
 		(v.IsPtr && v.Scalar != nil && v.Scalar.Name == "Request" && v.Scalar.Package == "net/http")
 }
 
-func (v *Value) isContext() bool {
+func valueIsContext(v *model.Value) bool {
 	return (v.StructType != nil && v.StructType.Name == "Context" && v.StructType.Package == "context") ||
 		(v.Scalar != nil && v.Scalar.Name == "Context" && v.Scalar.Package == "context")
 }
 
-func (v *Value) goType(aliases map[string]string, packageName string) (t string) {
+func valueGoType(v *model.Value, aliases map[string]string, packageName string) (t string) {
 	if v.IsPtr {
 		t = "*"
 	}
+
 	switch {
 	case v.Array != nil:
-		t += "[]" + v.Array.Value.goType(aliases, packageName)
+		t += "[]" + valueGoType(v.Array.Value, aliases, packageName)
 	case len(v.GoScalarType) > 0:
 		t += v.GoScalarType
 	case v.TypeParam != "":
@@ -38,28 +40,32 @@ func (v *Value) goType(aliases map[string]string, packageName string) (t string)
 		if packageName != v.StructType.Package && aliases[v.StructType.Package] != "" {
 			t += aliases[v.StructType.Package] + "."
 		}
+
 		t += v.StructType.Name
 		if len(v.StructType.TypeArgs) > 0 {
 			t += "["
+
 			for i, arg := range v.StructType.TypeArgs {
 				if i > 0 {
 					t += ", "
 				}
-				t += arg.goType(aliases, packageName)
+
+				t += valueGoType(arg, aliases, packageName)
 			}
+
 			t += "]"
 		}
 	case v.Map != nil:
-		t += `map[` + v.Map.Key.goType(aliases, packageName) + `]` + v.Map.Value.goType(aliases, packageName)
+		t += `map[` + valueGoType(v.Map.Key, aliases, packageName) + `]` + valueGoType(v.Map.Value, aliases, packageName)
 	case v.Scalar != nil:
 		if packageName != v.Scalar.Package && aliases[v.Scalar.Package] != "" {
 			t += aliases[v.Scalar.Package] + "."
 		}
+
 		t += v.Scalar.Name
 	case v.IsInterface:
 		t += "any"
 	default:
-		// TODO
 		fmt.Println("WARN: can't resolve goType")
 	}
 
@@ -75,46 +81,52 @@ func ucfirst(str string) string {
 }
 
 func strfirst(str string, strfunc func(string) string) string {
-	res := ""
+	var res strings.Builder
+
 	for i, char := range str {
 		if i == 0 {
-			res += strfunc(string(char))
+			res.WriteString(strfunc(string(char)))
 		} else {
-			res += string(char)
+			res.WriteRune(char)
 		}
 	}
-	return res
+
+	return res.String()
 }
 
 func extractImport(packageName string, fullPackageName string, aliases map[string]string) {
 	r := strings.NewReplacer(".", "_", "/", "_", "-", "_")
+
 	if packageName != fullPackageName {
 		if _, ok := aliases[packageName]; !ok {
 			packageParts := strings.Split(packageName, "/")
 			beautifulAlias := packageParts[len(packageParts)-1]
 			uglyAlias := r.Replace(packageName)
-			alias := uglyAlias // beautifulAlias
+			alias := uglyAlias
+
 			for _, otherAlias := range aliases {
 				if otherAlias == beautifulAlias {
 					alias = uglyAlias
 					break
 				}
 			}
+
 			aliases[packageName] = alias
 		}
 	}
 }
 
-func extractImports(fields []*Field, fullPackageName string, aliases map[string]string) {
+func extractImports(fields []*model.Field, fullPackageName string, aliases map[string]string) {
 	for _, f := range fields {
 		extractImportValue(f.Value, fullPackageName, aliases)
 	}
 }
 
-func extractImportValue(value *Value, fullPackageName string, aliases map[string]string) {
+func extractImportValue(value *model.Value, fullPackageName string, aliases map[string]string) {
 	switch {
 	case value.StructType != nil:
 		extractImport(value.StructType.Package, fullPackageName, aliases)
+
 		for _, arg := range value.StructType.TypeArgs {
 			extractImportValue(arg, fullPackageName, aliases)
 		}
@@ -128,18 +140,18 @@ func extractImportValue(value *Value, fullPackageName string, aliases map[string
 	}
 }
 
-func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, packageName string, config *config.Target, unions map[string][]string, g *code) error {
+func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, unions map[string][]string, g *Code) error {
 	aliases := map[string]string{
 		"time":                        "time",
 		"net/http":                    "http",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
 	}
+
 	for _, service := range services {
-		// Check if we should render this service as ts rpc
-		// Note: remove once there's a separate gorcp generator
 		if !config.IsTSRPC(service.Name) {
 			continue
 		}
+
 		for _, m := range service.Methods {
 			extractImports(m.Args, fullPackageName, aliases)
 		}
@@ -149,13 +161,11 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		extractImport(pkg, fullPackageName, aliases)
 	}
 
-	g.l(renderImports(aliases, packageName))
+	g.L(renderImports(aliases, packageName))
 
 	renderInit(unions, aliases, packageName, g)
 
 	for _, service := range services {
-		// Check if we should render this service as ts rcp
-		// Note: remove once there's a separate gorcp generator
 		if !config.IsTSRPC(service.Name) {
 			continue
 		}
@@ -167,13 +177,15 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 
 		proxyName := service.Name + "GoTSRPCProxy"
 
-		g.l("const (")
-		for _, method := range service.Methods {
-			g.l(proxyName + method.Name + " = \"" + method.Name + "\"")
-		}
-		g.l(")")
+		g.L("const (")
 
-		g.l(`
+		for _, method := range service.Methods {
+			g.L(proxyName + method.Name + " = \"" + method.Name + "\"")
+		}
+
+		g.L(")")
+
+		g.L(`
         type ` + proxyName + ` struct {
 	        EndPoint    string
 	        service     ` + servicePointer + service.Name + `
@@ -188,9 +200,8 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		        EndPoint: endpoint,
 		        service:  service,
 	        }
-        }`)
+        }
 
-		g.l(`
         // ServeHTTP exposes your service
         func (p *` + proxyName + `) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	        if r.Method == http.MethodOptions {
@@ -199,72 +210,81 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		        gotsrpc.ErrorMethodNotAllowed(w)
 		        return
 	        }
+			defer io.Copy(io.Discard, r.Body) // Drain Request Body
 		`)
 
-		g.l("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
-		g.l("callStats, _ := gotsrpc.GetStatsForRequest(r)")
-		g.l("if callStats != nil {")
-		g.ind(1)
-		g.l("callStats.Func = funcName")
-		g.l("callStats.Package = \"" + fullPackageName + "\"")
-		g.l("callStats.Service = \"" + service.Name + "\"")
-		g.ind(-1)
-		g.l("}")
+		g.L("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
+		g.L("callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)")
+		g.L("if callStatsOk {")
+		g.Ind(1)
+		g.L("callStats.Func = funcName")
+		g.L("callStats.Package = \"" + fullPackageName + "\"")
+		g.L("callStats.Service = \"" + service.Name + "\"")
+		g.Ind(-1)
+		g.L("}")
 
-		g.l(`switch funcName {`)
+		g.L(`switch funcName {`)
 
-		// indenting into switch cases
-		g.ind(4)
+		g.Ind(4)
 
 		for _, method := range service.Methods {
-			// a case for each method
-			g.l("case " + proxyName + method.Name + ":")
-			g.ind(1)
+			g.L("case " + proxyName + method.Name + ":")
+			g.Ind(1)
+
 			var (
 				callArgs         []string
 				isContextRequest bool
 				isSessionRequest bool
 			)
-			g.l("var (")
-			g.ind(1)
-			g.l("args []any")
-			g.l("rets []any")
-			g.ind(-1)
-			g.l(")")
+
+			g.L("var (")
+			g.Ind(1)
+			g.L("args []any")
+			g.L("rets []any")
+			g.Ind(-1)
+			g.L(")")
+
 			if len(method.Args) > 0 {
-				var args []string
-				var argsDecls []string
+				var (
+					args      []string
+					argsDecls []string
+				)
 
 				skipArgI := 0
 
 				nonHTTPRelatedArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
 
 				isSessionRequest = len(method.Args)-len(nonHTTPRelatedArgs) == 2
-				isContextRequest = len(method.Args) > 0 && method.Args[0].Value.isContext()
+				isContextRequest = len(method.Args) > 0 && valueIsContext(method.Args[0].Value)
 
 				for _, arg := range nonHTTPRelatedArgs {
 					argName := "arg_" + arg.Name
-					argsDecls = append(argsDecls, argName+"  "+arg.Value.goType(aliases, packageName))
+					argsDecls = append(argsDecls, argName+"  "+valueGoType(arg.Value, aliases, packageName))
 					args = append(args, "&"+argName)
 					callArgs = append(callArgs, argName)
 					skipArgI++
 				}
+
 				if len(args) > 0 {
-					g.l("var (")
+					g.L("var (")
+
 					for _, argDecl := range argsDecls {
-						g.l(argDecl)
+						g.L(argDecl)
 					}
-					g.l(")")
-					g.l("args = []any{" + strings.Join(args, ", ") + "}")
-					g.l("if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {")
-					g.ind(1)
-					g.l("gotsrpc.ErrorCouldNotLoadArgs(w)")
-					g.l("return")
-					g.ind(-1)
-					g.l("}")
+
+					g.L(")")
+					g.L("args = []any{" + strings.Join(args, ", ") + "}")
+					g.L("if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {")
+					g.Ind(1)
+					g.L("gotsrpc.ErrorCouldNotLoadArgs(w)")
+					g.L("return")
+					g.Ind(-1)
+					g.L("}")
 				}
 			}
+
 			var returnValueNames []string
+
 			for retI, retField := range method.Return {
 				retArgName := retField.Name
 				if len(retArgName) == 0 {
@@ -273,62 +293,74 @@ func renderTSRPCServiceProxies(services ServiceList, fullPackageName string, pac
 						retArgName += "_" + fmt.Sprint(retI)
 					}
 				}
+
 				returnValueNames = append(returnValueNames, lcfirst(method.Name)+ucfirst(retArgName))
 			}
-			g.l("var executionStart time.Time")
-			g.l("if callStats != nil {")
-			g.ind(1)
-			g.l("executionStart = time.Now()")
-			g.ind(-1)
-			g.l("}")
+
+			g.L("var executionStart time.Time")
+			g.L("if callStatsOk {")
+			g.Ind(1)
+			g.L("executionStart = time.Now()")
+			g.Ind(-1)
+			g.L("}")
 
 			if isSessionRequest {
-				g.l("rw := gotsrpc.ResponseWriter{ResponseWriter: w}")
+				g.L("rw := gotsrpc.ResponseWriter{ResponseWriter: w}")
+
 				callArgs = append([]string{"&rw", "r"}, callArgs...)
 			} else if isContextRequest {
 				callArgs = append([]string{"r.Context()"}, callArgs...)
 			}
+
 			if len(returnValueNames) > 0 {
-				g.app(strings.Join(returnValueNames, ", ") + " := ")
+				g.App(strings.Join(returnValueNames, ", ") + " := ")
 			}
-			g.app("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
-			g.nl()
-			g.l("if callStats != nil {")
-			g.ind(1)
-			g.l("callStats.Execution = time.Since(executionStart)")
-			g.ind(-1)
-			g.l("}")
+
+			g.App("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
+			g.NL()
+			g.L("if callStatsOk {")
+			g.Ind(1)
+			g.L("callStats.Execution = time.Since(executionStart)")
+			g.Ind(-1)
+			g.L("}")
+
 			if isSessionRequest {
-				g.l("if rw.Status() == http.StatusOK {").ind(1)
+				g.L("if rw.Status() == http.StatusOK {").Ind(1)
 			}
 			// Wrap all error return values with ErrorReply
 			retsValues := make([]string, len(returnValueNames))
 			copy(retsValues, returnValueNames)
+
 			for i, ret := range method.Return {
 				if ret.Value.GoScalarType == "error" {
 					retsValues[i] = "gotsrpc.ErrorReply(" + retsValues[i] + ")"
 				}
 			}
-			g.l("rets = []any{" + strings.Join(retsValues, ", ") + "}")
-			g.l("if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {")
-			g.ind(1)
-			g.l("gotsrpc.ErrorCouldNotReply(w)")
-			g.l("return")
-			g.ind(-1)
-			g.l("}")
+
+			g.L("rets = []any{" + strings.Join(retsValues, ", ") + "}")
+			g.L("if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {")
+			g.Ind(1)
+			g.L("gotsrpc.ErrorCouldNotReply(w)")
+			g.L("return")
+			g.Ind(-1)
+			g.L("}")
+
 			if isSessionRequest {
-				g.ind(-1).l("}")
+				g.Ind(-1).L("}")
 			}
-			g.l("gotsrpc.Monitor(w, r, args, rets, callStats)")
-			g.l("return")
-			g.ind(-1)
+
+			g.L("gotsrpc.Monitor(w, r, args, rets, callStats)")
+			g.L("return")
+			g.Ind(-1)
 		}
-		g.l("default:")
-		g.ind(1).l("gotsrpc.ClearStats(r)")
-		g.ind(1).l("gotsrpc.ErrorFuncNotFound(w)")
-		g.ind(-2).l("}") // close switch
-		g.ind(-1).l("}") // close ServeHttp
+
+		g.L("default:")
+		g.Ind(1).L("gotsrpc.ClearStats(r)")
+		g.Ind(1).L("gotsrpc.ErrorFuncNotFound(w)")
+		g.Ind(-2).L("}") // close switch
+		g.Ind(-1).L("}") // close ServeHttp
 	}
+
 	return nil
 }
 
@@ -340,24 +372,33 @@ type goMethod struct {
 	returns []string
 }
 
-func newMethodSignature(method *Method, aliases map[string]string, fullPackageName string) goMethod {
-	var args []string
-	var params []string
+func newMethodSignature(method *model.Method, aliases map[string]string, fullPackageName string) goMethod {
+	var (
+		args   []string
+		params []string
+	)
+
 	params = append(params, "ctx go_context.Context")
 	for _, a := range goMethodArgsWithoutHTTPContextRelatedArgs(method) {
 		args = append(args, a.Name)
-		params = append(params, a.Name+" "+a.Value.goType(aliases, fullPackageName))
+		params = append(params, a.Name+" "+valueGoType(a.Value, aliases, fullPackageName))
 	}
-	var rets []string
-	var returns []string
+
+	var (
+		rets    []string
+		returns []string
+	)
+
 	for i, r := range method.Return {
 		name := r.Name
 		if len(name) == 0 {
 			name = fmt.Sprintf("ret%s_%d", method.Name, i)
 		}
+
 		rets = append(rets, "&"+name)
-		returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
+		returns = append(returns, name+" "+valueGoType(r.Value, aliases, fullPackageName))
 	}
+
 	returns = append(returns, "clientErr error")
 
 	return goMethod{
@@ -373,7 +414,7 @@ func (ms *goMethod) renderSignature() string {
 	return ms.name + `(` + strings.Join(ms.params, ", ") + `) (` + strings.Join(ms.returns, ", ") + `)`
 }
 
-func renderTSRPCServiceClients(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
+func renderTSRPCServiceClients(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, g *Code) error {
 	aliases := map[string]string{
 		"github.com/pkg/errors":       "pkg_errors",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
@@ -382,22 +423,19 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 	}
 
 	for _, service := range services {
-		// Check if we should render this service as ts rcp
-		// Note: remove once there's a separate gorcp generator
 		if !config.IsTSRPC(service.Name) {
 			continue
 		}
+
 		for _, m := range service.Methods {
 			extractImports(m.Args, fullPackageName, aliases)
 			extractImports(m.Return, fullPackageName, aliases)
 		}
 	}
 
-	g.l(renderImports(aliases, packageName))
+	g.L(renderImports(aliases, packageName))
 
 	for _, service := range services {
-		// Check if we should render this service as ts rcp
-		// Note: remove once there's a separate gorcp generator
 		if !config.IsTSRPC(service.Name) {
 			continue
 		}
@@ -405,17 +443,16 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 		interfaceName := service.Name + "GoTSRPCClient"
 		clientName := "HTTP" + interfaceName
 
-		// Render Interface
-		g.l(`type ` + interfaceName + ` interface { `)
+		g.L(`type ` + interfaceName + ` interface { `)
+
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)
-			g.l(ms.renderSignature())
+			g.L(ms.renderSignature())
 		}
 
-		g.l(`} `)
+		g.L(`} `)
 
-		// Render Constructors
-		g.l(`
+		g.L(`
         type ` + clientName + ` struct {
 					URL string
 	        EndPoint string
@@ -427,7 +464,7 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
         }
 
         func New` + interfaceName + `(url string, endpoint string) *` + clientName + ` {
-			return New` + interfaceName + `WithClient(url, endpoint, nil) 
+			return New` + interfaceName + `WithClient(url, endpoint, nil)
         }
 
         func New` + interfaceName + `WithClient(url string, endpoint string, client *go_net_http.Client) *` + clientName + ` {
@@ -437,26 +474,27 @@ func renderTSRPCServiceClients(services ServiceList, fullPackageName string, pac
 		        Client: gotsrpc.NewClientWithHttpClient(client),
 	        }
 		}`)
-		g.nl()
+		g.NL()
 
 		for _, method := range service.Methods {
 			ms := newMethodSignature(method, aliases, fullPackageName)
-			g.l(`func (tsc *` + clientName + `) ` + ms.renderSignature() + ` {`)
-			g.l(`rpcArgs := []any{` + strings.Join(ms.args, ", ") + `}`)
-			g.l(`rpcReply := []any{` + strings.Join(ms.rets, ", ") + `}`)
-			g.l(`rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", rpcArgs, rpcReply)`)
-			g.l(`if rpcErr != nil {`)
-			g.ind(1).l(`clientErr = pkg_errors.WithMessage(rpcErr, "failed to call ` + packageName + `.` + service.Name + `GoTSRPCProxy ` + method.Name + `")`).ind(-1)
-			g.l(`}`)
-			g.l(`return`)
-			g.l(`}`)
-			g.nl()
+			g.L(`func (tsc *` + clientName + `) ` + ms.renderSignature() + ` {`)
+			g.L(`rpcArgs := []any{` + strings.Join(ms.args, ", ") + `}`)
+			g.L(`rpcReply := []any{` + strings.Join(ms.rets, ", ") + `}`)
+			g.L(`rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "` + method.Name + `", rpcArgs, rpcReply)`)
+			g.L(`if rpcErr != nil {`)
+			g.Ind(1).L(`clientErr = pkg_errors.WithMessage(rpcErr, "failed to call ` + packageName + `.` + service.Name + `GoTSRPCProxy ` + method.Name + `")`).Ind(-1)
+			g.L(`}`)
+			g.L(`return`)
+			g.L(`}`)
+			g.NL()
 		}
 	}
+
 	return nil
 }
 
-func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
+func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, g *Code) error {
 	aliases := map[string]string{
 		"fmt":                         "fmt",
 		"time":                        "time",
@@ -479,7 +517,7 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		}
 	}
 
-	g.l(renderImports(aliases, packageName))
+	g.L(renderImports(aliases, packageName))
 
 	for _, service := range services {
 		if !config.IsGoRPC(service.Name) {
@@ -492,47 +530,50 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 		}
 
 		proxyName := service.Name + "GoRPCProxy"
-		// Types
-		g.l(`type (`)
-		// Proxy type
-		g.l(`
+
+		g.L(`type (`)
+		g.L(`
         ` + proxyName + ` struct {
         	server *gorpc.Server
 	        service  ` + servicePointer + service.Name + `
 	        callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
         }
 		`)
-		// Request & Response types
+
 		for _, method := range service.Methods {
-			// Request type
-			g.l(ucfirst(service.Name+method.Name) + `Request struct {`)
+			g.L(ucfirst(service.Name+method.Name) + `Request struct {`)
+
 			for _, a := range goMethodArgsWithoutHTTPContextRelatedArgs(method) {
-				g.l(ucfirst(a.Name) + ` ` + a.Value.goType(aliases, fullPackageName))
+				g.L(ucfirst(a.Name) + ` ` + valueGoType(a.Value, aliases, fullPackageName))
 			}
-			g.l(`}`)
-			// Response type
-			g.l(ucfirst(service.Name+method.Name) + `Response struct {`)
+
+			g.L(`}`)
+			g.L(ucfirst(service.Name+method.Name) + `Response struct {`)
+
 			for i, r := range method.Return {
 				name := r.Name
 				if len(name) == 0 {
 					name = fmt.Sprintf("ret%s_%d", method.Name, i)
 				}
-				g.l(ucfirst(name) + ` ` + r.Value.goType(aliases, fullPackageName))
+
+				g.L(ucfirst(name) + ` ` + valueGoType(r.Value, aliases, fullPackageName))
 			}
-			g.l(`}`)
-			g.nl()
+
+			g.L(`}`)
+			g.NL()
 		}
-		g.l(`)`)
-		g.nl()
-		// Init
-		g.l(`func init() {`)
+
+		g.L(`)`)
+		g.NL()
+		g.L(`func init() {`)
+
 		for _, method := range service.Methods {
-			g.l(`gob.Register(` + ucfirst(service.Name+method.Name) + `Request{})`)
-			g.l(`gob.Register(` + ucfirst(service.Name+method.Name) + `Response{})`)
+			g.L(`gob.Register(` + ucfirst(service.Name+method.Name) + `Request{})`)
+			g.L(`gob.Register(` + ucfirst(service.Name+method.Name) + `Response{})`)
 		}
-		g.l(`}`)
-		// Constructor
-		g.l(`
+
+		g.L(`}`)
+		g.L(`
         func New` + proxyName + `(addr string, service ` + servicePointer + service.Name + `, tlsConfig *tls.Config) *` + proxyName + ` {
         	proxy :=  &` + proxyName + `{
 		        service:  service,
@@ -563,67 +604,91 @@ func renderGoRPCServiceProxies(services ServiceList, fullPackageName string, pac
 					p.callStatsHandler = handler
 				}
 		`)
-		g.nl()
-		// Handler
-		g.l(`func (p *` + proxyName + `) handler(clientAddr string, request any) (response any) {`)
-		g.l(`start := time.Now()`)
-		g.nl()
-		g.l(`reqType := reflect.TypeOf(request).String()`)
-		g.l(`funcNameParts := strings.Split(reqType, ".")`)
-		g.l(`funcName := funcNameParts[len(funcNameParts)-1]`)
-		g.nl()
-		g.l(`switch funcName {`)
+		g.NL()
+		g.L(`func (p *` + proxyName + `) handler(clientAddr string, request any) (response any) {`)
+
+		g.L(`var start time.Time`)
+		g.L(`if p.callStatsHandler != nil {`)
+		g.Ind(1)
+		g.L(`start = time.Now()`)
+		g.Ind(-1)
+		g.L(`}`)
+		g.NL()
+		g.L(`reqType := reflect.TypeOf(request).String()`)
+		g.L(`funcNameParts := strings.Split(reqType, ".")`)
+		g.L(`funcName := funcNameParts[len(funcNameParts)-1]`)
+		g.NL()
+		g.L(`switch funcName {`)
+
 		for _, method := range service.Methods {
 			var argParams []string
+
 			nonHTTPRelatedMethodArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
+
 			diffNONHTTPRelatedMethodArgs := len(method.Args) - len(nonHTTPRelatedMethodArgs)
-			for i := 0; i < diffNONHTTPRelatedMethodArgs; i++ {
-				argParams = append(argParams, "nil")
+			for i := range diffNONHTTPRelatedMethodArgs {
+				if i == 0 && valueIsContext(method.Args[0].Value) {
+					argParams = append(argParams, "go_context.Background()")
+				} else {
+					argParams = append(argParams, "nil")
+				}
 			}
+
 			for _, a := range nonHTTPRelatedMethodArgs {
 				argParams = append(argParams, "req."+ucfirst(a.Name))
 			}
-			var rets []string
-			var retParams []string
+
+			var (
+				rets      []string
+				retParams []string
+			)
+
 			for i, r := range method.Return {
 				name := r.Name
 				if len(name) == 0 {
 					name = fmt.Sprintf("ret%s_%d", method.Name, i)
 				}
+
 				rets = append(rets, name)
 				retParams = append(retParams, ucfirst(name)+`: `+name)
 			}
-			g.l(`case "` + service.Name + method.Name + `Request":`)
+
+			g.L(`case "` + service.Name + method.Name + `Request":`)
+
 			if len(nonHTTPRelatedMethodArgs) > 0 {
-				g.l(`req := request.(` + service.Name + method.Name + `Request)`)
+				g.L(`req := request.(` + service.Name + method.Name + `Request)`)
 			}
+
 			if len(rets) > 0 {
-				g.l(strings.Join(rets, ", ") + ` := p.service.` + method.Name + `(` + strings.Join(argParams, ", ") + `)`)
+				g.L(strings.Join(rets, ", ") + ` := p.service.` + method.Name + `(` + strings.Join(argParams, ", ") + `)`)
 			} else {
-				g.l(`p.service.` + method.Name + `(` + strings.Join(argParams, ", ") + `)`)
+				g.L(`p.service.` + method.Name + `(` + strings.Join(argParams, ", ") + `)`)
 			}
-			g.l(`response = ` + service.Name + method.Name + `Response{` + strings.Join(retParams, ", ") + `}`)
+
+			g.L(`response = ` + service.Name + method.Name + `Response{` + strings.Join(retParams, ", ") + `}`)
 		}
-		g.l(`default:`)
-		g.l(`fmt.Println("Unknown request type", reflect.TypeOf(request).String())`)
-		g.l(`}`)
-		g.nl()
-		g.l(`if p.callStatsHandler != nil {`)
-		g.l(`p.callStatsHandler(&gotsrpc.CallStats{`)
-		g.l(`Func: funcName,`)
-		g.l(`Package: "` + fullPackageName + `",`)
-		g.l(`Service: "` + service.Name + `",`)
-		g.l(`Execution: time.Since(start),`)
-		g.l(`})`)
-		g.l(`}`)
-		g.nl()
-		g.l(`return`)
-		g.l(`}`)
+
+		g.L(`default:`)
+		g.L(`fmt.Println("Unknown request type", reflect.TypeOf(request).String())`)
+		g.L(`}`)
+		g.NL()
+		g.L(`if p.callStatsHandler != nil {`)
+		g.L(`p.callStatsHandler(&gotsrpc.CallStats{`)
+		g.L(`Func: funcName,`)
+		g.L(`Package: "` + fullPackageName + `",`)
+		g.L(`Service: "` + service.Name + `",`)
+		g.L(`Execution: time.Since(start),`)
+		g.L(`})`)
+		g.L(`}`)
+		g.NL()
+		g.L(`return`)
+		g.L(`}`)
 	}
+
 	return nil
 }
 
-func renderGoRPCServiceClients(services ServiceList, fullPackageName string, packageName string, config *config.Target, g *code) error {
+func renderGoRPCServiceClients(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, g *Code) error {
 	aliases := map[string]string{
 		"crypto/tls":               "tls",
 		"github.com/valyala/gorpc": "gorpc",
@@ -633,18 +698,14 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 		if !config.IsGoRPC(service.Name) {
 			continue
 		}
+
 		for _, m := range service.Methods {
 			extractImports(m.Args, fullPackageName, aliases)
 			extractImports(m.Return, fullPackageName, aliases)
 		}
 	}
 
-	imports := ""
-	for packageName, alias := range aliases {
-		imports += alias + " \"" + packageName + "\"\n"
-	}
-
-	g.l(renderImports(aliases, packageName))
+	g.L(renderImports(aliases, packageName))
 
 	for _, service := range services {
 		if !config.IsGoRPC(service.Name) {
@@ -652,14 +713,12 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 		}
 
 		clientName := service.Name + "GoRPCClient"
-		// Client type
-		g.l(`
+		g.L(`
         type ` + clientName + ` struct {
         	Client *gorpc.Client
         }
 		`)
-		// Constructor
-		g.l(`
+		g.L(`
         func New` + clientName + `(addr string, tlsConfig *tls.Config) *` + clientName + ` {
         	client := &` + clientName + `{}
         	if tlsConfig == nil {
@@ -678,8 +737,8 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
         	tsc.Client.Stop()
       	}
 		`)
-		g.nl()
-		// Methods
+		g.NL()
+
 		for _, method := range service.Methods {
 			var (
 				args   []string
@@ -687,138 +746,171 @@ func renderGoRPCServiceClients(services ServiceList, fullPackageName string, pac
 			)
 			for _, a := range goMethodArgsWithoutHTTPContextRelatedArgs(method) {
 				args = append(args, ucfirst(a.Name)+`: `+a.Name)
-				params = append(params, a.Name+" "+a.Value.goType(aliases, fullPackageName))
+				params = append(params, a.Name+" "+valueGoType(a.Value, aliases, fullPackageName))
 			}
+
 			var (
 				rets    []string
 				returns []string
 			)
+
 			for i, r := range method.Return {
 				name := r.Name
 				if len(name) == 0 {
 					name = fmt.Sprintf("ret%s_%d", method.Name, i)
 				}
+
 				rets = append(rets, "rpcResp."+ucfirst(name))
-				returns = append(returns, name+" "+r.Value.goType(aliases, fullPackageName))
+				returns = append(returns, name+" "+valueGoType(r.Value, aliases, fullPackageName))
 			}
+
 			returns = append(returns, "clientErr error")
-			g.l(`func (tsc *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
-			g.l(`rpcReq := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
+			g.L(`func (tsc *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
+			g.L(`rpcReq := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
+
 			if len(rets) > 0 {
-				g.l(`rpcRes, rpcErr := tsc.Client.Call(rpcReq)`)
+				g.L(`rpcRes, rpcErr := tsc.Client.Call(rpcReq)`)
 			} else {
-				g.l(`_, rpcErr := tsc.Client.Call(rpcReq)`)
+				g.L(`_, rpcErr := tsc.Client.Call(rpcReq)`)
 			}
-			g.l(`if rpcErr != nil {`)
-			g.l(`clientErr = rpcErr`)
-			g.l(`return`)
-			g.l(`}`)
+
+			g.L(`if rpcErr != nil {`)
+			g.L(`clientErr = rpcErr`)
+			g.L(`return`)
+			g.L(`}`)
+
 			if len(rets) > 0 {
-				g.l(`rpcResp := rpcRes.(` + service.Name + method.Name + `Response)`)
-				g.l(`return ` + strings.Join(rets, ", ") + `, nil`)
+				g.L(`rpcResp := rpcRes.(` + service.Name + method.Name + `Response)`)
+				g.L(`return ` + strings.Join(rets, ", ") + `, nil`)
 			} else {
-				g.l(`return nil`)
+				g.L(`return nil`)
 			}
-			g.l(`}`)
-			g.nl()
+
+			g.L(`}`)
+			g.NL()
 		}
 	}
+
 	return nil
 }
 
-func RenderGoTSRPCProxies(services ServiceList, longPackageName, packageName string, config *config.Target, unions map[string][]string) (gocode string, err error) {
-	g := newCode("	")
+func RenderGoTSRPCProxies(services model.ServiceList, longPackageName, packageName string, config *config.Target, unions map[string][]string) (gocode string, err error) {
+	g := NewCode("	")
+
 	err = renderTSRPCServiceProxies(services, longPackageName, packageName, config, unions, g)
 	if err != nil {
 		return
 	}
-	gocode = g.string()
+
+	gocode = g.String()
+
 	return
 }
 
-func RenderGoTSRPCClients(services ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
-	g := newCode("	")
+func RenderGoTSRPCClients(services model.ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
+	g := NewCode("	")
+
 	err = renderTSRPCServiceClients(services, longPackageName, packageName, config, g)
 	if err != nil {
 		return
 	}
-	gocode = g.string()
+
+	gocode = g.String()
+
 	return
 }
 
-func RenderGoRPCProxies(services ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
-	g := newCode("	")
+func RenderGoRPCProxies(services model.ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
+	g := NewCode("	")
+
 	err = renderGoRPCServiceProxies(services, longPackageName, packageName, config, g)
 	if err != nil {
 		return
 	}
-	gocode = g.string()
+
+	gocode = g.String()
+
 	return
 }
 
-func RenderGoRPCClients(services ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
-	g := newCode("	")
+func RenderGoRPCClients(services model.ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
+	g := NewCode("	")
+
 	err = renderGoRPCServiceClients(services, longPackageName, packageName, config, g)
 	if err != nil {
 		return
 	}
-	gocode = g.string()
+
+	gocode = g.String()
+
 	return
 }
 
-func goMethodArgsWithoutHTTPContextRelatedArgs(m *Method) (filteredArgs []*Field) {
-	filteredArgs = []*Field{}
+func goMethodArgsWithoutHTTPContextRelatedArgs(m *model.Method) (filteredArgs []*model.Field) {
+	filteredArgs = []*model.Field{}
+
 	for argI, arg := range m.Args {
-		if argI == 0 && arg.Value.isHTTPResponseWriter() {
+		if argI == 0 && valueIsHTTPResponseWriter(arg.Value) {
 			continue
 		}
-		if argI == 1 && arg.Value.isHTTPRequest() {
+
+		if argI == 1 && valueIsHTTPRequest(arg.Value) {
 			continue
 		}
-		if argI == 0 && arg.Value.isContext() {
+
+		if argI == 0 && valueIsContext(arg.Value) {
 			continue
 		}
+
 		filteredArgs = append(filteredArgs, arg)
 	}
+
 	return
 }
 
-func renderInit(unions map[string][]string, aliases map[string]string, packageName string, g *code) {
+func renderInit(unions map[string][]string, aliases map[string]string, packageName string, g *Code) {
 	if len(unions) > 0 {
-		g.l("func init() {")
-		g.ind(1)
+		g.L("func init() {")
+		g.Ind(1)
+
 		var strs []string
+
 		for pkg, us := range unions {
 			for _, name := range us {
 				var str string
 				if packageName != pkg && aliases[pkg] != "" {
 					str += aliases[pkg] + "."
 				}
+
 				str += name
 				strs = append(strs, str)
 			}
 		}
+
 		sort.Strings(strs)
+
 		for _, str := range strs {
-			g.l("gotsrpc.MustRegisterUnionExt(" + str + "{})")
+			g.L("gotsrpc.MustRegisterUnionExt(" + str + "{})")
 		}
-		g.ind(-1)
-		g.l("}")
+
+		g.Ind(-1)
+		g.L("}")
 	}
 }
 
 func renderImports(aliases map[string]string, packageName string) string {
-	imports := ""
+	var imports strings.Builder
 	for importPath, alias := range aliases {
-		imports += alias + " \"" + importPath + "\"\n"
+		imports.WriteString(alias + " \"" + importPath + "\"\n")
 	}
+
 	return `
 		// Code generated by gotsrpc https://github.com/foomo/gotsrpc/v2 - DO NOT EDIT.
 
 		package ` + packageName + `
 
 		import (
-			` + imports + `
+			` + imports.String() + `
 		)
 	`
 }

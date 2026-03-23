@@ -20,5 +20,6 @@ func (r *ResponseWriter) Status() int {
 	if !r.wroteHeader {
 		return http.StatusOK
 	}
+
 	return r.status
 }

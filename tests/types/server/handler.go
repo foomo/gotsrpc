@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+
+	"github.com/foomo/gotsrpc/v2/tests/common"
 )
 
 type Handler struct{}
@@ -34,31 +36,39 @@ func (h *Handler) Uint32Ptr(_ context.Context, v *uint32) *uint32    { return v 
 func (h *Handler) Uint64Ptr(_ context.Context, v *uint64) *uint64    { return v }
 func (h *Handler) Float32Ptr(_ context.Context, v *float32) *float32 { return v }
 
-func (h *Handler) SimpleStruct(_ context.Context, v Simple) Simple                   { return v }
-func (h *Handler) NestedStruct(_ context.Context, v Nested) Nested                   { return v }
+func (h *Handler) SimpleStruct(_ context.Context, v common.Simple) common.Simple { return v }
+func (h *Handler) NestedStruct(_ context.Context, v common.Nested) common.Nested { return v }
+func (h *Handler) InlinedStruct(_ context.Context, v Inlined) Inlined            { return v }
+func (h *Handler) InlinedPtrStruct(_ context.Context, v InlinedPtr) InlinedPtr   { return v }
+func (h *Handler) InlinedMultipleStruct(_ context.Context, v InlinedMultiple) InlinedMultiple {
+	return v
+}
+func (h *Handler) InlinedMixedStruct(_ context.Context, v InlinedMixed) InlinedMixed { return v }
 func (h *Handler) StructWithPointers(_ context.Context, v WithPointers) WithPointers { return v }
 func (h *Handler) StructWithCollections(_ context.Context, v WithCollections) WithCollections {
 	return v
 }
 
-func (h *Handler) StringSlice(_ context.Context, v []string) []string       { return v }
-func (h *Handler) Int64Slice(_ context.Context, v []int64) []int64          { return v }
-func (h *Handler) SimpleSlice(_ context.Context, v []Simple) []Simple       { return v }
-func (h *Handler) SimplePtrSlice(_ context.Context, v []*Simple) []*Simple  { return v }
-func (h *Handler) StringSlice2D(_ context.Context, v [][]string) [][]string { return v }
-func (h *Handler) Int8Slice(_ context.Context, v []int8) []int8             { return v }
-func (h *Handler) Int16Slice(_ context.Context, v []int16) []int16          { return v }
-func (h *Handler) Int32Slice(_ context.Context, v []int32) []int32          { return v }
-func (h *Handler) UintSlice(_ context.Context, v []uint) []uint             { return v }
-func (h *Handler) Uint16Slice(_ context.Context, v []uint16) []uint16       { return v }
-func (h *Handler) Uint32Slice(_ context.Context, v []uint32) []uint32       { return v }
-func (h *Handler) Uint64Slice(_ context.Context, v []uint64) []uint64       { return v }
-func (h *Handler) Float32Slice(_ context.Context, v []float32) []float32    { return v }
+func (h *Handler) StringSlice(_ context.Context, v []string) []string                    { return v }
+func (h *Handler) Int64Slice(_ context.Context, v []int64) []int64                       { return v }
+func (h *Handler) SimpleSlice(_ context.Context, v []common.Simple) []common.Simple      { return v }
+func (h *Handler) SimplePtrSlice(_ context.Context, v []*common.Simple) []*common.Simple { return v }
+func (h *Handler) StringSlice2D(_ context.Context, v [][]string) [][]string              { return v }
+func (h *Handler) Int8Slice(_ context.Context, v []int8) []int8                          { return v }
+func (h *Handler) Int16Slice(_ context.Context, v []int16) []int16                       { return v }
+func (h *Handler) Int32Slice(_ context.Context, v []int32) []int32                       { return v }
+func (h *Handler) UintSlice(_ context.Context, v []uint) []uint                          { return v }
+func (h *Handler) Uint16Slice(_ context.Context, v []uint16) []uint16                    { return v }
+func (h *Handler) Uint32Slice(_ context.Context, v []uint32) []uint32                    { return v }
+func (h *Handler) Uint64Slice(_ context.Context, v []uint64) []uint64                    { return v }
+func (h *Handler) Float32Slice(_ context.Context, v []float32) []float32                 { return v }
 
 func (h *Handler) StringStringMap(_ context.Context, v map[string]string) map[string]string { return v }
 func (h *Handler) StringInt64Map(_ context.Context, v map[string]int64) map[string]int64    { return v }
-func (h *Handler) StringSimpleMap(_ context.Context, v map[string]Simple) map[string]Simple { return v }
-func (h *Handler) StringSimplePtrMap(_ context.Context, v map[string]*Simple) map[string]*Simple {
+func (h *Handler) StringSimpleMap(_ context.Context, v map[string]common.Simple) map[string]common.Simple {
+	return v
+}
+func (h *Handler) StringSimplePtrMap(_ context.Context, v map[string]*common.Simple) map[string]*common.Simple {
 	return v
 }
 func (h *Handler) StringStringSliceMap(_ context.Context, v map[string][]string) map[string][]string {
@@ -79,7 +89,7 @@ func (h *Handler) StringFloat32Map(_ context.Context, v map[string]float32) map[
 func (h *Handler) MapOfMaps(_ context.Context, v map[string]map[string]string) map[string]map[string]string {
 	return v
 }
-func (h *Handler) MapOfSimpleSlice(_ context.Context, v map[string][]Simple) map[string][]Simple {
+func (h *Handler) MapOfSimpleSlice(_ context.Context, v map[string][]common.Simple) map[string][]common.Simple {
 	return v
 }
 func (h *Handler) SliceOfMaps(_ context.Context, v []map[string]string) []map[string]string {
@@ -89,7 +99,7 @@ func (h *Handler) SliceOfMaps(_ context.Context, v []map[string]string) []map[st
 func (h *Handler) MultiArgs(_ context.Context, a string, b int64, c bool) (string, int64, bool) {
 	return a, b, c
 }
-func (h *Handler) MixedArgs(_ context.Context, s Simple, items []string, m map[string]int64) (Simple, []string, map[string]int64) {
+func (h *Handler) MixedArgs(_ context.Context, s common.Simple, items []string, m map[string]int64) (common.Simple, []string, map[string]int64) {
 	return s, items, m
 }
 

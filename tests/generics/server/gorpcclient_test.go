@@ -27,6 +27,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetStringResponse", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetStringResponse()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "hello", ret.Data)
@@ -34,6 +35,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetItemResponse", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetItemResponse()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "1", ret.Data.ID)
@@ -42,6 +44,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("SetItemResponse", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.SetItemResponse(common.Response[common.Item]{Data: common.Item{ID: "1", Name: "x"}})
 		require.NoError(t, clientErr)
 		assert.True(t, ret)
@@ -49,6 +52,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetPair", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetPair()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "hello", ret.First)
@@ -57,6 +61,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetPagedItems", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetPagedItems(1)
 		require.NoError(t, clientErr)
 		require.Len(t, ret.Items, 1)
@@ -66,6 +71,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetNestedGeneric", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetNestedGeneric()
 		require.NoError(t, clientErr)
 		require.Len(t, ret.Items, 1)
@@ -75,6 +81,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetResult", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetResult()
 		require.NoError(t, clientErr)
 		require.NotNil(t, ret.Value)
@@ -83,6 +90,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetContainer", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetContainer()
 		require.NoError(t, clientErr)
 		require.Contains(t, ret.Data, "key")

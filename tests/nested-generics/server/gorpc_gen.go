@@ -3,6 +3,7 @@
 package server
 
 import (
+	go_context "context"
 	tls "crypto/tls"
 	gob "encoding/gob"
 	fmt "fmt"
@@ -90,7 +91,10 @@ func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHa
 }
 
 func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
-	start := time.Now()
+	var start time.Time
+	if p.callStatsHandler != nil {
+		start = time.Now()
+	}
 
 	reqType := reflect.TypeOf(request).String()
 	funcNameParts := strings.Split(reqType, ".")
@@ -99,16 +103,16 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	switch funcName {
 	case "ServiceGetByKeyRequest":
 		req := request.(ServiceGetByKeyRequest)
-		retGetByKey_0 := p.service.GetByKey(nil, req.Key)
+		retGetByKey_0 := p.service.GetByKey(go_context.Background(), req.Key)
 		response = ServiceGetByKeyResponse{RetGetByKey_0: retGetByKey_0}
 	case "ServiceGetNameRequest":
-		retGetName_0 := p.service.GetName(nil)
+		retGetName_0 := p.service.GetName(go_context.Background())
 		response = ServiceGetNameResponse{RetGetName_0: retGetName_0}
 	case "ServiceGetValueRequest":
-		retGetValue_0 := p.service.GetValue(nil)
+		retGetValue_0 := p.service.GetValue(go_context.Background())
 		response = ServiceGetValueResponse{RetGetValue_0: retGetValue_0}
 	case "ServiceGetWrappedRequest":
-		retGetWrapped_0 := p.service.GetWrapped(nil)
+		retGetWrapped_0 := p.service.GetWrapped(go_context.Background())
 		response = ServiceGetWrappedResponse{RetGetWrapped_0: retGetWrapped_0}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())

@@ -20,9 +20,6 @@ tmp/
 ## Docker
 !.dockerignore
 
-## Lefthook
-!.lefthook.yaml
-
 ### Node
 !.npmrc
 **/node_modules/
@@ -38,6 +35,9 @@ tmp/
 
 ## Mise
 !.mise.toml
+
+## Lefthook
+!.lefthook.yaml
 
 ## Vitepress
 !docs/.vitepress

@@ -3,6 +3,7 @@
 package server
 
 import (
+	go_context "context"
 	tls "crypto/tls"
 	gob "encoding/gob"
 	fmt "fmt"
@@ -96,7 +97,10 @@ func (p *ExtendedServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCal
 }
 
 func (p *ExtendedServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
-	start := time.Now()
+	var start time.Time
+	if p.callStatsHandler != nil {
+		start = time.Now()
+	}
 
 	reqType := reflect.TypeOf(request).String()
 	funcNameParts := strings.Split(reqType, ".")
@@ -104,19 +108,19 @@ func (p *ExtendedServiceGoRPCProxy) handler(clientAddr string, request any) (res
 
 	switch funcName {
 	case "ExtendedServiceGetAgeRequest":
-		retGetAge_0 := p.service.GetAge(nil)
+		retGetAge_0 := p.service.GetAge(go_context.Background())
 		response = ExtendedServiceGetAgeResponse{RetGetAge_0: retGetAge_0}
 	case "ExtendedServiceGetFirstNameRequest":
-		retGetFirstName_0 := p.service.GetFirstName(nil)
+		retGetFirstName_0 := p.service.GetFirstName(go_context.Background())
 		response = ExtendedServiceGetFirstNameResponse{RetGetFirstName_0: retGetFirstName_0}
 	case "ExtendedServiceGetLastNameRequest":
-		retGetLastName_0 := p.service.GetLastName(nil)
+		retGetLastName_0 := p.service.GetLastName(go_context.Background())
 		response = ExtendedServiceGetLastNameResponse{RetGetLastName_0: retGetLastName_0}
 	case "ExtendedServiceGetMiddleNameRequest":
-		retGetMiddleName_0 := p.service.GetMiddleName(nil)
+		retGetMiddleName_0 := p.service.GetMiddleName(go_context.Background())
 		response = ExtendedServiceGetMiddleNameResponse{RetGetMiddleName_0: retGetMiddleName_0}
 	case "ExtendedServiceGetPersonRequest":
-		retGetPerson_0 := p.service.GetPerson(nil)
+		retGetPerson_0 := p.service.GetPerson(go_context.Background())
 		response = ExtendedServiceGetPersonResponse{RetGetPerson_0: retGetPerson_0}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())

@@ -1,23 +1,39 @@
 package server
 
-type Simple struct {
-	Bool    bool    `json:"bool"`
-	Int     int     `json:"int"`
-	Int64   int64   `json:"int64"`
-	Float64 float64 `json:"float64"`
-	String  string  `json:"string"`
+import (
+	"github.com/foomo/gotsrpc/v2/tests/common"
+)
+
+type Inlined struct {
+	common.Simple `json:",inline"`
+	Name          string `json:"name"`
 }
 
-type Nested struct {
-	Name  string `json:"name"`
-	Child Simple `json:"child"`
+// Cross-package pointer embed
+type InlinedPtr struct {
+	*common.Simple `json:",inline,omitempty"`
+	Name           string `json:"name"`
+}
+
+// Multiple cross-package embeds
+type InlinedMultiple struct {
+	common.Simple `json:",inline"`
+	common.Other  `json:",inline"`
+	Name          string `json:"name"`
+}
+
+// Mix of cross-package embed + regular fields with pointers
+type InlinedMixed struct {
+	common.Simple `json:",inline"`
+	Extra         *common.Other `json:"extra"`
+	Name          string        `json:"name"`
 }
 
 type WithPointers struct {
-	StrPtr   *string `json:"strPtr"`
-	Int64Ptr *int64  `json:"int64Ptr"`
-	BoolPtr  *bool   `json:"boolPtr"`
-	Child    *Simple `json:"child"`
+	StrPtr   *string        `json:"strPtr"`
+	Int64Ptr *int64         `json:"int64Ptr"`
+	BoolPtr  *bool          `json:"boolPtr"`
+	Child    *common.Simple `json:"child"`
 }
 
 type AllScalars struct {
@@ -75,10 +91,10 @@ type (
 )
 
 type WithCollections struct {
-	Strings   []string          `json:"strings"`
-	Int64s    []int64           `json:"int64s"`
-	Items     []Simple          `json:"items"`
-	ItemPtrs  []*Simple         `json:"itemPtrs"`
-	StringMap map[string]string `json:"stringMap"`
-	StructMap map[string]Simple `json:"structMap"`
+	Strings   []string                 `json:"strings"`
+	Int64s    []int64                  `json:"int64s"`
+	Items     []common.Simple          `json:"items"`
+	ItemPtrs  []*common.Simple         `json:"itemPtrs"`
+	StringMap map[string]string        `json:"stringMap"`
+	StructMap map[string]common.Simple `json:"structMap"`
 }

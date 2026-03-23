@@ -26,6 +26,7 @@ func TestNewExtendedServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetFirstName", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetFirstName()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "John", ret)
@@ -33,6 +34,7 @@ func TestNewExtendedServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetMiddleName", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetMiddleName()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "Michael", ret)
@@ -40,6 +42,7 @@ func TestNewExtendedServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetAge", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetAge()
 		require.NoError(t, clientErr)
 		assert.Equal(t, 30, ret)
@@ -47,6 +50,7 @@ func TestNewExtendedServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetLastName", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetLastName()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "Doe", ret)
@@ -54,6 +58,7 @@ func TestNewExtendedServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetPerson", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetPerson()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "John", ret.FirstName)

@@ -20,7 +20,7 @@ func (h *Handler) Bool(v bool) bool {
 }
 
 func (h *Handler) BoolPtr(v bool) *bool {
-	return &v
+	return new(v)
 }
 
 func (h *Handler) Int(v int) int {
@@ -63,7 +63,7 @@ func (h *Handler) Struct(v Struct) Struct {
 	return v
 }
 
-func (h *Handler) Interface(v interface{}) interface{} {
+func (h *Handler) Interface(v any) any {
 	return v
 }
 
@@ -107,39 +107,39 @@ func (h *Handler) StringSlice(v []string) []string {
 	return v
 }
 
-func (h *Handler) IntMap(v map[int]interface{}) map[int]interface{} {
+func (h *Handler) IntMap(v map[int]any) map[int]any {
 	return v
 }
 
-func (h *Handler) Int32Map(v map[int32]interface{}) map[int32]interface{} {
+func (h *Handler) Int32Map(v map[int32]any) map[int32]any {
 	return v
 }
 
-func (h *Handler) Int64Map(v map[int64]interface{}) map[int64]interface{} {
+func (h *Handler) Int64Map(v map[int64]any) map[int64]any {
 	return v
 }
 
-func (h *Handler) UIntMap(v map[uint]interface{}) map[uint]interface{} {
+func (h *Handler) UIntMap(v map[uint]any) map[uint]any {
 	return v
 }
 
-func (h *Handler) UInt32Map(v map[uint32]interface{}) map[uint32]interface{} {
+func (h *Handler) UInt32Map(v map[uint32]any) map[uint32]any {
 	return v
 }
 
-func (h *Handler) UInt64Map(v map[uint64]interface{}) map[uint64]interface{} {
+func (h *Handler) UInt64Map(v map[uint64]any) map[uint64]any {
 	return v
 }
 
-func (h *Handler) Float32Map(v map[float32]interface{}) map[float32]interface{} {
+func (h *Handler) Float32Map(v map[float32]any) map[float32]any {
 	return v
 }
 
-func (h *Handler) Float64Map(v map[float64]interface{}) map[float64]interface{} {
+func (h *Handler) Float64Map(v map[float64]any) map[float64]any {
 	return v
 }
 
-func (h *Handler) StringMap(v map[string]interface{}) map[string]interface{} {
+func (h *Handler) StringMap(v map[string]any) map[string]any {
 	return v
 }
 
@@ -215,7 +215,7 @@ func (h *Handler) StringTypeMapTyped(v StringTypeMapTyped) StringTypeMapTyped {
 	return v
 }
 
-func (h *Handler) InterfaceSlice(v []interface{}) []interface{} {
+func (h *Handler) InterfaceSlice(v []any) []any {
 	return v
 }
 

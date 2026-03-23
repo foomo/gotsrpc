@@ -3,6 +3,7 @@
 package server
 
 import (
+	"io"
 	http "net/http"
 	time "time"
 
@@ -41,10 +42,11 @@ func (p *ExtendedServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.R
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
+	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
+	callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)
+	if callStatsOk {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/v2/tests/nested/server"
 		callStats.Service = "ExtendedService"
@@ -56,11 +58,11 @@ func (p *ExtendedServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.R
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		getAgeRet := p.service.GetAge(r.Context())
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{getAgeRet}
@@ -76,11 +78,11 @@ func (p *ExtendedServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.R
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		getFirstNameRet := p.service.GetFirstName(r.Context())
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{getFirstNameRet}
@@ -96,11 +98,11 @@ func (p *ExtendedServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.R
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		getLastNameRet := p.service.GetLastName(r.Context())
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{getLastNameRet}
@@ -116,11 +118,11 @@ func (p *ExtendedServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.R
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		getMiddleNameRet := p.service.GetMiddleName(r.Context())
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{getMiddleNameRet}
@@ -136,11 +138,11 @@ func (p *ExtendedServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.R
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		getPersonRet := p.service.GetPerson(r.Context())
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{getPersonRet}

@@ -1,8 +1,6 @@
 package gotsrpc
 
-import (
-	"time"
-)
+import "time"
 
 type CallStats struct {
 	Package       string

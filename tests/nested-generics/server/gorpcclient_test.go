@@ -26,6 +26,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetValue", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetValue()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "1", ret.ID)
@@ -34,6 +35,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetWrapped", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetWrapped()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "1", ret.Data.ID)
@@ -42,6 +44,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetByKey", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetByKey("hello")
 		require.NoError(t, clientErr)
 		assert.Equal(t, 5, ret)
@@ -49,6 +52,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("GetName", func(t *testing.T) {
 		t.Parallel()
+
 		ret, clientErr := c.GetName()
 		require.NoError(t, clientErr)
 		assert.Equal(t, "service", ret)
