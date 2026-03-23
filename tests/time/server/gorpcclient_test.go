@@ -11,7 +11,7 @@ import (
 )
 
 func TestNewServiceGoRPCClient(t *testing.T) {
-	l, err := net.Listen("tcp", "127.0.0.1:0") //nolint:noctx
+	l, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	require.NoError(t, l.Close())
 

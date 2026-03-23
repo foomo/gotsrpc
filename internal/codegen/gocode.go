@@ -587,7 +587,13 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
 		`)
 		g.NL()
 		g.L(`func (p *` + proxyName + `) handler(clientAddr string, request any) (response any) {`)
-		g.L(`start := time.Now()`)
+
+		g.L(`var start time.Time`)
+		g.L(`if p.callStatsHandler != nil {`)
+		g.Ind(1)
+		g.L(`start = time.Now()`)
+		g.Ind(-1)
+		g.L(`}`)
 		g.NL()
 		g.L(`reqType := reflect.TypeOf(request).String()`)
 		g.L(`funcNameParts := strings.Split(reqType, ".")`)
@@ -601,8 +607,12 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
 			nonHTTPRelatedMethodArgs := goMethodArgsWithoutHTTPContextRelatedArgs(method)
 
 			diffNONHTTPRelatedMethodArgs := len(method.Args) - len(nonHTTPRelatedMethodArgs)
-			for range diffNONHTTPRelatedMethodArgs {
-				argParams = append(argParams, "nil")
+			for i := range diffNONHTTPRelatedMethodArgs {
+				if i == 0 && valueIsContext(method.Args[0].Value) {
+					argParams = append(argParams, "go_context.Background()")
+				} else {
+					argParams = append(argParams, "nil")
+				}
 			}
 
 			for _, a := range nonHTTPRelatedMethodArgs {

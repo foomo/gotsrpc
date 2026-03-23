@@ -19,7 +19,7 @@ func setupGoRPC(b *testing.B) *server.ServiceGoRPCClient {
 		return &http.Client{Timeout: 5 * time.Second} // or reusable client
 	})
 
-	l, err := net.Listen("tcp", "127.0.0.1:0") //nolint:noctx
+	l, err := (&net.ListenConfig{}).Listen(b.Context(), "tcp", "127.0.0.1:0")
 	if err != nil {
 		b.Fatal(err)
 	}
