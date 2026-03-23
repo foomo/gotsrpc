@@ -1,4 +1,4 @@
-package gotsrpc
+package gotsrpc //nolint:testpackage
 
 import (
 	"context"

@@ -11,15 +11,17 @@ import (
 )
 
 func TestNewServiceGoRPCClient(t *testing.T) {
-	l, err := net.Listen("tcp", "127.0.0.1:0") //nolint:noctx
+	l, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	require.NoError(t, l.Close())
 
 	s := server.NewServiceGoRPCProxy(l.Addr().String(), &server.Handler{}, nil)
+
 	require.NoError(t, s.Start())
 	defer s.Stop()
 
 	c := server.NewServiceGoRPCClient(l.Addr().String(), nil)
+
 	c.Start()
 	defer c.Stop()
 

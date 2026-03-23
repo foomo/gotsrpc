@@ -3,6 +3,7 @@
 package server
 
 import (
+	go_context "context"
 	tls "crypto/tls"
 	gob "encoding/gob"
 	fmt "fmt"
@@ -134,7 +135,10 @@ func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHa
 }
 
 func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
-	start := time.Now()
+	var start time.Time
+	if p.callStatsHandler != nil {
+		start = time.Now()
+	}
 
 	reqType := reflect.TypeOf(request).String()
 	funcNameParts := strings.Split(reqType, ".")
@@ -143,35 +147,35 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	switch funcName {
 	case "ServiceVariantARequest":
 		req := request.(ServiceVariantARequest)
-		r1 := p.service.VariantA(nil, req.I1)
+		r1 := p.service.VariantA(go_context.Background(), req.I1)
 		response = ServiceVariantAResponse{R1: r1}
 	case "ServiceVariantBRequest":
 		req := request.(ServiceVariantBRequest)
-		r1 := p.service.VariantB(nil, req.I1)
+		r1 := p.service.VariantB(go_context.Background(), req.I1)
 		response = ServiceVariantBResponse{R1: r1}
 	case "ServiceVariantCRequest":
 		req := request.(ServiceVariantCRequest)
-		r1 := p.service.VariantC(nil, req.I1)
+		r1 := p.service.VariantC(go_context.Background(), req.I1)
 		response = ServiceVariantCResponse{R1: r1}
 	case "ServiceVariantDRequest":
 		req := request.(ServiceVariantDRequest)
-		r1 := p.service.VariantD(nil, req.I1)
+		r1 := p.service.VariantD(go_context.Background(), req.I1)
 		response = ServiceVariantDResponse{R1: r1}
 	case "ServiceVariantERequest":
 		req := request.(ServiceVariantERequest)
-		r1 := p.service.VariantE(nil, req.I1)
+		r1 := p.service.VariantE(go_context.Background(), req.I1)
 		response = ServiceVariantEResponse{R1: r1}
 	case "ServiceVariantFRequest":
 		req := request.(ServiceVariantFRequest)
-		r1 := p.service.VariantF(nil, req.I1)
+		r1 := p.service.VariantF(go_context.Background(), req.I1)
 		response = ServiceVariantFResponse{R1: r1}
 	case "ServiceVariantGRequest":
 		req := request.(ServiceVariantGRequest)
-		r1 := p.service.VariantG(nil, req.I1)
+		r1 := p.service.VariantG(go_context.Background(), req.I1)
 		response = ServiceVariantGResponse{R1: r1}
 	case "ServiceVariantHRequest":
 		req := request.(ServiceVariantHRequest)
-		r1, r2, r3, r4 := p.service.VariantH(nil, req.I1, req.I2, req.I3, req.I4)
+		r1, r2, r3, r4 := p.service.VariantH(go_context.Background(), req.I1, req.I2, req.I3, req.I4)
 		response = ServiceVariantHResponse{R1: r1, R2: r2, R3: r3, R4: r4}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())

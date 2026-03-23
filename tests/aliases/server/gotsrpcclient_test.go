@@ -46,6 +46,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("TagsValue", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Tags{"go", "typescript", "rpc"}
 		ret, clientErr := c.TagsValue(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -54,6 +55,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("EntriesValue", func(t *testing.T) {
 		t.Parallel()
+
 		e := &server.Entry{
 			ID: "1", Status: server.StatusActive, Priority: server.PriorityHigh,
 			Rating: 4.5, Tags: server.Tags{"a"},
@@ -68,6 +70,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("RegistryValue", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Registry{
 			"first": {ID: "1", Status: server.StatusActive, Priority: server.PriorityLow, Rating: 1.0},
 		}
@@ -78,6 +81,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("IndexValue", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Index{
 			server.CategoryA: {{ID: "1", Status: server.StatusActive, Priority: server.PriorityLow, Rating: 1.0}},
 		}
@@ -88,6 +92,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("LabelMapValue", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.LabelMap{"key": "val", "env": "prod"}
 		ret, clientErr := c.LabelMapValue(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -96,6 +101,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("EntryValue", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Entry{
 			ID: "1", Status: server.StatusActive, Priority: server.PriorityHigh,
 			Rating: 4.5, Tags: server.Tags{"a", "b"},
@@ -107,6 +113,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("DetailValue", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Detail{
 			Name:        "test",
 			Description: "desc",
@@ -122,6 +129,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("DataRecordValue", func(t *testing.T) {
 		t.Parallel()
+
 		note := "some note"
 		v := server.DataRecord{
 			ID:     "1",
@@ -153,6 +161,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("MapOfEntries", func(t *testing.T) {
 		t.Parallel()
+
 		v := map[server.Category][]server.Entry{
 			server.CategoryA: {{ID: "1", Status: server.StatusActive, Priority: server.PriorityLow, Rating: 1.0}},
 		}
@@ -163,6 +172,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 
 	t.Run("DataRecordNil", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.DataRecord{
 			ID:     "1",
 			Title:  "minimal",

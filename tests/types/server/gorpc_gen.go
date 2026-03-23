@@ -3,6 +3,7 @@
 package server
 
 import (
+	go_context "context"
 	tls "crypto/tls"
 	gob "encoding/gob"
 	fmt "fmt"
@@ -11,6 +12,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -102,6 +104,34 @@ type (
 	}
 	ServiceFloat64Response struct {
 		RetFloat64_0 float64
+	}
+
+	ServiceInlinedMixedStructRequest struct {
+		V InlinedMixed
+	}
+	ServiceInlinedMixedStructResponse struct {
+		RetInlinedMixedStruct_0 InlinedMixed
+	}
+
+	ServiceInlinedMultipleStructRequest struct {
+		V InlinedMultiple
+	}
+	ServiceInlinedMultipleStructResponse struct {
+		RetInlinedMultipleStruct_0 InlinedMultiple
+	}
+
+	ServiceInlinedPtrStructRequest struct {
+		V InlinedPtr
+	}
+	ServiceInlinedPtrStructResponse struct {
+		RetInlinedPtrStruct_0 InlinedPtr
+	}
+
+	ServiceInlinedStructRequest struct {
+		V Inlined
+	}
+	ServiceInlinedStructResponse struct {
+		RetInlinedStruct_0 Inlined
 	}
 
 	ServiceIntRequest struct {
@@ -203,19 +233,19 @@ type (
 	}
 
 	ServiceMapOfSimpleSliceRequest struct {
-		V map[string][]Simple
+		V map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceMapOfSimpleSliceResponse struct {
-		RetMapOfSimpleSlice_0 map[string][]Simple
+		RetMapOfSimpleSlice_0 map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceMixedArgsRequest struct {
-		S     Simple
+		S     github_com_foomo_gotsrpc_v2_tests_common.Simple
 		Items []string
 		M     map[string]int64
 	}
 	ServiceMixedArgsResponse struct {
-		RetMixedArgs_0 Simple
+		RetMixedArgs_0 github_com_foomo_gotsrpc_v2_tests_common.Simple
 		RetMixedArgs_1 []string
 		RetMixedArgs_2 map[string]int64
 	}
@@ -232,10 +262,10 @@ type (
 	}
 
 	ServiceNestedStructRequest struct {
-		V Nested
+		V github_com_foomo_gotsrpc_v2_tests_common.Nested
 	}
 	ServiceNestedStructResponse struct {
-		RetNestedStruct_0 Nested
+		RetNestedStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Nested
 	}
 
 	ServiceObjectIDRequest struct {
@@ -246,24 +276,24 @@ type (
 	}
 
 	ServiceSimplePtrSliceRequest struct {
-		V []*Simple
+		V []*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceSimplePtrSliceResponse struct {
-		RetSimplePtrSlice_0 []*Simple
+		RetSimplePtrSlice_0 []*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceSimpleSliceRequest struct {
-		V []Simple
+		V []github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceSimpleSliceResponse struct {
-		RetSimpleSlice_0 []Simple
+		RetSimpleSlice_0 []github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceSimpleStructRequest struct {
-		V Simple
+		V github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceSimpleStructResponse struct {
-		RetSimpleStruct_0 Simple
+		RetSimpleStruct_0 github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceSliceOfMapsRequest struct {
@@ -323,17 +353,17 @@ type (
 	}
 
 	ServiceStringSimpleMapRequest struct {
-		V map[string]Simple
+		V map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceStringSimpleMapResponse struct {
-		RetStringSimpleMap_0 map[string]Simple
+		RetStringSimpleMap_0 map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceStringSimplePtrMapRequest struct {
-		V map[string]*Simple
+		V map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 	ServiceStringSimplePtrMapResponse struct {
-		RetStringSimplePtrMap_0 map[string]*Simple
+		RetStringSimplePtrMap_0 map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple
 	}
 
 	ServiceStringSliceRequest struct {
@@ -537,6 +567,14 @@ func init() {
 	gob.Register(ServiceFloat32SliceResponse{})
 	gob.Register(ServiceFloat64Request{})
 	gob.Register(ServiceFloat64Response{})
+	gob.Register(ServiceInlinedMixedStructRequest{})
+	gob.Register(ServiceInlinedMixedStructResponse{})
+	gob.Register(ServiceInlinedMultipleStructRequest{})
+	gob.Register(ServiceInlinedMultipleStructResponse{})
+	gob.Register(ServiceInlinedPtrStructRequest{})
+	gob.Register(ServiceInlinedPtrStructResponse{})
+	gob.Register(ServiceInlinedStructRequest{})
+	gob.Register(ServiceInlinedStructResponse{})
 	gob.Register(ServiceIntRequest{})
 	gob.Register(ServiceIntResponse{})
 	gob.Register(ServiceInt16Request{})
@@ -684,7 +722,10 @@ func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHa
 }
 
 func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
-	start := time.Now()
+	var start time.Time
+	if p.callStatsHandler != nil {
+		start = time.Now()
+	}
 
 	reqType := reflect.TypeOf(request).String()
 	funcNameParts := strings.Split(reqType, ".")
@@ -693,278 +734,294 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	switch funcName {
 	case "ServiceAllScalarMapsStructRequest":
 		req := request.(ServiceAllScalarMapsStructRequest)
-		retAllScalarMapsStruct_0 := p.service.AllScalarMapsStruct(nil, req.V)
+		retAllScalarMapsStruct_0 := p.service.AllScalarMapsStruct(go_context.Background(), req.V)
 		response = ServiceAllScalarMapsStructResponse{RetAllScalarMapsStruct_0: retAllScalarMapsStruct_0}
 	case "ServiceAllScalarPointersStructRequest":
 		req := request.(ServiceAllScalarPointersStructRequest)
-		retAllScalarPointersStruct_0 := p.service.AllScalarPointersStruct(nil, req.V)
+		retAllScalarPointersStruct_0 := p.service.AllScalarPointersStruct(go_context.Background(), req.V)
 		response = ServiceAllScalarPointersStructResponse{RetAllScalarPointersStruct_0: retAllScalarPointersStruct_0}
 	case "ServiceAllScalarSlicesStructRequest":
 		req := request.(ServiceAllScalarSlicesStructRequest)
-		retAllScalarSlicesStruct_0 := p.service.AllScalarSlicesStruct(nil, req.V)
+		retAllScalarSlicesStruct_0 := p.service.AllScalarSlicesStruct(go_context.Background(), req.V)
 		response = ServiceAllScalarSlicesStructResponse{RetAllScalarSlicesStruct_0: retAllScalarSlicesStruct_0}
 	case "ServiceAllScalarsStructRequest":
 		req := request.(ServiceAllScalarsStructRequest)
-		retAllScalarsStruct_0 := p.service.AllScalarsStruct(nil, req.V)
+		retAllScalarsStruct_0 := p.service.AllScalarsStruct(go_context.Background(), req.V)
 		response = ServiceAllScalarsStructResponse{RetAllScalarsStruct_0: retAllScalarsStruct_0}
 	case "ServiceBoolRequest":
 		req := request.(ServiceBoolRequest)
-		retBool_0 := p.service.Bool(nil, req.V)
+		retBool_0 := p.service.Bool(go_context.Background(), req.V)
 		response = ServiceBoolResponse{RetBool_0: retBool_0}
 	case "ServiceBoolPtrRequest":
 		req := request.(ServiceBoolPtrRequest)
-		retBoolPtr_0 := p.service.BoolPtr(nil, req.V)
+		retBoolPtr_0 := p.service.BoolPtr(go_context.Background(), req.V)
 		response = ServiceBoolPtrResponse{RetBoolPtr_0: retBoolPtr_0}
 	case "ServiceByteSliceRequest":
 		req := request.(ServiceByteSliceRequest)
-		retByteSlice_0 := p.service.ByteSlice(nil, req.V)
+		retByteSlice_0 := p.service.ByteSlice(go_context.Background(), req.V)
 		response = ServiceByteSliceResponse{RetByteSlice_0: retByteSlice_0}
 	case "ServiceEmptyRequest":
-		retEmpty_0 := p.service.Empty(nil)
+		retEmpty_0 := p.service.Empty(go_context.Background())
 		response = ServiceEmptyResponse{RetEmpty_0: retEmpty_0}
 	case "ServiceFloat32Request":
 		req := request.(ServiceFloat32Request)
-		retFloat32_0 := p.service.Float32(nil, req.V)
+		retFloat32_0 := p.service.Float32(go_context.Background(), req.V)
 		response = ServiceFloat32Response{RetFloat32_0: retFloat32_0}
 	case "ServiceFloat32PtrRequest":
 		req := request.(ServiceFloat32PtrRequest)
-		retFloat32Ptr_0 := p.service.Float32Ptr(nil, req.V)
+		retFloat32Ptr_0 := p.service.Float32Ptr(go_context.Background(), req.V)
 		response = ServiceFloat32PtrResponse{RetFloat32Ptr_0: retFloat32Ptr_0}
 	case "ServiceFloat32SliceRequest":
 		req := request.(ServiceFloat32SliceRequest)
-		retFloat32Slice_0 := p.service.Float32Slice(nil, req.V)
+		retFloat32Slice_0 := p.service.Float32Slice(go_context.Background(), req.V)
 		response = ServiceFloat32SliceResponse{RetFloat32Slice_0: retFloat32Slice_0}
 	case "ServiceFloat64Request":
 		req := request.(ServiceFloat64Request)
-		retFloat64_0 := p.service.Float64(nil, req.V)
+		retFloat64_0 := p.service.Float64(go_context.Background(), req.V)
 		response = ServiceFloat64Response{RetFloat64_0: retFloat64_0}
+	case "ServiceInlinedMixedStructRequest":
+		req := request.(ServiceInlinedMixedStructRequest)
+		retInlinedMixedStruct_0 := p.service.InlinedMixedStruct(go_context.Background(), req.V)
+		response = ServiceInlinedMixedStructResponse{RetInlinedMixedStruct_0: retInlinedMixedStruct_0}
+	case "ServiceInlinedMultipleStructRequest":
+		req := request.(ServiceInlinedMultipleStructRequest)
+		retInlinedMultipleStruct_0 := p.service.InlinedMultipleStruct(go_context.Background(), req.V)
+		response = ServiceInlinedMultipleStructResponse{RetInlinedMultipleStruct_0: retInlinedMultipleStruct_0}
+	case "ServiceInlinedPtrStructRequest":
+		req := request.(ServiceInlinedPtrStructRequest)
+		retInlinedPtrStruct_0 := p.service.InlinedPtrStruct(go_context.Background(), req.V)
+		response = ServiceInlinedPtrStructResponse{RetInlinedPtrStruct_0: retInlinedPtrStruct_0}
+	case "ServiceInlinedStructRequest":
+		req := request.(ServiceInlinedStructRequest)
+		retInlinedStruct_0 := p.service.InlinedStruct(go_context.Background(), req.V)
+		response = ServiceInlinedStructResponse{RetInlinedStruct_0: retInlinedStruct_0}
 	case "ServiceIntRequest":
 		req := request.(ServiceIntRequest)
-		retInt_0 := p.service.Int(nil, req.V)
+		retInt_0 := p.service.Int(go_context.Background(), req.V)
 		response = ServiceIntResponse{RetInt_0: retInt_0}
 	case "ServiceInt16Request":
 		req := request.(ServiceInt16Request)
-		retInt16_0 := p.service.Int16(nil, req.V)
+		retInt16_0 := p.service.Int16(go_context.Background(), req.V)
 		response = ServiceInt16Response{RetInt16_0: retInt16_0}
 	case "ServiceInt16PtrRequest":
 		req := request.(ServiceInt16PtrRequest)
-		retInt16Ptr_0 := p.service.Int16Ptr(nil, req.V)
+		retInt16Ptr_0 := p.service.Int16Ptr(go_context.Background(), req.V)
 		response = ServiceInt16PtrResponse{RetInt16Ptr_0: retInt16Ptr_0}
 	case "ServiceInt16SliceRequest":
 		req := request.(ServiceInt16SliceRequest)
-		retInt16Slice_0 := p.service.Int16Slice(nil, req.V)
+		retInt16Slice_0 := p.service.Int16Slice(go_context.Background(), req.V)
 		response = ServiceInt16SliceResponse{RetInt16Slice_0: retInt16Slice_0}
 	case "ServiceInt32Request":
 		req := request.(ServiceInt32Request)
-		retInt32_0 := p.service.Int32(nil, req.V)
+		retInt32_0 := p.service.Int32(go_context.Background(), req.V)
 		response = ServiceInt32Response{RetInt32_0: retInt32_0}
 	case "ServiceInt32PtrRequest":
 		req := request.(ServiceInt32PtrRequest)
-		retInt32Ptr_0 := p.service.Int32Ptr(nil, req.V)
+		retInt32Ptr_0 := p.service.Int32Ptr(go_context.Background(), req.V)
 		response = ServiceInt32PtrResponse{RetInt32Ptr_0: retInt32Ptr_0}
 	case "ServiceInt32SliceRequest":
 		req := request.(ServiceInt32SliceRequest)
-		retInt32Slice_0 := p.service.Int32Slice(nil, req.V)
+		retInt32Slice_0 := p.service.Int32Slice(go_context.Background(), req.V)
 		response = ServiceInt32SliceResponse{RetInt32Slice_0: retInt32Slice_0}
 	case "ServiceInt64Request":
 		req := request.(ServiceInt64Request)
-		retInt64_0 := p.service.Int64(nil, req.V)
+		retInt64_0 := p.service.Int64(go_context.Background(), req.V)
 		response = ServiceInt64Response{RetInt64_0: retInt64_0}
 	case "ServiceInt64PtrRequest":
 		req := request.(ServiceInt64PtrRequest)
-		retInt64Ptr_0 := p.service.Int64Ptr(nil, req.V)
+		retInt64Ptr_0 := p.service.Int64Ptr(go_context.Background(), req.V)
 		response = ServiceInt64PtrResponse{RetInt64Ptr_0: retInt64Ptr_0}
 	case "ServiceInt64SliceRequest":
 		req := request.(ServiceInt64SliceRequest)
-		retInt64Slice_0 := p.service.Int64Slice(nil, req.V)
+		retInt64Slice_0 := p.service.Int64Slice(go_context.Background(), req.V)
 		response = ServiceInt64SliceResponse{RetInt64Slice_0: retInt64Slice_0}
 	case "ServiceInt8Request":
 		req := request.(ServiceInt8Request)
-		retInt8_0 := p.service.Int8(nil, req.V)
+		retInt8_0 := p.service.Int8(go_context.Background(), req.V)
 		response = ServiceInt8Response{RetInt8_0: retInt8_0}
 	case "ServiceInt8PtrRequest":
 		req := request.(ServiceInt8PtrRequest)
-		retInt8Ptr_0 := p.service.Int8Ptr(nil, req.V)
+		retInt8Ptr_0 := p.service.Int8Ptr(go_context.Background(), req.V)
 		response = ServiceInt8PtrResponse{RetInt8Ptr_0: retInt8Ptr_0}
 	case "ServiceInt8SliceRequest":
 		req := request.(ServiceInt8SliceRequest)
-		retInt8Slice_0 := p.service.Int8Slice(nil, req.V)
+		retInt8Slice_0 := p.service.Int8Slice(go_context.Background(), req.V)
 		response = ServiceInt8SliceResponse{RetInt8Slice_0: retInt8Slice_0}
 	case "ServiceMapOfMapsRequest":
 		req := request.(ServiceMapOfMapsRequest)
-		retMapOfMaps_0 := p.service.MapOfMaps(nil, req.V)
+		retMapOfMaps_0 := p.service.MapOfMaps(go_context.Background(), req.V)
 		response = ServiceMapOfMapsResponse{RetMapOfMaps_0: retMapOfMaps_0}
 	case "ServiceMapOfSimpleSliceRequest":
 		req := request.(ServiceMapOfSimpleSliceRequest)
-		retMapOfSimpleSlice_0 := p.service.MapOfSimpleSlice(nil, req.V)
+		retMapOfSimpleSlice_0 := p.service.MapOfSimpleSlice(go_context.Background(), req.V)
 		response = ServiceMapOfSimpleSliceResponse{RetMapOfSimpleSlice_0: retMapOfSimpleSlice_0}
 	case "ServiceMixedArgsRequest":
 		req := request.(ServiceMixedArgsRequest)
-		retMixedArgs_0, retMixedArgs_1, retMixedArgs_2 := p.service.MixedArgs(nil, req.S, req.Items, req.M)
+		retMixedArgs_0, retMixedArgs_1, retMixedArgs_2 := p.service.MixedArgs(go_context.Background(), req.S, req.Items, req.M)
 		response = ServiceMixedArgsResponse{RetMixedArgs_0: retMixedArgs_0, RetMixedArgs_1: retMixedArgs_1, RetMixedArgs_2: retMixedArgs_2}
 	case "ServiceMultiArgsRequest":
 		req := request.(ServiceMultiArgsRequest)
-		retMultiArgs_0, retMultiArgs_1, retMultiArgs_2 := p.service.MultiArgs(nil, req.A, req.B, req.C)
+		retMultiArgs_0, retMultiArgs_1, retMultiArgs_2 := p.service.MultiArgs(go_context.Background(), req.A, req.B, req.C)
 		response = ServiceMultiArgsResponse{RetMultiArgs_0: retMultiArgs_0, RetMultiArgs_1: retMultiArgs_1, RetMultiArgs_2: retMultiArgs_2}
 	case "ServiceNestedStructRequest":
 		req := request.(ServiceNestedStructRequest)
-		retNestedStruct_0 := p.service.NestedStruct(nil, req.V)
+		retNestedStruct_0 := p.service.NestedStruct(go_context.Background(), req.V)
 		response = ServiceNestedStructResponse{RetNestedStruct_0: retNestedStruct_0}
 	case "ServiceObjectIDRequest":
 		req := request.(ServiceObjectIDRequest)
-		retObjectID_0 := p.service.ObjectID(nil, req.V)
+		retObjectID_0 := p.service.ObjectID(go_context.Background(), req.V)
 		response = ServiceObjectIDResponse{RetObjectID_0: retObjectID_0}
 	case "ServiceSimplePtrSliceRequest":
 		req := request.(ServiceSimplePtrSliceRequest)
-		retSimplePtrSlice_0 := p.service.SimplePtrSlice(nil, req.V)
+		retSimplePtrSlice_0 := p.service.SimplePtrSlice(go_context.Background(), req.V)
 		response = ServiceSimplePtrSliceResponse{RetSimplePtrSlice_0: retSimplePtrSlice_0}
 	case "ServiceSimpleSliceRequest":
 		req := request.(ServiceSimpleSliceRequest)
-		retSimpleSlice_0 := p.service.SimpleSlice(nil, req.V)
+		retSimpleSlice_0 := p.service.SimpleSlice(go_context.Background(), req.V)
 		response = ServiceSimpleSliceResponse{RetSimpleSlice_0: retSimpleSlice_0}
 	case "ServiceSimpleStructRequest":
 		req := request.(ServiceSimpleStructRequest)
-		retSimpleStruct_0 := p.service.SimpleStruct(nil, req.V)
+		retSimpleStruct_0 := p.service.SimpleStruct(go_context.Background(), req.V)
 		response = ServiceSimpleStructResponse{RetSimpleStruct_0: retSimpleStruct_0}
 	case "ServiceSliceOfMapsRequest":
 		req := request.(ServiceSliceOfMapsRequest)
-		retSliceOfMaps_0 := p.service.SliceOfMaps(nil, req.V)
+		retSliceOfMaps_0 := p.service.SliceOfMaps(go_context.Background(), req.V)
 		response = ServiceSliceOfMapsResponse{RetSliceOfMaps_0: retSliceOfMaps_0}
 	case "ServiceStringRequest":
 		req := request.(ServiceStringRequest)
-		retString_0 := p.service.String(nil, req.V)
+		retString_0 := p.service.String(go_context.Background(), req.V)
 		response = ServiceStringResponse{RetString_0: retString_0}
 	case "ServiceStringFloat32MapRequest":
 		req := request.(ServiceStringFloat32MapRequest)
-		retStringFloat32Map_0 := p.service.StringFloat32Map(nil, req.V)
+		retStringFloat32Map_0 := p.service.StringFloat32Map(go_context.Background(), req.V)
 		response = ServiceStringFloat32MapResponse{RetStringFloat32Map_0: retStringFloat32Map_0}
 	case "ServiceStringInt16MapRequest":
 		req := request.(ServiceStringInt16MapRequest)
-		retStringInt16Map_0 := p.service.StringInt16Map(nil, req.V)
+		retStringInt16Map_0 := p.service.StringInt16Map(go_context.Background(), req.V)
 		response = ServiceStringInt16MapResponse{RetStringInt16Map_0: retStringInt16Map_0}
 	case "ServiceStringInt32MapRequest":
 		req := request.(ServiceStringInt32MapRequest)
-		retStringInt32Map_0 := p.service.StringInt32Map(nil, req.V)
+		retStringInt32Map_0 := p.service.StringInt32Map(go_context.Background(), req.V)
 		response = ServiceStringInt32MapResponse{RetStringInt32Map_0: retStringInt32Map_0}
 	case "ServiceStringInt64MapRequest":
 		req := request.(ServiceStringInt64MapRequest)
-		retStringInt64Map_0 := p.service.StringInt64Map(nil, req.V)
+		retStringInt64Map_0 := p.service.StringInt64Map(go_context.Background(), req.V)
 		response = ServiceStringInt64MapResponse{RetStringInt64Map_0: retStringInt64Map_0}
 	case "ServiceStringInt8MapRequest":
 		req := request.(ServiceStringInt8MapRequest)
-		retStringInt8Map_0 := p.service.StringInt8Map(nil, req.V)
+		retStringInt8Map_0 := p.service.StringInt8Map(go_context.Background(), req.V)
 		response = ServiceStringInt8MapResponse{RetStringInt8Map_0: retStringInt8Map_0}
 	case "ServiceStringPtrRequest":
 		req := request.(ServiceStringPtrRequest)
-		retStringPtr_0 := p.service.StringPtr(nil, req.V)
+		retStringPtr_0 := p.service.StringPtr(go_context.Background(), req.V)
 		response = ServiceStringPtrResponse{RetStringPtr_0: retStringPtr_0}
 	case "ServiceStringSimpleMapRequest":
 		req := request.(ServiceStringSimpleMapRequest)
-		retStringSimpleMap_0 := p.service.StringSimpleMap(nil, req.V)
+		retStringSimpleMap_0 := p.service.StringSimpleMap(go_context.Background(), req.V)
 		response = ServiceStringSimpleMapResponse{RetStringSimpleMap_0: retStringSimpleMap_0}
 	case "ServiceStringSimplePtrMapRequest":
 		req := request.(ServiceStringSimplePtrMapRequest)
-		retStringSimplePtrMap_0 := p.service.StringSimplePtrMap(nil, req.V)
+		retStringSimplePtrMap_0 := p.service.StringSimplePtrMap(go_context.Background(), req.V)
 		response = ServiceStringSimplePtrMapResponse{RetStringSimplePtrMap_0: retStringSimplePtrMap_0}
 	case "ServiceStringSliceRequest":
 		req := request.(ServiceStringSliceRequest)
-		retStringSlice_0 := p.service.StringSlice(nil, req.V)
+		retStringSlice_0 := p.service.StringSlice(go_context.Background(), req.V)
 		response = ServiceStringSliceResponse{RetStringSlice_0: retStringSlice_0}
 	case "ServiceStringSlice2DRequest":
 		req := request.(ServiceStringSlice2DRequest)
-		retStringSlice2D_0 := p.service.StringSlice2D(nil, req.V)
+		retStringSlice2D_0 := p.service.StringSlice2D(go_context.Background(), req.V)
 		response = ServiceStringSlice2DResponse{RetStringSlice2D_0: retStringSlice2D_0}
 	case "ServiceStringStringMapRequest":
 		req := request.(ServiceStringStringMapRequest)
-		retStringStringMap_0 := p.service.StringStringMap(nil, req.V)
+		retStringStringMap_0 := p.service.StringStringMap(go_context.Background(), req.V)
 		response = ServiceStringStringMapResponse{RetStringStringMap_0: retStringStringMap_0}
 	case "ServiceStringStringSliceMapRequest":
 		req := request.(ServiceStringStringSliceMapRequest)
-		retStringStringSliceMap_0 := p.service.StringStringSliceMap(nil, req.V)
+		retStringStringSliceMap_0 := p.service.StringStringSliceMap(go_context.Background(), req.V)
 		response = ServiceStringStringSliceMapResponse{RetStringStringSliceMap_0: retStringStringSliceMap_0}
 	case "ServiceStringUint16MapRequest":
 		req := request.(ServiceStringUint16MapRequest)
-		retStringUint16Map_0 := p.service.StringUint16Map(nil, req.V)
+		retStringUint16Map_0 := p.service.StringUint16Map(go_context.Background(), req.V)
 		response = ServiceStringUint16MapResponse{RetStringUint16Map_0: retStringUint16Map_0}
 	case "ServiceStringUint32MapRequest":
 		req := request.(ServiceStringUint32MapRequest)
-		retStringUint32Map_0 := p.service.StringUint32Map(nil, req.V)
+		retStringUint32Map_0 := p.service.StringUint32Map(go_context.Background(), req.V)
 		response = ServiceStringUint32MapResponse{RetStringUint32Map_0: retStringUint32Map_0}
 	case "ServiceStringUint64MapRequest":
 		req := request.(ServiceStringUint64MapRequest)
-		retStringUint64Map_0 := p.service.StringUint64Map(nil, req.V)
+		retStringUint64Map_0 := p.service.StringUint64Map(go_context.Background(), req.V)
 		response = ServiceStringUint64MapResponse{RetStringUint64Map_0: retStringUint64Map_0}
 	case "ServiceStringUint8MapRequest":
 		req := request.(ServiceStringUint8MapRequest)
-		retStringUint8Map_0 := p.service.StringUint8Map(nil, req.V)
+		retStringUint8Map_0 := p.service.StringUint8Map(go_context.Background(), req.V)
 		response = ServiceStringUint8MapResponse{RetStringUint8Map_0: retStringUint8Map_0}
 	case "ServiceStringUintMapRequest":
 		req := request.(ServiceStringUintMapRequest)
-		retStringUintMap_0 := p.service.StringUintMap(nil, req.V)
+		retStringUintMap_0 := p.service.StringUintMap(go_context.Background(), req.V)
 		response = ServiceStringUintMapResponse{RetStringUintMap_0: retStringUintMap_0}
 	case "ServiceStructWithCollectionsRequest":
 		req := request.(ServiceStructWithCollectionsRequest)
-		retStructWithCollections_0 := p.service.StructWithCollections(nil, req.V)
+		retStructWithCollections_0 := p.service.StructWithCollections(go_context.Background(), req.V)
 		response = ServiceStructWithCollectionsResponse{RetStructWithCollections_0: retStructWithCollections_0}
 	case "ServiceStructWithPointersRequest":
 		req := request.(ServiceStructWithPointersRequest)
-		retStructWithPointers_0 := p.service.StructWithPointers(nil, req.V)
+		retStructWithPointers_0 := p.service.StructWithPointers(go_context.Background(), req.V)
 		response = ServiceStructWithPointersResponse{RetStructWithPointers_0: retStructWithPointers_0}
 	case "ServiceUintRequest":
 		req := request.(ServiceUintRequest)
-		retUint_0 := p.service.Uint(nil, req.V)
+		retUint_0 := p.service.Uint(go_context.Background(), req.V)
 		response = ServiceUintResponse{RetUint_0: retUint_0}
 	case "ServiceUint16Request":
 		req := request.(ServiceUint16Request)
-		retUint16_0 := p.service.Uint16(nil, req.V)
+		retUint16_0 := p.service.Uint16(go_context.Background(), req.V)
 		response = ServiceUint16Response{RetUint16_0: retUint16_0}
 	case "ServiceUint16PtrRequest":
 		req := request.(ServiceUint16PtrRequest)
-		retUint16Ptr_0 := p.service.Uint16Ptr(nil, req.V)
+		retUint16Ptr_0 := p.service.Uint16Ptr(go_context.Background(), req.V)
 		response = ServiceUint16PtrResponse{RetUint16Ptr_0: retUint16Ptr_0}
 	case "ServiceUint16SliceRequest":
 		req := request.(ServiceUint16SliceRequest)
-		retUint16Slice_0 := p.service.Uint16Slice(nil, req.V)
+		retUint16Slice_0 := p.service.Uint16Slice(go_context.Background(), req.V)
 		response = ServiceUint16SliceResponse{RetUint16Slice_0: retUint16Slice_0}
 	case "ServiceUint32Request":
 		req := request.(ServiceUint32Request)
-		retUint32_0 := p.service.Uint32(nil, req.V)
+		retUint32_0 := p.service.Uint32(go_context.Background(), req.V)
 		response = ServiceUint32Response{RetUint32_0: retUint32_0}
 	case "ServiceUint32PtrRequest":
 		req := request.(ServiceUint32PtrRequest)
-		retUint32Ptr_0 := p.service.Uint32Ptr(nil, req.V)
+		retUint32Ptr_0 := p.service.Uint32Ptr(go_context.Background(), req.V)
 		response = ServiceUint32PtrResponse{RetUint32Ptr_0: retUint32Ptr_0}
 	case "ServiceUint32SliceRequest":
 		req := request.(ServiceUint32SliceRequest)
-		retUint32Slice_0 := p.service.Uint32Slice(nil, req.V)
+		retUint32Slice_0 := p.service.Uint32Slice(go_context.Background(), req.V)
 		response = ServiceUint32SliceResponse{RetUint32Slice_0: retUint32Slice_0}
 	case "ServiceUint64Request":
 		req := request.(ServiceUint64Request)
-		retUint64_0 := p.service.Uint64(nil, req.V)
+		retUint64_0 := p.service.Uint64(go_context.Background(), req.V)
 		response = ServiceUint64Response{RetUint64_0: retUint64_0}
 	case "ServiceUint64PtrRequest":
 		req := request.(ServiceUint64PtrRequest)
-		retUint64Ptr_0 := p.service.Uint64Ptr(nil, req.V)
+		retUint64Ptr_0 := p.service.Uint64Ptr(go_context.Background(), req.V)
 		response = ServiceUint64PtrResponse{RetUint64Ptr_0: retUint64Ptr_0}
 	case "ServiceUint64SliceRequest":
 		req := request.(ServiceUint64SliceRequest)
-		retUint64Slice_0 := p.service.Uint64Slice(nil, req.V)
+		retUint64Slice_0 := p.service.Uint64Slice(go_context.Background(), req.V)
 		response = ServiceUint64SliceResponse{RetUint64Slice_0: retUint64Slice_0}
 	case "ServiceUint8Request":
 		req := request.(ServiceUint8Request)
-		retUint8_0 := p.service.Uint8(nil, req.V)
+		retUint8_0 := p.service.Uint8(go_context.Background(), req.V)
 		response = ServiceUint8Response{RetUint8_0: retUint8_0}
 	case "ServiceUint8PtrRequest":
 		req := request.(ServiceUint8PtrRequest)
-		retUint8Ptr_0 := p.service.Uint8Ptr(nil, req.V)
+		retUint8Ptr_0 := p.service.Uint8Ptr(go_context.Background(), req.V)
 		response = ServiceUint8PtrResponse{RetUint8Ptr_0: retUint8Ptr_0}
 	case "ServiceUintPtrRequest":
 		req := request.(ServiceUintPtrRequest)
-		retUintPtr_0 := p.service.UintPtr(nil, req.V)
+		retUintPtr_0 := p.service.UintPtr(go_context.Background(), req.V)
 		response = ServiceUintPtrResponse{RetUintPtr_0: retUintPtr_0}
 	case "ServiceUintSliceRequest":
 		req := request.(ServiceUintSliceRequest)
-		retUintSlice_0 := p.service.UintSlice(nil, req.V)
+		retUintSlice_0 := p.service.UintSlice(go_context.Background(), req.V)
 		response = ServiceUintSliceResponse{RetUintSlice_0: retUintSlice_0}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())

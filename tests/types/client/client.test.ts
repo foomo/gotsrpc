@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
-import transport from "../../lib/transport";
+import transport from "../../common/transport";
 import { ServiceClient } from "./client.ts";
+import type {InlinedMultiple} from "./vo.ts";
 
 const client = new ServiceClient(
 	transport(`${process.env.GOTSRPC_SERVER_URL}${ServiceClient.defaultEndpoint}`)
@@ -160,6 +161,26 @@ test("simpleStruct", async () => {
 test("nestedStruct", async () => {
 	const v = { name: "parent", child: { bool: true, int: 1, int64: 2, float64: 3.0, string: "child" } };
 	expect(await client.nestedStruct(v)).toEqual(v);
+});
+
+test("inlinedStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent" };
+	expect(await client.inlinedStruct(v)).toEqual(v);
+});
+
+test("inlinedPtrStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent" };
+	expect(await client.inlinedPtrStruct(v)).toEqual(v);
+});
+
+test("inlinedMultipleStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent",  label: "label"};
+	expect(await client.inlinedMultipleStruct(v)).toEqual(v);
+});
+
+test("inlinedMixedStruct", async () => {
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", extra: { label: "label" }, name: "name" };
+	expect(await client.inlinedMixedStruct(v)).toEqual(v);
 });
 
 test("structWithPointers", async () => {

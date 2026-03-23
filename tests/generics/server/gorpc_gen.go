@@ -3,6 +3,7 @@
 package server
 
 import (
+	go_context "context"
 	tls "crypto/tls"
 	gob "encoding/gob"
 	fmt "fmt"
@@ -122,7 +123,10 @@ func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHa
 }
 
 func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
-	start := time.Now()
+	var start time.Time
+	if p.callStatsHandler != nil {
+		start = time.Now()
+	}
 
 	reqType := reflect.TypeOf(request).String()
 	funcNameParts := strings.Split(reqType, ".")
@@ -130,30 +134,30 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 
 	switch funcName {
 	case "ServiceGetContainerRequest":
-		retGetContainer_0 := p.service.GetContainer(nil)
+		retGetContainer_0 := p.service.GetContainer(go_context.Background())
 		response = ServiceGetContainerResponse{RetGetContainer_0: retGetContainer_0}
 	case "ServiceGetItemResponseRequest":
-		retGetItemResponse_0 := p.service.GetItemResponse(nil)
+		retGetItemResponse_0 := p.service.GetItemResponse(go_context.Background())
 		response = ServiceGetItemResponseResponse{RetGetItemResponse_0: retGetItemResponse_0}
 	case "ServiceGetNestedGenericRequest":
-		retGetNestedGeneric_0 := p.service.GetNestedGeneric(nil)
+		retGetNestedGeneric_0 := p.service.GetNestedGeneric(go_context.Background())
 		response = ServiceGetNestedGenericResponse{RetGetNestedGeneric_0: retGetNestedGeneric_0}
 	case "ServiceGetPagedItemsRequest":
 		req := request.(ServiceGetPagedItemsRequest)
-		retGetPagedItems_0 := p.service.GetPagedItems(nil, req.Page)
+		retGetPagedItems_0 := p.service.GetPagedItems(go_context.Background(), req.Page)
 		response = ServiceGetPagedItemsResponse{RetGetPagedItems_0: retGetPagedItems_0}
 	case "ServiceGetPairRequest":
-		retGetPair_0 := p.service.GetPair(nil)
+		retGetPair_0 := p.service.GetPair(go_context.Background())
 		response = ServiceGetPairResponse{RetGetPair_0: retGetPair_0}
 	case "ServiceGetResultRequest":
-		retGetResult_0 := p.service.GetResult(nil)
+		retGetResult_0 := p.service.GetResult(go_context.Background())
 		response = ServiceGetResultResponse{RetGetResult_0: retGetResult_0}
 	case "ServiceGetStringResponseRequest":
-		retGetStringResponse_0 := p.service.GetStringResponse(nil)
+		retGetStringResponse_0 := p.service.GetStringResponse(go_context.Background())
 		response = ServiceGetStringResponseResponse{RetGetStringResponse_0: retGetStringResponse_0}
 	case "ServiceSetItemResponseRequest":
 		req := request.(ServiceSetItemResponseRequest)
-		retSetItemResponse_0 := p.service.SetItemResponse(nil, req.Req)
+		retSetItemResponse_0 := p.service.SetItemResponse(go_context.Background(), req.Req)
 		response = ServiceSetItemResponseResponse{RetSetItemResponse_0: retSetItemResponse_0}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())

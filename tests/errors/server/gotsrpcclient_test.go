@@ -43,6 +43,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		t.Parallel()
 		serviceErr, clientErr := c.Scalar(t.Context())
 		require.NoError(t, clientErr)
+
 		var err *server.ScalarError
 		require.ErrorAs(t, serviceErr, &err)
 		assert.Equal(t, "one", err.String())

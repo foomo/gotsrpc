@@ -14,7 +14,7 @@ import (
 
 func init() {
 	// set custom monitor handler
-	gotsrpc.Monitor = func(w http.ResponseWriter, r *http.Request, args, rets []interface{}, stats *gotsrpc.CallStats) {
+	gotsrpc.Monitor = func(w http.ResponseWriter, r *http.Request, args, rets []any, stats *gotsrpc.CallStats) {
 		// you might want to use channels or routines here as to not block the actual call
 		go func(stats *gotsrpc.CallStats) {
 			fmt.Printf(
@@ -42,6 +42,7 @@ func main() {
 
 	go func() {
 		time.Sleep(time.Second)
+
 		_ = exec.CommandContext(ctx, "open", "http://127.0.0.1:3000").Run()
 		call(ctx)
 	}()
