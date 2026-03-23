@@ -17,6 +17,8 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 	c := server.NewDefaultServiceGoTSRPCClient(s.URL)
 	t.Cleanup(s.Close)
 
+	// Scalars
+
 	t.Run("Bool", func(t *testing.T) {
 		t.Parallel()
 		ret, clientErr := c.Bool(t.Context(), true)
@@ -29,27 +31,6 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		ret, clientErr := c.Int(t.Context(), 42)
 		require.NoError(t, clientErr)
 		assert.Equal(t, 42, ret)
-	})
-
-	t.Run("Int64", func(t *testing.T) {
-		t.Parallel()
-		ret, clientErr := c.Int64(t.Context(), int64(9876543210))
-		require.NoError(t, clientErr)
-		assert.Equal(t, int64(9876543210), ret)
-	})
-
-	t.Run("Float64", func(t *testing.T) {
-		t.Parallel()
-		ret, clientErr := c.Float64(t.Context(), 3.14159)
-		require.NoError(t, clientErr)
-		assert.InDelta(t, 3.14159, ret, 1e-10)
-	})
-
-	t.Run("String", func(t *testing.T) {
-		t.Parallel()
-		ret, clientErr := c.String(t.Context(), "hello world")
-		require.NoError(t, clientErr)
-		assert.Equal(t, "hello world", ret)
 	})
 
 	t.Run("Int8", func(t *testing.T) {
@@ -71,6 +52,13 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		ret, clientErr := c.Int32(t.Context(), 2147483647)
 		require.NoError(t, clientErr)
 		assert.Equal(t, int32(2147483647), ret)
+	})
+
+	t.Run("Int64", func(t *testing.T) {
+		t.Parallel()
+		ret, clientErr := c.Int64(t.Context(), int64(9876543210))
+		require.NoError(t, clientErr)
+		assert.Equal(t, int64(9876543210), ret)
 	})
 
 	t.Run("Uint", func(t *testing.T) {
@@ -115,26 +103,21 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		assert.InDelta(t, float32(3.14), ret, 1e-5)
 	})
 
-	t.Run("AllScalarsStruct", func(t *testing.T) {
+	t.Run("Float64", func(t *testing.T) {
 		t.Parallel()
-
-		v := server.AllScalars{
-			Int8: 127, Int16: 32767, Int32: 2147483647,
-			Uint: 42, Uint8: 255, Uint16: 65535, Uint32: 4294967295, Uint64: 9876543210,
-			Float32: 3.14,
-		}
-		ret, clientErr := c.AllScalarsStruct(t.Context(), v)
+		ret, clientErr := c.Float64(t.Context(), 3.14159)
 		require.NoError(t, clientErr)
-		assert.Equal(t, v.Int8, ret.Int8)
-		assert.Equal(t, v.Int16, ret.Int16)
-		assert.Equal(t, v.Int32, ret.Int32)
-		assert.Equal(t, v.Uint, ret.Uint)
-		assert.Equal(t, v.Uint8, ret.Uint8)
-		assert.Equal(t, v.Uint16, ret.Uint16)
-		assert.Equal(t, v.Uint32, ret.Uint32)
-		assert.Equal(t, v.Uint64, ret.Uint64)
-		assert.InDelta(t, v.Float32, ret.Float32, 1e-5)
+		assert.InDelta(t, 3.14159, ret, 1e-10)
 	})
+
+	t.Run("String", func(t *testing.T) {
+		t.Parallel()
+		ret, clientErr := c.String(t.Context(), "hello world")
+		require.NoError(t, clientErr)
+		assert.Equal(t, "hello world", ret)
+	})
+
+	// Pointers
 
 	t.Run("StringPtr", func(t *testing.T) {
 		t.Parallel()
@@ -256,38 +239,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		assert.InDelta(t, v, *ret, 1e-5)
 	})
 
-	t.Run("AllScalarPointersStruct", func(t *testing.T) {
-		t.Parallel()
-
-		i8, i16, i32 := int8(127), int16(32767), int32(2147483647)
-		u, u8, u16, u32, u64 := uint(42), uint8(255), uint16(65535), uint32(4294967295), uint64(9876543210)
-		f32 := float32(3.14)
-		v := server.AllScalarPointers{
-			Int8Ptr: &i8, Int16Ptr: &i16, Int32Ptr: &i32,
-			UintPtr: &u, Uint8Ptr: &u8, Uint16Ptr: &u16, Uint32Ptr: &u32, Uint64Ptr: &u64,
-			Float32Ptr: &f32,
-		}
-		ret, clientErr := c.AllScalarPointersStruct(t.Context(), v)
-		require.NoError(t, clientErr)
-		require.NotNil(t, ret.Int8Ptr)
-		assert.Equal(t, i8, *ret.Int8Ptr)
-		require.NotNil(t, ret.Int16Ptr)
-		assert.Equal(t, i16, *ret.Int16Ptr)
-		require.NotNil(t, ret.Int32Ptr)
-		assert.Equal(t, i32, *ret.Int32Ptr)
-		require.NotNil(t, ret.UintPtr)
-		assert.Equal(t, u, *ret.UintPtr)
-		require.NotNil(t, ret.Uint8Ptr)
-		assert.Equal(t, u8, *ret.Uint8Ptr)
-		require.NotNil(t, ret.Uint16Ptr)
-		assert.Equal(t, u16, *ret.Uint16Ptr)
-		require.NotNil(t, ret.Uint32Ptr)
-		assert.Equal(t, u32, *ret.Uint32Ptr)
-		require.NotNil(t, ret.Uint64Ptr)
-		assert.Equal(t, u64, *ret.Uint64Ptr)
-		require.NotNil(t, ret.Float32Ptr)
-		assert.InDelta(t, f32, *ret.Float32Ptr, 1e-5)
-	})
+	// Structs
 
 	t.Run("SimpleStruct", func(t *testing.T) {
 		t.Parallel()
@@ -322,6 +274,49 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		ret, clientErr := c.InlinedStruct(t.Context(), v)
 		require.NoError(t, clientErr)
 		assert.Equal(t, v, ret)
+	})
+
+	t.Run("InlinedPtrStruct", func(t *testing.T) {
+		t.Parallel()
+
+		v := server.InlinedPtr{
+			Simple: &common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Name:   "parent",
+		}
+		ret, clientErr := c.InlinedPtrStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v.Name, ret.Name)
+		require.NotNil(t, ret.Simple)
+		assert.Equal(t, *v.Simple, *ret.Simple)
+	})
+
+	t.Run("InlinedMultipleStruct", func(t *testing.T) {
+		t.Parallel()
+
+		v := server.InlinedMultiple{
+			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Other:  common.Other{Label: "other"},
+			Name:   "parent",
+		}
+		ret, clientErr := c.InlinedMultipleStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v, ret)
+	})
+
+	t.Run("InlinedMixedStruct", func(t *testing.T) {
+		t.Parallel()
+
+		v := server.InlinedMixed{
+			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Extra:  &common.Other{Label: "extra"},
+			Name:   "parent",
+		}
+		ret, clientErr := c.InlinedMixedStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v.Name, ret.Name)
+		assert.Equal(t, v.Simple, ret.Simple)
+		require.NotNil(t, ret.Extra)
+		assert.Equal(t, *v.Extra, *ret.Extra)
 	})
 
 	t.Run("StructWithPointers", func(t *testing.T) {
@@ -368,6 +363,8 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		assert.Equal(t, v.StringMap, ret.StringMap)
 		assert.Equal(t, v.StructMap, ret.StructMap)
 	})
+
+	// Slices
 
 	t.Run("StringSlice", func(t *testing.T) {
 		t.Parallel()
@@ -498,28 +495,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		assert.InDelta(t, v[2], ret[2], 1e-5)
 	})
 
-	t.Run("AllScalarSlicesStruct", func(t *testing.T) {
-		t.Parallel()
-
-		v := server.AllScalarSlices{
-			Int8s: []int8{-1, 0, 1}, Int16s: []int16{-1, 0, 1}, Int32s: []int32{-1, 0, 1},
-			Uints: []uint{0, 1, 2}, Uint16s: []uint16{0, 1, 2},
-			Uint32s: []uint32{0, 1, 2}, Uint64s: []uint64{0, 1, 2},
-			Float32s: []float32{1.1, 2.2},
-		}
-		ret, clientErr := c.AllScalarSlicesStruct(t.Context(), v)
-		require.NoError(t, clientErr)
-		assert.Equal(t, v.Int8s, ret.Int8s)
-		assert.Equal(t, v.Int16s, ret.Int16s)
-		assert.Equal(t, v.Int32s, ret.Int32s)
-		assert.Equal(t, v.Uints, ret.Uints)
-		assert.Equal(t, v.Uint16s, ret.Uint16s)
-		assert.Equal(t, v.Uint32s, ret.Uint32s)
-		assert.Equal(t, v.Uint64s, ret.Uint64s)
-		require.Len(t, ret.Float32s, 2)
-		assert.InDelta(t, v.Float32s[0], ret.Float32s[0], 1e-5)
-		assert.InDelta(t, v.Float32s[1], ret.Float32s[1], 1e-5)
-	})
+	// Maps
 
 	t.Run("StringStringMap", func(t *testing.T) {
 		t.Parallel()
@@ -655,29 +631,7 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		assert.InDelta(t, v["b"], ret["b"], 1e-5)
 	})
 
-	t.Run("AllScalarMapsStruct", func(t *testing.T) {
-		t.Parallel()
-
-		v := server.AllScalarMaps{
-			Int8Map: map[string]int8{"x": 1}, Int16Map: map[string]int16{"x": 1},
-			Int32Map: map[string]int32{"x": 1}, UintMap: map[string]uint{"x": 1},
-			Uint8Map: map[string]uint8{"x": 1}, Uint16Map: map[string]uint16{"x": 1},
-			Uint32Map: map[string]uint32{"x": 1}, Uint64Map: map[string]uint64{"x": 1},
-			Float32Map: map[string]float32{"x": 1.5},
-		}
-		ret, clientErr := c.AllScalarMapsStruct(t.Context(), v)
-		require.NoError(t, clientErr)
-		assert.Equal(t, v.Int8Map, ret.Int8Map)
-		assert.Equal(t, v.Int16Map, ret.Int16Map)
-		assert.Equal(t, v.Int32Map, ret.Int32Map)
-		assert.Equal(t, v.UintMap, ret.UintMap)
-		assert.Equal(t, v.Uint8Map, ret.Uint8Map)
-		assert.Equal(t, v.Uint16Map, ret.Uint16Map)
-		assert.Equal(t, v.Uint32Map, ret.Uint32Map)
-		assert.Equal(t, v.Uint64Map, ret.Uint64Map)
-		require.Contains(t, ret.Float32Map, "x")
-		assert.InDelta(t, v.Float32Map["x"], ret.Float32Map["x"], 1e-5)
-	})
+	// Complex nested
 
 	t.Run("MapOfMaps", func(t *testing.T) {
 		t.Parallel()
@@ -708,6 +662,8 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		assert.Equal(t, v, ret)
 	})
 
+	// Multi-args
+
 	t.Run("MultiArgs", func(t *testing.T) {
 		t.Parallel()
 		retA, retB, retC, clientErr := c.MultiArgs(t.Context(), "hello", int64(42), true)
@@ -729,6 +685,111 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		assert.Equal(t, items, retItems)
 		assert.Equal(t, m, retM)
 	})
+
+	// Struct with all scalars
+
+	t.Run("AllScalarsStruct", func(t *testing.T) {
+		t.Parallel()
+
+		v := server.AllScalars{
+			Int8: 127, Int16: 32767, Int32: 2147483647,
+			Uint: 42, Uint8: 255, Uint16: 65535, Uint32: 4294967295, Uint64: 9876543210,
+			Float32: 3.14,
+		}
+		ret, clientErr := c.AllScalarsStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v.Int8, ret.Int8)
+		assert.Equal(t, v.Int16, ret.Int16)
+		assert.Equal(t, v.Int32, ret.Int32)
+		assert.Equal(t, v.Uint, ret.Uint)
+		assert.Equal(t, v.Uint8, ret.Uint8)
+		assert.Equal(t, v.Uint16, ret.Uint16)
+		assert.Equal(t, v.Uint32, ret.Uint32)
+		assert.Equal(t, v.Uint64, ret.Uint64)
+		assert.InDelta(t, v.Float32, ret.Float32, 1e-5)
+	})
+
+	t.Run("AllScalarPointersStruct", func(t *testing.T) {
+		t.Parallel()
+
+		i8, i16, i32 := int8(127), int16(32767), int32(2147483647)
+		u, u8, u16, u32, u64 := uint(42), uint8(255), uint16(65535), uint32(4294967295), uint64(9876543210)
+		f32 := float32(3.14)
+		v := server.AllScalarPointers{
+			Int8Ptr: &i8, Int16Ptr: &i16, Int32Ptr: &i32,
+			UintPtr: &u, Uint8Ptr: &u8, Uint16Ptr: &u16, Uint32Ptr: &u32, Uint64Ptr: &u64,
+			Float32Ptr: &f32,
+		}
+		ret, clientErr := c.AllScalarPointersStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		require.NotNil(t, ret.Int8Ptr)
+		assert.Equal(t, i8, *ret.Int8Ptr)
+		require.NotNil(t, ret.Int16Ptr)
+		assert.Equal(t, i16, *ret.Int16Ptr)
+		require.NotNil(t, ret.Int32Ptr)
+		assert.Equal(t, i32, *ret.Int32Ptr)
+		require.NotNil(t, ret.UintPtr)
+		assert.Equal(t, u, *ret.UintPtr)
+		require.NotNil(t, ret.Uint8Ptr)
+		assert.Equal(t, u8, *ret.Uint8Ptr)
+		require.NotNil(t, ret.Uint16Ptr)
+		assert.Equal(t, u16, *ret.Uint16Ptr)
+		require.NotNil(t, ret.Uint32Ptr)
+		assert.Equal(t, u32, *ret.Uint32Ptr)
+		require.NotNil(t, ret.Uint64Ptr)
+		assert.Equal(t, u64, *ret.Uint64Ptr)
+		require.NotNil(t, ret.Float32Ptr)
+		assert.InDelta(t, f32, *ret.Float32Ptr, 1e-5)
+	})
+
+	t.Run("AllScalarSlicesStruct", func(t *testing.T) {
+		t.Parallel()
+
+		v := server.AllScalarSlices{
+			Int8s: []int8{-1, 0, 1}, Int16s: []int16{-1, 0, 1}, Int32s: []int32{-1, 0, 1},
+			Uints: []uint{0, 1, 2}, Uint16s: []uint16{0, 1, 2},
+			Uint32s: []uint32{0, 1, 2}, Uint64s: []uint64{0, 1, 2},
+			Float32s: []float32{1.1, 2.2},
+		}
+		ret, clientErr := c.AllScalarSlicesStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v.Int8s, ret.Int8s)
+		assert.Equal(t, v.Int16s, ret.Int16s)
+		assert.Equal(t, v.Int32s, ret.Int32s)
+		assert.Equal(t, v.Uints, ret.Uints)
+		assert.Equal(t, v.Uint16s, ret.Uint16s)
+		assert.Equal(t, v.Uint32s, ret.Uint32s)
+		assert.Equal(t, v.Uint64s, ret.Uint64s)
+		require.Len(t, ret.Float32s, 2)
+		assert.InDelta(t, v.Float32s[0], ret.Float32s[0], 1e-5)
+		assert.InDelta(t, v.Float32s[1], ret.Float32s[1], 1e-5)
+	})
+
+	t.Run("AllScalarMapsStruct", func(t *testing.T) {
+		t.Parallel()
+
+		v := server.AllScalarMaps{
+			Int8Map: map[string]int8{"x": 1}, Int16Map: map[string]int16{"x": 1},
+			Int32Map: map[string]int32{"x": 1}, UintMap: map[string]uint{"x": 1},
+			Uint8Map: map[string]uint8{"x": 1}, Uint16Map: map[string]uint16{"x": 1},
+			Uint32Map: map[string]uint32{"x": 1}, Uint64Map: map[string]uint64{"x": 1},
+			Float32Map: map[string]float32{"x": 1.5},
+		}
+		ret, clientErr := c.AllScalarMapsStruct(t.Context(), v)
+		require.NoError(t, clientErr)
+		assert.Equal(t, v.Int8Map, ret.Int8Map)
+		assert.Equal(t, v.Int16Map, ret.Int16Map)
+		assert.Equal(t, v.Int32Map, ret.Int32Map)
+		assert.Equal(t, v.UintMap, ret.UintMap)
+		assert.Equal(t, v.Uint8Map, ret.Uint8Map)
+		assert.Equal(t, v.Uint16Map, ret.Uint16Map)
+		assert.Equal(t, v.Uint32Map, ret.Uint32Map)
+		assert.Equal(t, v.Uint64Map, ret.Uint64Map)
+		require.Contains(t, ret.Float32Map, "x")
+		assert.InDelta(t, v.Float32Map["x"], ret.Float32Map["x"], 1e-5)
+	})
+
+	// Edge cases
 
 	t.Run("Empty", func(t *testing.T) {
 		t.Parallel()
