@@ -20,52 +20,6 @@ type interfaceInfo struct {
 	typeParams []string
 }
 
-// collectPackageInterfaces scans all files in the package and builds a map
-// of interface names to their AST and file imports.
-func collectPackageInterfaces(pkg *ast.Package, packageName string) map[string]interfaceInfo {
-	result := map[string]interfaceInfo{}
-
-	for _, file := range pkg.Files {
-		fileImports := getFileImports(file, packageName)
-		for _, decl := range file.Decls {
-			genDecl, ok := decl.(*ast.GenDecl)
-			if !ok || genDecl.Tok != token.TYPE {
-				continue
-			}
-
-			for _, spec := range genDecl.Specs {
-				typeSpec, ok := spec.(*ast.TypeSpec)
-				if !ok {
-					continue
-				}
-
-				iface, ok := typeSpec.Type.(*ast.InterfaceType)
-				if !ok {
-					continue
-				}
-
-				var typeParams []string
-
-				if typeSpec.TypeParams != nil {
-					for _, tp := range typeSpec.TypeParams.List {
-						for _, n := range tp.Names {
-							typeParams = append(typeParams, n.Name)
-						}
-					}
-				}
-
-				result[typeSpec.Name.Name] = interfaceInfo{
-					iface:      iface,
-					imports:    fileImports,
-					typeParams: typeParams,
-				}
-			}
-		}
-	}
-
-	return result
-}
-
 // resolvedMethod pairs an AST function type with the file imports it was declared in.
 type resolvedMethod struct {
 	name         string
@@ -73,121 +27,6 @@ type resolvedMethod struct {
 	imports      fileImportSpecMap
 	typeSubst    map[string]ast.Expr
 	substImports fileImportSpecMap // imports for resolving typeSubst expressions
-}
-
-// resolveExpr resolves an AST expression through a type substitution map.
-func resolveExpr(expr ast.Expr, typeSubst map[string]ast.Expr) ast.Expr {
-	if ident, ok := expr.(*ast.Ident); ok {
-		if sub, ok := typeSubst[ident.Name]; ok {
-			return sub
-		}
-	}
-
-	return expr
-}
-
-// resolveInterfaceMethods recursively collects all methods from an interface,
-// following embedded interfaces via the pkgInterfaces map. Uses visited for cycle protection.
-// typeSubst maps type parameter names to concrete type expressions.
-// substImports are the imports needed to resolve expressions in typeSubst.
-func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap, pkgInterfaces map[string]interfaceInfo, visited map[string]bool, typeSubst map[string]ast.Expr, substImports fileImportSpecMap) []resolvedMethod {
-	var methods []resolvedMethod
-
-	for _, field := range iface.Methods.List {
-		switch ft := field.Type.(type) {
-		case *ast.FuncType:
-			if len(field.Names) == 0 {
-				continue
-			}
-
-			methods = append(methods, resolvedMethod{
-				name:         field.Names[0].Name,
-				funcTyp:      ft,
-				imports:      imports,
-				typeSubst:    typeSubst,
-				substImports: substImports,
-			})
-		case *ast.Ident:
-			// Embedded interface reference (non-generic)
-			if visited[ft.Name] {
-				continue
-			}
-
-			visited[ft.Name] = true
-			if info, ok := pkgInterfaces[ft.Name]; ok {
-				methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, nil, nil)...)
-			}
-		case *ast.IndexExpr:
-			// Generic embedded interface with single type arg: Base[string] or Base[T]
-			ident, ok := ft.X.(*ast.Ident)
-			if !ok {
-				continue
-			}
-
-			if visited[ident.Name] {
-				continue
-			}
-
-			visited[ident.Name] = true
-
-			info, ok := pkgInterfaces[ident.Name]
-			if !ok {
-				continue
-			}
-			// Build substitution map for the embedded interface's type params.
-			// Determine the imports needed to resolve the substitution expressions:
-			// if the arg was resolved from the parent's typeSubst, use substImports;
-			// otherwise use the current imports (where the embedding is written).
-			newSubst := map[string]ast.Expr{}
-			newSubstImports := imports
-
-			resolvedArg := resolveExpr(ft.Index, typeSubst)
-			if resolvedArg != ft.Index && substImports != nil {
-				newSubstImports = substImports
-			}
-
-			if len(info.typeParams) > 0 {
-				newSubst[info.typeParams[0]] = resolvedArg
-			}
-
-			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst, newSubstImports)...)
-		case *ast.IndexListExpr:
-			// Generic embedded interface with multiple type args: Keyed[string, int]
-			ident, ok := ft.X.(*ast.Ident)
-			if !ok {
-				continue
-			}
-
-			if visited[ident.Name] {
-				continue
-			}
-
-			visited[ident.Name] = true
-
-			info, ok := pkgInterfaces[ident.Name]
-			if !ok {
-				continue
-			}
-
-			newSubst := map[string]ast.Expr{}
-			newSubstImports := imports
-
-			for i, idx := range ft.Indices {
-				resolvedArg := resolveExpr(idx, typeSubst)
-				if resolvedArg != idx && substImports != nil {
-					newSubstImports = substImports
-				}
-
-				if i < len(info.typeParams) {
-					newSubst[info.typeParams[i]] = resolvedArg
-				}
-			}
-
-			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst, newSubstImports)...)
-		}
-	}
-
-	return methods
 }
 
 func Read(
@@ -975,4 +814,165 @@ func collectStructTypes(fields []*model.Field, structTypes map[string]bool) {
 			}
 		}
 	}
+}
+
+// collectPackageInterfaces scans all files in the package and builds a map
+// of interface names to their AST and file imports.
+func collectPackageInterfaces(pkg *ast.Package, packageName string) map[string]interfaceInfo {
+	result := map[string]interfaceInfo{}
+
+	for _, file := range pkg.Files {
+		fileImports := getFileImports(file, packageName)
+		for _, decl := range file.Decls {
+			genDecl, ok := decl.(*ast.GenDecl)
+			if !ok || genDecl.Tok != token.TYPE {
+				continue
+			}
+
+			for _, spec := range genDecl.Specs {
+				typeSpec, ok := spec.(*ast.TypeSpec)
+				if !ok {
+					continue
+				}
+
+				iface, ok := typeSpec.Type.(*ast.InterfaceType)
+				if !ok {
+					continue
+				}
+
+				var typeParams []string
+
+				if typeSpec.TypeParams != nil {
+					for _, tp := range typeSpec.TypeParams.List {
+						for _, n := range tp.Names {
+							typeParams = append(typeParams, n.Name)
+						}
+					}
+				}
+
+				result[typeSpec.Name.Name] = interfaceInfo{
+					iface:      iface,
+					imports:    fileImports,
+					typeParams: typeParams,
+				}
+			}
+		}
+	}
+
+	return result
+}
+
+// resolveExpr resolves an AST expression through a type substitution map.
+func resolveExpr(expr ast.Expr, typeSubst map[string]ast.Expr) ast.Expr {
+	if ident, ok := expr.(*ast.Ident); ok {
+		if sub, ok := typeSubst[ident.Name]; ok {
+			return sub
+		}
+	}
+
+	return expr
+}
+
+// resolveInterfaceMethods recursively collects all methods from an interface,
+// following embedded interfaces via the pkgInterfaces map. Uses visited for cycle protection.
+// typeSubst maps type parameter names to concrete type expressions.
+// substImports are the imports needed to resolve expressions in typeSubst.
+func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap, pkgInterfaces map[string]interfaceInfo, visited map[string]bool, typeSubst map[string]ast.Expr, substImports fileImportSpecMap) []resolvedMethod {
+	var methods []resolvedMethod
+
+	for _, field := range iface.Methods.List {
+		switch ft := field.Type.(type) {
+		case *ast.FuncType:
+			if len(field.Names) == 0 {
+				continue
+			}
+
+			methods = append(methods, resolvedMethod{
+				name:         field.Names[0].Name,
+				funcTyp:      ft,
+				imports:      imports,
+				typeSubst:    typeSubst,
+				substImports: substImports,
+			})
+		case *ast.Ident:
+			// Embedded interface reference (non-generic)
+			if visited[ft.Name] {
+				continue
+			}
+
+			visited[ft.Name] = true
+			if info, ok := pkgInterfaces[ft.Name]; ok {
+				methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, nil, nil)...)
+			}
+		case *ast.IndexExpr:
+			// Generic embedded interface with single type arg: Base[string] or Base[T]
+			ident, ok := ft.X.(*ast.Ident)
+			if !ok {
+				continue
+			}
+
+			if visited[ident.Name] {
+				continue
+			}
+
+			visited[ident.Name] = true
+
+			info, ok := pkgInterfaces[ident.Name]
+			if !ok {
+				continue
+			}
+			// Build substitution map for the embedded interface's type params.
+			// Determine the imports needed to resolve the substitution expressions:
+			// if the arg was resolved from the parent's typeSubst, use substImports;
+			// otherwise use the current imports (where the embedding is written).
+			newSubst := map[string]ast.Expr{}
+			newSubstImports := imports
+
+			resolvedArg := resolveExpr(ft.Index, typeSubst)
+			if resolvedArg != ft.Index && substImports != nil {
+				newSubstImports = substImports
+			}
+
+			if len(info.typeParams) > 0 {
+				newSubst[info.typeParams[0]] = resolvedArg
+			}
+
+			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst, newSubstImports)...)
+		case *ast.IndexListExpr:
+			// Generic embedded interface with multiple type args: Keyed[string, int]
+			ident, ok := ft.X.(*ast.Ident)
+			if !ok {
+				continue
+			}
+
+			if visited[ident.Name] {
+				continue
+			}
+
+			visited[ident.Name] = true
+
+			info, ok := pkgInterfaces[ident.Name]
+			if !ok {
+				continue
+			}
+
+			newSubst := map[string]ast.Expr{}
+			newSubstImports := imports
+
+			for i, idx := range ft.Indices {
+				resolvedArg := resolveExpr(idx, typeSubst)
+				if resolvedArg != idx && substImports != nil {
+					newSubstImports = substImports
+				}
+
+				if i < len(info.typeParams) {
+					newSubst[info.typeParams[i]] = resolvedArg
+				}
+			}
+
+			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst, newSubstImports)...)
+		}
+	}
+
+	return methods
 }
