@@ -195,8 +195,8 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 		`)
 
 		g.L("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
-		g.L("callStats, _ := gotsrpc.GetStatsForRequest(r)")
-		g.L("if callStats != nil {")
+		g.L("callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)")
+		g.L("if callStatsOk {")
 		g.Ind(1)
 		g.L("callStats.Func = funcName")
 		g.L("callStats.Package = \"" + fullPackageName + "\"")
@@ -279,7 +279,7 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 			}
 
 			g.L("var executionStart time.Time")
-			g.L("if callStats != nil {")
+			g.L("if callStatsOk {")
 			g.Ind(1)
 			g.L("executionStart = time.Now()")
 			g.Ind(-1)
@@ -299,7 +299,7 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 
 			g.App("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.NL()
-			g.L("if callStats != nil {")
+			g.L("if callStatsOk {")
 			g.Ind(1)
 			g.L("callStats.Execution = time.Since(executionStart)")
 			g.Ind(-1)

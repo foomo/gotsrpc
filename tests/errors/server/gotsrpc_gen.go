@@ -53,8 +53,8 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
+	callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)
+	if callStatsOk {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/v2/tests/errors/server"
 		callStats.Service = "Service"
@@ -66,12 +66,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		customErrorE := p.service.CustomError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -89,12 +89,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		errorE := p.service.Error(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -112,12 +112,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		errorsE1, errorsE2 := p.service.Errors(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -135,12 +135,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		multiScalarE := p.service.MultiScalar(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -158,12 +158,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		scalarE := p.service.Scalar(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -181,12 +181,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		scalarErrorE := p.service.ScalarError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -204,12 +204,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		structE := p.service.Struct(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -227,12 +227,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		structErrorE := p.service.StructError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -250,12 +250,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedCustomErrorE := p.service.TypedCustomError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -273,12 +273,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedErrorE := p.service.TypedError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -296,12 +296,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedScalarErrorE := p.service.TypedScalarError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -319,12 +319,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		typedWrappedErrorE := p.service.TypedWrappedError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -342,12 +342,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		wrappedErrorE := p.service.WrappedError(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {

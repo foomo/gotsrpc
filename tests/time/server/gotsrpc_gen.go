@@ -42,8 +42,8 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
+	callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)
+	if callStatsOk {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/v2/tests/time/server"
 		callStats.Service = "Service"
@@ -63,11 +63,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		timeRet := p.service.Time(arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{timeRet}
@@ -91,11 +91,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		timeStructRet := p.service.TimeStruct(arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{timeStructRet}

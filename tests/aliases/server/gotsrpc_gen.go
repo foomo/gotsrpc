@@ -54,8 +54,8 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
+	callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)
+	if callStatsOk {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/v2/tests/aliases/server"
 		callStats.Service = "Service"
@@ -75,11 +75,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		categoryValueRet := p.service.CategoryValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{categoryValueRet}
@@ -103,11 +103,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		dataRecordNilRet := p.service.DataRecordNil(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{dataRecordNilRet}
@@ -131,11 +131,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		dataRecordValueRet := p.service.DataRecordValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{dataRecordValueRet}
@@ -159,11 +159,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		detailValueRet := p.service.DetailValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{detailValueRet}
@@ -187,11 +187,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		entriesValueRet := p.service.EntriesValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{entriesValueRet}
@@ -215,11 +215,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		entryValueRet := p.service.EntryValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{entryValueRet}
@@ -243,11 +243,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		indexValueRet := p.service.IndexValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{indexValueRet}
@@ -271,11 +271,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		labelMapValueRet := p.service.LabelMapValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{labelMapValueRet}
@@ -299,11 +299,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		mapOfEntriesRet := p.service.MapOfEntries(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{mapOfEntriesRet}
@@ -327,11 +327,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		priorityValueRet := p.service.PriorityValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{priorityValueRet}
@@ -355,11 +355,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		ratingValueRet := p.service.RatingValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{ratingValueRet}
@@ -383,11 +383,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		registryValueRet := p.service.RegistryValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{registryValueRet}
@@ -411,11 +411,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		statusValueRet := p.service.StatusValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{statusValueRet}
@@ -439,11 +439,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		tagsValueRet := p.service.TagsValue(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{tagsValueRet}

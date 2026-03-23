@@ -49,8 +49,8 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
+	callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)
+	if callStatsOk {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/v2/tests/union/server"
 		callStats.Service = "Service"
@@ -62,12 +62,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructE := p.service.InlineStruct(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -85,12 +85,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		inlineStructPtrE := p.service.InlineStructPtr(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -108,12 +108,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStringE := p.service.UnionString(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
@@ -131,12 +131,12 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
 		unionStructE := p.service.UnionStruct(&rw, r)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		if rw.Status() == http.StatusOK {
