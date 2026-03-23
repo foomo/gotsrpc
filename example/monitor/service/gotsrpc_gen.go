@@ -3,6 +3,7 @@
 package service
 
 import (
+	"io"
 	http "net/http"
 	time "time"
 
@@ -37,10 +38,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
+	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
+	callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)
+	if callStatsOk {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/v2/example/monitor/service"
 		callStats.Service = "Service"
@@ -60,11 +62,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		helloRet := p.service.Hello(arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{helloRet}

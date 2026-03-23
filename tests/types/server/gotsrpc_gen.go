@@ -3,10 +3,12 @@
 package server
 
 import (
+	"io"
 	http "net/http"
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 )
 
 const (
@@ -22,6 +24,10 @@ const (
 	ServiceGoTSRPCProxyFloat32Ptr              = "Float32Ptr"
 	ServiceGoTSRPCProxyFloat32Slice            = "Float32Slice"
 	ServiceGoTSRPCProxyFloat64                 = "Float64"
+	ServiceGoTSRPCProxyInlinedMixedStruct      = "InlinedMixedStruct"
+	ServiceGoTSRPCProxyInlinedMultipleStruct   = "InlinedMultipleStruct"
+	ServiceGoTSRPCProxyInlinedPtrStruct        = "InlinedPtrStruct"
+	ServiceGoTSRPCProxyInlinedStruct           = "InlinedStruct"
 	ServiceGoTSRPCProxyInt                     = "Int"
 	ServiceGoTSRPCProxyInt16                   = "Int16"
 	ServiceGoTSRPCProxyInt16Ptr                = "Int16Ptr"
@@ -105,10 +111,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		gotsrpc.ErrorMethodNotAllowed(w)
 		return
 	}
+	defer io.Copy(io.Discard, r.Body) // Drain Request Body
 
 	funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)
-	callStats, _ := gotsrpc.GetStatsForRequest(r)
-	if callStats != nil {
+	callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)
+	if callStatsOk {
 		callStats.Func = funcName
 		callStats.Package = "github.com/foomo/gotsrpc/v2/tests/types/server"
 		callStats.Service = "Service"
@@ -128,11 +135,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		allScalarMapsStructRet := p.service.AllScalarMapsStruct(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{allScalarMapsStructRet}
@@ -156,11 +163,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		allScalarPointersStructRet := p.service.AllScalarPointersStruct(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{allScalarPointersStructRet}
@@ -184,11 +191,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		allScalarSlicesStructRet := p.service.AllScalarSlicesStruct(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{allScalarSlicesStructRet}
@@ -212,11 +219,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		allScalarsStructRet := p.service.AllScalarsStruct(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{allScalarsStructRet}
@@ -240,11 +247,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		boolRet := p.service.Bool(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{boolRet}
@@ -268,11 +275,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		boolPtrRet := p.service.BoolPtr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{boolPtrRet}
@@ -296,11 +303,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		byteSliceRet := p.service.ByteSlice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{byteSliceRet}
@@ -316,11 +323,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		emptyRet := p.service.Empty(r.Context())
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{emptyRet}
@@ -344,11 +351,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		float32Ret := p.service.Float32(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{float32Ret}
@@ -372,11 +379,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		float32PtrRet := p.service.Float32Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{float32PtrRet}
@@ -400,11 +407,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		float32SliceRet := p.service.Float32Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{float32SliceRet}
@@ -428,14 +435,126 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		float64Ret := p.service.Float64(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{float64Ret}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInlinedMixedStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v InlinedMixed
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		inlinedMixedStructRet := p.service.InlinedMixedStruct(r.Context(), arg_v)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedMixedStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInlinedMultipleStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v InlinedMultiple
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		inlinedMultipleStructRet := p.service.InlinedMultipleStruct(r.Context(), arg_v)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedMultipleStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInlinedPtrStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v InlinedPtr
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		inlinedPtrStructRet := p.service.InlinedPtrStruct(r.Context(), arg_v)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedPtrStructRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyInlinedStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v Inlined
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		inlinedStructRet := p.service.InlinedStruct(r.Context(), arg_v)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{inlinedStructRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -456,11 +575,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		intRet := p.service.Int(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{intRet}
@@ -484,11 +603,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int16Ret := p.service.Int16(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int16Ret}
@@ -512,11 +631,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int16PtrRet := p.service.Int16Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int16PtrRet}
@@ -540,11 +659,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int16SliceRet := p.service.Int16Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int16SliceRet}
@@ -568,11 +687,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int32Ret := p.service.Int32(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int32Ret}
@@ -596,11 +715,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int32PtrRet := p.service.Int32Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int32PtrRet}
@@ -624,11 +743,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int32SliceRet := p.service.Int32Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int32SliceRet}
@@ -652,11 +771,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int64Ret := p.service.Int64(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int64Ret}
@@ -680,11 +799,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int64PtrRet := p.service.Int64Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int64PtrRet}
@@ -708,11 +827,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int64SliceRet := p.service.Int64Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int64SliceRet}
@@ -736,11 +855,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int8Ret := p.service.Int8(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int8Ret}
@@ -764,11 +883,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int8PtrRet := p.service.Int8Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int8PtrRet}
@@ -792,11 +911,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		int8SliceRet := p.service.Int8Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int8SliceRet}
@@ -820,11 +939,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		mapOfMapsRet := p.service.MapOfMaps(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{mapOfMapsRet}
@@ -840,7 +959,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v map[string][]Simple
+			arg_v map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -848,11 +967,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		mapOfSimpleSliceRet := p.service.MapOfSimpleSlice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{mapOfSimpleSliceRet}
@@ -868,7 +987,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_s     Simple
+			arg_s     github_com_foomo_gotsrpc_v2_tests_common.Simple
 			arg_items []string
 			arg_m     map[string]int64
 		)
@@ -878,11 +997,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		mixedArgsRet, mixedArgsRet_1, mixedArgsRet_2 := p.service.MixedArgs(r.Context(), arg_s, arg_items, arg_m)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{mixedArgsRet, mixedArgsRet_1, mixedArgsRet_2}
@@ -908,11 +1027,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		multiArgsRet, multiArgsRet_1, multiArgsRet_2 := p.service.MultiArgs(r.Context(), arg_a, arg_b, arg_c)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{multiArgsRet, multiArgsRet_1, multiArgsRet_2}
@@ -928,7 +1047,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v Nested
+			arg_v github_com_foomo_gotsrpc_v2_tests_common.Nested
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -936,11 +1055,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		nestedStructRet := p.service.NestedStruct(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{nestedStructRet}
@@ -964,11 +1083,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		objectIDRet := p.service.ObjectID(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{objectIDRet}
@@ -984,7 +1103,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v []*Simple
+			arg_v []*github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -992,11 +1111,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		simplePtrSliceRet := p.service.SimplePtrSlice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{simplePtrSliceRet}
@@ -1012,7 +1131,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v []Simple
+			arg_v []github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1020,11 +1139,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		simpleSliceRet := p.service.SimpleSlice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{simpleSliceRet}
@@ -1040,7 +1159,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v Simple
+			arg_v github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1048,11 +1167,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		simpleStructRet := p.service.SimpleStruct(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{simpleStructRet}
@@ -1076,11 +1195,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		sliceOfMapsRet := p.service.SliceOfMaps(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{sliceOfMapsRet}
@@ -1104,11 +1223,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringRet := p.service.String(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringRet}
@@ -1132,11 +1251,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringFloat32MapRet := p.service.StringFloat32Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringFloat32MapRet}
@@ -1160,11 +1279,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringInt16MapRet := p.service.StringInt16Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringInt16MapRet}
@@ -1188,11 +1307,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringInt32MapRet := p.service.StringInt32Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringInt32MapRet}
@@ -1216,11 +1335,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringInt64MapRet := p.service.StringInt64Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringInt64MapRet}
@@ -1244,11 +1363,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringInt8MapRet := p.service.StringInt8Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringInt8MapRet}
@@ -1272,11 +1391,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringPtrRet := p.service.StringPtr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringPtrRet}
@@ -1292,7 +1411,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v map[string]Simple
+			arg_v map[string]github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1300,11 +1419,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringSimpleMapRet := p.service.StringSimpleMap(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringSimpleMapRet}
@@ -1320,7 +1439,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_v map[string]*Simple
+			arg_v map[string]*github_com_foomo_gotsrpc_v2_tests_common.Simple
 		)
 		args = []any{&arg_v}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -1328,11 +1447,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringSimplePtrMapRet := p.service.StringSimplePtrMap(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringSimplePtrMapRet}
@@ -1356,11 +1475,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringSliceRet := p.service.StringSlice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringSliceRet}
@@ -1384,11 +1503,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringSlice2DRet := p.service.StringSlice2D(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringSlice2DRet}
@@ -1412,11 +1531,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringStringMapRet := p.service.StringStringMap(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringStringMapRet}
@@ -1440,11 +1559,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringStringSliceMapRet := p.service.StringStringSliceMap(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringStringSliceMapRet}
@@ -1468,11 +1587,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringUint16MapRet := p.service.StringUint16Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringUint16MapRet}
@@ -1496,11 +1615,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringUint32MapRet := p.service.StringUint32Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringUint32MapRet}
@@ -1524,11 +1643,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringUint64MapRet := p.service.StringUint64Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringUint64MapRet}
@@ -1552,11 +1671,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringUint8MapRet := p.service.StringUint8Map(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringUint8MapRet}
@@ -1580,11 +1699,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		stringUintMapRet := p.service.StringUintMap(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringUintMapRet}
@@ -1608,11 +1727,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		structWithCollectionsRet := p.service.StructWithCollections(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{structWithCollectionsRet}
@@ -1636,11 +1755,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		structWithPointersRet := p.service.StructWithPointers(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{structWithPointersRet}
@@ -1664,11 +1783,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uintRet := p.service.Uint(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uintRet}
@@ -1692,11 +1811,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint16Ret := p.service.Uint16(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint16Ret}
@@ -1720,11 +1839,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint16PtrRet := p.service.Uint16Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint16PtrRet}
@@ -1748,11 +1867,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint16SliceRet := p.service.Uint16Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint16SliceRet}
@@ -1776,11 +1895,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint32Ret := p.service.Uint32(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint32Ret}
@@ -1804,11 +1923,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint32PtrRet := p.service.Uint32Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint32PtrRet}
@@ -1832,11 +1951,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint32SliceRet := p.service.Uint32Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint32SliceRet}
@@ -1860,11 +1979,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint64Ret := p.service.Uint64(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint64Ret}
@@ -1888,11 +2007,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint64PtrRet := p.service.Uint64Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint64PtrRet}
@@ -1916,11 +2035,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint64SliceRet := p.service.Uint64Slice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint64SliceRet}
@@ -1944,11 +2063,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint8Ret := p.service.Uint8(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint8Ret}
@@ -1972,11 +2091,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uint8PtrRet := p.service.Uint8Ptr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uint8PtrRet}
@@ -2000,11 +2119,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uintPtrRet := p.service.UintPtr(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uintPtrRet}
@@ -2028,11 +2147,11 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		var executionStart time.Time
-		if callStats != nil {
+		if callStatsOk {
 			executionStart = time.Now()
 		}
 		uintSliceRet := p.service.UintSlice(r.Context(), arg_v)
-		if callStats != nil {
+		if callStatsOk {
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{uintSliceRet}

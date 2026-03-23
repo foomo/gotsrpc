@@ -3,6 +3,7 @@
 package server
 
 import (
+	go_context "context"
 	tls "crypto/tls"
 	gob "encoding/gob"
 	fmt "fmt"
@@ -110,7 +111,10 @@ func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHa
 }
 
 func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
-	start := time.Now()
+	var start time.Time
+	if p.callStatsHandler != nil {
+		start = time.Now()
+	}
 
 	reqType := reflect.TypeOf(request).String()
 	funcNameParts := strings.Split(reqType, ".")
@@ -119,27 +123,27 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	switch funcName {
 	case "ServiceCustomErrorRequest":
 		req := request.(ServiceCustomErrorRequest)
-		retCustomError_0 := p.service.CustomError(nil, req.Msg)
+		retCustomError_0 := p.service.CustomError(go_context.Background(), req.Msg)
 		response = ServiceCustomErrorResponse{RetCustomError_0: retCustomError_0}
 	case "ServiceErrorRequest":
 		req := request.(ServiceErrorRequest)
-		retError_0 := p.service.Error(nil, req.Msg)
+		retError_0 := p.service.Error(go_context.Background(), req.Msg)
 		response = ServiceErrorResponse{RetError_0: retError_0}
 	case "ServiceHelloRequest":
 		req := request.(ServiceHelloRequest)
-		retHello_0 := p.service.Hello(nil, req.Msg)
+		retHello_0 := p.service.Hello(go_context.Background(), req.Msg)
 		response = ServiceHelloResponse{RetHello_0: retHello_0}
 	case "ServiceJoinedErrorRequest":
 		req := request.(ServiceJoinedErrorRequest)
-		retJoinedError_0 := p.service.JoinedError(nil, req.Msg)
+		retJoinedError_0 := p.service.JoinedError(go_context.Background(), req.Msg)
 		response = ServiceJoinedErrorResponse{RetJoinedError_0: retJoinedError_0}
 	case "ServicePkgErrorRequest":
 		req := request.(ServicePkgErrorRequest)
-		retPkgError_0 := p.service.PkgError(nil, req.Msg)
+		retPkgError_0 := p.service.PkgError(go_context.Background(), req.Msg)
 		response = ServicePkgErrorResponse{RetPkgError_0: retPkgError_0}
 	case "ServiceWrappedErrorRequest":
 		req := request.(ServiceWrappedErrorRequest)
-		retWrappedError_0 := p.service.WrappedError(nil, req.Msg)
+		retWrappedError_0 := p.service.WrappedError(go_context.Background(), req.Msg)
 		response = ServiceWrappedErrorResponse{RetWrappedError_0: retWrappedError_0}
 	default:
 		fmt.Println("Unknown request type", reflect.TypeOf(request).String())

@@ -35,6 +35,9 @@ tmp/
 ## Mise
 !.mise.toml
 
+## Lefthook
+!.lefthook.yaml
+
 ## Vitepress
 node_modules/
 !docs/.vitepress

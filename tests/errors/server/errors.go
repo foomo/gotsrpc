@@ -12,7 +12,7 @@ const (
 )
 
 func NewMyScalarError(e MyScalarError) *MyScalarError {
-	return &e
+	return new(e)
 }
 
 func (e *MyScalarError) Error() string {
@@ -66,6 +66,6 @@ func (e *MyCustomError) Error() string {
 var (
 	ErrTyped     = errors.New("typed error")
 	ErrCustom    = NewMyCustomError("typed custom error")
-	ErrScalarOne = NewMyScalarError(MyScalarErrorOne)
-	ErrScalarTwo = NewMyScalarError(MyScalarErrorTwo)
+	ErrScalarOne = new(MyScalarErrorOne)
+	ErrScalarTwo = new(MyScalarErrorTwo)
 )

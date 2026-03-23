@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import transport from "../../lib/transport";
+import transport from "../../common/transport";
 import { ServiceClient } from "./client.ts";
 import { Status, Priority, Category } from "./vo.ts";
 
@@ -43,15 +43,15 @@ test("entriesValue", async () => {
 test("registryValue", async () => {
 	const v = { first: { id: "1", status: Status.Active, priority: Priority.Low, rating: 1.0 } };
 	const ret = await client.registryValue(v);
-	expect(ret!["first"].id).toBe("1");
-	expect(ret!["first"].status).toBe(Status.Active);
+	expect(ret!["first"]!.id).toBe("1");
+	expect(ret!["first"]!.status).toBe(Status.Active);
 });
 
 test("indexValue", async () => {
 	const v = { [Category.A]: [{ id: "1", status: Status.Active, priority: Priority.Low, rating: 1.0 }] };
 	const ret = await client.indexValue(v);
 	expect(ret![Category.A]).toHaveLength(1);
-	expect(ret![Category.A]![0].id).toBe("1");
+	expect(ret![Category.A]![0]!.id).toBe("1");
 });
 
 test("labelMapValue", async () => {
@@ -109,7 +109,7 @@ test("mapOfEntries", async () => {
 	};
 	const ret = await client.mapOfEntries(v);
 	expect(ret![Category.A]).toHaveLength(1);
-	expect(ret![Category.A]![0].id).toBe("1");
+	expect(ret![Category.A]![0]!.id).toBe("1");
 });
 
 // Nil optionals

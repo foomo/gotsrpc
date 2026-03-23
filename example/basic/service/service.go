@@ -19,7 +19,7 @@ type Service interface {
 	Float64(v float64) float64
 	String(v string) string
 	Struct(v Struct) Struct
-	Interface(v interface{}) interface{}
+	Interface(v any) any
 	BoolSlice(v []bool) []bool
 	IntSlice(v []int) []int
 	Int32Slice(v []int32) []int32
@@ -30,15 +30,15 @@ type Service interface {
 	Float32Slice(v []float32) []float32
 	Float64Slice(v []float64) []float64
 	StringSlice(v []string) []string
-	IntMap(v map[int]interface{}) map[int]interface{}
-	Int32Map(v map[int32]interface{}) map[int32]interface{}
-	Int64Map(v map[int64]interface{}) map[int64]interface{}
-	UIntMap(v map[uint]interface{}) map[uint]interface{}
-	UInt32Map(v map[uint32]interface{}) map[uint32]interface{}
-	UInt64Map(v map[uint64]interface{}) map[uint64]interface{}
-	Float32Map(v map[float32]interface{}) map[float32]interface{}
-	Float64Map(v map[float64]interface{}) map[float64]interface{}
-	StringMap(v map[string]interface{}) map[string]interface{}
+	IntMap(v map[int]any) map[int]any
+	Int32Map(v map[int32]any) map[int32]any
+	Int64Map(v map[int64]any) map[int64]any
+	UIntMap(v map[uint]any) map[uint]any
+	UInt32Map(v map[uint32]any) map[uint32]any
+	UInt64Map(v map[uint64]any) map[uint64]any
+	Float32Map(v map[float32]any) map[float32]any
+	Float64Map(v map[float64]any) map[float64]any
+	StringMap(v map[string]any) map[string]any
 	IntTypeMap(v map[IntTypeMapKey]IntTypeMapValue) map[IntTypeMapKey]IntTypeMapValue
 	Int32TypeMap(v map[Int32TypeMapKey]Int32TypeMapValue) map[Int32TypeMapKey]Int32TypeMapValue
 	Int64TypeMap(v map[Int64TypeMapKey]Int64TypeMapValue) map[Int64TypeMapKey]Int64TypeMapValue
@@ -57,7 +57,7 @@ type Service interface {
 	Float32TypeMapTyped(v Float32TypeMapTyped) Float32TypeMapTyped
 	Float64TypeMapTyped(v Float64TypeMapTyped) Float64TypeMapTyped
 	StringTypeMapTyped(v StringTypeMapTyped) StringTypeMapTyped
-	InterfaceSlice(v []interface{}) []interface{}
+	InterfaceSlice(v []any) []any
 	IntType(v IntType) IntType
 	Int32Type(v Int32Type) Int32Type
 	Int64Type(v Int64Type) Int64Type

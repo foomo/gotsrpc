@@ -23,9 +23,9 @@ type Base struct {
 	B2 *string `json:"b2,omitempty"`
 	B3 *string `json:"b3"`
 
-	C1 interface{}  `json:"c1"`
-	C2 *interface{} `json:"c2,omitempty"`
-	C3 *interface{} `json:"c3"`
+	C1 any  `json:"c1"`
+	C2 *any `json:"c2,omitempty"`
+	C3 *any `json:"c3"`
 
 	D1 ACustomType  `json:"d1"`
 	D2 *ACustomType `json:"d2,omitempty"`

@@ -15,6 +15,7 @@ func TestClient(t *testing.T) {
 	cmd := exec.CommandContext(t.Context(), "bun", "test", "./client/client.test.ts")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	cmd.Env = append(os.Environ(), "GOTSRPC_SERVER_URL="+s.URL)
 	require.NoError(t, cmd.Run())
 }

@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/evilmartians/lefthook/refs/heads/master/schema.json
+# https://lefthook.dev/configuration/
+output: [ summary ]
+
+pre-commit:
+  skip: [ merge, rebase ]
+  parallel: true
+  commands:
+    branch-name:
+      run: |
+        branch_name=$(git rev-parse --abbrev-ref HEAD)
+        if ! [[ "$branch_name" =~ ^(feature|fix)/ ]]; then
+          echo "Error: Branch name must start with 'feature/' or 'fix/'. Your branch: $branch_name"
+          exit 1
+        fi
+    golangci-fmt:
+      glob: "*.go"
+      run: golangci-lint fmt {staged_files}
+      stage_fixed: true
+    golangci-lint:
+      glob: "*.go"
+      run: golangci-lint run --new --fast-only
+
+commit-msg:
+  skip: [ merge, rebase ]
+  commands:
+    commit:
+      run: |
+        commit_msg_file={1}
+        commit_msg=$(cat "$commit_msg_file")
+        # Regex for conventional commits (type(scope?): subject)
+        regex="^(build|chore|ci|docs|feat|fix|perf|refactor|style|test|sec|wip|revert)(\([a-z0-9\-]+\))?(!)?: .{1,50}"
+        if ! echo "$commit_msg" | grep -qE "$regex"; then
+          echo "❌ Commit message does not follow Conventional Commits format."
+          echo "Format: type(scope?): subject"
+          echo "Example: feat(login): add remember me option"
+          exit 1
+        fi
+
+post-checkout:
+  commands:
+    mise:
+      run: mise -q install
+
+tags:
+  commands:
+    semver:
+      run: |
+        TAG_NAME=$(git describe --tags --exact-match)
+        if [[ ! $TAG_NAME =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+          echo "❌ Invalid SemVer: $TAG_NAME"
+          echo "Must be: vMAJOR.MINOR.PATCH[-prerelease][+build]"
+          exit 1
+        fi

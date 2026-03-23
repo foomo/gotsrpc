@@ -15,8 +15,7 @@ func (h *Handler) InlineStructPtr(w http.ResponseWriter, r *http.Request) (e Inl
 }
 
 func (h *Handler) UnionString(w http.ResponseWriter, r *http.Request) (e UnionString) {
-	v := UnionStringBThree
-	return UnionString{B: &v}
+	return UnionString{B: new(UnionStringBThree)}
 }
 
 func (h *Handler) UnionStruct(w http.ResponseWriter, r *http.Request) (e UnionStruct) {

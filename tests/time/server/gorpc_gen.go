@@ -74,7 +74,10 @@ func (p *ServiceGoRPCProxy) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHa
 }
 
 func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response any) {
-	start := time.Now()
+	var start time.Time
+	if p.callStatsHandler != nil {
+		start = time.Now()
+	}
 
 	reqType := reflect.TypeOf(request).String()
 	funcNameParts := strings.Split(reqType, ".")

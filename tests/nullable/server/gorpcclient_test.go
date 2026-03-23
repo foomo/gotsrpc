@@ -12,7 +12,7 @@ import (
 func TestNewServiceGoRPCClient(t *testing.T) {
 	t.Parallel()
 
-	l, err := net.Listen("tcp", "127.0.0.1:0") //nolint:noctx
+	l, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 	require.NoError(t, err)
 	require.NoError(t, l.Close())
 
@@ -26,6 +26,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("VariantA", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.Base{B1: "hello", D1: server.ACustomTypeOne}
 		ret, clientErr := c.VariantA(v)
 		require.NoError(t, clientErr)
@@ -34,6 +35,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("VariantB", func(t *testing.T) {
 		t.Parallel()
+
 		v := server.BCustomType("test")
 		ret, clientErr := c.VariantB(v)
 		require.NoError(t, clientErr)
@@ -42,6 +44,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("VariantE", func(t *testing.T) {
 		t.Parallel()
+
 		v := &server.Base{B1: "ptr"}
 		ret, clientErr := c.VariantE(v)
 		require.NoError(t, clientErr)
@@ -51,6 +54,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 	t.Run("VariantH", func(t *testing.T) {
 		t.Parallel()
+
 		i1 := server.Base{B1: "one"}
 		i2 := &server.Base{B1: "two"}
 		i3 := []*server.Base{{B1: "three"}}

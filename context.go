@@ -18,7 +18,8 @@ func GetStatsForRequest(r *http.Request) (*CallStats, bool) {
 	if value, ok := r.Context().Value(contextStatsKey).(*CallStats); ok && value != nil {
 		return value, true
 	}
-	return nil, false
+
+	return &CallStats{}, false
 }
 
 func ClearStats(r *http.Request) {

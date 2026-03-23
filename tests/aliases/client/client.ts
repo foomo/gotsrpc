@@ -31,8 +31,8 @@ export class ServiceClient {
 	async labelMapValue(v:github_com_foomo_gotsrpc_v2_tests_aliases_server.LabelMap|null):Promise<github_com_foomo_gotsrpc_v2_tests_aliases_server.LabelMap|null> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_aliases_server.LabelMap|null}>("LabelMapValue", [v]))[0]
 	}
-	async mapOfEntries(v:Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>|null):Promise<Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>|null> {
-		return (await this.transport<{0:Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>|null}>("MapOfEntries", [v]))[0]
+	async mapOfEntries(v:Partial<Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>>|null):Promise<Partial<Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>>|null> {
+		return (await this.transport<{0:Partial<Record<github_com_foomo_gotsrpc_v2_tests_aliases_server.Category,Array<github_com_foomo_gotsrpc_v2_tests_aliases_server.Entry>|null>>|null}>("MapOfEntries", [v]))[0]
 	}
 	async priorityValue(v:github_com_foomo_gotsrpc_v2_tests_aliases_server.Priority):Promise<github_com_foomo_gotsrpc_v2_tests_aliases_server.Priority> {
 		return (await this.transport<{0:github_com_foomo_gotsrpc_v2_tests_aliases_server.Priority}>("PriorityValue", [v]))[0]
