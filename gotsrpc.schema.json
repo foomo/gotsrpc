@@ -18,7 +18,6 @@
           "$ref": "#/$defs/TypeScriptMappings"
         },
         "tsImportExtension": {
-          "description": "Optional file extension to append to relative TypeScript import paths (e.g. '.js'). Required for TypeScript projects using moduleResolution 'nodenext' or 'node16'.",
           "type": "string"
         }
       },
