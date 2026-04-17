@@ -17,8 +17,8 @@
         "mappings": {
           "$ref": "#/$defs/TypeScriptMappings"
         },
-        "tsImportExtension": {
-          "type": "string"
+        "tsImportJsExtension": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
