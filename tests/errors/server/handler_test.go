@@ -15,7 +15,7 @@ func TestHandler(t *testing.T) {
 
 	h := server.New()
 	w := httptest.NewRecorder()
-	r := httptest.NewRequest(http.MethodPost, "/", nil)
+	r := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil)
 
 	t.Run("Error", func(t *testing.T) {
 		t.Parallel()

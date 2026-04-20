@@ -65,7 +65,7 @@ func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, 
 		return NewClientError(errors.Wrap(errRequest, "failed to create request"))
 	}
 
-	resp, errDo := c.client.Do(request) //nolint:gosec
+	resp, errDo := c.client.Do(request)
 	if errDo != nil {
 		return NewClientError(errors.Wrap(errDo, "failed to send request"))
 	}
