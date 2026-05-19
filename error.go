@@ -42,7 +42,7 @@ func NewError(err error) *Error {
 	errType := reflect.TypeOf(err)
 
 	errElem := errType
-	if errType.Kind() == reflect.Ptr {
+	if errType.Kind() == reflect.Pointer {
 		errElem = errType.Elem()
 	}
 
@@ -152,7 +152,7 @@ func (e *Error) Is(err error) bool {
 	errType := reflect.TypeOf(err)
 
 	errElem := errType
-	if errType.Kind() == reflect.Ptr {
+	if errType.Kind() == reflect.Pointer {
 		errElem = errType.Elem()
 	}
 

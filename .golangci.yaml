@@ -55,6 +55,7 @@ linters:
     - wrapcheck # Checks that errors returned from external packages are wrapped [fast: false, auto-fix: false]
     - zerologlint # Detects the wrong usage of `zerolog` that a user forgets to dispatch with `Send` or `Msg` [fast: false, auto-fix: false]
     # Deprected linters
+    - gomodguard
     - wsl
 
   # https://golangci-lint.run/docs/linters/

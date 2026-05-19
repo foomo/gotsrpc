@@ -65,8 +65,6 @@ export interface InlinedMultiple extends github_com_foomo_gotsrpc_v2_tests_commo
 // github.com/foomo/gotsrpc/v2/tests/types/server.InlinedPtr
 export interface InlinedPtr extends Partial<github_com_foomo_gotsrpc_v2_tests_common.Simple> {
 	name:string;
-	"@alpha":string;
-	"#hash":string;
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.ObjectID
 export type ObjectID = Uint8Array & { readonly length: 12 }
