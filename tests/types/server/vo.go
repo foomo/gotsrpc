@@ -13,6 +13,8 @@ type Inlined struct {
 type InlinedPtr struct {
 	*common.Simple `json:",inline,omitempty"`
 	Name           string `json:"name"`
+	Alpha          string `json:"@alpha"`
+	Hash           string `json:"#hash"`
 }
 
 // Multiple cross-package embeds

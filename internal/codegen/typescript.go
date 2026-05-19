@@ -12,10 +12,21 @@ import (
 	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
+// tsQuotedFieldNamePrefixes are leading characters that make a field name an
+// invalid TypeScript identifier, requiring the name to be emitted as a quoted
+// property key (e.g. `"@type"`, `"#text"`).
+var tsQuotedFieldNamePrefixes = []string{"@", "#"}
+
 func fieldTSName(f *model.Field) string {
 	n := f.Name
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
 		n = f.JSONInfo.Name
+	}
+
+	for _, prefix := range tsQuotedFieldNamePrefixes {
+		if strings.HasPrefix(n, prefix) {
+			return `"` + n + `"`
+		}
 	}
 
 	return n

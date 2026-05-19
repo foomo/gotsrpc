@@ -1,7 +1,6 @@
 import { expect, test } from "bun:test";
 import transport from "../../common/transport";
 import { ServiceClient } from "./client.ts";
-import type {InlinedMultiple} from "./vo.ts";
 
 const client = new ServiceClient(
 	transport(`${process.env.GOTSRPC_SERVER_URL}${ServiceClient.defaultEndpoint}`)
@@ -169,7 +168,7 @@ test("inlinedStruct", async () => {
 });
 
 test("inlinedPtrStruct", async () => {
-	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent" };
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent", '@alpha': "alpha", '#hash': "hash" };
 	expect(await client.inlinedPtrStruct(v)).toEqual(v);
 });
 
