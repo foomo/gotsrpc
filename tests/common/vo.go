@@ -6,6 +6,8 @@ type Simple struct {
 	Int64   int64   `json:"int64"`
 	Float64 float64 `json:"float64"`
 	String  string  `json:"string"`
+	Alpha   string  `json:"@alpha"`
+	Hash    string  `json:"#hash"`
 }
 
 type Nested struct {
