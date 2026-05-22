@@ -278,13 +278,16 @@ func deriveCommonJSMapping(conf *config.Config) {
 	}
 }
 
-func relativeFilePath(a, b string) (r string, e error) {
+func relativeFilePath(a, b string, appendJsExtension bool) (r string, e error) {
 	r, e = filepath.Rel(path.Dir(a), b)
 	if e != nil {
 		return
 	}
 
 	r = strings.TrimSuffix(r, ".ts")
+	if appendJsExtension {
+		r += ".js"
+	}
 
 	return
 }
@@ -304,7 +307,7 @@ func commonJSImports(conf *config.Config, c *codegen.Code, tsFilename string, co
 			continue
 		}
 
-		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out)
+		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out, conf.TSImportJsExtension)
 		if relativeErr != nil {
 			fmt.Println("can not derive a relative path between", tsFilename, "and", importMapping.Out, relativeErr)
 			os.Exit(1)

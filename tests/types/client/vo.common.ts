@@ -18,5 +18,7 @@ export interface Simple {
 	int64:number;
 	float64:number;
 	string:string;
+	"@alpha":string;
+	"#hash":string;
 }
 // end of common js

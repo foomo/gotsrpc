@@ -1,7 +1,6 @@
 import { expect, test } from "bun:test";
 import transport from "../../common/transport";
 import { ServiceClient } from "./client.ts";
-import type {InlinedMultiple} from "./vo.ts";
 
 const client = new ServiceClient(
 	transport(`${process.env.GOTSRPC_SERVER_URL}${ServiceClient.defaultEndpoint}`)
@@ -154,37 +153,37 @@ test("allScalarPointersStruct", async () => {
 // Structs
 
 test("simpleStruct", async () => {
-	const v = { bool: true, int: 42, int64: 100, float64: 2.718, string: "test" };
+	const v = { bool: true, int: 42, int64: 100, float64: 2.718, string: "test", '@alpha': "alpha", '#hash': "hash" };
 	expect(await client.simpleStruct(v)).toEqual(v);
 });
 
 test("nestedStruct", async () => {
-	const v = { name: "parent", child: { bool: true, int: 1, int64: 2, float64: 3.0, string: "child" } };
+	const v = { name: "parent", child: { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", '@alpha': "alpha", '#hash': "hash" } };
 	expect(await client.nestedStruct(v)).toEqual(v);
 });
 
 test("inlinedStruct", async () => {
-	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent" };
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent", '@alpha': "alpha", '#hash': "hash" };
 	expect(await client.inlinedStruct(v)).toEqual(v);
 });
 
 test("inlinedPtrStruct", async () => {
-	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent" };
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent", '@alpha': "alpha", '#hash': "hash" };
 	expect(await client.inlinedPtrStruct(v)).toEqual(v);
 });
 
 test("inlinedMultipleStruct", async () => {
-	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent",  label: "label"};
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", name: "parent",  label: "label", '@alpha': "alpha", '#hash': "hash" };
 	expect(await client.inlinedMultipleStruct(v)).toEqual(v);
 });
 
 test("inlinedMixedStruct", async () => {
-	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", extra: { label: "label" }, name: "name" };
+	const v = { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", extra: { label: "label" }, name: "name", '@alpha': "alpha", '#hash': "hash" };
 	expect(await client.inlinedMixedStruct(v)).toEqual(v);
 });
 
 test("structWithPointers", async () => {
-	const v = { strPtr: "hello", int64Ptr: 42, boolPtr: true, child: { bool: true, int: 1, int64: 2, float64: 3.0, string: "child" } };
+	const v = { strPtr: "hello", int64Ptr: 42, boolPtr: true, child: { bool: true, int: 1, int64: 2, float64: 3.0, string: "child", '@alpha': "alpha", '#hash': "hash" } };
 	expect(await client.structWithPointers(v)).toEqual(v);
 });
 
@@ -192,10 +191,10 @@ test("structWithCollections", async () => {
 	const v = {
 		strings: ["a", "b"],
 		int64s: [1, 2, 3],
-		items: [{ bool: true, int: 1, int64: 2, float64: 3.0, string: "item" }],
-		itemPtrs: [{ bool: false, int: 10, int64: 20, float64: 30.0, string: "ptr" }],
+		items: [{ bool: true, int: 1, int64: 2, float64: 3.0, string: "item", '@alpha': "alpha", '#hash': "hash" }],
+		itemPtrs: [{ bool: false, int: 10, int64: 20, float64: 30.0, string: "ptr", '@alpha': "alpha", '#hash': "hash" }],
 		stringMap: { key: "val" },
-		structMap: { s: { bool: true, int: 5, int64: 6, float64: 7.0, string: "map" } },
+		structMap: { s: { bool: true, int: 5, int64: 6, float64: 7.0, string: "map", '@alpha': "alpha", '#hash': "hash" } },
 	};
 	expect(await client.structWithCollections(v)).toEqual(v);
 });
@@ -212,16 +211,16 @@ test("int64Slice", async () => {
 
 test("simpleSlice", async () => {
 	const v = [
-		{ bool: true, int: 1, int64: 2, float64: 3.0, string: "one" },
-		{ bool: false, int: 4, int64: 5, float64: 6.0, string: "two" },
+		{ bool: true, int: 1, int64: 2, float64: 3.0, string: "one", '@alpha': "alpha", '#hash': "hash" },
+		{ bool: false, int: 4, int64: 5, float64: 6.0, string: "two", '@alpha': "alpha", '#hash': "hash" },
 	];
 	expect(await client.simpleSlice(v)).toEqual(v);
 });
 
 test("simplePtrSlice", async () => {
 	const v = [
-		{ bool: true, int: 1, int64: 2, float64: 3.0, string: "one" },
-		{ bool: false, int: 4, int64: 5, float64: 6.0, string: "two" },
+		{ bool: true, int: 1, int64: 2, float64: 3.0, string: "one", '@alpha': "alpha", '#hash': "hash" },
+		{ bool: false, int: 4, int64: 5, float64: 6.0, string: "two", '@alpha': "alpha", '#hash': "hash" },
 	];
 	expect(await client.simplePtrSlice(v)).toEqual(v);
 });
@@ -300,12 +299,12 @@ test("stringInt64Map", async () => {
 });
 
 test("stringSimpleMap", async () => {
-	const v = { one: { bool: true, int: 1, int64: 2, float64: 3.0, string: "one" } };
+	const v = { one: { bool: true, int: 1, int64: 2, float64: 3.0, string: "one", '@alpha': "alpha", '#hash': "hash" } };
 	expect(await client.stringSimpleMap(v)).toEqual(v);
 });
 
 test("stringSimplePtrMap", async () => {
-	const v = { k: { bool: true, int: 1, int64: 2, float64: 3.0, string: "val" } };
+	const v = { k: { bool: true, int: 1, int64: 2, float64: 3.0, string: "val", '@alpha': "alpha", '#hash': "hash" } };
 	expect(await client.stringSimplePtrMap(v)).toEqual(v);
 });
 
@@ -387,7 +386,7 @@ test("mapOfMaps", async () => {
 });
 
 test("mapOfSimpleSlice", async () => {
-	const v = { group: [{ bool: true, int: 1, int64: 2, float64: 3.0, string: "item" }] };
+	const v = { group: [{ bool: true, int: 1, int64: 2, float64: 3.0, string: "item", '@alpha': "alpha", '#hash': "hash" }] };
 	expect(await client.mapOfSimpleSlice(v)).toEqual(v);
 });
 
@@ -406,7 +405,7 @@ test("multiArgs", async () => {
 });
 
 test("mixedArgs", async () => {
-	const s = { bool: true, int: 1, int64: 2, float64: 3.0, string: "mix" };
+	const s = { bool: true, int: 1, int64: 2, float64: 3.0, string: "mix", '@alpha': "alpha", '#hash': "hash" };
 	const items = ["a", "b"];
 	const m = { x: 10 };
 	const ret = await client.mixedArgs(s, items, m);
