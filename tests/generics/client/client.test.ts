@@ -54,3 +54,25 @@ test("getContainer", async () => {
 	expect(ret.data!["key"]!.id).toBe("1");
 	expect(ret.default.name).toBe("default");
 });
+
+test("setEnvelope", async () => {
+	const ret = await client.setEnvelope({ id: "abc", payload: { id: "1", name: "thing" } });
+	expect(ret).toBe("abc:thing");
+});
+
+test("getEnvelope", async () => {
+	const ret = await client.getEnvelope("xyz");
+	expect(ret!.id).toBe("xyz");
+	expect(ret!.payload.id).toBe("1");
+	expect(ret!.payload.name).toBe("boxed");
+});
+
+test("roundtripForeignEnvelope", async () => {
+	const ret = await client.roundtripForeignEnvelope({
+		id: "src",
+		payload: { name: "color", value: "red" },
+	});
+	expect(ret!.id).toBe("echo:src");
+	expect(ret!.payload.name).toBe("color");
+	expect(ret!.payload.value).toBe("red");
+});

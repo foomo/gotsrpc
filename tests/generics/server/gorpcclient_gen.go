@@ -5,6 +5,7 @@ package server
 import (
 	tls "crypto/tls"
 
+	github_com_foomo_gotsrpc_v2_tests_generics_private "github.com/foomo/gotsrpc/v2/tests/generics/private"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -39,6 +40,17 @@ func (tsc *ServiceGoRPCClient) GetContainer() (retGetContainer_0 Container[strin
 	}
 	rpcResp := rpcRes.(ServiceGetContainerResponse)
 	return rpcResp.RetGetContainer_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) GetEnvelope(id string) (retGetEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item], clientErr error) {
+	rpcReq := ServiceGetEnvelopeRequest{Id: id}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceGetEnvelopeResponse)
+	return rpcResp.RetGetEnvelope_0, nil
 }
 
 func (tsc *ServiceGoRPCClient) GetItemResponse() (retGetItemResponse_0 Response[Item], clientErr error) {
@@ -105,6 +117,28 @@ func (tsc *ServiceGoRPCClient) GetStringResponse() (retGetStringResponse_0 Respo
 	}
 	rpcResp := rpcRes.(ServiceGetStringResponseResponse)
 	return rpcResp.RetGetStringResponse_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) RoundtripForeignEnvelope(env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag]) (retRoundtripForeignEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag], clientErr error) {
+	rpcReq := ServiceRoundtripForeignEnvelopeRequest{Env: env}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceRoundtripForeignEnvelopeResponse)
+	return rpcResp.RetRoundtripForeignEnvelope_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) SetEnvelope(env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]) (retSetEnvelope_0 string, clientErr error) {
+	rpcReq := ServiceSetEnvelopeRequest{Env: env}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceSetEnvelopeResponse)
+	return rpcResp.RetSetEnvelope_0, nil
 }
 
 func (tsc *ServiceGoRPCClient) SetItemResponse(req Response[Item]) (retSetItemResponse_0 bool, clientErr error) {

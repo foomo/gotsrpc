@@ -700,6 +700,14 @@ func getScalarForField(value *model.Value) []*model.Scalar {
 		scalarTypes = append(scalarTypes, getScalarForField(value.Map.Value)...)
 	case value.Array != nil:
 		scalarTypes = append(scalarTypes, getScalarForField(value.Array.Value)...)
+	case value.StructType != nil:
+		// Cross-package generic type arguments parse as Scalar (see
+		// promoteScalarToStructType). Without this branch they would never be
+		// reached by collectScalarTypes and the referenced packages would
+		// emit a TS interface that references an undeclared member.
+		for _, arg := range value.StructType.TypeArgs {
+			scalarTypes = append(scalarTypes, getScalarForField(arg)...)
+		}
 	}
 
 	return scalarTypes
