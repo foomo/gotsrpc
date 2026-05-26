@@ -11,7 +11,23 @@ updates:
       interval: weekly
       timezone: Europe/Berlin
     cooldown:
-      default-days: 1
+      default-days: 3
+
+  - package-ecosystem: docker
+    open-pull-requests-limit: 1
+    commit-message: { prefix: 'sec(deps)' }
+    directories: [ '**/*' ]
+    schedule:
+      interval: daily
+    groups:
+      security:
+        applies-to: security-updates
+        update-types: [ minor, patch ]
+    ignore:
+      - dependency-name: '*'
+        update-types: [ 'version-update:semver-major' ]
+    cooldown:
+      default-days: 3
 
   - package-ecosystem: gomod
     open-pull-requests-limit: 1
@@ -27,7 +43,4 @@ updates:
       - dependency-name: '*'
         update-types: [ 'version-update:semver-major' ]
     cooldown:
-      default-days: 1
-      semver-major-days: 14
-      semver-minor-days: 7
-      semver-patch-days: 1
+      default-days: 3
