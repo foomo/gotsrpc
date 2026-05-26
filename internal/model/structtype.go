@@ -1,9 +1,8 @@
 package model
 
 type StructType struct {
-	Name     string
-	Package  string
-	TypeArgs []*Value
+	Name    string
+	Package string
 }
 
 func (st *StructType) FullName() string {

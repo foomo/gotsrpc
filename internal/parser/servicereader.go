@@ -401,10 +401,8 @@ func loadFlatStructsValue(s *model.Value, flatStructs map[string]bool) {
 		flatStructs[s.Scalar.FullName()] = true
 	}
 
-	if s.StructType != nil {
-		for _, arg := range s.StructType.TypeArgs {
-			loadFlatStructsValue(arg, flatStructs)
-		}
+	for _, arg := range s.TypeArgs {
+		loadFlatStructsValue(arg, flatStructs)
 	}
 }
 
@@ -573,18 +571,18 @@ func needsWorkValue(value *model.Value, needsWork func(fullName string) bool) bo
 		if needsWork(value.StructType.FullName()) {
 			return true
 		}
-
-		for _, arg := range value.StructType.TypeArgs {
-			if needsWorkValue(arg, needsWork) {
-				return true
-			}
-		}
 	case value.Array != nil:
 		if needsWorkValue(value.Array.Value, needsWork) {
 			return true
 		}
 	case value.Map != nil:
 		if needsWorkValue(value.Map.Key, needsWork) || needsWorkValue(value.Map.Value, needsWork) {
+			return true
+		}
+	}
+
+	for _, arg := range value.TypeArgs {
+		if needsWorkValue(arg, needsWork) {
 			return true
 		}
 	}
@@ -672,13 +670,14 @@ func getStructTypesForField(value *model.Value) []*model.StructType {
 	switch {
 	case value.StructType != nil:
 		types = append(types, value.StructType)
-		for _, arg := range value.StructType.TypeArgs {
-			types = append(types, getStructTypesForField(arg)...)
-		}
 	case value.Map != nil:
 		types = append(types, getStructTypesForField(value.Map.Value)...)
 	case value.Array != nil:
 		types = append(types, getStructTypesForField(value.Array.Value)...)
+	}
+
+	for _, arg := range value.TypeArgs {
+		types = append(types, getStructTypesForField(arg)...)
 	}
 
 	return types
@@ -700,14 +699,10 @@ func getScalarForField(value *model.Value) []*model.Scalar {
 		scalarTypes = append(scalarTypes, getScalarForField(value.Map.Value)...)
 	case value.Array != nil:
 		scalarTypes = append(scalarTypes, getScalarForField(value.Array.Value)...)
-	case value.StructType != nil:
-		// Cross-package generic type arguments parse as Scalar (see
-		// promoteScalarToStructType). Without this branch they would never be
-		// reached by collectScalarTypes and the referenced packages would
-		// emit a TS interface that references an undeclared member.
-		for _, arg := range value.StructType.TypeArgs {
-			scalarTypes = append(scalarTypes, getScalarForField(arg)...)
-		}
+	}
+
+	for _, arg := range value.TypeArgs {
+		scalarTypes = append(scalarTypes, getScalarForField(arg)...)
 	}
 
 	return scalarTypes

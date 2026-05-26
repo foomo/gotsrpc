@@ -245,26 +245,6 @@ func readAstInterfaceType(v *model.Value, interfaceType *ast.InterfaceType, file
 	v.IsInterface = true
 }
 
-// promoteScalarToStructType rewrites a Value that was parsed as a Scalar into a
-// StructType so that generic type arguments can be attached. Cross-package
-// identifiers always land in Value.Scalar because readAstType cannot tell from
-// the AST alone whether the referenced type is a struct or a scalar alias; that
-// is resolved later. The Scalar model has no TypeArgs slot, so without this
-// promotion every cross-package generic would silently lose its type
-// parameters at parse time.
-func promoteScalarToStructType(v *model.Value) {
-	if v.StructType != nil || v.Scalar == nil {
-		return
-	}
-
-	v.StructType = &model.StructType{
-		Name:    v.Scalar.Name,
-		Package: v.Scalar.Package,
-	}
-	v.Scalar = nil
-	v.ScalarType = ""
-}
-
 func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap, typeParams []string) {
 	switch exprType := expr.(type) {
 	case *ast.ArrayType:
@@ -321,24 +301,18 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap,
 	case *ast.IndexExpr:
 		// Generic type with single type argument: T[X]
 		loadValueExpr(v, exprType.X, fileImports, typeParams)
-		promoteScalarToStructType(v)
 
-		if v.StructType != nil {
-			arg := &model.Value{}
-			loadValueExpr(arg, exprType.Index, fileImports, typeParams)
-			v.StructType.TypeArgs = append(v.StructType.TypeArgs, arg)
-		}
+		arg := &model.Value{}
+		loadValueExpr(arg, exprType.Index, fileImports, typeParams)
+		v.TypeArgs = append(v.TypeArgs, arg)
 	case *ast.IndexListExpr:
 		// Generic type with multiple type arguments: T[X, Y]
 		loadValueExpr(v, exprType.X, fileImports, typeParams)
-		promoteScalarToStructType(v)
 
-		if v.StructType != nil {
-			for _, index := range exprType.Indices {
-				arg := &model.Value{}
-				loadValueExpr(arg, index, fileImports, typeParams)
-				v.StructType.TypeArgs = append(v.StructType.TypeArgs, arg)
-			}
+		for _, index := range exprType.Indices {
+			arg := &model.Value{}
+			loadValueExpr(arg, index, fileImports, typeParams)
+			v.TypeArgs = append(v.TypeArgs, arg)
 		}
 	default:
 		trace("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())

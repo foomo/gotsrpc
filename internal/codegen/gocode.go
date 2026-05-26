@@ -9,6 +9,27 @@ import (
 	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
+func renderGoTypeArgs(typeArgs []*model.Value, aliases map[string]string, packageName string) string {
+	if len(typeArgs) == 0 {
+		return ""
+	}
+
+	var b strings.Builder
+	b.WriteString("[")
+
+	for i, arg := range typeArgs {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+
+		b.WriteString(valueGoType(arg, aliases, packageName))
+	}
+
+	b.WriteString("]")
+
+	return b.String()
+}
+
 func valueIsHTTPResponseWriter(v *model.Value) bool {
 	return (v.StructType != nil && v.StructType.Name == "ResponseWriter" && v.StructType.Package == "net/http") ||
 		(v.Scalar != nil && v.Scalar.Name == "ResponseWriter" && v.Scalar.Package == "net/http")
@@ -42,19 +63,7 @@ func valueGoType(v *model.Value, aliases map[string]string, packageName string) 
 		}
 
 		t += v.StructType.Name
-		if len(v.StructType.TypeArgs) > 0 {
-			t += "["
-
-			for i, arg := range v.StructType.TypeArgs {
-				if i > 0 {
-					t += ", "
-				}
-
-				t += valueGoType(arg, aliases, packageName)
-			}
-
-			t += "]"
-		}
+		t += renderGoTypeArgs(v.TypeArgs, aliases, packageName)
 	case v.Map != nil:
 		t += `map[` + valueGoType(v.Map.Key, aliases, packageName) + `]` + valueGoType(v.Map.Value, aliases, packageName)
 	case v.Scalar != nil:
@@ -63,6 +72,7 @@ func valueGoType(v *model.Value, aliases map[string]string, packageName string) 
 		}
 
 		t += v.Scalar.Name
+		t += renderGoTypeArgs(v.TypeArgs, aliases, packageName)
 	case v.IsInterface:
 		t += "any"
 	default:
@@ -126,10 +136,6 @@ func extractImportValue(value *model.Value, fullPackageName string, aliases map[
 	switch {
 	case value.StructType != nil:
 		extractImport(value.StructType.Package, fullPackageName, aliases)
-
-		for _, arg := range value.StructType.TypeArgs {
-			extractImportValue(arg, fullPackageName, aliases)
-		}
 	case value.Array != nil:
 		extractImportValue(value.Array.Value, fullPackageName, aliases)
 	case value.Map != nil:
@@ -138,10 +144,15 @@ func extractImportValue(value *model.Value, fullPackageName string, aliases map[
 	case value.Scalar != nil:
 		extractImport(value.Scalar.Package, fullPackageName, aliases)
 	}
+
+	for _, arg := range value.TypeArgs {
+		extractImportValue(arg, fullPackageName, aliases)
+	}
 }
 
 func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, unions map[string][]string, g *Code) error {
 	aliases := map[string]string{
+		"io":                          "io",
 		"time":                        "time",
 		"net/http":                    "http",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
