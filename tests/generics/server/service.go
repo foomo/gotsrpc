@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 
-	"github.com/foomo/gotsrpc/v2/tests/generics/private"
 	"github.com/foomo/gotsrpc/v2/tests/common"
+	"github.com/foomo/gotsrpc/v2/tests/generics/private"
 )
 
 type Service interface {

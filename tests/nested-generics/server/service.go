@@ -4,10 +4,11 @@ import (
 	"context"
 
 	"github.com/foomo/gotsrpc/v2/tests/common"
+	"github.com/foomo/gotsrpc/v2/tests/nested-generics/private"
 )
 
 type Middle[T any] interface {
-	Base[T]
+	private.Base[T]
 	GetWrapped(ctx context.Context) common.Response[T]
 }
 

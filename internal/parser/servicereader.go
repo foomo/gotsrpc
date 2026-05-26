@@ -20,6 +20,65 @@ type interfaceInfo struct {
 	typeParams []string
 }
 
+// interfaceResolver lazily loads interface definitions from any package by path.
+type interfaceResolver struct {
+	goPaths []string
+	gomod   config.Namespace
+	cache   map[string]map[string]interfaceInfo
+}
+
+func newInterfaceResolver(goPaths []string, gomod config.Namespace) *interfaceResolver {
+	return &interfaceResolver{
+		goPaths: goPaths,
+		gomod:   gomod,
+		cache:   map[string]map[string]interfaceInfo{},
+	}
+}
+
+func (r *interfaceResolver) seed(packagePath string, ifaces map[string]interfaceInfo) {
+	r.cache[packagePath] = ifaces
+}
+
+func (r *interfaceResolver) load(packagePath string) map[string]interfaceInfo {
+	if m, ok := r.cache[packagePath]; ok {
+		return m
+	}
+
+	pkg, err := parsePackage(r.goPaths, r.gomod, packagePath)
+	if err != nil || pkg == nil {
+		r.cache[packagePath] = map[string]interfaceInfo{}
+		return r.cache[packagePath]
+	}
+
+	m := collectPackageInterfaces(pkg, packagePath)
+	r.cache[packagePath] = m
+
+	return m
+}
+
+func (r *interfaceResolver) lookup(packagePath, name string) (interfaceInfo, bool) {
+	info, ok := r.load(packagePath)[name]
+	return info, ok
+}
+
+// extractInterfaceRef resolves an embedded interface reference expression to
+// (packagePath, name). Handles both same-package Ident and cross-package SelectorExpr.
+func extractInterfaceRef(expr ast.Expr, imports fileImportSpecMap) (pkgPath, name string, ok bool) {
+	switch x := expr.(type) {
+	case *ast.Ident:
+		return imports.getPackagePath(""), x.Name, true
+	case *ast.SelectorExpr:
+		pkgIdent, isIdent := x.X.(*ast.Ident)
+		if !isIdent {
+			return "", "", false
+		}
+
+		return imports.getPackagePath(pkgIdent.Name), x.Sel.Name, true
+	}
+
+	return "", "", false
+}
+
 // resolvedMethod pairs an AST function type with the file imports it was declared in.
 type resolvedMethod struct {
 	name         string
@@ -57,7 +116,7 @@ func Read(
 
 	pkgName = pkg.Name
 
-	services, err = readServicesInPackage(pkg, packageName, serviceMap)
+	services, err = readServicesInPackage(pkg, packageName, serviceMap, newInterfaceResolver(goPaths, gomod))
 	if err != nil {
 		return
 	}
@@ -165,7 +224,7 @@ func Read(
 	return
 }
 
-func readServiceFile(file *ast.File, packageName string, services model.ServiceList, pkgInterfaces map[string]interfaceInfo) error {
+func readServiceFile(file *ast.File, packageName string, services model.ServiceList, resolver *interfaceResolver) error {
 	findService := func(serviceName string) (service *model.Service, ok bool) {
 		for _, service := range services {
 			if service.Name == serviceName {
@@ -221,7 +280,7 @@ func readServiceFile(file *ast.File, packageName string, services model.ServiceL
 						if iSpec, ok := typeSpec.Type.(*ast.InterfaceType); ok {
 							service.IsInterface = true
 
-							resolved := resolveInterfaceMethods(iSpec, fileImports, pkgInterfaces, map[string]bool{ident.Name: true}, nil, nil)
+							resolved := resolveInterfaceMethods(iSpec, fileImports, resolver, map[string]bool{packageName + "." + ident.Name: true}, nil, nil)
 							for _, m := range resolved {
 								trace(" on sth:", m.name)
 
@@ -316,14 +375,12 @@ func substituteValue(v *model.Value, subst map[string]ast.Expr, substImports fil
 		substituteValue(v.Map.Value, subst, substImports)
 	}
 
-	if v.StructType != nil {
-		for _, arg := range v.StructType.TypeArgs {
-			substituteValue(arg, subst, substImports)
-		}
+	for _, arg := range v.TypeArgs {
+		substituteValue(arg, subst, substImports)
 	}
 }
 
-func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string) (services model.ServiceList, err error) {
+func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string, resolver *interfaceResolver) (services model.ServiceList, err error) {
 	if pkg == nil {
 		return nil, errors.New("package cannot be nil")
 	}
@@ -338,6 +395,7 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 	}
 
 	pkgInterfaces := collectPackageInterfaces(pkg, packageName)
+	resolver.seed(packageName, pkgInterfaces)
 
 	pkgFiles := make([]string, 0, len(pkg.Files))
 	for k := range pkg.Files {
@@ -349,7 +407,7 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 	for _, k := range pkgFiles {
 		file := pkg.Files[k]
 
-		err = readServiceFile(file, packageName, services, pkgInterfaces)
+		err = readServiceFile(file, packageName, services, resolver)
 		if err != nil {
 			return
 		}
@@ -757,9 +815,7 @@ func getScalarForField(value *model.Value) []*model.Scalar {
 	case value.Scalar != nil:
 		scalarTypes = append(scalarTypes, value.Scalar)
 	case value.StructType != nil:
-		for _, arg := range value.StructType.TypeArgs {
-			scalarTypes = append(scalarTypes, getScalarForField(arg)...)
-		}
+		// TypeArgs handled by outer loop below
 	case value.Map != nil:
 		if value.Map.Key != nil {
 			if v := getScalarForField(value.Map.Key); v != nil {
@@ -880,7 +936,7 @@ func resolveExpr(expr ast.Expr, typeSubst map[string]ast.Expr) ast.Expr {
 // following embedded interfaces via the pkgInterfaces map. Uses visited for cycle protection.
 // typeSubst maps type parameter names to concrete type expressions.
 // substImports are the imports needed to resolve expressions in typeSubst.
-func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap, pkgInterfaces map[string]interfaceInfo, visited map[string]bool, typeSubst map[string]ast.Expr, substImports fileImportSpecMap) []resolvedMethod {
+func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap, resolver *interfaceResolver, visited map[string]bool, typeSubst map[string]ast.Expr, substImports fileImportSpecMap) []resolvedMethod {
 	var methods []resolvedMethod
 
 	for _, field := range iface.Methods.List {
@@ -897,30 +953,41 @@ func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap
 				typeSubst:    typeSubst,
 				substImports: substImports,
 			})
-		case *ast.Ident:
-			// Embedded interface reference (non-generic)
-			if visited[ft.Name] {
-				continue
-			}
-
-			visited[ft.Name] = true
-			if info, ok := pkgInterfaces[ft.Name]; ok {
-				methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, nil, nil)...)
-			}
-		case *ast.IndexExpr:
-			// Generic embedded interface with single type arg: Base[string] or Base[T]
-			ident, ok := ft.X.(*ast.Ident)
+		case *ast.Ident, *ast.SelectorExpr:
+			// Embedded interface reference (non-generic), possibly cross-package.
+			pkgPath, name, ok := extractInterfaceRef(ft, imports)
 			if !ok {
 				continue
 			}
 
-			if visited[ident.Name] {
+			visitKey := pkgPath + "." + name
+			if visited[visitKey] {
 				continue
 			}
 
-			visited[ident.Name] = true
+			visited[visitKey] = true
 
-			info, ok := pkgInterfaces[ident.Name]
+			info, ok := resolver.lookup(pkgPath, name)
+			if !ok {
+				continue
+			}
+
+			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, resolver, visited, nil, nil)...)
+		case *ast.IndexExpr:
+			// Generic embedded interface with single type arg: Base[string], Base[T], or private.Base[T].
+			pkgPath, name, ok := extractInterfaceRef(ft.X, imports)
+			if !ok {
+				continue
+			}
+
+			visitKey := pkgPath + "." + name
+			if visited[visitKey] {
+				continue
+			}
+
+			visited[visitKey] = true
+
+			info, ok := resolver.lookup(pkgPath, name)
 			if !ok {
 				continue
 			}
@@ -940,21 +1007,22 @@ func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap
 				newSubst[info.typeParams[0]] = resolvedArg
 			}
 
-			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst, newSubstImports)...)
+			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, resolver, visited, newSubst, newSubstImports)...)
 		case *ast.IndexListExpr:
-			// Generic embedded interface with multiple type args: Keyed[string, int]
-			ident, ok := ft.X.(*ast.Ident)
+			// Generic embedded interface with multiple type args: Keyed[string, int] or private.Keyed[K, V].
+			pkgPath, name, ok := extractInterfaceRef(ft.X, imports)
 			if !ok {
 				continue
 			}
 
-			if visited[ident.Name] {
+			visitKey := pkgPath + "." + name
+			if visited[visitKey] {
 				continue
 			}
 
-			visited[ident.Name] = true
+			visited[visitKey] = true
 
-			info, ok := pkgInterfaces[ident.Name]
+			info, ok := resolver.lookup(pkgPath, name)
 			if !ok {
 				continue
 			}
@@ -973,7 +1041,7 @@ func resolveInterfaceMethods(iface *ast.InterfaceType, imports fileImportSpecMap
 				}
 			}
 
-			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, pkgInterfaces, visited, newSubst, newSubstImports)...)
+			methods = append(methods, resolveInterfaceMethods(info.iface, info.imports, resolver, visited, newSubst, newSubstImports)...)
 		}
 	}
 

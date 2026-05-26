@@ -8,6 +8,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	github_com_foomo_gotsrpc_v2_tests_generics_private "github.com/foomo/gotsrpc/v2/tests/generics/private"
 )
 
@@ -269,7 +270,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]
+			arg_env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_common.Item]
 		)
 		args = []any{&arg_env}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
@@ -297,7 +298,7 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			rets []any
 		)
 		var (
-			arg_req Response[Item]
+			arg_req github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]
 		)
 		args = []any{&arg_req}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {

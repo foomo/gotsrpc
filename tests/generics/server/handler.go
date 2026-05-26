@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 
-	"github.com/foomo/gotsrpc/v2/tests/generics/private"
 	"github.com/foomo/gotsrpc/v2/tests/common"
+	"github.com/foomo/gotsrpc/v2/tests/generics/private"
 )
 
 type Handler struct{}
@@ -53,9 +53,9 @@ func (h *Handler) SetEnvelope(_ context.Context, env *private.Envelope[common.It
 }
 
 func (h *Handler) GetEnvelope(_ context.Context, id string) *private.Envelope[common.Item] {
-	return &private.Envelope[Item]{
+	return &private.Envelope[common.Item]{
 		ID:      id,
-		Payload: Item{ID: "1", Name: "boxed"},
+		Payload: common.Item{ID: "1", Name: "boxed"},
 	}
 }
 
