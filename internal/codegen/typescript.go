@@ -12,10 +12,21 @@ import (
 	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
+// tsQuotedFieldNamePrefixes are leading characters that make a field name an
+// invalid TypeScript identifier, requiring the name to be emitted as a quoted
+// property key (e.g. `"@type"`, `"#text"`).
+var tsQuotedFieldNamePrefixes = []string{"@", "#"}
+
 func fieldTSName(f *model.Field) string {
 	n := f.Name
 	if f.JSONInfo != nil && len(f.JSONInfo.Name) > 0 {
 		n = f.JSONInfo.Name
+	}
+
+	for _, prefix := range tsQuotedFieldNamePrefixes {
+		if strings.HasPrefix(n, prefix) {
+			return `"` + n + `"`
+		}
 	}
 
 	return n
@@ -102,6 +113,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 			}
 
 			ts.App(tsType)
+			renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 
 			if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 				ts.App("|null")
@@ -111,6 +123,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 		}
 
 		ts.App(tsTypeFromScalarType(v.Scalar.Type))
+		renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 	case v.StructType != nil:
 		if v.StructType.Package != "" {
 			mapping, ok := mappings[v.StructType.Package]
@@ -121,7 +134,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 			}
 
 			ts.App(tsModule + "." + v.StructType.Name)
-			renderTSTypeArgs(v.StructType.TypeArgs, mappings, scalars, structs, ts)
+			renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 
 			hiddenStruct, isHiddenStruct := structs[v.StructType.FullName()]
 			if isHiddenStruct && (hiddenStruct.Array != nil || hiddenStruct.Map != nil) && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
@@ -134,7 +147,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 		}
 
 		ts.App(v.StructType.Name)
-		renderTSTypeArgs(v.StructType.TypeArgs, mappings, scalars, structs, ts)
+		renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 	case v.Struct != nil:
 		ts.L("{").Ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalars, structs, ts)

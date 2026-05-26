@@ -266,7 +266,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 	t.Run("SimpleStruct", func(t *testing.T) {
 		t.Parallel()
 
-		v := common.Simple{Bool: true, Int: 42, Int64: 100, Float64: 2.718, String: "test"}
+		v := common.Simple{Bool: true, Int: 42, Int64: 100, Float64: 2.718, String: "test", Alpha: "alpha", Hash: "hash"}
 		ret, clientErr := c.SimpleStruct(v)
 		require.NoError(t, clientErr)
 		assert.Equal(t, v, ret)
@@ -277,7 +277,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 
 		v := common.Nested{
 			Name:  "parent",
-			Child: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Child: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
 		}
 		ret, clientErr := c.NestedStruct(v)
 		require.NoError(t, clientErr)
@@ -288,7 +288,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.Inlined{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
 			Name:   "parent",
 		}
 		ret, clientErr := c.InlinedStruct(v)
@@ -300,7 +300,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.InlinedPtr{
-			Simple: &common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Simple: &common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
 			Name:   "parent",
 		}
 		ret, clientErr := c.InlinedPtrStruct(v)
@@ -314,7 +314,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.InlinedMultiple{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
 			Other:  common.Other{Label: "other"},
 			Name:   "parent",
 		}
@@ -327,7 +327,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.InlinedMixed{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
+			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
 			Extra:  &common.Other{Label: "extra"},
 			Name:   "parent",
 		}
@@ -345,7 +345,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		str := "hello"
 		i := int64(42)
 		b := true
-		child := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"}
+		child := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"}
 		v := server.WithPointers{
 			StrPtr: &str, Int64Ptr: &i, BoolPtr: &b, Child: &child,
 		}
@@ -367,10 +367,10 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		v := server.WithCollections{
 			Strings:   []string{"a", "b"},
 			Int64s:    []int64{1, 2, 3},
-			Items:     []common.Simple{{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item"}},
-			ItemPtrs:  []*common.Simple{{Bool: false, Int: 10, Int64: 20, Float64: 30.0, String: "ptr"}},
+			Items:     []common.Simple{{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item", Alpha: "alpha", Hash: "hash"}},
+			ItemPtrs:  []*common.Simple{{Bool: false, Int: 10, Int64: 20, Float64: 30.0, String: "ptr", Alpha: "alpha", Hash: "hash"}},
 			StringMap: map[string]string{"key": "val"},
-			StructMap: map[string]common.Simple{"s": {Bool: true, Int: 5, Int64: 6, Float64: 7.0, String: "map"}},
+			StructMap: map[string]common.Simple{"s": {Bool: true, Int: 5, Int64: 6, Float64: 7.0, String: "map", Alpha: "alpha", Hash: "hash"}},
 		}
 		ret, clientErr := c.StructWithCollections(v)
 		require.NoError(t, clientErr)
@@ -408,8 +408,8 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := []common.Simple{
-			{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"},
-			{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two"},
+			{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one", Alpha: "alpha", Hash: "hash"},
+			{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two", Alpha: "alpha", Hash: "hash"},
 		}
 		ret, clientErr := c.SimpleSlice(v)
 		require.NoError(t, clientErr)
@@ -419,8 +419,8 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 	t.Run("SimplePtrSlice", func(t *testing.T) {
 		t.Parallel()
 
-		s1 := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"}
-		s2 := common.Simple{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two"}
+		s1 := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one", Alpha: "alpha", Hash: "hash"}
+		s2 := common.Simple{Bool: false, Int: 4, Int64: 5, Float64: 6.0, String: "two", Alpha: "alpha", Hash: "hash"}
 		v := []*common.Simple{&s1, &s2}
 		ret, clientErr := c.SimplePtrSlice(v)
 		require.NoError(t, clientErr)
@@ -539,7 +539,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := map[string]common.Simple{
-			"one": {Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one"},
+			"one": {Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "one", Alpha: "alpha", Hash: "hash"},
 		}
 		ret, clientErr := c.StringSimpleMap(v)
 		require.NoError(t, clientErr)
@@ -549,7 +549,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 	t.Run("StringSimplePtrMap", func(t *testing.T) {
 		t.Parallel()
 
-		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "val"}
+		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "val", Alpha: "alpha", Hash: "hash"}
 		v := map[string]*common.Simple{"k": &s}
 		ret, clientErr := c.StringSimplePtrMap(v)
 		require.NoError(t, clientErr)
@@ -666,7 +666,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := map[string][]common.Simple{
-			"group": {{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item"}},
+			"group": {{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "item", Alpha: "alpha", Hash: "hash"}},
 		}
 		ret, clientErr := c.MapOfSimpleSlice(v)
 		require.NoError(t, clientErr)
@@ -697,7 +697,7 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 	t.Run("MixedArgs", func(t *testing.T) {
 		t.Parallel()
 
-		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "mix"}
+		s := common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "mix", Alpha: "alpha", Hash: "hash"}
 		items := []string{"a", "b"}
 		m := map[string]int64{"x": 10}
 		retS, retItems, retM, clientErr := c.MixedArgs(s, items, m)

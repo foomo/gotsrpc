@@ -8,18 +8,21 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
-	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
+	github_com_foomo_gotsrpc_v2_tests_generics_private "github.com/foomo/gotsrpc/v2/tests/generics/private"
 )
 
 const (
-	ServiceGoTSRPCProxyGetContainer      = "GetContainer"
-	ServiceGoTSRPCProxyGetItemResponse   = "GetItemResponse"
-	ServiceGoTSRPCProxyGetNestedGeneric  = "GetNestedGeneric"
-	ServiceGoTSRPCProxyGetPagedItems     = "GetPagedItems"
-	ServiceGoTSRPCProxyGetPair           = "GetPair"
-	ServiceGoTSRPCProxyGetResult         = "GetResult"
-	ServiceGoTSRPCProxyGetStringResponse = "GetStringResponse"
-	ServiceGoTSRPCProxySetItemResponse   = "SetItemResponse"
+	ServiceGoTSRPCProxyGetContainer             = "GetContainer"
+	ServiceGoTSRPCProxyGetEnvelope              = "GetEnvelope"
+	ServiceGoTSRPCProxyGetItemResponse          = "GetItemResponse"
+	ServiceGoTSRPCProxyGetNestedGeneric         = "GetNestedGeneric"
+	ServiceGoTSRPCProxyGetPagedItems            = "GetPagedItems"
+	ServiceGoTSRPCProxyGetPair                  = "GetPair"
+	ServiceGoTSRPCProxyGetResult                = "GetResult"
+	ServiceGoTSRPCProxyGetStringResponse        = "GetStringResponse"
+	ServiceGoTSRPCProxyRoundtripForeignEnvelope = "RoundtripForeignEnvelope"
+	ServiceGoTSRPCProxySetEnvelope              = "SetEnvelope"
+	ServiceGoTSRPCProxySetItemResponse          = "SetItemResponse"
 )
 
 type ServiceGoTSRPCProxy struct {
@@ -70,6 +73,34 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{getContainerRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyGetEnvelope:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_id string
+		)
+		args = []any{&arg_id}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		getEnvelopeRet := p.service.GetEnvelope(r.Context(), arg_id)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{getEnvelopeRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
@@ -204,13 +235,69 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		gotsrpc.Monitor(w, r, args, rets, callStats)
 		return
+	case ServiceGoTSRPCProxyRoundtripForeignEnvelope:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag]
+		)
+		args = []any{&arg_env}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		roundtripForeignEnvelopeRet := p.service.RoundtripForeignEnvelope(r.Context(), arg_env)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{roundtripForeignEnvelopeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxySetEnvelope:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]
+		)
+		args = []any{&arg_env}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		setEnvelopeRet := p.service.SetEnvelope(r.Context(), arg_env)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{setEnvelopeRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
 	case ServiceGoTSRPCProxySetItemResponse:
 		var (
 			args []any
 			rets []any
 		)
 		var (
-			arg_req github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]
+			arg_req Response[Item]
 		)
 		args = []any{&arg_req}
 		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {

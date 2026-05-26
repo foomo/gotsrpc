@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 
+	"github.com/foomo/gotsrpc/v2/tests/generics/private"
 	"github.com/foomo/gotsrpc/v2/tests/common"
 )
 
@@ -15,4 +16,7 @@ type Service interface {
 	GetNestedGeneric(ctx context.Context) PagedResponse[Pair[string, common.Item]]
 	GetResult(ctx context.Context) Result[common.Item]
 	GetContainer(ctx context.Context) Container[string, common.Item]
+	SetEnvelope(ctx context.Context, env *private.Envelope[common.Item]) string
+	GetEnvelope(ctx context.Context, id string) *private.Envelope[common.Item]
+	RoundtripForeignEnvelope(ctx context.Context, env *private.Envelope[private.Tag]) *private.Envelope[private.Tag]
 }

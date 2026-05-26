@@ -5,7 +5,7 @@ package server
 import (
 	tls "crypto/tls"
 
-	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
+	github_com_foomo_gotsrpc_v2_tests_generics_private "github.com/foomo/gotsrpc/v2/tests/generics/private"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -31,7 +31,7 @@ func (tsc *ServiceGoRPCClient) Stop() {
 	tsc.Client.Stop()
 }
 
-func (tsc *ServiceGoRPCClient) GetContainer() (retGetContainer_0 Container[string, github_com_foomo_gotsrpc_v2_tests_common.Item], clientErr error) {
+func (tsc *ServiceGoRPCClient) GetContainer() (retGetContainer_0 Container[string, Item], clientErr error) {
 	rpcReq := ServiceGetContainerRequest{}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -42,7 +42,18 @@ func (tsc *ServiceGoRPCClient) GetContainer() (retGetContainer_0 Container[strin
 	return rpcResp.RetGetContainer_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) GetItemResponse() (retGetItemResponse_0 github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item], clientErr error) {
+func (tsc *ServiceGoRPCClient) GetEnvelope(id string) (retGetEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item], clientErr error) {
+	rpcReq := ServiceGetEnvelopeRequest{Id: id}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceGetEnvelopeResponse)
+	return rpcResp.RetGetEnvelope_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) GetItemResponse() (retGetItemResponse_0 Response[Item], clientErr error) {
 	rpcReq := ServiceGetItemResponseRequest{}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -53,7 +64,7 @@ func (tsc *ServiceGoRPCClient) GetItemResponse() (retGetItemResponse_0 github_co
 	return rpcResp.RetGetItemResponse_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) GetNestedGeneric() (retGetNestedGeneric_0 PagedResponse[Pair[string, github_com_foomo_gotsrpc_v2_tests_common.Item]], clientErr error) {
+func (tsc *ServiceGoRPCClient) GetNestedGeneric() (retGetNestedGeneric_0 PagedResponse[Pair[string, Item]], clientErr error) {
 	rpcReq := ServiceGetNestedGenericRequest{}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -64,7 +75,7 @@ func (tsc *ServiceGoRPCClient) GetNestedGeneric() (retGetNestedGeneric_0 PagedRe
 	return rpcResp.RetGetNestedGeneric_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) GetPagedItems(page int) (retGetPagedItems_0 PagedResponse[github_com_foomo_gotsrpc_v2_tests_common.Item], clientErr error) {
+func (tsc *ServiceGoRPCClient) GetPagedItems(page int) (retGetPagedItems_0 PagedResponse[Item], clientErr error) {
 	rpcReq := ServiceGetPagedItemsRequest{Page: page}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -86,7 +97,7 @@ func (tsc *ServiceGoRPCClient) GetPair() (retGetPair_0 Pair[string, int], client
 	return rpcResp.RetGetPair_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) GetResult() (retGetResult_0 Result[github_com_foomo_gotsrpc_v2_tests_common.Item], clientErr error) {
+func (tsc *ServiceGoRPCClient) GetResult() (retGetResult_0 Result[Item], clientErr error) {
 	rpcReq := ServiceGetResultRequest{}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -97,7 +108,7 @@ func (tsc *ServiceGoRPCClient) GetResult() (retGetResult_0 Result[github_com_foo
 	return rpcResp.RetGetResult_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) GetStringResponse() (retGetStringResponse_0 github_com_foomo_gotsrpc_v2_tests_common.Response[string], clientErr error) {
+func (tsc *ServiceGoRPCClient) GetStringResponse() (retGetStringResponse_0 Response[string], clientErr error) {
 	rpcReq := ServiceGetStringResponseRequest{}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {
@@ -108,7 +119,29 @@ func (tsc *ServiceGoRPCClient) GetStringResponse() (retGetStringResponse_0 githu
 	return rpcResp.RetGetStringResponse_0, nil
 }
 
-func (tsc *ServiceGoRPCClient) SetItemResponse(req github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]) (retSetItemResponse_0 bool, clientErr error) {
+func (tsc *ServiceGoRPCClient) RoundtripForeignEnvelope(env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag]) (retRoundtripForeignEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag], clientErr error) {
+	rpcReq := ServiceRoundtripForeignEnvelopeRequest{Env: env}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceRoundtripForeignEnvelopeResponse)
+	return rpcResp.RetRoundtripForeignEnvelope_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) SetEnvelope(env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]) (retSetEnvelope_0 string, clientErr error) {
+	rpcReq := ServiceSetEnvelopeRequest{Env: env}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceSetEnvelopeResponse)
+	return rpcResp.RetSetEnvelope_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) SetItemResponse(req Response[Item]) (retSetItemResponse_0 bool, clientErr error) {
 	rpcReq := ServiceSetItemResponseRequest{Req: req}
 	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
 	if rpcErr != nil {

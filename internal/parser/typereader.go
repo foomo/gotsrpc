@@ -311,11 +311,9 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap,
 			v.Scalar = nil
 		}
 
-		if v.StructType != nil {
-			arg := &model.Value{}
-			loadValueExpr(arg, exprType.Index, fileImports, typeParams)
-			v.StructType.TypeArgs = append(v.StructType.TypeArgs, arg)
-		}
+		arg := &model.Value{}
+		loadValueExpr(arg, exprType.Index, fileImports, typeParams)
+		v.TypeArgs = append(v.TypeArgs, arg)
 	case *ast.IndexListExpr:
 		// Generic type with multiple type arguments: T[X, Y]
 		loadValueExpr(v, exprType.X, fileImports, typeParams)
@@ -329,12 +327,10 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap,
 			v.Scalar = nil
 		}
 
-		if v.StructType != nil {
-			for _, index := range exprType.Indices {
-				arg := &model.Value{}
-				loadValueExpr(arg, index, fileImports, typeParams)
-				v.StructType.TypeArgs = append(v.StructType.TypeArgs, arg)
-			}
+		for _, index := range exprType.Indices {
+			arg := &model.Value{}
+			loadValueExpr(arg, index, fileImports, typeParams)
+			v.TypeArgs = append(v.TypeArgs, arg)
 		}
 	default:
 		trace("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())

@@ -12,7 +12,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
-	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
+	github_com_foomo_gotsrpc_v2_tests_generics_private "github.com/foomo/gotsrpc/v2/tests/generics/private"
 	gorpc "github.com/valyala/gorpc"
 )
 
@@ -26,26 +26,33 @@ type (
 	ServiceGetContainerRequest struct {
 	}
 	ServiceGetContainerResponse struct {
-		RetGetContainer_0 Container[string, github_com_foomo_gotsrpc_v2_tests_common.Item]
+		RetGetContainer_0 Container[string, Item]
+	}
+
+	ServiceGetEnvelopeRequest struct {
+		Id string
+	}
+	ServiceGetEnvelopeResponse struct {
+		RetGetEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]
 	}
 
 	ServiceGetItemResponseRequest struct {
 	}
 	ServiceGetItemResponseResponse struct {
-		RetGetItemResponse_0 github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]
+		RetGetItemResponse_0 Response[Item]
 	}
 
 	ServiceGetNestedGenericRequest struct {
 	}
 	ServiceGetNestedGenericResponse struct {
-		RetGetNestedGeneric_0 PagedResponse[Pair[string, github_com_foomo_gotsrpc_v2_tests_common.Item]]
+		RetGetNestedGeneric_0 PagedResponse[Pair[string, Item]]
 	}
 
 	ServiceGetPagedItemsRequest struct {
 		Page int
 	}
 	ServiceGetPagedItemsResponse struct {
-		RetGetPagedItems_0 PagedResponse[github_com_foomo_gotsrpc_v2_tests_common.Item]
+		RetGetPagedItems_0 PagedResponse[Item]
 	}
 
 	ServiceGetPairRequest struct {
@@ -57,17 +64,31 @@ type (
 	ServiceGetResultRequest struct {
 	}
 	ServiceGetResultResponse struct {
-		RetGetResult_0 Result[github_com_foomo_gotsrpc_v2_tests_common.Item]
+		RetGetResult_0 Result[Item]
 	}
 
 	ServiceGetStringResponseRequest struct {
 	}
 	ServiceGetStringResponseResponse struct {
-		RetGetStringResponse_0 github_com_foomo_gotsrpc_v2_tests_common.Response[string]
+		RetGetStringResponse_0 Response[string]
+	}
+
+	ServiceRoundtripForeignEnvelopeRequest struct {
+		Env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag]
+	}
+	ServiceRoundtripForeignEnvelopeResponse struct {
+		RetRoundtripForeignEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag]
+	}
+
+	ServiceSetEnvelopeRequest struct {
+		Env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]
+	}
+	ServiceSetEnvelopeResponse struct {
+		RetSetEnvelope_0 string
 	}
 
 	ServiceSetItemResponseRequest struct {
-		Req github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]
+		Req Response[Item]
 	}
 	ServiceSetItemResponseResponse struct {
 		RetSetItemResponse_0 bool
@@ -77,6 +98,8 @@ type (
 func init() {
 	gob.Register(ServiceGetContainerRequest{})
 	gob.Register(ServiceGetContainerResponse{})
+	gob.Register(ServiceGetEnvelopeRequest{})
+	gob.Register(ServiceGetEnvelopeResponse{})
 	gob.Register(ServiceGetItemResponseRequest{})
 	gob.Register(ServiceGetItemResponseResponse{})
 	gob.Register(ServiceGetNestedGenericRequest{})
@@ -89,6 +112,10 @@ func init() {
 	gob.Register(ServiceGetResultResponse{})
 	gob.Register(ServiceGetStringResponseRequest{})
 	gob.Register(ServiceGetStringResponseResponse{})
+	gob.Register(ServiceRoundtripForeignEnvelopeRequest{})
+	gob.Register(ServiceRoundtripForeignEnvelopeResponse{})
+	gob.Register(ServiceSetEnvelopeRequest{})
+	gob.Register(ServiceSetEnvelopeResponse{})
 	gob.Register(ServiceSetItemResponseRequest{})
 	gob.Register(ServiceSetItemResponseResponse{})
 }
@@ -137,6 +164,10 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	case "ServiceGetContainerRequest":
 		retGetContainer_0 := p.service.GetContainer(go_context.Background())
 		response = ServiceGetContainerResponse{RetGetContainer_0: retGetContainer_0}
+	case "ServiceGetEnvelopeRequest":
+		req := request.(ServiceGetEnvelopeRequest)
+		retGetEnvelope_0 := p.service.GetEnvelope(go_context.Background(), req.Id)
+		response = ServiceGetEnvelopeResponse{RetGetEnvelope_0: retGetEnvelope_0}
 	case "ServiceGetItemResponseRequest":
 		retGetItemResponse_0 := p.service.GetItemResponse(go_context.Background())
 		response = ServiceGetItemResponseResponse{RetGetItemResponse_0: retGetItemResponse_0}
@@ -156,6 +187,14 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 	case "ServiceGetStringResponseRequest":
 		retGetStringResponse_0 := p.service.GetStringResponse(go_context.Background())
 		response = ServiceGetStringResponseResponse{RetGetStringResponse_0: retGetStringResponse_0}
+	case "ServiceRoundtripForeignEnvelopeRequest":
+		req := request.(ServiceRoundtripForeignEnvelopeRequest)
+		retRoundtripForeignEnvelope_0 := p.service.RoundtripForeignEnvelope(go_context.Background(), req.Env)
+		response = ServiceRoundtripForeignEnvelopeResponse{RetRoundtripForeignEnvelope_0: retRoundtripForeignEnvelope_0}
+	case "ServiceSetEnvelopeRequest":
+		req := request.(ServiceSetEnvelopeRequest)
+		retSetEnvelope_0 := p.service.SetEnvelope(go_context.Background(), req.Env)
+		response = ServiceSetEnvelopeResponse{RetSetEnvelope_0: retSetEnvelope_0}
 	case "ServiceSetItemResponseRequest":
 		req := request.(ServiceSetItemResponseRequest)
 		retSetItemResponse_0 := p.service.SetItemResponse(go_context.Background(), req.Req)

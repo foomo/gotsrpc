@@ -71,6 +71,9 @@ type Config struct {
 	Targets map[string]*Target `json:"targets" yaml:"targets"`
 	// Map of go module names to TypeScript mapping settings
 	Mappings TypeScriptMappings `json:"mappings" yaml:"mappings"`
+	// When true, appends .js extension to relative TypeScript import paths.
+	// Required for TypeScript projects using moduleResolution 'nodenext' or 'node16'.
+	TSImportJsExtension bool `json:"tsImportJsExtension" yaml:"tsImportJsExtension"`
 }
 
 func LoadConfigFile(file string) (conf *Config, err error) {

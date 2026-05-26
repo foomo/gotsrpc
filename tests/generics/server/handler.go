@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 
+	"github.com/foomo/gotsrpc/v2/tests/generics/private"
 	"github.com/foomo/gotsrpc/v2/tests/common"
 )
 
@@ -44,5 +45,26 @@ func (h *Handler) GetContainer(_ context.Context) Container[string, common.Item]
 	return Container[string, common.Item]{
 		Data:    map[string]common.Item{"key": {ID: "1", Name: "contained"}},
 		Default: common.Item{ID: "0", Name: "default"},
+	}
+}
+
+func (h *Handler) SetEnvelope(_ context.Context, env *private.Envelope[common.Item]) string {
+	return env.ID + ":" + env.Payload.Name
+}
+
+func (h *Handler) GetEnvelope(_ context.Context, id string) *private.Envelope[common.Item] {
+	return &private.Envelope[Item]{
+		ID:      id,
+		Payload: Item{ID: "1", Name: "boxed"},
+	}
+}
+
+func (h *Handler) RoundtripForeignEnvelope(_ context.Context, env *private.Envelope[private.Tag]) *private.Envelope[private.Tag] {
+	return &private.Envelope[private.Tag]{
+		ID: "echo:" + env.ID,
+		Payload: private.Tag{
+			Name:  env.Payload.Name,
+			Value: env.Payload.Value,
+		},
 	}
 }
