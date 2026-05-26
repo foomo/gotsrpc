@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+
+	"github.com/foomo/gotsrpc/v2/tests/generics/private"
 )
 
 type Handler struct{}
@@ -42,5 +44,26 @@ func (h *Handler) GetContainer(_ context.Context) Container[string, Item] {
 	return Container[string, Item]{
 		Data:    map[string]Item{"key": {ID: "1", Name: "contained"}},
 		Default: Item{ID: "0", Name: "default"},
+	}
+}
+
+func (h *Handler) SetEnvelope(_ context.Context, env *private.Envelope[Item]) string {
+	return env.ID + ":" + env.Payload.Name
+}
+
+func (h *Handler) GetEnvelope(_ context.Context, id string) *private.Envelope[Item] {
+	return &private.Envelope[Item]{
+		ID:      id,
+		Payload: Item{ID: "1", Name: "boxed"},
+	}
+}
+
+func (h *Handler) RoundtripForeignEnvelope(_ context.Context, env *private.Envelope[private.Tag]) *private.Envelope[private.Tag] {
+	return &private.Envelope[private.Tag]{
+		ID: "echo:" + env.ID,
+		Payload: private.Tag{
+			Name:  env.Payload.Name,
+			Value: env.Payload.Value,
+		},
 	}
 }

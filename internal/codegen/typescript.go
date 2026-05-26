@@ -113,6 +113,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 			}
 
 			ts.App(tsType)
+			renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 
 			if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 				ts.App("|null")
@@ -122,6 +123,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 		}
 
 		ts.App(tsTypeFromScalarType(v.Scalar.Type))
+		renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 	case v.StructType != nil:
 		if v.StructType.Package != "" {
 			mapping, ok := mappings[v.StructType.Package]
@@ -132,7 +134,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 			}
 
 			ts.App(tsModule + "." + v.StructType.Name)
-			renderTSTypeArgs(v.StructType.TypeArgs, mappings, scalars, structs, ts)
+			renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 
 			hiddenStruct, isHiddenStruct := structs[v.StructType.FullName()]
 			if isHiddenStruct && (hiddenStruct.Array != nil || hiddenStruct.Map != nil) && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
@@ -145,7 +147,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 		}
 
 		ts.App(v.StructType.Name)
-		renderTSTypeArgs(v.StructType.TypeArgs, mappings, scalars, structs, ts)
+		renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 	case v.Struct != nil:
 		ts.L("{").Ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalars, structs, ts)

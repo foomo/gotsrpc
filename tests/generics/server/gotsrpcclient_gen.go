@@ -7,17 +7,21 @@ import (
 	go_net_http "net/http"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_generics_private "github.com/foomo/gotsrpc/v2/tests/generics/private"
 	pkg_errors "github.com/pkg/errors"
 )
 
 type ServiceGoTSRPCClient interface {
 	GetContainer(ctx go_context.Context) (retGetContainer_0 Container[string, Item], clientErr error)
+	GetEnvelope(ctx go_context.Context, id string) (retGetEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item], clientErr error)
 	GetItemResponse(ctx go_context.Context) (retGetItemResponse_0 Response[Item], clientErr error)
 	GetNestedGeneric(ctx go_context.Context) (retGetNestedGeneric_0 PagedResponse[Pair[string, Item]], clientErr error)
 	GetPagedItems(ctx go_context.Context, page int) (retGetPagedItems_0 PagedResponse[Item], clientErr error)
 	GetPair(ctx go_context.Context) (retGetPair_0 Pair[string, int], clientErr error)
 	GetResult(ctx go_context.Context) (retGetResult_0 Result[Item], clientErr error)
 	GetStringResponse(ctx go_context.Context) (retGetStringResponse_0 Response[string], clientErr error)
+	RoundtripForeignEnvelope(ctx go_context.Context, env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag]) (retRoundtripForeignEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag], clientErr error)
+	SetEnvelope(ctx go_context.Context, env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]) (retSetEnvelope_0 string, clientErr error)
 	SetItemResponse(ctx go_context.Context, req Response[Item]) (retSetItemResponse_0 bool, clientErr error)
 }
 
@@ -49,6 +53,16 @@ func (tsc *HTTPServiceGoTSRPCClient) GetContainer(ctx go_context.Context) (retGe
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "GetContainer", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy GetContainer")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) GetEnvelope(ctx go_context.Context, id string) (retGetEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item], clientErr error) {
+	rpcArgs := []any{id}
+	rpcReply := []any{&retGetEnvelope_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "GetEnvelope", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy GetEnvelope")
 	}
 	return
 }
@@ -109,6 +123,26 @@ func (tsc *HTTPServiceGoTSRPCClient) GetStringResponse(ctx go_context.Context) (
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "GetStringResponse", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy GetStringResponse")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) RoundtripForeignEnvelope(ctx go_context.Context, env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag]) (retRoundtripForeignEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_generics_private.Tag], clientErr error) {
+	rpcArgs := []any{env}
+	rpcReply := []any{&retRoundtripForeignEnvelope_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "RoundtripForeignEnvelope", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy RoundtripForeignEnvelope")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) SetEnvelope(ctx go_context.Context, env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]) (retSetEnvelope_0 string, clientErr error) {
+	rpcArgs := []any{env}
+	rpcReply := []any{&retSetEnvelope_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "SetEnvelope", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy SetEnvelope")
 	}
 	return
 }
