@@ -152,7 +152,6 @@ func extractImportValue(value *model.Value, fullPackageName string, aliases map[
 
 func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, unions map[string][]string, g *Code) error {
 	aliases := map[string]string{
-		"io":                          "io",
 		"time":                        "time",
 		"net/http":                    "http",
 		"github.com/foomo/gotsrpc/v2": "gotsrpc",
