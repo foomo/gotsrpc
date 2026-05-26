@@ -27,7 +27,7 @@ func MustRegisterUnionExt(v ...any) {
 
 func (x *UnionExt) ConvertExt(v any) any {
 	val := reflect.ValueOf(v)
-	if val.Kind() == reflect.Ptr {
+	if val.Kind() == reflect.Pointer {
 		val = val.Elem()
 	}
 

@@ -19,11 +19,12 @@
 
 <!-- Link related issues: Fixes #123, Closes #456 -->
 
-## Changes
+### Changes
 
 <!-- List key changes -->
 
 ### Checklist
+
 - [ ] My code adheres to the coding and style guidelines of the project.
 - [ ] I have performed a self-review of my own code.
 - [ ] I have commented on my code, particularly in hard-to-understand areas.
