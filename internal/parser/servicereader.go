@@ -380,7 +380,7 @@ func substituteValue(v *model.Value, subst map[string]ast.Expr, substImports fil
 	}
 }
 
-func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[string]string, resolver *interfaceResolver) (services model.ServiceList, err error) {
+func readServicesInPackage(pkg *parsedPackage, packageName string, serviceMap map[string]string, resolver *interfaceResolver) (services model.ServiceList, err error) {
 	if pkg == nil {
 		return nil, errors.New("package cannot be nil")
 	}
@@ -418,7 +418,7 @@ func readServicesInPackage(pkg *ast.Package, packageName string, serviceMap map[
 	return
 }
 
-func loadConstantTypes(pkg *ast.Package) map[string]any {
+func loadConstantTypes(pkg *parsedPackage) map[string]any {
 	constantTypes := map[string]any{}
 
 	for _, file := range pkg.Files {
@@ -877,7 +877,7 @@ func collectStructTypes(fields []*model.Field, structTypes map[string]bool) {
 
 // collectPackageInterfaces scans all files in the package and builds a map
 // of interface names to their AST and file imports.
-func collectPackageInterfaces(pkg *ast.Package, packageName string) map[string]interfaceInfo {
+func collectPackageInterfaces(pkg *parsedPackage, packageName string) map[string]interfaceInfo {
 	result := map[string]interfaceInfo{}
 
 	for _, file := range pkg.Files {

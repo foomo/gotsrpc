@@ -506,7 +506,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 	return nil
 }
 
-func readStructs(pkg *ast.Package, packageName string) (structs map[string]*model.Struct, scalars map[string]*model.Scalar, err error) {
+func readStructs(pkg *parsedPackage, packageName string) (structs map[string]*model.Struct, scalars map[string]*model.Scalar, err error) {
 	structs = map[string]*model.Struct{}
 
 	trace("reading files in package", packageName)
