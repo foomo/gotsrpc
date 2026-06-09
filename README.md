@@ -1,6 +1,9 @@
-[![Build Status](https://github.com/foomo/gotsrpc/actions/workflows/test.yml/badge.svg?branch=main&event=push)](https://github.com/foomo/gotsrpc/actions/workflows/test.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/foomo/gotsrpc)](https://goreportcard.com/report/github.com/foomo/gotsrpc)
-[![GoDoc](https://godoc.org/github.com/foomo/gotsrpc?status.svg)](https://godoc.org/github.com/foomo/gotsrpc)
+[![Go Report Card](https://goreportcard.com/badge/github.com/foomo/gotsrpc?style=flat-square)](https://goreportcard.com/report/github.com/foomo/gotsrpc)
+[![GoDoc](https://img.shields.io/badge/GoDoc-✓-informational.svg?style=flat-square&logo=go)](https://godoc.org/github.com/foomo/gotsrpc)
+[![Coverage](https://img.shields.io/codecov/c/github/foomo/gotsrpc?style=flat-square&logo=github)](https://app.codecov.io/gh/foomo/gotsrpc)
+[![GitHub Downloads](https://img.shields.io/github/downloads/foomo/gotsrpc/total.svg?style=flat-square&logo=github)](https://github.com/foomo/gotsrpc/releases)
+[![Docker Pulls](https://img.shields.io/docker/pulls/foomo/gotsrpc.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/foomo/gotsrpc)
+[![GitHub Stars](https://img.shields.io/github/stars/foomo/gotsrpc.svg?style=flat-square&logo=github)](https://github.com/foomo/gotsrpc)
 
 <p align="center">
   <img alt="gotsrpc" src="docs/public/logo.png" width="400" height="400"/>

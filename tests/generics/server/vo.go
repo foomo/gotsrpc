@@ -1,18 +1,8 @@
 package server
 
-type Response[T any] struct {
-	Data  T      `json:"data"`
-	Error string `json:"error,omitempty"`
-}
-
 type Pair[A, B any] struct {
 	First  A `json:"first"`
 	Second B `json:"second"`
-}
-
-type Item struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }
 
 type PagedResponse[T any] struct {

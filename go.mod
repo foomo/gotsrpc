@@ -4,14 +4,14 @@ go 1.26
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/foomo/go v0.11.0
+	github.com/foomo/go v0.12.0
 	github.com/invopop/jsonschema v0.14.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
 	github.com/ugorji/go/codec v1.3.1
-	golang.org/x/mod v0.36.0
+	golang.org/x/mod v0.37.0
 	golang.org/x/tools v0.45.0
 	gopkg.in/yaml.v2 v2.4.0
 )

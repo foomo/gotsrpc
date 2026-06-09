@@ -16,3 +16,5 @@ mappings:
     out: ./client/vo.ts
   github.com/foomo/gotsrpc/v2/tests/generics/private:
     out: ./client/private-vo.ts
+  github.com/foomo/gotsrpc/v2/tests/common:
+    out: ./client/vo-common.ts

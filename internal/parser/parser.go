@@ -3,146 +3,154 @@ package parser
 import (
 	"fmt"
 	"go/ast"
-	"go/parser"
 	"go/token"
-	"os"
-	"path"
-	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
+	"golang.org/x/tools/go/packages"
 
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-func parserExcludeFiles(info os.FileInfo) bool {
-	return !strings.HasSuffix(info.Name(), "_test.go")
+// parsedPackage is a minimal stand-in for the deprecated go/ast.Package.
+// It exposes only the fields the rest of the parser actually consumes:
+// the package's short name and its parsed source files keyed by absolute path.
+type parsedPackage struct {
+	Name    string
+	Files   map[string]*ast.File
+	FileSet *token.FileSet
 }
 
-func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map[string]*ast.Package, *token.FileSet, error) {
-	if gomod.Name != "" && strings.HasPrefix(packageName, gomod.Name) {
-		fset := token.NewFileSet()
-		dir := strings.Replace(packageName, gomod.Name, gomod.Path, 1)
-		pkgs, err := parser.ParseDir(fset, dir, parserExcludeFiles, parser.DeclarationErrors|parser.AllErrors)
-
-		return pkgs, fset, err
+// loadPackage resolves and parses a single Go package by import path using
+// golang.org/x/tools/go/packages. Delegating to `go list` gives correct
+// handling of:
+//   - module-versioned import paths (e.g. go.mongodb.org/mongo-driver/v2),
+//     whose on-disk directory does not contain the /v2 suffix;
+//   - go.mod replace and require directives;
+//   - vendored and module-cache lookups.
+//
+// This replaces the previous hand-rolled goPaths walk together with the
+// deprecated go/parser.ParseDir and go/ast.NewPackage calls.
+func loadPackage(gomod config.Namespace, packageName string) (*parsedPackage, error) {
+	cfg := &packages.Config{
+		Mode: packages.NeedName |
+			packages.NeedFiles |
+			packages.NeedCompiledGoFiles |
+			packages.NeedSyntax,
+		Dir:   gomod.Path,
+		Tests: false,
 	}
 
-	errorStrings := map[string]string{}
-
-	for _, goPath := range goPaths {
-		var dir string
-
-		fset := token.NewFileSet()
-
-		if gomod.ModFile != nil {
-			for _, rep := range gomod.ModFile.Replace {
-				if packageName == rep.Old.Path || strings.HasPrefix(packageName, rep.Old.Path+"/") {
-					if strings.HasPrefix(rep.New.String(), ".") || strings.HasPrefix(rep.New.Path, "/") {
-						trace("replacing package with local dir", packageName, rep.Old.String(), rep.New.String())
-						dir = strings.Replace(packageName, rep.Old.Path, filepath.Join(gomod.Path, rep.New.Path), 1)
-					} else {
-						trace("replacing package", packageName, rep.Old.String(), rep.New.String())
-						dir = strings.TrimSuffix(path.Join(goPath, "pkg", "mod", rep.New.String(), strings.TrimPrefix(packageName, rep.Old.Path)), "/")
-					}
-
-					break
-				}
-			}
-
-			if dir == "" {
-				for _, req := range gomod.ModFile.Require {
-					if packageName == req.Mod.Path || strings.HasPrefix(packageName, req.Mod.Path+"/") {
-						trace("resolving mod package", packageName, req.Mod.String())
-						dir = strings.TrimSuffix(path.Join(goPath, "pkg", "mod", req.Mod.String(), strings.TrimPrefix(packageName, req.Mod.Path)), "/")
-
-						break
-					}
-				}
-			}
-		}
-
-		if dir == "" {
-			if strings.HasSuffix(goPath, "vendor") {
-				dir = path.Join(goPath, packageName)
-			} else {
-				dir = path.Join(goPath, "src", packageName)
-			}
-		}
-
-		pkgs, err := parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
-		if err == nil {
-			return pkgs, fset, nil
-		}
-
-		errorStrings[dir] = err.Error()
-	}
-
-	return nil, nil, errors.New("could not parse dir for package name: " + packageName + " in goPaths " + strings.Join(goPaths, ", ") + " : " + fmt.Sprint(errorStrings))
-}
-
-func parsePackage(goPaths []string, gomod config.Namespace, packageName string) (pkg *ast.Package, err error) {
-	pkgs, fset, err := parseDir(goPaths, gomod, packageName)
+	pkgs, err := packages.Load(cfg, packageName)
 	if err != nil {
-		return nil, errors.New("could not parse package " + packageName + ": " + err.Error())
+		return nil, errors.New("could not load package " + packageName + ": " + err.Error())
 	}
 
-	packageNameParts := strings.Split(packageName, "/")
-	if len(packageNameParts) == 0 {
-		return nil, errors.New("invalid package name given")
+	if len(pkgs) == 0 {
+		return nil, errors.New("package not found: " + packageName)
 	}
 
-	strippedPackageName := packageNameParts[len(packageNameParts)-1]
-	if len(pkgs) == 1 {
-		for _, v := range pkgs {
-			strippedPackageName = v.Name
-			break
+	var firstErr error
+
+	for _, pkg := range pkgs {
+		if pkg.Name == "" || len(pkg.Syntax) == 0 {
+			if firstErr == nil && len(pkg.Errors) > 0 {
+				firstErr = fmt.Errorf("%v", pkg.Errors)
+			}
+
+			continue
+		}
+
+		fileNames := pkg.CompiledGoFiles
+		if len(fileNames) != len(pkg.Syntax) {
+			fileNames = pkg.GoFiles
+		}
+
+		files := make(map[string]*ast.File, len(pkg.Syntax))
+
+		for i, syntax := range pkg.Syntax {
+			var name string
+			if i < len(fileNames) {
+				name = fileNames[i]
+			} else {
+				name = fmt.Sprintf("%s.%d.go", pkg.PkgPath, i)
+			}
+
+			if strings.HasSuffix(name, "_test.go") {
+				continue
+			}
+
+			files[name] = syntax
+		}
+
+		if len(files) == 0 {
+			continue
+		}
+
+		// go/packages parses each file independently, so cross-file identifier
+		// references (the ones go/ast.NewPackage used to resolve) come back
+		// with Ident.Obj == nil. Several readers downstream rely on Obj being
+		// linked to follow named-map / array aliases through the package, so
+		// we re-run that linking step ourselves. This avoids depending on the
+		// deprecated ast.NewPackage while keeping behavior identical.
+		resolvePackageScope(files)
+
+		return &parsedPackage{
+			Name:    pkg.Name,
+			Files:   files,
+			FileSet: pkg.Fset,
+		}, nil
+	}
+
+	if firstErr != nil {
+		return nil, errors.New("could not load package " + packageName + ": " + firstErr.Error())
+	}
+
+	return nil, errors.New("package not found: " + packageName)
+}
+
+// parsePackage retains its prior signature so existing callers compile
+// unchanged. The goPaths argument is no longer used — package resolution
+// is fully delegated to go/packages via the module config in gomod.
+func parsePackage(_ []string, gomod config.Namespace, packageName string) (*parsedPackage, error) {
+	return loadPackage(gomod, packageName)
+}
+
+// resolvePackageScope re-creates the cross-file identifier linking that the
+// deprecated go/ast.NewPackage used to perform. It walks every file in the
+// package, merges all top-level declarations into a single package-level
+// scope, then re-resolves each file's Unresolved identifiers against that
+// scope, populating Ident.Obj when a match is found.
+//
+// The legacy ast.Object machinery is itself deprecated in favor of go/types,
+// but the existing readers in this package still navigate the AST via
+// Ident.Obj, so we replicate that contract locally instead of leaking the
+// deprecated ast.NewPackage symbol into the call graph.
+func resolvePackageScope(files map[string]*ast.File) {
+	pkgScope := ast.NewScope(nil)
+
+	for _, f := range files {
+		if f.Scope == nil {
+			continue
+		}
+
+		for _, obj := range f.Scope.Objects {
+			// first declaration wins, mirroring ast.NewPackage's behavior
+			_ = pkgScope.Insert(obj)
 		}
 	}
 
-	var foundPackages []string
+	for _, f := range files {
+		stillUnresolved := f.Unresolved[:0]
 
-	sortedGoPaths := make([]string, len(goPaths))
-	copy(sortedGoPaths, goPaths)
-	sort.Sort(byLen(sortedGoPaths))
-
-	var parsedPkg *ast.Package
-
-Loop:
-	for pkgName, pkg := range pkgs {
-		if pkgName == strippedPackageName {
-			parsedPkg = pkg
-			break
-		}
-
-		for pkgFile := range pkg.Files {
-			for _, goPath := range sortedGoPaths {
-				prefix := goPath + "/"
-				if strings.HasPrefix(pkgFile, prefix) && !strings.HasSuffix(pkgFile, "_test.go") && !strings.HasSuffix(pkgFile, "_generator.go") {
-					trimmedFilename := strings.TrimPrefix(pkgFile, prefix)
-
-					parts := strings.Split(trimmedFilename, "/")
-					if len(parts) > 1 {
-						parts = parts[0 : len(parts)-1]
-						if strings.Join(parts, "/") == packageName {
-							parsedPkg = pkg
-							break Loop
-						}
-					}
-				}
+		for _, ident := range f.Unresolved {
+			if obj := pkgScope.Lookup(ident.Name); obj != nil {
+				ident.Obj = obj
+			} else {
+				stillUnresolved = append(stillUnresolved, ident)
 			}
 		}
 
-		foundPackages = append(foundPackages, pkgName)
+		f.Unresolved = stillUnresolved
 	}
-
-	if parsedPkg == nil {
-		return nil, errors.New("package \"" + packageName + "\" not found in " + strings.Join(foundPackages, ", ") + " looking in go paths" + strings.Join(goPaths, ", "))
-	}
-
-	// create new package with resolved objects
-	resolvedPkg, _ := ast.NewPackage(fset, parsedPkg.Files, nil, nil) // ignore error
-
-	return resolvedPkg, nil
 }

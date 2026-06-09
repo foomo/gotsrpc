@@ -93,8 +93,9 @@ build.debug:
 
 .PHONY: install
 ## Run go install
+install: GOPATH=$(shell go env GOPATH)
 install:
-	@echo "〉installing gotsrpc"
+	@echo "〉installing gotsrpc to ${GOPATH}/bin/gosrpc"
 	@go install cmd/gotsrpc/gotsrpc.go
 
 .PHONY: install.debug

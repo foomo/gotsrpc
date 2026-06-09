@@ -68,6 +68,10 @@ export interface InlinedPtr extends Partial<github_com_foomo_gotsrpc_v2_tests_co
 }
 // github.com/foomo/gotsrpc/v2/tests/types/server.ObjectID
 export type ObjectID = Uint8Array & { readonly length: 12 }
+// github.com/foomo/gotsrpc/v2/tests/types/server.StringObjectID
+export interface StringObjectID {
+	objectId:string;
+}
 // github.com/foomo/gotsrpc/v2/tests/types/server.WithCollections
 export interface WithCollections {
 	strings:Array<string>|null;

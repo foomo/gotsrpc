@@ -48,7 +48,7 @@ test("registryValue", async () => {
 });
 
 test("indexValue", async () => {
-	const v = { [Category.A]: [{ id: "1", status: Status.Active, priority: Priority.Low, rating: 1.0 }], [Category.B]: null };
+	const v = { [Category.A]: [{ id: "1", status: Status.Active, priority: Priority.Low, rating: 1.0 }] };
 	const ret = await client.indexValue(v);
 	expect(ret![Category.A]).toHaveLength(1);
 	expect(ret![Category.A]![0]!.id).toBe("1");

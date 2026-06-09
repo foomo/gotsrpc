@@ -6,11 +6,6 @@ export interface Container<K extends string | number | symbol, V> {
 	data:Record<K,V>|null;
 	default:V;
 }
-// github.com/foomo/gotsrpc/v2/tests/generics/server.Item
-export interface Item {
-	id:string;
-	name:string;
-}
 // github.com/foomo/gotsrpc/v2/tests/generics/server.PagedResponse
 export interface PagedResponse<T> {
 	items:Array<T>|null;
@@ -20,11 +15,6 @@ export interface PagedResponse<T> {
 export interface Pair<A, B> {
 	first:A;
 	second:B;
-}
-// github.com/foomo/gotsrpc/v2/tests/generics/server.Response
-export interface Response<T> {
-	data:T;
-	error?:string;
 }
 // github.com/foomo/gotsrpc/v2/tests/generics/server.Result
 export interface Result<T> {

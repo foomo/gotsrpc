@@ -345,6 +345,13 @@ type (
 		RetStringInt8Map_0 map[string]int8
 	}
 
+	ServiceStringObjectIDRequest struct {
+		V StringObjectID
+	}
+	ServiceStringObjectIDResponse struct {
+		RetStringObjectID_0 StringObjectID
+	}
+
 	ServiceStringPtrRequest struct {
 		V *string
 	}
@@ -633,6 +640,8 @@ func init() {
 	gob.Register(ServiceStringInt64MapResponse{})
 	gob.Register(ServiceStringInt8MapRequest{})
 	gob.Register(ServiceStringInt8MapResponse{})
+	gob.Register(ServiceStringObjectIDRequest{})
+	gob.Register(ServiceStringObjectIDResponse{})
 	gob.Register(ServiceStringPtrRequest{})
 	gob.Register(ServiceStringPtrResponse{})
 	gob.Register(ServiceStringSimpleMapRequest{})
@@ -911,6 +920,10 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceStringInt8MapRequest)
 		retStringInt8Map_0 := p.service.StringInt8Map(go_context.Background(), req.V)
 		response = ServiceStringInt8MapResponse{RetStringInt8Map_0: retStringInt8Map_0}
+	case "ServiceStringObjectIDRequest":
+		req := request.(ServiceStringObjectIDRequest)
+		retStringObjectID_0 := p.service.StringObjectID(go_context.Background(), req.V)
+		response = ServiceStringObjectIDResponse{RetStringObjectID_0: retStringObjectID_0}
 	case "ServiceStringPtrRequest":
 		req := request.(ServiceStringPtrRequest)
 		retStringPtr_0 := p.service.StringPtr(go_context.Background(), req.V)

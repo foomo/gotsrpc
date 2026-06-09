@@ -301,6 +301,15 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap,
 	case *ast.IndexExpr:
 		// Generic type with single type argument: T[X]
 		loadValueExpr(v, exprType.X, fileImports, typeParams)
+		// Cross-package types have ident.Obj==nil, so readAstType may
+		// create a Scalar instead of StructType. Promote for generics.
+		if v.StructType == nil && v.Scalar != nil {
+			v.StructType = &model.StructType{
+				Name:    v.Scalar.Name,
+				Package: v.Scalar.Package,
+			}
+			v.Scalar = nil
+		}
 
 		arg := &model.Value{}
 		loadValueExpr(arg, exprType.Index, fileImports, typeParams)
@@ -308,6 +317,15 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap,
 	case *ast.IndexListExpr:
 		// Generic type with multiple type arguments: T[X, Y]
 		loadValueExpr(v, exprType.X, fileImports, typeParams)
+		// Cross-package types have ident.Obj==nil, so readAstType may
+		// create a Scalar instead of StructType. Promote for generics.
+		if v.StructType == nil && v.Scalar != nil {
+			v.StructType = &model.StructType{
+				Name:    v.Scalar.Name,
+				Package: v.Scalar.Package,
+			}
+			v.Scalar = nil
+		}
 
 		for _, index := range exprType.Indices {
 			arg := &model.Value{}
@@ -488,7 +506,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 	return nil
 }
 
-func readStructs(pkg *ast.Package, packageName string) (structs map[string]*model.Struct, scalars map[string]*model.Scalar, err error) {
+func readStructs(pkg *parsedPackage, packageName string) (structs map[string]*model.Struct, scalars map[string]*model.Scalar, err error) {
 	structs = map[string]*model.Struct{}
 
 	trace("reading files in package", packageName)

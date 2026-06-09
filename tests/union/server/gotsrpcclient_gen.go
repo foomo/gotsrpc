@@ -7,12 +7,17 @@ import (
 	go_net_http "net/http"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_union_private "github.com/foomo/gotsrpc/v2/tests/union/private"
 	pkg_errors "github.com/pkg/errors"
 )
 
 type ServiceGoTSRPCClient interface {
 	InlineStruct(ctx go_context.Context) (e InlineStruct, clientErr error)
 	InlineStructPtr(ctx go_context.Context) (e InlineStructPtr, clientErr error)
+	PrivateInlineStruct(ctx go_context.Context) (e *github_com_foomo_gotsrpc_v2_tests_union_private.InlineStruct, clientErr error)
+	PrivateInlineStructPtr(ctx go_context.Context) (e *github_com_foomo_gotsrpc_v2_tests_union_private.InlineStructPtr, clientErr error)
+	PrivateUnionString(ctx go_context.Context) (e *PrivateUnionString, clientErr error)
+	PrivateUnionStruct(ctx go_context.Context) (e *PrivateUnionStruct, clientErr error)
 	UnionString(ctx go_context.Context) (e UnionString, clientErr error)
 	UnionStruct(ctx go_context.Context) (e UnionStruct, clientErr error)
 }
@@ -55,6 +60,46 @@ func (tsc *HTTPServiceGoTSRPCClient) InlineStructPtr(ctx go_context.Context) (e 
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "InlineStructPtr", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy InlineStructPtr")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) PrivateInlineStruct(ctx go_context.Context) (e *github_com_foomo_gotsrpc_v2_tests_union_private.InlineStruct, clientErr error) {
+	rpcArgs := []any{}
+	rpcReply := []any{&e}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "PrivateInlineStruct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy PrivateInlineStruct")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) PrivateInlineStructPtr(ctx go_context.Context) (e *github_com_foomo_gotsrpc_v2_tests_union_private.InlineStructPtr, clientErr error) {
+	rpcArgs := []any{}
+	rpcReply := []any{&e}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "PrivateInlineStructPtr", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy PrivateInlineStructPtr")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) PrivateUnionString(ctx go_context.Context) (e *PrivateUnionString, clientErr error) {
+	rpcArgs := []any{}
+	rpcReply := []any{&e}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "PrivateUnionString", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy PrivateUnionString")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) PrivateUnionStruct(ctx go_context.Context) (e *PrivateUnionStruct, clientErr error) {
+	rpcArgs := []any{}
+	rpcReply := []any{&e}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "PrivateUnionStruct", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy PrivateUnionStruct")
 	}
 	return
 }

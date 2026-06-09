@@ -2,10 +2,12 @@ package server
 
 import (
 	"github.com/foomo/gotsrpc/v2"
+	"github.com/foomo/gotsrpc/v2/tests/union/private"
 )
 
 func init() {
 	gotsrpc.MustRegisterUnionExt(UnionString{}, UnionStruct{})
+	gotsrpc.MustRegisterUnionExt(PrivateUnionString{}, PrivateUnionStruct{})
 }
 
 type (
@@ -73,4 +75,15 @@ const (
 	UnionStructAValueBOne   UnionStructAValueB = "one"
 	UnionStructAValueBTwo   UnionStructAValueB = "two"
 	UnionStructAValueBThree UnionStructAValueB = "three"
+)
+
+type (
+	PrivateUnionString struct {
+		A *private.UnionStringA `json:"a,omitempty" gotsrpc:"union"`
+		B *private.UnionStringB `json:"b,omitempty" gotsrpc:"union"`
+	}
+	PrivateUnionStruct struct {
+		A *private.UnionStructA `json:"a,omitempty" gotsrpc:"union"`
+		B *private.UnionStructB `json:"b,omitempty" gotsrpc:"union"`
+	}
 )

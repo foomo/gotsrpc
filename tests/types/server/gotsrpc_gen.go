@@ -57,6 +57,7 @@ const (
 	ServiceGoTSRPCProxyStringInt32Map          = "StringInt32Map"
 	ServiceGoTSRPCProxyStringInt64Map          = "StringInt64Map"
 	ServiceGoTSRPCProxyStringInt8Map           = "StringInt8Map"
+	ServiceGoTSRPCProxyStringObjectID          = "StringObjectID"
 	ServiceGoTSRPCProxyStringPtr               = "StringPtr"
 	ServiceGoTSRPCProxyStringSimpleMap         = "StringSimpleMap"
 	ServiceGoTSRPCProxyStringSimplePtrMap      = "StringSimplePtrMap"
@@ -1371,6 +1372,34 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{stringInt8MapRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyStringObjectID:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v StringObjectID
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		stringObjectIDRet := p.service.StringObjectID(r.Context(), arg_v)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{stringObjectIDRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return

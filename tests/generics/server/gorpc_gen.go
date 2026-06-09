@@ -12,6 +12,7 @@ import (
 	time "time"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
+	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	github_com_foomo_gotsrpc_v2_tests_generics_private "github.com/foomo/gotsrpc/v2/tests/generics/private"
 	gorpc "github.com/valyala/gorpc"
 )
@@ -26,33 +27,33 @@ type (
 	ServiceGetContainerRequest struct {
 	}
 	ServiceGetContainerResponse struct {
-		RetGetContainer_0 Container[string, Item]
+		RetGetContainer_0 Container[string, github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 
 	ServiceGetEnvelopeRequest struct {
 		Id string
 	}
 	ServiceGetEnvelopeResponse struct {
-		RetGetEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]
+		RetGetEnvelope_0 *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 
 	ServiceGetItemResponseRequest struct {
 	}
 	ServiceGetItemResponseResponse struct {
-		RetGetItemResponse_0 Response[Item]
+		RetGetItemResponse_0 github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 
 	ServiceGetNestedGenericRequest struct {
 	}
 	ServiceGetNestedGenericResponse struct {
-		RetGetNestedGeneric_0 PagedResponse[Pair[string, Item]]
+		RetGetNestedGeneric_0 PagedResponse[Pair[string, github_com_foomo_gotsrpc_v2_tests_common.Item]]
 	}
 
 	ServiceGetPagedItemsRequest struct {
 		Page int
 	}
 	ServiceGetPagedItemsResponse struct {
-		RetGetPagedItems_0 PagedResponse[Item]
+		RetGetPagedItems_0 PagedResponse[github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 
 	ServiceGetPairRequest struct {
@@ -64,13 +65,13 @@ type (
 	ServiceGetResultRequest struct {
 	}
 	ServiceGetResultResponse struct {
-		RetGetResult_0 Result[Item]
+		RetGetResult_0 Result[github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 
 	ServiceGetStringResponseRequest struct {
 	}
 	ServiceGetStringResponseResponse struct {
-		RetGetStringResponse_0 Response[string]
+		RetGetStringResponse_0 github_com_foomo_gotsrpc_v2_tests_common.Response[string]
 	}
 
 	ServiceRoundtripForeignEnvelopeRequest struct {
@@ -81,14 +82,14 @@ type (
 	}
 
 	ServiceSetEnvelopeRequest struct {
-		Env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[Item]
+		Env *github_com_foomo_gotsrpc_v2_tests_generics_private.Envelope[github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 	ServiceSetEnvelopeResponse struct {
 		RetSetEnvelope_0 string
 	}
 
 	ServiceSetItemResponseRequest struct {
-		Req Response[Item]
+		Req github_com_foomo_gotsrpc_v2_tests_common.Response[github_com_foomo_gotsrpc_v2_tests_common.Item]
 	}
 	ServiceSetItemResponseResponse struct {
 		RetSetItemResponse_0 bool
