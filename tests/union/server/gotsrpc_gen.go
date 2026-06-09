@@ -11,15 +11,21 @@ import (
 )
 
 func init() {
+	gotsrpc.MustRegisterUnionExt(PrivateUnionString{})
+	gotsrpc.MustRegisterUnionExt(PrivateUnionStruct{})
 	gotsrpc.MustRegisterUnionExt(UnionString{})
 	gotsrpc.MustRegisterUnionExt(UnionStruct{})
 }
 
 const (
-	ServiceGoTSRPCProxyInlineStruct    = "InlineStruct"
-	ServiceGoTSRPCProxyInlineStructPtr = "InlineStructPtr"
-	ServiceGoTSRPCProxyUnionString     = "UnionString"
-	ServiceGoTSRPCProxyUnionStruct     = "UnionStruct"
+	ServiceGoTSRPCProxyInlineStruct           = "InlineStruct"
+	ServiceGoTSRPCProxyInlineStructPtr        = "InlineStructPtr"
+	ServiceGoTSRPCProxyPrivateInlineStruct    = "PrivateInlineStruct"
+	ServiceGoTSRPCProxyPrivateInlineStructPtr = "PrivateInlineStructPtr"
+	ServiceGoTSRPCProxyPrivateUnionString     = "PrivateUnionString"
+	ServiceGoTSRPCProxyPrivateUnionStruct     = "PrivateUnionStruct"
+	ServiceGoTSRPCProxyUnionString            = "UnionString"
+	ServiceGoTSRPCProxyUnionStruct            = "UnionStruct"
 )
 
 type ServiceGoTSRPCProxy struct {
@@ -95,6 +101,98 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		if rw.Status() == http.StatusOK {
 			rets = []any{inlineStructPtrE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyPrivateInlineStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
+		privateInlineStructE := p.service.PrivateInlineStruct(&rw, r)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		if rw.Status() == http.StatusOK {
+			rets = []any{privateInlineStructE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyPrivateInlineStructPtr:
+		var (
+			args []any
+			rets []any
+		)
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
+		privateInlineStructPtrE := p.service.PrivateInlineStructPtr(&rw, r)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		if rw.Status() == http.StatusOK {
+			rets = []any{privateInlineStructPtrE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyPrivateUnionString:
+		var (
+			args []any
+			rets []any
+		)
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
+		privateUnionStringE := p.service.PrivateUnionString(&rw, r)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		if rw.Status() == http.StatusOK {
+			rets = []any{privateUnionStringE}
+			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+				gotsrpc.ErrorCouldNotReply(w)
+				return
+			}
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyPrivateUnionStruct:
+		var (
+			args []any
+			rets []any
+		)
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		rw := gotsrpc.ResponseWriter{ResponseWriter: w}
+		privateUnionStructE := p.service.PrivateUnionStruct(&rw, r)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		if rw.Status() == http.StatusOK {
+			rets = []any{privateUnionStructE}
 			if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 				gotsrpc.ErrorCouldNotReply(w)
 				return

@@ -1,14 +1,4 @@
-package server
-
-import (
-	"github.com/foomo/gotsrpc/v2"
-	"github.com/foomo/gotsrpc/v2/tests/union/private"
-)
-
-func init() {
-	gotsrpc.MustRegisterUnionExt(UnionString{}, UnionStruct{})
-	gotsrpc.MustRegisterUnionExt(PrivateUnionString{}, PrivateUnionStruct{})
-}
+package private
 
 type (
 	InlineStructA struct {
@@ -31,10 +21,6 @@ type (
 )
 
 type (
-	UnionString struct {
-		A *UnionStringA `json:"a,omitempty" gotsrpc:"union"`
-		B *UnionStringB `json:"b,omitempty" gotsrpc:"union"`
-	}
 	UnionStringA string
 	UnionStringB string
 )
@@ -60,11 +46,6 @@ type (
 		Foo   string             `json:"foo"`
 	}
 	UnionStructAValueB string
-
-	UnionStruct struct {
-		A *UnionStructA `json:"a,omitempty" gotsrpc:"union"`
-		B *UnionStructB `json:"b,omitempty" gotsrpc:"union"`
-	}
 )
 
 const (
@@ -75,15 +56,4 @@ const (
 	UnionStructAValueBOne   UnionStructAValueB = "one"
 	UnionStructAValueBTwo   UnionStructAValueB = "two"
 	UnionStructAValueBThree UnionStructAValueB = "three"
-)
-
-type (
-	PrivateUnionString struct {
-		A *private.UnionStringA `json:"a,omitempty" gotsrpc:"union"`
-		B *private.UnionStringB `json:"b,omitempty" gotsrpc:"union"`
-	}
-	PrivateUnionStruct struct {
-		A *private.UnionStructA `json:"a,omitempty" gotsrpc:"union"`
-		B *private.UnionStructB `json:"b,omitempty" gotsrpc:"union"`
-	}
 )

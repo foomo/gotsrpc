@@ -296,8 +296,23 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 			return errors.New("no fields or inline fields are supported when using union")
 		}
 
+		structMembers, scalarMembers := 0, 0
+
+		for _, f := range str.UnionFields {
+			switch {
+			case f.Value.StructType != nil:
+				structMembers++
+			case f.Value.Scalar != nil:
+				if _, isStruct := structs[f.Value.Scalar.Package+"."+f.Value.Scalar.Name]; isStruct {
+					structMembers++
+				} else {
+					scalarMembers++
+				}
+			}
+		}
+
 		switch {
-		case str.UnionFields[0].Value.StructType != nil:
+		case structMembers > 0 && scalarMembers == 0:
 			ts.App("export type " + str.Name + typeParamsSuffix + " = ")
 
 			var isUndefined bool
@@ -319,7 +334,7 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 			}
 
 			ts.NL()
-		case str.UnionFields[0].Value.Scalar != nil:
+		case scalarMembers > 0 && structMembers == 0:
 			ts.App("export const " + str.Name + typeParamsSuffix + " = ")
 			ts.App("{ ")
 
