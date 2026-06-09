@@ -7,29 +7,37 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v6
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
 
-      - uses: jdx/mise-action@v4
+      # https://github.com/jdx/mise-action/releases
+      - uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925 # v4.1.0
 
-      - uses: actions/setup-go@v6
+      # https://github.com/actions/setup-go/releases
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           check-latest: true
           go-version-file: go.mod
 
-      - uses: docker/setup-qemu-action@v4
+      # https://github.com/docker/setup-qemu-action/releases
+      - uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
 
-      - uses: docker/setup-buildx-action@v4
+      # https://github.com/docker/setup-buildx-action/releases
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
       - id: app_token
-        uses: tibdex/github-app-token@v2
+        # https://github.com/tibdex/github-app-token/releases
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
         with:
           app_id: ${{ secrets.TOKEN_APP_ID }}
           private_key: ${{ secrets.TOKEN_APP_PRIVATE_KEY }}
@@ -37,7 +45,8 @@ jobs:
       - name: Login to docker.io
         run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - uses: goreleaser/goreleaser-action@v7
+      # https://github.com/goreleaser/goreleaser-action/releases
+      - uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
         with:
           version: '~> v2'
           args: release --clean
