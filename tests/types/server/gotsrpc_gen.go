@@ -3,6 +3,7 @@
 package server
 
 import (
+	encoding_json "encoding/json"
 	"io"
 	http "net/http"
 	time "time"
@@ -41,6 +42,7 @@ const (
 	ServiceGoTSRPCProxyInt8                    = "Int8"
 	ServiceGoTSRPCProxyInt8Ptr                 = "Int8Ptr"
 	ServiceGoTSRPCProxyInt8Slice               = "Int8Slice"
+	ServiceGoTSRPCProxyJSONRawMessage          = "JSONRawMessage"
 	ServiceGoTSRPCProxyMapOfMaps               = "MapOfMaps"
 	ServiceGoTSRPCProxyMapOfSimpleSlice        = "MapOfSimpleSlice"
 	ServiceGoTSRPCProxyMixedArgs               = "MixedArgs"
@@ -919,6 +921,34 @@ func (p *ServiceGoTSRPCProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			callStats.Execution = time.Since(executionStart)
 		}
 		rets = []any{int8SliceRet}
+		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
+			gotsrpc.ErrorCouldNotReply(w)
+			return
+		}
+		gotsrpc.Monitor(w, r, args, rets, callStats)
+		return
+	case ServiceGoTSRPCProxyJSONRawMessage:
+		var (
+			args []any
+			rets []any
+		)
+		var (
+			arg_v encoding_json.RawMessage
+		)
+		args = []any{&arg_v}
+		if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {
+			gotsrpc.ErrorCouldNotLoadArgs(w)
+			return
+		}
+		var executionStart time.Time
+		if callStatsOk {
+			executionStart = time.Now()
+		}
+		jSONRawMessageRet := p.service.JSONRawMessage(r.Context(), arg_v)
+		if callStatsOk {
+			callStats.Execution = time.Since(executionStart)
+		}
+		rets = []any{jSONRawMessageRet}
 		if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {
 			gotsrpc.ErrorCouldNotReply(w)
 			return
