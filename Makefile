@@ -160,14 +160,14 @@ tidy:
 ## Show outdated direct dependencies
 outdated:
 	@echo "〉go mod outdated"
-	@go list -u -m -json all | go-mod-outdated -update -direct
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && go mod tidy && go list -u -m -json all | go-mod-outdated -update -direct) &&) true
 
 .PHONY: upgrade
-## Show outdated direct dependencies
+## Upgrade direct dependencies in all go.mod files
 upgrade:
 	@echo "〉go mod upgrade"
-	@go list -u -m -f '{{if and (not .Indirect) .Update}}{{.Path}}{{end}}' all | xargs -n1 -I{} go get {}@latest
-	@$(MAKE) tidy
+	@rm -f go.work go.work.sum
+	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && go mod tidy && deps=$$(go list -u -m -f '{{if and (not .Main) (not .Indirect) .Update}}{{.Path}}{{end}}' all); [ -z "$$deps" ] || for dep in $$deps; do go get "$$dep@latest"; done; go mod tidy) &&) true
 
 ### Documentation
 
