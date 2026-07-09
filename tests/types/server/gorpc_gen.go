@@ -6,6 +6,7 @@ import (
 	go_context "context"
 	tls "crypto/tls"
 	gob "encoding/gob"
+	encoding_json "encoding/json"
 	fmt "fmt"
 	reflect "reflect"
 	strings "strings"
@@ -223,6 +224,13 @@ type (
 	}
 	ServiceInt8SliceResponse struct {
 		RetInt8Slice_0 []int8
+	}
+
+	ServiceJSONRawMessageRequest struct {
+		V encoding_json.RawMessage
+	}
+	ServiceJSONRawMessageResponse struct {
+		RetJSONRawMessage_0 encoding_json.RawMessage
 	}
 
 	ServiceMapOfMapsRequest struct {
@@ -601,6 +609,8 @@ func init() {
 	gob.Register(ServiceInt8PtrResponse{})
 	gob.Register(ServiceInt8SliceRequest{})
 	gob.Register(ServiceInt8SliceResponse{})
+	gob.Register(ServiceJSONRawMessageRequest{})
+	gob.Register(ServiceJSONRawMessageResponse{})
 	gob.Register(ServiceMapOfMapsRequest{})
 	gob.Register(ServiceMapOfMapsResponse{})
 	gob.Register(ServiceMapOfSimpleSliceRequest{})
@@ -847,6 +857,10 @@ func (p *ServiceGoRPCProxy) handler(clientAddr string, request any) (response an
 		req := request.(ServiceInt8SliceRequest)
 		retInt8Slice_0 := p.service.Int8Slice(go_context.Background(), req.V)
 		response = ServiceInt8SliceResponse{RetInt8Slice_0: retInt8Slice_0}
+	case "ServiceJSONRawMessageRequest":
+		req := request.(ServiceJSONRawMessageRequest)
+		retJSONRawMessage_0 := p.service.JSONRawMessage(go_context.Background(), req.V)
+		response = ServiceJSONRawMessageResponse{RetJSONRawMessage_0: retJSONRawMessage_0}
 	case "ServiceMapOfMapsRequest":
 		req := request.(ServiceMapOfMapsRequest)
 		retMapOfMaps_0 := p.service.MapOfMaps(go_context.Background(), req.V)

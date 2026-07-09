@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/foomo/gotsrpc/v2/tests/common"
 )
@@ -112,6 +113,7 @@ func (h *Handler) AllScalarSlicesStruct(_ context.Context, v AllScalarSlices) Al
 }
 func (h *Handler) AllScalarMapsStruct(_ context.Context, v AllScalarMaps) AllScalarMaps { return v }
 
-func (h *Handler) Empty(_ context.Context) bool                    { return true }
-func (h *Handler) ByteSlice(_ context.Context, v []byte) []byte    { return v }
-func (h *Handler) ObjectID(_ context.Context, v ObjectID) ObjectID { return v }
+func (h *Handler) Empty(_ context.Context) bool                                        { return true }
+func (h *Handler) ByteSlice(_ context.Context, v []byte) []byte                        { return v }
+func (h *Handler) ObjectID(_ context.Context, v ObjectID) ObjectID                     { return v }
+func (h *Handler) JSONRawMessage(_ context.Context, v json.RawMessage) json.RawMessage { return v }
