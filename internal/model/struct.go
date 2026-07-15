@@ -9,6 +9,7 @@ type Struct struct {
 	InlineFields []*Field
 	Map          *Map
 	Array        *Array
+	TypeParams   []string
 }
 
 func (s *Struct) FullName() string {

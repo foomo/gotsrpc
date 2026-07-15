@@ -244,7 +244,7 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap) (fields
 	}
 
 	for _, param := range fieldList.List {
-		names, value, _ := readField(param, fileImports)
+		names, value, _ := readField(param, fileImports, nil)
 		for _, name := range names {
 			fields = append(fields, &model.Field{
 				Name:  name,
@@ -399,6 +399,10 @@ func loadFlatStructsValue(s *model.Value, flatStructs map[string]bool) {
 
 	if s.Scalar != nil {
 		flatStructs[s.Scalar.FullName()] = true
+	}
+
+	for _, arg := range s.TypeArgs {
+		loadFlatStructsValue(arg, flatStructs)
 	}
 }
 
@@ -577,6 +581,12 @@ func needsWorkValue(value *model.Value, needsWork func(fullName string) bool) bo
 		}
 	}
 
+	for _, arg := range value.TypeArgs {
+		if needsWorkValue(arg, needsWork) {
+			return true
+		}
+	}
+
 	return false
 }
 
@@ -654,19 +664,23 @@ func getTypesInPackage(goPaths []string, gomod config.Namespace, packageName str
 	return structs, scalars, nil
 }
 
-func getStructTypeForField(value *model.Value) *model.StructType {
-	var strType *model.StructType
+func getStructTypesForField(value *model.Value) []*model.StructType {
+	var types []*model.StructType
 
 	switch {
 	case value.StructType != nil:
-		strType = value.StructType
+		types = append(types, value.StructType)
 	case value.Map != nil:
-		strType = getStructTypeForField(value.Map.Value)
+		types = append(types, getStructTypesForField(value.Map.Value)...)
 	case value.Array != nil:
-		strType = getStructTypeForField(value.Array.Value)
+		types = append(types, getStructTypesForField(value.Array.Value)...)
 	}
 
-	return strType
+	for _, arg := range value.TypeArgs {
+		types = append(types, getStructTypesForField(arg)...)
+	}
+
+	return types
 }
 
 func getScalarForField(value *model.Value) []*model.Scalar {
@@ -685,6 +699,10 @@ func getScalarForField(value *model.Value) []*model.Scalar {
 		scalarTypes = append(scalarTypes, getScalarForField(value.Map.Value)...)
 	case value.Array != nil:
 		scalarTypes = append(scalarTypes, getScalarForField(value.Array.Value)...)
+	}
+
+	for _, arg := range value.TypeArgs {
+		scalarTypes = append(scalarTypes, getScalarForField(arg)...)
 	}
 
 	return scalarTypes
@@ -712,18 +730,19 @@ func collectScalarTypes(fields []*model.Field, scalarTypes map[string]bool) {
 
 func collectStructTypes(fields []*model.Field, structTypes map[string]bool) {
 	for _, field := range fields {
-		strType := getStructTypeForField(field.Value)
-		if strType != nil {
-			fullName := strType.Package + "." + strType.Name
-			if len(strType.Package) == 0 {
-				fullName = strType.Name
-			}
+		for _, strType := range getStructTypesForField(field.Value) {
+			if strType != nil {
+				fullName := strType.Package + "." + strType.Name
+				if len(strType.Package) == 0 {
+					fullName = strType.Name
+				}
 
-			switch fullName {
-			case "error", "net/http.Request", "net/http.ResponseWriter", "context.Context":
-				continue
-			default:
-				structTypes[fullName] = true
+				switch fullName {
+				case "error", "net/http.Request", "net/http.ResponseWriter", "context.Context":
+					continue
+				default:
+					structTypes[fullName] = true
+				}
 			}
 		}
 	}

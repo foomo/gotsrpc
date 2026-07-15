@@ -36,8 +36,27 @@ var tsTypeAliases = map[string]string{
 	"time.Time": "number",
 }
 
+func renderTSTypeArgs(typeArgs []*model.Value, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, ts *Code) {
+	if len(typeArgs) > 0 {
+		ts.App("<")
+
+		for i, arg := range typeArgs {
+			if i > 0 {
+				ts.App(",")
+			}
+
+			valueTSType(arg, mappings, scalars, structs, ts, nil)
+		}
+
+		ts.App(">")
+	}
+}
+
 func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, ts *Code, jsonInfo *model.JSONInfo) {
 	switch {
+	case v.TypeParam != "":
+		ts.App(v.TypeParam)
+		return
 	case jsonInfo != nil && len(jsonInfo.Type) > 0:
 		ts.App(jsonInfo.Type)
 	case v.Map != nil:
@@ -94,6 +113,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 			}
 
 			ts.App(tsType)
+			renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 
 			if v.IsPtr && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
 				ts.App("|null")
@@ -103,6 +123,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 		}
 
 		ts.App(tsTypeFromScalarType(v.Scalar.Type))
+		renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 	case v.StructType != nil:
 		if v.StructType.Package != "" {
 			mapping, ok := mappings[v.StructType.Package]
@@ -113,6 +134,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 			}
 
 			ts.App(tsModule + "." + v.StructType.Name)
+			renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 
 			hiddenStruct, isHiddenStruct := structs[v.StructType.FullName()]
 			if isHiddenStruct && (hiddenStruct.Array != nil || hiddenStruct.Map != nil) && (jsonInfo == nil || !jsonInfo.OmitEmpty) {
@@ -125,6 +147,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 		}
 
 		ts.App(v.StructType.Name)
+		renderTSTypeArgs(v.TypeArgs, mappings, scalars, structs, ts)
 	case v.Struct != nil:
 		ts.L("{").Ind(1)
 		renderStructFields(v.Struct.Fields, mappings, scalars, structs, ts)
@@ -178,15 +201,66 @@ func renderStructFields(fields []*model.Field, mappings config.TypeScriptMapping
 	}
 }
 
+// mapKeyTypeParams returns the set of type parameter names used as map keys
+// in the given struct's fields or as the struct-level map key.
+func mapKeyTypeParams(str *model.Struct) map[string]bool {
+	result := make(map[string]bool)
+	if str.Map != nil && str.Map.Key != nil && str.Map.Key.TypeParam != "" {
+		result[str.Map.Key.TypeParam] = true
+	}
+
+	for _, f := range str.Fields {
+		collectMapKeyTypeParams(f.Value, result)
+	}
+
+	return result
+}
+
+func collectMapKeyTypeParams(v *model.Value, result map[string]bool) {
+	if v == nil {
+		return
+	}
+
+	if v.Map != nil {
+		if v.Map.Key != nil && v.Map.Key.TypeParam != "" {
+			result[v.Map.Key.TypeParam] = true
+		}
+
+		collectMapKeyTypeParams(v.Map.Value, result)
+	}
+
+	if v.Array != nil {
+		collectMapKeyTypeParams(v.Array.Value, result)
+	}
+}
+
+func tsTypeParamsSuffix(typeParams []string, mapKeys map[string]bool) string {
+	if len(typeParams) == 0 {
+		return ""
+	}
+
+	parts := make([]string, len(typeParams))
+	for i, tp := range typeParams {
+		if mapKeys[tp] {
+			parts[i] = tp + " extends string | number | symbol"
+		} else {
+			parts[i] = tp
+		}
+	}
+
+	return "<" + strings.Join(parts, ", ") + ">"
+}
+
 func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, ts *Code) error {
 	ts.L("// " + str.FullName())
+	typeParamsSuffix := tsTypeParamsSuffix(str.TypeParams, mapKeyTypeParams(str))
 
 	switch {
 	case str.Array != nil:
 		if str.Array.Len > 0 && str.Array.Value.ScalarType == model.ScalarTypeByte {
-			ts.App("export type " + str.Name + " = Uint8Array & { readonly length: " + fmt.Sprintf("%d", str.Array.Len) + " }")
+			ts.App("export type " + str.Name + typeParamsSuffix + " = Uint8Array & { readonly length: " + fmt.Sprintf("%d", str.Array.Len) + " }")
 		} else {
-			ts.App("export type " + str.Name + " = Array<")
+			ts.App("export type " + str.Name + typeParamsSuffix + " = Array<")
 			valueTSType(str.Array.Value, mappings, scalars, structs, ts, nil)
 			ts.App(">")
 		}
@@ -195,9 +269,9 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 	case str.Map != nil:
 		enumKey := str.Map.Key != nil && str.Map.Key.Scalar != nil
 		if enumKey {
-			ts.App("export type " + str.Name + " = Partial<Record<")
+			ts.App("export type " + str.Name + typeParamsSuffix + " = Partial<Record<")
 		} else {
-			ts.App("export type " + str.Name + " = Record<")
+			ts.App("export type " + str.Name + typeParamsSuffix + " = Record<")
 		}
 
 		if str.Map.Key != nil {
@@ -224,7 +298,7 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 
 		switch {
 		case str.UnionFields[0].Value.StructType != nil:
-			ts.App("export type " + str.Name + " = ")
+			ts.App("export type " + str.Name + typeParamsSuffix + " = ")
 
 			var isUndefined bool
 
@@ -246,7 +320,7 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 
 			ts.NL()
 		case str.UnionFields[0].Value.Scalar != nil:
-			ts.App("export const " + str.Name + " = ")
+			ts.App("export const " + str.Name + typeParamsSuffix + " = ")
 			ts.App("{ ")
 
 			for i, field := range str.UnionFields {
@@ -260,7 +334,7 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 
 			ts.App(" }")
 			ts.NL()
-			ts.App("export type " + str.Name + " = ")
+			ts.App("export type " + str.Name + typeParamsSuffix + " = ")
 
 			for i, field := range str.UnionFields {
 				if i > 0 {
@@ -277,7 +351,7 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 	case len(str.InlineFields) > 0:
 		var extends bool
 
-		ts.App("export interface " + str.Name)
+		ts.App("export interface " + str.Name + typeParamsSuffix)
 
 		for i, inlineField := range str.InlineFields {
 			if inlineField.Value.Scalar != nil {
@@ -341,7 +415,7 @@ func renderTypescriptStruct(str *model.Struct, mappings config.TypeScriptMapping
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
 		ts.Ind(-1).L("}")
 	default:
-		ts.L("export interface " + str.Name + " {").Ind(1)
+		ts.L("export interface " + str.Name + typeParamsSuffix + " {").Ind(1)
 		renderStructFields(str.Fields, mappings, scalars, structs, ts)
 		ts.Ind(-1).L("}")
 	}

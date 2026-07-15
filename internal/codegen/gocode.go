@@ -9,6 +9,27 @@ import (
 	"github.com/foomo/gotsrpc/v2/internal/model"
 )
 
+func renderGoTypeArgs(typeArgs []*model.Value, aliases map[string]string, packageName string) string {
+	if len(typeArgs) == 0 {
+		return ""
+	}
+
+	var b strings.Builder
+	b.WriteString("[")
+
+	for i, arg := range typeArgs {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+
+		b.WriteString(valueGoType(arg, aliases, packageName))
+	}
+
+	b.WriteString("]")
+
+	return b.String()
+}
+
 func valueIsHTTPResponseWriter(v *model.Value) bool {
 	return (v.StructType != nil && v.StructType.Name == "ResponseWriter" && v.StructType.Package == "net/http") ||
 		(v.Scalar != nil && v.Scalar.Name == "ResponseWriter" && v.Scalar.Package == "net/http")
@@ -34,12 +55,15 @@ func valueGoType(v *model.Value, aliases map[string]string, packageName string) 
 		t += "[]" + valueGoType(v.Array.Value, aliases, packageName)
 	case len(v.GoScalarType) > 0:
 		t += v.GoScalarType
+	case v.TypeParam != "":
+		t += v.TypeParam
 	case v.StructType != nil:
 		if packageName != v.StructType.Package && aliases[v.StructType.Package] != "" {
 			t += aliases[v.StructType.Package] + "."
 		}
 
 		t += v.StructType.Name
+		t += renderGoTypeArgs(v.TypeArgs, aliases, packageName)
 	case v.Map != nil:
 		t += `map[` + valueGoType(v.Map.Key, aliases, packageName) + `]` + valueGoType(v.Map.Value, aliases, packageName)
 	case v.Scalar != nil:
@@ -48,6 +72,7 @@ func valueGoType(v *model.Value, aliases map[string]string, packageName string) 
 		}
 
 		t += v.Scalar.Name
+		t += renderGoTypeArgs(v.TypeArgs, aliases, packageName)
 	case v.IsInterface:
 		t += "any"
 	default:
@@ -118,6 +143,10 @@ func extractImportValue(value *model.Value, fullPackageName string, aliases map[
 		extractImportValue(value.Map.Value, fullPackageName, aliases)
 	case value.Scalar != nil:
 		extractImport(value.Scalar.Package, fullPackageName, aliases)
+	}
+
+	for _, arg := range value.TypeArgs {
+		extractImportValue(arg, fullPackageName, aliases)
 	}
 }
 

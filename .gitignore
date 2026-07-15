@@ -20,7 +20,8 @@ tmp/
 ## Docker
 !.dockerignore
 
-## Node ##
+### Node
+!.npmrc
 **/node_modules/
 
 ## TypeScript
@@ -39,5 +40,7 @@ tmp/
 !.lefthook.yaml
 
 ## Vitepress
-node_modules/
 !docs/.vitepress
+docs/.vitepress/*
+!docs/.vitepress/theme/
+!docs/.vitepress/config.mts

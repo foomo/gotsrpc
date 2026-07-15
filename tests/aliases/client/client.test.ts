@@ -48,7 +48,7 @@ test("registryValue", async () => {
 });
 
 test("indexValue", async () => {
-	const v = { [Category.A]: [{ id: "1", status: Status.Active, priority: Priority.Low, rating: 1.0 }] };
+	const v = { [Category.A]: [{ id: "1", status: Status.Active, priority: Priority.Low, rating: 1.0 }], [Category.B]: null };
 	const ret = await client.indexValue(v);
 	expect(ret![Category.A]).toHaveLength(1);
 	expect(ret![Category.A]![0]!.id).toBe("1");
@@ -106,6 +106,7 @@ test("dataRecordValue", async () => {
 test("mapOfEntries", async () => {
 	const v = {
 		[Category.A]: [{ id: "1", status: Status.Active, priority: Priority.Low, rating: 1.0 }],
+		[Category.B]: null,
 	};
 	const ret = await client.mapOfEntries(v);
 	expect(ret![Category.A]).toHaveLength(1);

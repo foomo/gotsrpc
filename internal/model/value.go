@@ -12,4 +12,6 @@ type Value struct {
 	Map          *Map        `json:",omitempty"`
 	Array        *Array      `json:",omitempty"`
 	IsPtr        bool        `json:",omitempty"`
+	TypeParam    string      `json:",omitempty"`
+	TypeArgs     []*Value    `json:",omitempty"`
 }
