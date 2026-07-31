@@ -116,5 +116,5 @@ func (h *Handler) AllScalarMapsStruct(_ context.Context, v AllScalarMaps) AllSca
 func (h *Handler) Empty(_ context.Context) bool                                        { return true }
 func (h *Handler) ByteSlice(_ context.Context, v []byte) []byte                        { return v }
 func (h *Handler) ObjectID(_ context.Context, v ObjectID) ObjectID                     { return v }
-func (h *Handler) StringObjectID(_ context.Context, v StringObjectID) StringObjectID { return v }
+func (h *Handler) StringObjectID(_ context.Context, v StringObjectID) StringObjectID   { return v }
 func (h *Handler) JSONRawMessage(_ context.Context, v json.RawMessage) json.RawMessage { return v }
