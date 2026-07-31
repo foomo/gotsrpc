@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"go/ast"
+	"go/build"
 	"go/parser"
 	"go/token"
 	"os"
@@ -16,15 +17,38 @@ import (
 	"github.com/foomo/gotsrpc/v2/config"
 )
 
-func parserExcludeFiles(info os.FileInfo) bool {
-	return !strings.HasSuffix(info.Name(), "_test.go")
+// buildConstraintFilter returns a parser.ParseDir filter for the given directory
+// that excludes test files and any file whose build constraints (//go:build lines
+// or _GOOS/_GOARCH name suffixes) do not apply to the current build context.
+//
+// go/parser.ParseDir does not evaluate build constraints on its own, so without
+// this filter mutually-exclusive build-tagged files (e.g. encoding/json's
+// stream.go vs. v2_stream.go, which both declare RawMessage) would all be parsed
+// and their colliding type definitions resolved non-deterministically.
+func buildConstraintFilter(dir string) func(os.FileInfo) bool {
+	ctx := build.Default
+
+	return func(info os.FileInfo) bool {
+		name := info.Name()
+		if strings.HasSuffix(name, "_test.go") {
+			return false
+		}
+
+		match, err := ctx.MatchFile(dir, name)
+		if err != nil {
+			// exclude files we cannot evaluate
+			return false
+		}
+
+		return match
+	}
 }
 
 func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map[string]*ast.Package, *token.FileSet, error) {
 	if gomod.Name != "" && strings.HasPrefix(packageName, gomod.Name) {
 		fset := token.NewFileSet()
 		dir := strings.Replace(packageName, gomod.Name, gomod.Path, 1)
-		pkgs, err := parser.ParseDir(fset, dir, parserExcludeFiles, parser.DeclarationErrors|parser.AllErrors)
+		pkgs, err := parser.ParseDir(fset, dir, buildConstraintFilter(dir), parser.DeclarationErrors|parser.AllErrors)
 
 		return pkgs, fset, err
 	}
@@ -71,7 +95,7 @@ func parseDir(goPaths []string, gomod config.Namespace, packageName string) (map
 			}
 		}
 
-		pkgs, err := parser.ParseDir(fset, dir, parserExcludeFiles, parser.AllErrors)
+		pkgs, err := parser.ParseDir(fset, dir, buildConstraintFilter(dir), parser.AllErrors)
 		if err == nil {
 			return pkgs, fset, nil
 		}

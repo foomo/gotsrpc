@@ -4,6 +4,7 @@ package server
 
 import (
 	go_context "context"
+	encoding_json "encoding/json"
 	go_net_http "net/http"
 
 	gotsrpc "github.com/foomo/gotsrpc/v2"
@@ -41,6 +42,7 @@ type ServiceGoTSRPCClient interface {
 	Int8(ctx go_context.Context, v int8) (retInt8_0 int8, clientErr error)
 	Int8Ptr(ctx go_context.Context, v *int8) (retInt8Ptr_0 *int8, clientErr error)
 	Int8Slice(ctx go_context.Context, v []int8) (retInt8Slice_0 []int8, clientErr error)
+	JSONRawMessage(ctx go_context.Context, v encoding_json.RawMessage) (retJSONRawMessage_0 encoding_json.RawMessage, clientErr error)
 	MapOfMaps(ctx go_context.Context, v map[string]map[string]string) (retMapOfMaps_0 map[string]map[string]string, clientErr error)
 	MapOfSimpleSlice(ctx go_context.Context, v map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple) (retMapOfSimpleSlice_0 map[string][]github_com_foomo_gotsrpc_v2_tests_common.Simple, clientErr error)
 	MixedArgs(ctx go_context.Context, s github_com_foomo_gotsrpc_v2_tests_common.Simple, items []string, m map[string]int64) (retMixedArgs_0 github_com_foomo_gotsrpc_v2_tests_common.Simple, retMixedArgs_1 []string, retMixedArgs_2 map[string]int64, clientErr error)
@@ -395,6 +397,16 @@ func (tsc *HTTPServiceGoTSRPCClient) Int8Slice(ctx go_context.Context, v []int8)
 	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "Int8Slice", rpcArgs, rpcReply)
 	if rpcErr != nil {
 		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy Int8Slice")
+	}
+	return
+}
+
+func (tsc *HTTPServiceGoTSRPCClient) JSONRawMessage(ctx go_context.Context, v encoding_json.RawMessage) (retJSONRawMessage_0 encoding_json.RawMessage, clientErr error) {
+	rpcArgs := []any{v}
+	rpcReply := []any{&retJSONRawMessage_0}
+	rpcErr := tsc.Client.Call(ctx, tsc.URL, tsc.EndPoint, "JSONRawMessage", rpcArgs, rpcReply)
+	if rpcErr != nil {
+		clientErr = pkg_errors.WithMessage(rpcErr, "failed to call server.ServiceGoTSRPCProxy JSONRawMessage")
 	}
 	return
 }
