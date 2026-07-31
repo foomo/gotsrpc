@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/foomo/gotsrpc/v2/tests/common"
 )
@@ -98,4 +99,5 @@ type Service interface {
 	ByteSlice(ctx context.Context, v []byte) []byte
 	ObjectID(ctx context.Context, v ObjectID) ObjectID
 	StringObjectID(ctx context.Context, v StringObjectID) StringObjectID
+	JSONRawMessage(ctx context.Context, v json.RawMessage) json.RawMessage
 }

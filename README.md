@@ -1,4 +1,3 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/foomo/gotsrpc?style=flat-square)](https://goreportcard.com/report/github.com/foomo/gotsrpc)
 [![GoDoc](https://img.shields.io/badge/GoDoc-✓-informational.svg?style=flat-square&logo=go)](https://godoc.org/github.com/foomo/gotsrpc)
 [![Coverage](https://img.shields.io/codecov/c/github/foomo/gotsrpc?style=flat-square&logo=github)](https://app.codecov.io/gh/foomo/gotsrpc)
 [![GitHub Downloads](https://img.shields.io/github/downloads/foomo/gotsrpc/total.svg?style=flat-square&logo=github)](https://github.com/foomo/gotsrpc/releases)

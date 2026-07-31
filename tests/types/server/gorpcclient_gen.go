@@ -4,6 +4,7 @@ package server
 
 import (
 	tls "crypto/tls"
+	encoding_json "encoding/json"
 
 	github_com_foomo_gotsrpc_v2_tests_common "github.com/foomo/gotsrpc/v2/tests/common"
 	gorpc "github.com/valyala/gorpc"
@@ -348,6 +349,17 @@ func (tsc *ServiceGoRPCClient) Int8Slice(v []int8) (retInt8Slice_0 []int8, clien
 	}
 	rpcResp := rpcRes.(ServiceInt8SliceResponse)
 	return rpcResp.RetInt8Slice_0, nil
+}
+
+func (tsc *ServiceGoRPCClient) JSONRawMessage(v encoding_json.RawMessage) (retJSONRawMessage_0 encoding_json.RawMessage, clientErr error) {
+	rpcReq := ServiceJSONRawMessageRequest{V: v}
+	rpcRes, rpcErr := tsc.Client.Call(rpcReq)
+	if rpcErr != nil {
+		clientErr = rpcErr
+		return
+	}
+	rpcResp := rpcRes.(ServiceJSONRawMessageResponse)
+	return rpcResp.RetJSONRawMessage_0, nil
 }
 
 func (tsc *ServiceGoRPCClient) MapOfMaps(v map[string]map[string]string) (retMapOfMaps_0 map[string]map[string]string, clientErr error) {
