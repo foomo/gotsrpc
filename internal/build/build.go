@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/charmbracelet/log"
 	"golang.org/x/tools/imports"
 
 	"github.com/foomo/gotsrpc/v3/config"
@@ -18,7 +19,10 @@ import (
 	"github.com/foomo/gotsrpc/v3/internal/parser"
 )
 
-func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
+func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //nolint:maintidx
+	parser.SetLogger(l)
+	codegen.SetLogger(l)
+
 	deriveCommonJSMapping(conf)
 
 	mappedTypeScript := map[string]map[string]*codegen.Code{}
@@ -52,7 +56,7 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 
 		packageName := target.Package
 		outputPath := getPathForTarget(conf.Module, goPath, target)
-		_, _ = fmt.Fprintf(os.Stderr, "building target %s (%s -> %s)\n", name, packageName, outputPath)
+		l.Info("building target", "name", name, "package", packageName, "output", outputPath)
 
 		goRPCProxiesFilename := path.Join(outputPath, "gorpc_gen.go")
 		goRPCClientsFilename := path.Join(outputPath, "gorpcclient_gen.go")
@@ -60,9 +64,8 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 		goTSRPCClientsFilename := path.Join(outputPath, "gotsrpcclient_gen.go")
 
 		remove := func(filename string) {
-			_, err := os.Stat(filename)
-			if err == nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	removing existing", filename)
+			if _, err := os.Stat(filename); err == nil {
+				l.Debug("removing existing file", "file", filename)
 				os.Remove(filename)
 			}
 		}
@@ -73,9 +76,7 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 
 		workDirectory, err := os.Getwd()
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err)
-
-			os.Exit(1)
+			return fmt.Errorf("could not determine working directory: %w", err)
 		}
 
 		vendorDirectory := path.Join(workDirectory, "vendor")
@@ -88,9 +89,7 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 
 		pkgName, services, structs, scalars, constantTypes, err := parser.Read(goPaths, conf.Module, packageName, target.Services, missingTypes, missingConstants)
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "\t an error occurred while trying to understand your code: ", err)
-
-			os.Exit(2)
+			return fmt.Errorf("an error occurred while trying to understand your code: %w", err)
 		}
 
 		// collect all union structs
@@ -105,120 +104,103 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 		if target.Out != "" {
 			ts, err := codegen.RenderTypeScriptServices(services, conf.Mappings, scalars, structs, target)
 			if err != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not generate ts code", err)
-
-				os.Exit(3)
+				return fmt.Errorf("could not generate ts code: %w", err)
 			}
 
 			// workaround to remove unneeded imports
 			importsCode := codegen.NewCode("	")
-			commonJSImports(conf, importsCode, target.Out, ts)
-			importsCode.L("").L("")
-			ts = importsCode.String() + ts
-
-			updateErr := updateCode(target.Out, codegen.GetTSHeaderComment()+ts)
-			if updateErr != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not write service file", target.Out, updateErr)
-
-				os.Exit(3)
+			if err := commonJSImports(conf, importsCode, target.Out, ts); err != nil {
+				return err
 			}
 
-			err = codegen.RenderTypescriptStructsToPackages(structs, conf.Mappings, constantTypes, scalars, mappedTypeScript)
-			if err != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "struct gen err for target", name, err)
+			importsCode.L("").L("")
 
-				os.Exit(4)
+			ts = importsCode.String() + ts
+
+			if err := updateCode(l, target.Out, codegen.GetTSHeaderComment()+ts); err != nil {
+				return fmt.Errorf("could not write service file %s: %w", target.Out, err)
+			}
+
+			if err := codegen.RenderTypescriptStructsToPackages(structs, conf.Mappings, constantTypes, scalars, mappedTypeScript); err != nil {
+				return fmt.Errorf("struct gen err for target %s: %w", name, err)
 			}
 		}
 
-		formatAndWrite := func(code string, filename string) {
+		formatAndWrite := func(code string, filename string) error {
 			formattedGoBytes, formattingError := format.Source([]byte(code))
 			if formattingError == nil {
 				code = string(formattedGoBytes)
 			} else {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not format go ts rpc proxies code", formattingError)
+				l.Warn("could not format generated go code", "file", filename, "err", formattingError)
 			}
 
 			codeBytes, errProcessImports := imports.Process(filename, []byte(code), nil)
 			if errProcessImports != nil {
-				_, _ = fmt.Fprintln(
-					os.Stderr,
-					"	goimports does not like the generated code: ",
-					errProcessImports,
-				)
-
-				writeErr := os.WriteFile(filename, []byte(code), 0644) //nolint:gosec
-				if writeErr != nil {
-					_, _ = fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
-
-					os.Exit(5)
+				if writeErr := os.WriteFile(filename, []byte(code), 0644); writeErr != nil { //nolint:gosec
+					return fmt.Errorf("could not write go source to file %s: %w", filename, writeErr)
 				}
 
-				_, _ = fmt.Fprintln(os.Stderr, "wrote code for debugging into file", filename)
-
-				os.Exit(5)
+				return fmt.Errorf("goimports does not like the generated code (wrote raw code to %s for debugging): %w", filename, errProcessImports)
 			}
 
-			writeErr := os.WriteFile(filename, codeBytes, 0644) //nolint:gosec
-			if writeErr != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not write go source to file", writeErr)
-
-				os.Exit(5)
+			if writeErr := os.WriteFile(filename, codeBytes, 0644); writeErr != nil { //nolint:gosec
+				return fmt.Errorf("could not write go source to file %s: %w", filename, writeErr)
 			}
+
+			return nil
 		}
 
 		if len(target.TSRPC) > 0 {
 			goTSRPCProxiesCode, goerr := codegen.RenderGoTSRPCProxies(services, packageName, pkgName, target, unions)
 			if goerr != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not generate go ts rpc proxies code in target", name, goerr)
-
-				os.Exit(4)
+				return fmt.Errorf("could not generate go ts rpc proxies code in target %s: %w", name, goerr)
 			}
 
-			formatAndWrite(goTSRPCProxiesCode, goTSRPCProxiesFilename)
+			if err := formatAndWrite(goTSRPCProxiesCode, goTSRPCProxiesFilename); err != nil {
+				return err
+			}
 		}
 
 		if len(target.TSRPC) > 0 && !target.SkipTSRPCClient {
 			goTSRPCClientsCode, goerr := codegen.RenderGoTSRPCClients(services, packageName, pkgName, target)
 			if goerr != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not generate go ts rpc clients code in target", name, goerr)
-
-				os.Exit(4)
+				return fmt.Errorf("could not generate go ts rpc clients code in target %s: %w", name, goerr)
 			}
 
-			formatAndWrite(goTSRPCClientsCode, goTSRPCClientsFilename)
+			if err := formatAndWrite(goTSRPCClientsCode, goTSRPCClientsFilename); err != nil {
+				return err
+			}
 		}
 
 		if len(target.GoRPC) > 0 {
 			goRPCProxiesCode, goerr := codegen.RenderGoRPCProxies(services, packageName, pkgName, target)
 			if goerr != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not generate go rpc proxies code in target", name, goerr)
-
-				os.Exit(4)
+				return fmt.Errorf("could not generate go rpc proxies code in target %s: %w", name, goerr)
 			}
 
-			formatAndWrite(goRPCProxiesCode, goRPCProxiesFilename)
+			if err := formatAndWrite(goRPCProxiesCode, goRPCProxiesFilename); err != nil {
+				return err
+			}
 
 			goRPCClientsCode, goerr := codegen.RenderGoRPCClients(services, packageName, pkgName, target)
 			if goerr != nil {
-				_, _ = fmt.Fprintln(os.Stderr, "	could not generate go rpc clients code in target", name, goerr)
-
-				os.Exit(4)
+				return fmt.Errorf("could not generate go rpc clients code in target %s: %w", name, goerr)
 			}
 
-			formatAndWrite(goRPCClientsCode, goRPCClientsFilename)
+			if err := formatAndWrite(goRPCClientsCode, goRPCClientsFilename); err != nil {
+				return err
+			}
 		}
 	}
 
 	for goPackage, mappedStructsMap := range mappedTypeScript {
 		mapping, ok := conf.Mappings[goPackage]
 		if !ok {
-			_, _ = fmt.Fprintln(os.Stderr, "reverse mapping error in struct generation for package", goPackage)
-
-			os.Exit(6)
+			return fmt.Errorf("reverse mapping error in struct generation for package %s", goPackage)
 		}
 
-		_, _ = fmt.Fprintln(os.Stderr, "building structs for go package", goPackage, "to ts module", mapping.TypeScriptModule, "in file", mapping.Out)
+		l.Info("building structs for go package", "package", goPackage, "module", mapping.TypeScriptModule, "file", mapping.Out)
+
 		moduleCode := codegen.NewCode("	")
 		structIndent := -3
 
@@ -260,15 +242,20 @@ func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx
 
 		// workaround to remove unneeded imports
 		importsCode := codegen.NewCode("	")
-		commonJSImports(conf, importsCode, mapping.Out, moduleCode.String())
+		if err := commonJSImports(conf, importsCode, mapping.Out, moduleCode.String()); err != nil {
+			return err
+		}
+
 		importsCode.L("").L("")
+
 		ts := importsCode.String() + moduleCode.String()
 
-		updateErr := updateCode(mapping.Out, codegen.GetTSHeaderComment()+ts)
-		if updateErr != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "	failed to update code in", mapping.Out, updateErr)
+		if err := updateCode(l, mapping.Out, codegen.GetTSHeaderComment()+ts); err != nil {
+			l.Warn("failed to update code", "file", mapping.Out, "err", err)
 		}
 	}
+
+	return nil
 }
 
 func deriveCommonJSMapping(conf *config.Config) {
@@ -292,7 +279,7 @@ func relativeFilePath(a, b string, appendJsExtension bool) (r string, e error) {
 	return
 }
 
-func commonJSImports(conf *config.Config, c *codegen.Code, tsFilename string, code string) {
+func commonJSImports(conf *config.Config, c *codegen.Code, tsFilename string, code string) error {
 	packageNames := make([]string, 0, len(conf.Mappings))
 	for packageName := range conf.Mappings {
 		packageNames = append(packageNames, packageName)
@@ -309,12 +296,13 @@ func commonJSImports(conf *config.Config, c *codegen.Code, tsFilename string, co
 
 		relativePath, relativeErr := relativeFilePath(tsFilename, importMapping.Out, conf.TSImportJsExtension)
 		if relativeErr != nil {
-			fmt.Println("can not derive a relative path between", tsFilename, "and", importMapping.Out, relativeErr)
-			os.Exit(1)
+			return fmt.Errorf("can not derive a relative path between %s and %s: %w", tsFilename, importMapping.Out, relativeErr)
 		}
 
 		c.L("import * as " + importMapping.TypeScriptModule + " from './" + relativePath + "'; // " + tsFilename + " to " + importMapping.Out)
 	}
+
+	return nil
 }
 
 func getPathForTarget(gomod config.Namespace, goPath string, target *config.Target) (outputPath string) {
@@ -326,7 +314,7 @@ func getPathForTarget(gomod config.Namespace, goPath string, target *config.Targ
 	}
 }
 
-func updateCode(file string, code string) error {
+func updateCode(l *log.Logger, file string, code string) error {
 	if len(file) > 0 {
 		if file[0] == '~' {
 			home := os.Getenv("HOME")
@@ -345,11 +333,12 @@ func updateCode(file string, code string) error {
 
 	oldCode, _ := os.ReadFile(file) //nolint:gosec
 	if string(oldCode) != code {
-		fmt.Println("	writing file", file)
+		l.Info("writing file", "file", file)
+
 		return os.WriteFile(file, []byte(code), 0600) //nolint:gosec
 	}
 
-	fmt.Println("	update file not necessary - unchanged", file)
+	l.Debug("update not necessary - unchanged", "file", file)
 
 	return nil
 }

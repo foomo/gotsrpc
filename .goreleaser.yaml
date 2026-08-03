@@ -4,7 +4,7 @@ project_name: gotsrpc
 
 builds:
   - binary: gotsrpc
-    main: ./cmd/gotsrpc/gotsrpc.go
+    main: ./cmd/gotsrpc/
     env:
       - CGO_ENABLED=0
     flags:
@@ -12,9 +12,9 @@ builds:
       - -tags=safe
     ldflags:
       - -s -w
-      - -X cmd/gotsrpc/gotsrpc.version={{.Version}}
-      - -X cmd/gotsrpc/gotsrpc.commitHash={{.FullCommit}}
-      - -X cmd/gotsrpc/gotsrpc.buildTimestamp={{.Timestamp}}
+      - -X main.version={{.Version}}
+      - -X main.commitHash={{.FullCommit}}
+      - -X main.buildTimestamp={{.Timestamp}}
     goos:
       - windows
       - darwin

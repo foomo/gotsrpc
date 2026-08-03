@@ -2,29 +2,49 @@ package parser
 
 import (
 	"fmt"
-	"os"
+	"io"
+	"strings"
 
+	"github.com/charmbracelet/log"
 	"gopkg.in/yaml.v2"
 )
 
-var ReaderTrace = false
+// Logger receives trace output. It defaults to a no-op logger and can be
+// replaced via SetLogger.
+var Logger = log.New(io.Discard)
 
-func trace(args ...any) {
-	if ReaderTrace {
-		_, _ = fmt.Fprintln(os.Stderr, args...)
+// SetLogger sets the logger used for trace output.
+func SetLogger(l *log.Logger) {
+	if l != nil {
+		Logger = l
 	}
 }
 
-func traceData(args ...any) {
-	if ReaderTrace {
-		for _, arg := range args {
-			yamlBytes, errMarshal := yaml.Marshal(arg)
-			if errMarshal != nil {
-				trace(arg)
-				continue
-			}
+// traceEnabled reports whether debug-level trace output would be emitted.
+func traceEnabled() bool {
+	return Logger.GetLevel() <= log.DebugLevel
+}
 
-			trace(string(yamlBytes))
+func trace(args ...any) {
+	if !traceEnabled() {
+		return
+	}
+
+	Logger.Debug(strings.TrimSuffix(fmt.Sprintln(args...), "\n"))
+}
+
+func traceData(args ...any) {
+	if !traceEnabled() {
+		return
+	}
+
+	for _, arg := range args {
+		yamlBytes, errMarshal := yaml.Marshal(arg)
+		if errMarshal != nil {
+			trace(arg)
+			continue
 		}
+
+		trace(string(yamlBytes))
 	}
 }

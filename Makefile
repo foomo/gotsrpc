@@ -77,39 +77,45 @@ test.bench:
 	@echo "〉go test -bench"
 	@GO_TEST_TAGS=-skip go test -tags=safe -bench=. -benchmem . -run ^$ | tee benchmarks.out
 
+# --- Version metadata (injected via -ldflags) --------------------------------
+VERSION?=$(shell git describe --tags --always --dirty 2>/dev/null || echo v3-dev)
+COMMIT_HASH?=$(shell git rev-parse --short HEAD 2>/dev/null || echo n/a)
+BUILD_TIMESTAMP?=$(shell date +%s)
+LDFLAGS=-X main.version=$(VERSION) -X main.commitHash=$(COMMIT_HASH) -X main.buildTimestamp=$(BUILD_TIMESTAMP)
+
 .PHONY: build
 ## Build binary
 build:
 	@echo "〉go build bin/gotsrpc"
 	@rm -f bin/gotsrpc
-	@go build -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
+	@go build -ldflags "$(LDFLAGS)" -o bin/gotsrpc ./cmd/gotsrpc/
 
 .PHONY: build.debug
 ## Build binary in debug mode
 build.debug:
 	@echo "〉go build bin/gotsrpc (debug)"
 	@rm -f bin/gotsrpc
-	@go build -gcflags "all=-N -l" -o bin/gotsrpc cmd/gotsrpc/gotsrpc.go
+	@go build -gcflags "all=-N -l" -ldflags "$(LDFLAGS)" -o bin/gotsrpc ./cmd/gotsrpc/
 
 .PHONY: install
 ## Run go install
 install: GOPATH=$(shell go env GOPATH)
 install:
 	@echo "〉installing gotsrpc to ${GOPATH}/bin/gosrpc"
-	@go install cmd/gotsrpc/gotsrpc.go
+	@go install -ldflags "$(LDFLAGS)" ./cmd/gotsrpc/
 
 .PHONY: install.debug
 ## Run go install with debug
 install.debug:
 	@echo "〉installing gotsrpc (debug)"
-	@go install -gcflags "all=-N -l" cmd/gotsrpc/gotsrpc.go
+	@go install -gcflags "all=-N -l" -ldflags "$(LDFLAGS)" ./cmd/gotsrpc/
 
 EXAMPLES=basic monitor
 define examples
 .PHONY: example.$(1)
 example.$(1):
 	@echo "📝  example: ${1}"
-	@cd example/${1} && go run ../../cmd/gotsrpc/gotsrpc.go gotsrpc.yml
+	@cd example/${1} && go run ../../cmd/gotsrpc gotsrpc.yml
 	@-cd example/${1}/client && ../../node_modules/.bin/tsc --build
 
 .PHONY: example.$(1).run
