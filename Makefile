@@ -180,7 +180,7 @@ upgrade:
 
 .PHONY: docs
 ## Open docs
-docs:
+docs: docs.cli
 	@echo "〉starting docs"
 	@cd docs && bun install && bun run dev
 
@@ -189,6 +189,12 @@ docs:
 docs.build:
 	@echo "〉building docs"
 	@cd docs && bun install && bun run build
+
+.PHONY: docs.cli
+## Generate the CLI reference markdown
+docs.cli:
+	@echo "〉generating cli docs"
+	@go run ./cmd/docs --dir docs/reference/cli
 
 .PHONY: godocs
 ## Open go docs

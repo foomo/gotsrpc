@@ -1,0 +1,14 @@
+{
+  "name": "gotsrpc",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+		"@catppuccin/vitepress": "0.1.2",
+    "vitepress": "1.6.3"
+  },
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  }
+}
