@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	version        = "dev"
+	version        = "v3-dev"
 	commitHash     = "n/a"
 	buildTimestamp = "n/a"
 )
