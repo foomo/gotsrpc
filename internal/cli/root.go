@@ -18,19 +18,9 @@ type BuildInfo struct {
 	BuildTime string
 }
 
-// logger is initialised in the root command's PersistentPreRunE and shared by
-// all subcommands.
-var logger *log.Logger
-
 // buildInfo holds the metadata passed to the most recently constructed root
 // command, consumed by the version command.
 var buildInfo BuildInfo
-
-// Logger returns the shared CLI logger. It is nil until the root command's
-// PersistentPreRunE has run.
-func Logger() *log.Logger {
-	return logger
-}
 
 // NewRootCmd builds the gotsrpc command tree.
 func NewRootCmd(info BuildInfo) *cobra.Command {
@@ -73,7 +63,7 @@ func NewRootCmd(info BuildInfo) *cobra.Command {
 				level = log.DebugLevel
 			}
 
-			logger = newLogger(level)
+			log.SetDefault(newLogger(level))
 
 			return nil
 		},

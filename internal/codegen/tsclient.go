@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/charmbracelet/log"
 	"github.com/foomo/gotsrpc/v3/config"
 	"github.com/foomo/gotsrpc/v3/internal/model"
 )
@@ -31,13 +32,13 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 
 		for index, arg := range method.Args {
 			if index == 0 && valueIsHTTPResponseWriter(arg.Value) {
-				trace("skipping first arg is a http.ResponseWriter")
+				log.Debug("skipping first arg is a http.ResponseWriter")
 
 				argOffset = 1
 
 				continue
 			} else if index == 0 && valueIsContext(arg.Value) {
-				trace("skipping first arg is a context.Context")
+				log.Debug("skipping first arg is a context.Context")
 
 				argOffset = 1
 
@@ -45,7 +46,7 @@ func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMa
 			}
 
 			if index == 1 && valueIsHTTPRequest(arg.Value) {
-				trace("skipping second arg is a *http.Request")
+				log.Debug("skipping second arg is a *http.Request")
 
 				argOffset = 2
 

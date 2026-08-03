@@ -52,7 +52,7 @@ func newGenerateCmd() *cobra.Command {
 				return fmt.Errorf("could not load config from %s: %w", configFile, err)
 			}
 
-			return build.Build(logger, conf, goPath, goRoot)
+			return build.Build(conf, goPath, goRoot)
 		},
 	}
 }

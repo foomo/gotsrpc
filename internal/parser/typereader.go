@@ -1,13 +1,13 @@
 package parser
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"reflect"
 	"strconv"
 	"strings"
 
+	"github.com/charmbracelet/log"
 	"github.com/foomo/gotsrpc/v3/internal/model"
 )
 
@@ -22,7 +22,7 @@ func getFileImports(file *ast.File, packageName string) (imports fileImportSpecM
 	for _, decl := range file.Decls {
 		if genDecl, ok := decl.(*ast.GenDecl); ok {
 			if genDecl.Tok == token.IMPORT {
-				trace("got an import", genDecl.Specs)
+				log.Debug("got an import", genDecl.Specs)
 
 				for _, spec := range genDecl.Specs {
 					if spec, ok := spec.(*ast.ImportSpec); ok {
@@ -198,13 +198,13 @@ func readAstStarExpr(v *model.Value, starExpr *ast.StarExpr, fileImports fileImp
 	case *ast.IndexListExpr:
 		loadValueExpr(v, starExprType, fileImports, typeParams)
 	default:
-		trace("a pointer on what", reflect.ValueOf(starExpr.X).Type().String())
+		log.Debug("a pointer on what", reflect.ValueOf(starExpr.X).Type().String())
 	}
 }
 
 func readAstMapType(m *model.Map, mapType *ast.MapType, fileImports fileImportSpecMap, typeParams []string) {
-	trace("		map key", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
-	trace("		map value", mapType.Value, reflect.ValueOf(mapType.Value).Type().String())
+	log.Debug("		map key", mapType.Key, reflect.ValueOf(mapType.Key).Type().String())
+	log.Debug("		map value", mapType.Value, reflect.ValueOf(mapType.Value).Type().String())
 
 	switch keyType := mapType.Key.(type) {
 	case *ast.Ident:
@@ -232,7 +232,7 @@ func readAstSelectorExpr(v *model.Value, selectorExpr *ast.SelectorExpr, fileImp
 			v.StructType.Name = selectorExpr.Sel.Name
 		}
 	default:
-		trace("selectorExpr.Sel !?", selectorExpr.X, reflect.ValueOf(selectorExpr.X).Type().String())
+		log.Debug("selectorExpr.Sel !?", selectorExpr.X, reflect.ValueOf(selectorExpr.X).Type().String())
 	}
 }
 
@@ -281,7 +281,7 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap,
 		case *ast.IndexListExpr:
 			loadValueExpr(v.Array.Value, exprEltType, fileImports, typeParams)
 		default:
-			trace("---------------------> array of", reflect.ValueOf(exprType.Elt).Type().String())
+			log.Debug("---------------------> array of", reflect.ValueOf(exprType.Elt).Type().String())
 		}
 	case *ast.Ident:
 		readAstType(v, exprType, fileImports, "", typeParams)
@@ -333,7 +333,7 @@ func loadValueExpr(v *model.Value, expr ast.Expr, fileImports fileImportSpecMap,
 			v.TypeArgs = append(v.TypeArgs, arg)
 		}
 	default:
-		trace("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())
+		log.Debug("what kind of field ident would that be ?!", reflect.ValueOf(expr).Type().String())
 	}
 }
 
@@ -364,10 +364,10 @@ func readFieldList(fieldList []*ast.Field, fileImports fileImportSpecMap, typePa
 			for _, name := range names {
 				if len(name) == 0 {
 					if jsonInfo == nil {
-						trace("i do not understand this one", field, names, value, jsonInfo)
+						log.Debug("i do not understand this one", field, names, value, jsonInfo)
 						continue
 					} else if jsonInfo.Ignore {
-						trace("ignoring this one", field, names, value, jsonInfo)
+						log.Debug("ignoring this one", field, names, value, jsonInfo)
 						continue
 					} else if jsonInfo.Inline {
 						inlineFields = append(inlineFields, &model.Field{
@@ -452,28 +452,28 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 						Package:    packageName,
 						TypeParams: typeParams,
 					}
-					trace("StructType", obj.Name)
+					log.Debug("StructType", obj.Name)
 
 					fields, inlineFields, unionFields := readFieldList(typeSpecType.Fields.List, fileImports, typeParams)
 					structs[structName].Fields = fields
 					structs[structName].InlineFields = inlineFields
 					structs[structName].UnionFields = unionFields
 				case *ast.InterfaceType:
-					trace("Interface", obj.Name)
+					log.Debug("Interface", obj.Name)
 					scalars[structName] = &model.Scalar{
 						Name:    structName,
 						Package: packageName,
 						Type:    model.ScalarTypeAny,
 					}
 				case *ast.Ident:
-					trace("Scalar", obj.Name)
+					log.Debug("Scalar", obj.Name)
 					scalars[structName] = &model.Scalar{
 						Name:    structName,
 						Package: packageName,
 						Type:    getScalarFromAstIdent(typeSpecType),
 					}
 				case *ast.SelectorExpr:
-					trace("SelectorExpr", obj.Name)
+					log.Debug("SelectorExpr", obj.Name)
 					structs[structName] = &model.Struct{
 						Name:    name,
 						Package: packageName,
@@ -497,7 +497,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 						TypeParams: typeParams,
 					}
 				default:
-					fmt.Println("	ignoring", obj.Name, reflect.ValueOf(typeSpec.Type).Type().String())
+					log.Debug("ignoring", "name", obj.Name, "type", reflect.ValueOf(typeSpec.Type).Type().String())
 				}
 			}
 		}
@@ -509,7 +509,7 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 func readStructs(pkg *parsedPackage, packageName string) (structs map[string]*model.Struct, scalars map[string]*model.Scalar, err error) {
 	structs = map[string]*model.Struct{}
 
-	trace("reading files in package", packageName)
+	log.Debug("reading files in package", packageName)
 
 	scalars = map[string]*model.Scalar{}
 	errorTypes := map[string]bool{}

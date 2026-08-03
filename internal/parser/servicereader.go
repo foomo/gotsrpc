@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/charmbracelet/log"
 	"github.com/foomo/gotsrpc/v3/config"
 	"github.com/foomo/gotsrpc/v3/internal/model"
 )
@@ -130,7 +131,7 @@ func Read(
 		}
 	}
 
-	trace("missing")
+	log.Debug("missing")
 	traceData(missingTypes)
 
 	structs = map[string]*model.Struct{}
@@ -141,12 +142,12 @@ func Read(
 		err = errors.New("error while collecting structs: " + collectErr.Error())
 	}
 
-	trace("---------------- found structs -------------------")
+	log.Debug("---------------- found structs -------------------")
 	traceData(structs)
-	trace("---------------- /found structs -------------------")
-	trace("---------------- found scalars -------------------")
+	log.Debug("---------------- /found structs -------------------")
+	log.Debug("---------------- found scalars -------------------")
 	traceData(scalars)
-	trace("---------------- /found scalars -------------------")
+	log.Debug("---------------- /found scalars -------------------")
 
 	allConstantTypes := map[string]map[string]any{}
 
@@ -240,7 +241,7 @@ func readServiceFile(file *ast.File, packageName string, services model.ServiceL
 	for _, decl := range file.Decls {
 		if funcDecl, ok := decl.(*ast.FuncDecl); ok {
 			if funcDecl.Recv != nil {
-				trace("that is a method named", funcDecl.Name)
+				log.Debug("that is a method named", funcDecl.Name)
 
 				if len(funcDecl.Recv.List) == 1 {
 					firstReceiverField := funcDecl.Recv.List[0]
@@ -253,7 +254,7 @@ func readServiceFile(file *ast.File, packageName string, services model.ServiceL
 								continue
 							}
 
-							trace("	on sth:", ident.Name)
+							log.Debug("	on sth:", ident.Name)
 
 							service.Methods = append(service.Methods, &model.Method{
 								Name:   funcDecl.Name.Name,
@@ -264,7 +265,7 @@ func readServiceFile(file *ast.File, packageName string, services model.ServiceL
 					}
 				}
 			} else {
-				trace("no receiver for", funcDecl.Name)
+				log.Debug("no receiver for", funcDecl.Name)
 			}
 		} else if genDecl, ok := decl.(*ast.GenDecl); ok {
 			if genDecl.Tok != token.TYPE {
@@ -274,7 +275,7 @@ func readServiceFile(file *ast.File, packageName string, services model.ServiceL
 			for _, spec := range genDecl.Specs {
 				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
 					ident := typeSpec.Name
-					trace("that is an interface named", ident.Name)
+					log.Debug("that is an interface named", ident.Name)
 
 					if service, ok := findService(ident.Name); ok {
 						if iSpec, ok := typeSpec.Type.(*ast.InterfaceType); ok {
@@ -282,7 +283,7 @@ func readServiceFile(file *ast.File, packageName string, services model.ServiceL
 
 							resolved := resolveInterfaceMethods(iSpec, fileImports, resolver, map[string]bool{packageName + "." + ident.Name: true}, nil, nil)
 							for _, m := range resolved {
-								trace(" on sth:", m.name)
+								log.Debug(" on sth:", m.name)
 
 								var tpNames []string
 								for k := range m.typeSubst {
@@ -318,7 +319,7 @@ func readServiceFile(file *ast.File, packageName string, services model.ServiceL
 }
 
 func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap, typeParams ...string) (fields []*model.Field) {
-	trace("reading fields")
+	log.Debug("reading fields")
 
 	fields = []*model.Field{}
 
@@ -336,7 +337,7 @@ func readFields(fieldList *ast.FieldList, fileImports fileImportSpecMap, typePar
 		}
 	}
 
-	trace("done reading fields")
+	log.Debug("done reading fields")
 
 	return
 }
@@ -426,7 +427,7 @@ func loadConstantTypes(pkg *parsedPackage) map[string]any {
 			if genDecl, ok := decl.(*ast.GenDecl); ok {
 				switch genDecl.Tok {
 				case token.TYPE:
-					trace("got a type", genDecl.Specs)
+					log.Debug("got a type", genDecl.Specs)
 
 					for _, spec := range genDecl.Specs {
 						if spec, ok := spec.(*ast.TypeSpec); ok {
@@ -449,16 +450,15 @@ func loadConstantTypes(pkg *parsedPackage) map[string]any {
 									"int", "int8", "int16", "int32", "int64",
 									"uint", "uint8", "uint16", "uint32", "uint64":
 									constantTypes[spec.Name.Name] = "number"
-								default:
-									trace("unhandled type", reflect.ValueOf(spec.Type).Type().String())
+									log.Debug("unhandled type", reflect.ValueOf(spec.Type).Type().String())
 								}
 							default:
-								trace("ignoring type", reflect.ValueOf(spec.Type).Type().String())
+								log.Debug("ignoring type", reflect.ValueOf(spec.Type).Type().String())
 							}
 						}
 					}
 				case token.CONST:
-					trace("got a const", genDecl.Specs)
+					log.Debug("got a const", genDecl.Specs)
 
 					for _, spec := range genDecl.Specs {
 						if spec, ok := spec.(*ast.ValueSpec); ok {
@@ -478,7 +478,7 @@ func loadConstantTypes(pkg *parsedPackage) map[string]any {
 						}
 					}
 				default:
-					trace("ignoring", genDecl.Tok)
+					log.Debug("ignoring", genDecl.Tok)
 				}
 			}
 		}
@@ -568,7 +568,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 	lastNumMissing := len(missingTypeNames())
 
 	for typesPending(structs, scalars, missingTypes) {
-		trace("pending", missingTypeNames())
+		log.Debug("pending", missingTypeNames())
 
 		for fullName, typeIsMissing := range missingTypes {
 			if !typeIsMissing {
@@ -580,7 +580,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 
 			packageName := strings.Join(fullNameParts, ".")
 
-			trace(fullName, "==========================>", fullNameParts, "=============>", packageName)
+			log.Debug(fullName, "==========================>", fullNameParts, "=============>", packageName)
 
 			packageStructs, structOK := scannedPackageStructs[packageName]
 
@@ -591,20 +591,20 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 					return err
 				}
 
-				trace("found structs in", goPaths, packageName)
+				log.Debug("found structs in", goPaths, packageName)
 
 				for structName, strct := range packageStructs {
-					trace("	struct", structName, strct)
+					log.Debug("	struct", structName, strct)
 
 					if strct == nil {
 						panic("how could that be")
 					}
 				}
 
-				trace("found scalars in", goPaths, packageName)
+				log.Debug("found scalars in", goPaths, packageName)
 
 				for scalarName, scalar := range packageScalars {
-					trace("	scalar", scalarName, scalar)
+					log.Debug("	scalar", scalarName, scalar)
 				}
 
 				traceData(parsedPackageScalars)
@@ -620,7 +620,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 			for packageStructName, packageStruct := range packageStructs {
 				missing, needed := missingTypes[packageStructName]
 				if needed && missing {
-					trace("picked up package struct", packageStructName, packageStruct)
+					log.Debug("picked up package struct", packageStructName, packageStruct)
 					missingTypes[packageStructName] = false
 
 					if packageStruct == nil {
@@ -636,7 +636,7 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 			for packageScalarName, packageScalar := range packageScalars {
 				missing, needed := missingTypes[packageScalarName]
 				if needed && missing {
-					trace("picked up package scalar", packageScalarName, packageScalar)
+					log.Debug("picked up package scalar", packageScalarName, packageScalar)
 					missingTypes[packageScalarName] = false
 					scalars[packageScalarName] = packageScalar
 				}
@@ -722,13 +722,13 @@ func depsSatisfied(s *model.Struct, missingTypes map[string]bool, structs map[st
 		scalar, scalarOK := scalars[fullName]
 		if !strctOK && !scalarOK {
 			missingTypes[fullName] = true
-			trace("need work ----------------------" + fullName)
+			log.Debug("need work ----------------------" + fullName)
 
 			return true
 		}
 
 		if strct == nil && scalar == nil {
-			trace("need work ----------------------" + fullName)
+			log.Debug("need work ----------------------" + fullName)
 			return true
 		}
 

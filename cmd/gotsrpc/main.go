@@ -21,11 +21,7 @@ func main() {
 		BuildTime: buildTimestamp,
 	})
 	if err != nil {
-		if logger := cli.Logger(); logger != nil {
-			logger.Error(err.Error())
-		} else {
-			_, _ = fmt.Fprintln(os.Stderr, err)
-		}
+		_, _ = fmt.Fprintln(os.Stderr, err)
 
 		os.Exit(1)
 	}

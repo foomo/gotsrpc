@@ -19,10 +19,7 @@ import (
 	"github.com/foomo/gotsrpc/v3/internal/parser"
 )
 
-func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //nolint:maintidx
-	parser.SetLogger(l)
-	codegen.SetLogger(l)
-
+func Build(conf *config.Config, goPath, goRoot string) error { //nolint:maintidx
 	deriveCommonJSMapping(conf)
 
 	mappedTypeScript := map[string]map[string]*codegen.Code{}
@@ -56,7 +53,7 @@ func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //
 
 		packageName := target.Package
 		outputPath := getPathForTarget(conf.Module, goPath, target)
-		l.Info("building target", "name", name, "package", packageName, "output", outputPath)
+		log.Print("Building target", "name", name, "package", packageName, "output", outputPath)
 
 		goRPCProxiesFilename := path.Join(outputPath, "gorpc_gen.go")
 		goRPCClientsFilename := path.Join(outputPath, "gorpcclient_gen.go")
@@ -65,8 +62,8 @@ func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //
 
 		remove := func(filename string) {
 			if _, err := os.Stat(filename); err == nil {
-				l.Debug("removing existing file", "file", filename)
-				os.Remove(filename)
+				log.Debug("removing existing file", "file", filename)
+				_ = os.Remove(filename)
 			}
 		}
 		remove(goRPCProxiesFilename)
@@ -117,7 +114,7 @@ func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //
 
 			ts = importsCode.String() + ts
 
-			if err := updateCode(l, target.Out, codegen.GetTSHeaderComment()+ts); err != nil {
+			if err := updateCode(target.Out, codegen.GetTSHeaderComment()+ts); err != nil {
 				return fmt.Errorf("could not write service file %s: %w", target.Out, err)
 			}
 
@@ -131,7 +128,7 @@ func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //
 			if formattingError == nil {
 				code = string(formattedGoBytes)
 			} else {
-				l.Warn("could not format generated go code", "file", filename, "err", formattingError)
+				log.Warn("could not format generated go code", "file", filename, "err", formattingError)
 			}
 
 			codeBytes, errProcessImports := imports.Process(filename, []byte(code), nil)
@@ -199,7 +196,7 @@ func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //
 			return fmt.Errorf("reverse mapping error in struct generation for package %s", goPackage)
 		}
 
-		l.Info("building structs for go package", "package", goPackage, "module", mapping.TypeScriptModule, "file", mapping.Out)
+		log.Debug("building structs for go package", "package", goPackage, "module", mapping.TypeScriptModule, "file", mapping.Out)
 
 		moduleCode := codegen.NewCode("	")
 		structIndent := -3
@@ -250,8 +247,8 @@ func Build(l *log.Logger, conf *config.Config, goPath, goRoot string) error { //
 
 		ts := importsCode.String() + moduleCode.String()
 
-		if err := updateCode(l, mapping.Out, codegen.GetTSHeaderComment()+ts); err != nil {
-			l.Warn("failed to update code", "file", mapping.Out, "err", err)
+		if err := updateCode(mapping.Out, codegen.GetTSHeaderComment()+ts); err != nil {
+			log.Warn("failed to update code", "file", mapping.Out, "err", err)
 		}
 	}
 
@@ -314,7 +311,7 @@ func getPathForTarget(gomod config.Namespace, goPath string, target *config.Targ
 	}
 }
 
-func updateCode(l *log.Logger, file string, code string) error {
+func updateCode(file string, code string) error {
 	if len(file) > 0 {
 		if file[0] == '~' {
 			home := os.Getenv("HOME")
@@ -333,12 +330,12 @@ func updateCode(l *log.Logger, file string, code string) error {
 
 	oldCode, _ := os.ReadFile(file) //nolint:gosec
 	if string(oldCode) != code {
-		l.Info("writing file", "file", file)
+		log.Info("writing file", "file", file)
 
 		return os.WriteFile(file, []byte(code), 0600) //nolint:gosec
 	}
 
-	l.Debug("update not necessary - unchanged", "file", file)
+	log.Debug("update not necessary - unchanged", "file", file)
 
 	return nil
 }
