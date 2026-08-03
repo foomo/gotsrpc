@@ -9,7 +9,7 @@ pre-commit:
     branch-name:
       run: |
         branch_name=$(git rev-parse --abbrev-ref HEAD)
-        if ! [[ "$branch_name" =~ ^(feature|fix)/ ]]; then
+        if ! [[ "$branch_name" =~ ^(feature|fix)/|^v[0-9]+$ ]]; then
           echo "Error: Branch name must start with 'feature/' or 'fix/'. Your branch: $branch_name"
           exit 1
         fi
