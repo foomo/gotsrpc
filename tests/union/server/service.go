@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/foomo/gotsrpc/v2/tests/union/private"
+	"github.com/foomo/gotsrpc/v3/tests/union/private"
 )
 
 type Service interface {

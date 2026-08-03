@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/tools/go/packages"
 
-	"github.com/foomo/gotsrpc/v2/config"
+	"github.com/foomo/gotsrpc/v3/config"
 )
 
 // parsedPackage is a minimal stand-in for the deprecated go/ast.Package.

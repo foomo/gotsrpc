@@ -3,7 +3,7 @@ package server_test
 import (
 	"testing"
 
-	"github.com/foomo/gotsrpc/v2/tests/nullable/server"
+	"github.com/foomo/gotsrpc/v3/tests/nullable/server"
 	"github.com/stretchr/testify/assert"
 )
 

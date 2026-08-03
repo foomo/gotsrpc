@@ -5,6 +5,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/foomo/gotsrpc/v3/semconv/httpconv"
 	"github.com/pkg/errors"
 )
 
@@ -17,15 +18,23 @@ type Client interface {
 	SetDefaultHeaders(headers http.Header)
 }
 
-func NewClient() Client {
-	return &bufferedClient{client: defaultHttpFactory(), handle: getHandleForEncoding(EncodingMsgpack), headers: nil}
+func NewClient(opts ...Option) Client {
+	return &bufferedClient{
+		client: defaultHttpFactory(),
+		handle: getHandleForEncoding(EncodingMsgpack),
+		instr:  httpconv.NewClient(opts...),
+	}
 }
 
-func NewClientWithHttpClient(client *http.Client) Client {
-	if client != nil {
-		return &bufferedClient{client: client, handle: getHandleForEncoding(EncodingMsgpack), headers: nil}
-	} else {
-		return &bufferedClient{client: defaultHttpFactory(), handle: getHandleForEncoding(EncodingMsgpack), headers: nil}
+func NewClientWithHttpClient(client *http.Client, opts ...Option) Client {
+	if client == nil {
+		client = defaultHttpFactory()
+	}
+
+	return &bufferedClient{
+		client: client,
+		handle: getHandleForEncoding(EncodingMsgpack),
+		instr:  httpconv.NewClient(opts...),
 	}
 }
 

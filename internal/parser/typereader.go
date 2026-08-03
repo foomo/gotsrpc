@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/foomo/gotsrpc/v2/internal/model"
+	"github.com/foomo/gotsrpc/v3/internal/model"
 )
 
 func standardImportName(importPath string) string {

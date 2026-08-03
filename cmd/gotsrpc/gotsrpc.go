@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2/config"
-	"github.com/foomo/gotsrpc/v2/internal/build"
-	"github.com/foomo/gotsrpc/v2/internal/codegen"
-	"github.com/foomo/gotsrpc/v2/internal/parser"
+	"github.com/foomo/gotsrpc/v3/config"
+	"github.com/foomo/gotsrpc/v3/internal/build"
+	"github.com/foomo/gotsrpc/v3/internal/codegen"
+	"github.com/foomo/gotsrpc/v3/internal/parser"
 )
 
 var (

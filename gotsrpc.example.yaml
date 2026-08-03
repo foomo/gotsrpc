@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=gotsrpc.schema.json
 module:
-  name: github.com/foomo/gotsrpc/v2
+  name: github.com/foomo/gotsrpc/v3
   path: ./
 
 targets:
   basic:
     services:
       /service: Service
-    package: github.com/foomo/gotsrpc/v2/example/basic/service
+    package: github.com/foomo/gotsrpc/v3/example/basic/service
     out: ./client/src/service-client.ts
     gorpc:
       - Service
@@ -15,5 +15,5 @@ targets:
       - Service
 
 mappings:
-  github.com/foomo/gotsrpc/v2/example/basic/service:
+  github.com/foomo/gotsrpc/v3/example/basic/service:
     out: ./client/src/service-vo.ts

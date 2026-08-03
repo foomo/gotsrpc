@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/foomo/gotsrpc/v2/config"
-	"github.com/foomo/gotsrpc/v2/internal/model"
+	"github.com/foomo/gotsrpc/v3/config"
+	"github.com/foomo/gotsrpc/v3/internal/model"
 )
 
 func renderGoTypeArgs(typeArgs []*model.Value, aliases map[string]string, packageName string) string {
@@ -152,9 +152,9 @@ func extractImportValue(value *model.Value, fullPackageName string, aliases map[
 
 func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, unions map[string][]string, g *Code) error {
 	aliases := map[string]string{
-		"time":                        "time",
 		"net/http":                    "http",
-		"github.com/foomo/gotsrpc/v2": "gotsrpc",
+		"github.com/foomo/gotsrpc/v3": "gotsrpc",
+		"github.com/foomo/gotsrpc/v3/semconv/httpconv": "httpconv",
 	}
 
 	for _, service := range services {
@@ -199,16 +199,18 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
         type ` + proxyName + ` struct {
 	        EndPoint    string
 	        service     ` + servicePointer + service.Name + `
+	        instr       *httpconv.Server
         }
 
-        func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `) *` + proxyName + ` {
-	        return New` + proxyName + `(service, "` + service.Endpoint + `")
+        func NewDefault` + proxyName + `(service ` + servicePointer + service.Name + `, opts ...gotsrpc.Option) *` + proxyName + ` {
+	        return New` + proxyName + `(service, "` + service.Endpoint + `", opts...)
         }
 
-        func New` + proxyName + `(service ` + servicePointer + service.Name + `, endpoint string) *` + proxyName + ` {
+        func New` + proxyName + `(service ` + servicePointer + service.Name + `, endpoint string, opts ...gotsrpc.Option) *` + proxyName + ` {
 	        return &` + proxyName + `{
 		        EndPoint: endpoint,
 		        service:  service,
+		        instr:    httpconv.NewServer("` + fullPackageName + `", "` + service.Name + `", opts...),
 	        }
         }
 
@@ -224,14 +226,8 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 		`)
 
 		g.L("funcName := gotsrpc.GetCalledFunc(r, p.EndPoint)")
-		g.L("callStats, callStatsOk := gotsrpc.GetStatsForRequest(r)")
-		g.L("if callStatsOk {")
-		g.Ind(1)
-		g.L("callStats.Func = funcName")
-		g.L("callStats.Package = \"" + fullPackageName + "\"")
-		g.L("callStats.Service = \"" + service.Name + "\"")
-		g.Ind(-1)
-		g.L("}")
+		g.L("r, call := p.instr.Start(w, r, funcName)")
+		g.L("defer call.End()")
 
 		g.L(`switch funcName {`)
 
@@ -247,12 +243,7 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 				isSessionRequest bool
 			)
 
-			g.L("var (")
-			g.Ind(1)
-			g.L("args []any")
-			g.L("rets []any")
-			g.Ind(-1)
-			g.L(")")
+			g.L("var rets []any")
 
 			if len(method.Args) > 0 {
 				var (
@@ -283,9 +274,10 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 					}
 
 					g.L(")")
-					g.L("args = []any{" + strings.Join(args, ", ") + "}")
-					g.L("if err := gotsrpc.LoadArgs(&args, callStats, r); err != nil {")
+					g.L("args := []any{" + strings.Join(args, ", ") + "}")
+					g.L("if err := gotsrpc.LoadArgs(&args, call, r); err != nil {")
 					g.Ind(1)
+					g.L("call.SetError(err)")
 					g.L("gotsrpc.ErrorCouldNotLoadArgs(w)")
 					g.L("return")
 					g.Ind(-1)
@@ -307,12 +299,7 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 				returnValueNames = append(returnValueNames, lcfirst(method.Name)+ucfirst(retArgName))
 			}
 
-			g.L("var executionStart time.Time")
-			g.L("if callStatsOk {")
-			g.Ind(1)
-			g.L("executionStart = time.Now()")
-			g.Ind(-1)
-			g.L("}")
+			g.L("call.ExecutionStart()")
 
 			if isSessionRequest {
 				g.L("rw := gotsrpc.ResponseWriter{ResponseWriter: w}")
@@ -328,13 +315,10 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 
 			g.App("p.service." + method.Name + "(" + strings.Join(callArgs, ", ") + ")")
 			g.NL()
-			g.L("if callStatsOk {")
-			g.Ind(1)
-			g.L("callStats.Execution = time.Since(executionStart)")
-			g.Ind(-1)
-			g.L("}")
+			g.L("call.ExecutionEnd()")
 
 			if isSessionRequest {
+				g.L("call.SetStatus(rw.Status())")
 				g.L("if rw.Status() == http.StatusOK {").Ind(1)
 			}
 			// Wrap all error return values with ErrorReply
@@ -348,8 +332,9 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 			}
 
 			g.L("rets = []any{" + strings.Join(retsValues, ", ") + "}")
-			g.L("if err := gotsrpc.Reply(rets, callStats, r, w); err != nil {")
+			g.L("if err := gotsrpc.Reply(rets, call, r, w); err != nil {")
 			g.Ind(1)
+			g.L("call.SetError(err)")
 			g.L("gotsrpc.ErrorCouldNotReply(w)")
 			g.L("return")
 			g.Ind(-1)
@@ -359,13 +344,12 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 				g.Ind(-1).L("}")
 			}
 
-			g.L("gotsrpc.Monitor(w, r, args, rets, callStats)")
 			g.L("return")
 			g.Ind(-1)
 		}
 
 		g.L("default:")
-		g.Ind(1).L("gotsrpc.ClearStats(r)")
+		g.Ind(1).L("call.NotFound()")
 		g.Ind(1).L("gotsrpc.ErrorFuncNotFound(w)")
 		g.Ind(-2).L("}") // close switch
 		g.Ind(-1).L("}") // close ServeHttp
@@ -427,7 +411,7 @@ func (ms *goMethod) renderSignature() string {
 func renderTSRPCServiceClients(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, g *Code) error {
 	aliases := map[string]string{
 		"github.com/pkg/errors":       "pkg_errors",
-		"github.com/foomo/gotsrpc/v2": "gotsrpc",
+		"github.com/foomo/gotsrpc/v3": "gotsrpc",
 		"net/http":                    "go_net_http",
 		"context":                     "go_context",
 	}
@@ -469,19 +453,19 @@ func renderTSRPCServiceClients(services model.ServiceList, fullPackageName strin
 			Client gotsrpc.Client
         }
 
-        func NewDefault` + interfaceName + `(url string) *` + clientName + ` {
-	        return New` + interfaceName + `(url, "` + service.Endpoint + `")
+        func NewDefault` + interfaceName + `(url string, opts ...gotsrpc.Option) *` + clientName + ` {
+	        return New` + interfaceName + `(url, "` + service.Endpoint + `", opts...)
         }
 
-        func New` + interfaceName + `(url string, endpoint string) *` + clientName + ` {
-			return New` + interfaceName + `WithClient(url, endpoint, nil)
+        func New` + interfaceName + `(url string, endpoint string, opts ...gotsrpc.Option) *` + clientName + ` {
+			return New` + interfaceName + `WithClient(url, endpoint, nil, opts...)
         }
 
-        func New` + interfaceName + `WithClient(url string, endpoint string, client *go_net_http.Client) *` + clientName + ` {
+        func New` + interfaceName + `WithClient(url string, endpoint string, client *go_net_http.Client, opts ...gotsrpc.Option) *` + clientName + ` {
 	        return &` + clientName + `{
 		        URL: url,
 		        EndPoint: endpoint,
-		        Client: gotsrpc.NewClientWithHttpClient(client),
+		        Client: gotsrpc.NewClientWithHttpClient(client, append([]gotsrpc.Option{gotsrpc.WithClientService("` + fullPackageName + `", "` + service.Name + `")}, opts...)...),
 	        }
 		}`)
 		g.NL()
@@ -507,13 +491,13 @@ func renderTSRPCServiceClients(services model.ServiceList, fullPackageName strin
 func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, g *Code) error {
 	aliases := map[string]string{
 		"fmt":                         "fmt",
-		"time":                        "time",
 		"strings":                     "strings",
 		"reflect":                     "reflect",
 		"crypto/tls":                  "tls",
 		"encoding/gob":                "gob",
 		"github.com/valyala/gorpc":    "gorpc",
-		"github.com/foomo/gotsrpc/v2": "gotsrpc",
+		"github.com/foomo/gotsrpc/v3": "gotsrpc",
+		"github.com/foomo/gotsrpc/v3/semconv/gorpcconv": "gorpcconv",
 	}
 
 	for _, service := range services {
@@ -546,7 +530,7 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
         ` + proxyName + ` struct {
         	server *gorpc.Server
 	        service  ` + servicePointer + service.Name + `
-	        callStatsHandler gotsrpc.GoRPCCallStatsHandlerFun
+	        instr *gorpcconv.Server
         }
 		`)
 
@@ -584,9 +568,10 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
 
 		g.L(`}`)
 		g.L(`
-        func New` + proxyName + `(addr string, service ` + servicePointer + service.Name + `, tlsConfig *tls.Config) *` + proxyName + ` {
+        func New` + proxyName + `(addr string, service ` + servicePointer + service.Name + `, tlsConfig *tls.Config, opts ...gotsrpc.Option) *` + proxyName + ` {
         	proxy :=  &` + proxyName + `{
 		        service:  service,
+		        instr:    gorpcconv.NewServer("` + fullPackageName + `", "` + service.Name + `", opts...),
 	        }
 
         	if tlsConfig != nil {
@@ -609,24 +594,16 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
         func (p *` + proxyName + `) Stop() {
         	p.server.Stop()
         }
-
-        func (p *` + proxyName + `) SetCallStatsHandler(handler gotsrpc.GoRPCCallStatsHandlerFun) {
-					p.callStatsHandler = handler
-				}
 		`)
 		g.NL()
 		g.L(`func (p *` + proxyName + `) handler(clientAddr string, request any) (response any) {`)
 
-		g.L(`var start time.Time`)
-		g.L(`if p.callStatsHandler != nil {`)
-		g.Ind(1)
-		g.L(`start = time.Now()`)
-		g.Ind(-1)
-		g.L(`}`)
-		g.NL()
 		g.L(`reqType := reflect.TypeOf(request).String()`)
 		g.L(`funcNameParts := strings.Split(reqType, ".")`)
 		g.L(`funcName := funcNameParts[len(funcNameParts)-1]`)
+		g.NL()
+		g.L(`call := p.instr.Handle(funcName)`)
+		g.L(`defer call.End()`)
 		g.NL()
 		g.L(`switch funcName {`)
 
@@ -679,16 +656,7 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
 		}
 
 		g.L(`default:`)
-		g.L(`fmt.Println("Unknown request type", reflect.TypeOf(request).String())`)
-		g.L(`}`)
-		g.NL()
-		g.L(`if p.callStatsHandler != nil {`)
-		g.L(`p.callStatsHandler(&gotsrpc.CallStats{`)
-		g.L(`Func: funcName,`)
-		g.L(`Package: "` + fullPackageName + `",`)
-		g.L(`Service: "` + service.Name + `",`)
-		g.L(`Execution: time.Since(start),`)
-		g.L(`})`)
+		g.L(`call.RecordError(fmt.Errorf("unknown request type %s", reqType), 0)`)
 		g.L(`}`)
 		g.NL()
 		g.L(`return`)
@@ -700,8 +668,10 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
 
 func renderGoRPCServiceClients(services model.ServiceList, fullPackageName string, packageName string, config *config.Target, g *Code) error {
 	aliases := map[string]string{
-		"crypto/tls":               "tls",
-		"github.com/valyala/gorpc": "gorpc",
+		"crypto/tls":                                    "tls",
+		"github.com/valyala/gorpc":                      "gorpc",
+		"github.com/foomo/gotsrpc/v3":                   "gotsrpc",
+		"github.com/foomo/gotsrpc/v3/semconv/gorpcconv": "gorpcconv",
 	}
 
 	for _, service := range services {
@@ -726,11 +696,14 @@ func renderGoRPCServiceClients(services model.ServiceList, fullPackageName strin
 		g.L(`
         type ` + clientName + ` struct {
         	Client *gorpc.Client
+        	instr  *gorpcconv.Client
         }
 		`)
 		g.L(`
-        func New` + clientName + `(addr string, tlsConfig *tls.Config) *` + clientName + ` {
-        	client := &` + clientName + `{}
+        func New` + clientName + `(addr string, tlsConfig *tls.Config, opts ...gotsrpc.Option) *` + clientName + ` {
+        	client := &` + clientName + `{
+        		instr: gorpcconv.NewClient(append([]gotsrpc.Option{gotsrpc.WithClientService("` + fullPackageName + `", "` + service.Name + `")}, opts...)...),
+        	}
         	if tlsConfig == nil {
 						client.Client = gorpc.NewTCPClient(addr)
 					} else {
@@ -776,6 +749,8 @@ func renderGoRPCServiceClients(services model.ServiceList, fullPackageName strin
 
 			returns = append(returns, "clientErr error")
 			g.L(`func (tsc *` + clientName + `) ` + method.Name + `(` + strings.Join(params, ", ") + `) (` + strings.Join(returns, ", ") + `) {`)
+			g.L(`call := tsc.instr.Start("` + method.Name + `")`)
+			g.L(`defer call.End()`)
 			g.L(`rpcReq := ` + service.Name + method.Name + `Request{` + strings.Join(args, ", ") + `}`)
 
 			if len(rets) > 0 {
@@ -785,6 +760,7 @@ func renderGoRPCServiceClients(services model.ServiceList, fullPackageName strin
 			}
 
 			g.L(`if rpcErr != nil {`)
+			g.L(`call.RecordError(rpcErr, 0)`)
 			g.L(`clientErr = rpcErr`)
 			g.L(`return`)
 			g.L(`}`)
@@ -915,7 +891,7 @@ func renderImports(aliases map[string]string, packageName string) string {
 	}
 
 	return `
-		// Code generated by gotsrpc https://github.com/foomo/gotsrpc/v2 - DO NOT EDIT.
+		// Code generated by gotsrpc https://github.com/foomo/gotsrpc/v3 - DO NOT EDIT.
 
 		package ` + packageName + `
 

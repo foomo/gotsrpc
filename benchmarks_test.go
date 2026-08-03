@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2"
-	"github.com/foomo/gotsrpc/v2/tests/common"
-	"github.com/foomo/gotsrpc/v2/tests/types/server"
+	"github.com/foomo/gotsrpc/v3"
+	"github.com/foomo/gotsrpc/v3/tests/common"
+	"github.com/foomo/gotsrpc/v3/tests/types/server"
 )
 
 func setupGoRPC(b *testing.B) *server.ServiceGoRPCClient {

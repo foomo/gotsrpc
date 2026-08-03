@@ -14,7 +14,7 @@ targets:
   demo:
     services:
       /service/demo: Service
-    package: github.com/foomo/gotsrpc/v2/demo
+    package: github.com/foomo/gotsrpc/v3/demo
     module: My.Service
     modulekind: commonjs
     out: /tmp/my-service.ts 
@@ -22,7 +22,7 @@ mappings:
   foo/bar:
     module: Sample.Module
     out: path/to/ts
-  github.com/foomo/gotsrpc/v2:
+  github.com/foomo/gotsrpc/v3:
     module: Sample.Module.RPC
     out: path/to/other/folder
 
@@ -60,7 +60,7 @@ func TestLoadConfig(t *testing.T) {
 		t.Fatal("demo target out is wrong")
 	}
 
-	if demoTarget.Package != "github.com/foomo/gotsrpc/v2/demo" {
+	if demoTarget.Package != "github.com/foomo/gotsrpc/v3/demo" {
 		t.Fatal("wrong target package")
 	}
 

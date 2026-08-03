@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/foomo/gotsrpc/v2/tests/common"
+	"github.com/foomo/gotsrpc/v3/tests/common"
 )
 
 type Handler struct{}

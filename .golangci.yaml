@@ -99,6 +99,13 @@ linters:
         linters:
           - forbidigo
           - gosec
+      # The semconvhttp/semconvgorpc instrumentation wrappers deliberately hold
+      # the call context and hand the span off to a *Call type that ends it in
+      # End(); spancheck/containedctx flag this legitimate pattern.
+      - path: semconv/(httpconv|gorpcconv)
+        linters:
+          - containedctx
+          - spancheck
     paths:
       - node_modules$
       - bin$

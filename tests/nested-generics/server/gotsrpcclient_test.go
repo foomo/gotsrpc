@@ -4,7 +4,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/foomo/gotsrpc/v2/tests/nested-generics/server"
+	"github.com/foomo/gotsrpc/v3/tests/nested-generics/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

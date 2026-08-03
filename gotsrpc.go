@@ -2,13 +2,13 @@ package gotsrpc
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/foomo/gotsrpc/v3/semconv/httpconv"
 	"github.com/pkg/errors"
 )
 
@@ -32,11 +32,8 @@ func ErrorMethodNotAllowed(w http.ResponseWriter) {
 	http.Error(w, "you gotta POST", http.StatusMethodNotAllowed)
 }
 
-func LoadArgs(args any, callStats *CallStats, r *http.Request) error {
-	var start time.Time
-	if callStats != nil {
-		start = time.Now()
-	}
+func LoadArgs(args any, call *httpconv.ServerCall, r *http.Request) error {
+	start := time.Now()
 
 	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
 	dec := ch.getDecoder(r.Body)
@@ -47,9 +44,8 @@ func LoadArgs(args any, callStats *CallStats, r *http.Request) error {
 		return errors.Wrap(errDecode, "could not decode arguments")
 	}
 
-	if callStats != nil {
-		callStats.Unmarshalling = time.Since(start)
-		callStats.RequestSize = int(r.ContentLength)
+	if call != nil {
+		call.RecordUnmarshal(time.Since(start), int(r.ContentLength))
 	}
 
 	return nil
@@ -64,7 +60,7 @@ func loadArgs(args any, jsonBytes []byte) error {
 }
 
 // Reply although this is a public method - do not call it, it will be called by generated code
-func Reply(response []any, stats *CallStats, r *http.Request, w http.ResponseWriter) error {
+func Reply(response []any, call *httpconv.ServerCall, r *http.Request, w http.ResponseWriter) error {
 	var errorIndices []int
 
 	for i, v := range response {
@@ -74,10 +70,7 @@ func Reply(response []any, stats *CallStats, r *http.Request, w http.ResponseWri
 		}
 	}
 
-	var serializationStart time.Time
-	if stats != nil {
-		serializationStart = time.Now()
-	}
+	serializationStart := time.Now()
 
 	ch := getHandlerForContentType(r.Header.Get("Content-Type"))
 
@@ -106,22 +99,20 @@ func Reply(response []any, stats *CallStats, r *http.Request, w http.ResponseWri
 		return errors.Wrap(err, "could not write response")
 	}
 
-	if stats != nil {
-		stats.ResponseSize = buf.Len()
-		stats.Marshalling = time.Since(serializationStart)
+	if call != nil {
+		call.RecordMarshal(time.Since(serializationStart), buf.Len())
 
 		for _, i := range errorIndices {
 			if v, ok := response[i].(error); ok && v != nil {
 				if !reflect.ValueOf(v).IsZero() {
-					stats.ErrorCode = 1
-					stats.ErrorType = fmt.Sprintf("%T", v)
-
-					stats.ErrorMessage = v.Error()
-					if v, ok := v.(interface {
+					code := 1
+					if c, ok := v.(interface {
 						ErrorCode() int
 					}); ok {
-						stats.ErrorCode = v.ErrorCode()
+						code = c.ErrorCode()
 					}
+
+					call.RecordError(v, code)
 				}
 			}
 		}

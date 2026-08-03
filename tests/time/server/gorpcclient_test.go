@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2/tests/time/server"
+	"github.com/foomo/gotsrpc/v3/tests/time/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

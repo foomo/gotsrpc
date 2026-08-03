@@ -4,8 +4,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/foomo/gotsrpc/v2/tests/common"
-	"github.com/foomo/gotsrpc/v2/tests/generics/server"
+	"github.com/foomo/gotsrpc/v3/tests/common"
+	"github.com/foomo/gotsrpc/v3/tests/generics/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

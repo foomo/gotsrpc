@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/foomo/gotsrpc/v2/tests/errors/server"
+	"github.com/foomo/gotsrpc/v3/tests/errors/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

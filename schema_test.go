@@ -9,7 +9,7 @@ import (
 
 	testingx "github.com/foomo/go/testing"
 	tagx "github.com/foomo/go/testing/tag"
-	"github.com/foomo/gotsrpc/v2/config"
+	"github.com/foomo/gotsrpc/v3/config"
 	"github.com/invopop/jsonschema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ func TestSchema(t *testing.T) {
 
 	reflector := new(jsonschema.Reflector)
 	reflector.RequiredFromJSONSchemaTags = true
-	require.NoError(t, reflector.AddGoComments("github.com/foomo/gotsrpc/v2/config", "./"))
+	require.NoError(t, reflector.AddGoComments("github.com/foomo/gotsrpc/v3/config", "./"))
 	schema := reflector.Reflect(&config.Config{})
 	schema.ID = "https://raw.githubusercontent.com/foomo/gotsrpc/refs/heads/main/gotsrpc.schema.json"
 	actual, err := json.MarshalIndent(schema, "", "  ")

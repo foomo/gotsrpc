@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/foomo/gotsrpc/v2"
-	"github.com/foomo/gotsrpc/v2/tests/union/private"
+	"github.com/foomo/gotsrpc/v3"
+	"github.com/foomo/gotsrpc/v3/tests/union/private"
 )
 
 func init() {

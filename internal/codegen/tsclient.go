@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/foomo/gotsrpc/v2/config"
-	"github.com/foomo/gotsrpc/v2/internal/model"
+	"github.com/foomo/gotsrpc/v3/config"
+	"github.com/foomo/gotsrpc/v3/internal/model"
 )
 
 func renderTypescriptClient(service *model.Service, mappings config.TypeScriptMappings, scalars map[string]*model.Scalar, structs map[string]*model.Struct, ts *Code) error {

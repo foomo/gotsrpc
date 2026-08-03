@@ -3,7 +3,7 @@ package codegen_test
 import (
 	"testing"
 
-	"github.com/foomo/gotsrpc/v2/internal/codegen"
+	"github.com/foomo/gotsrpc/v3/internal/codegen"
 )
 
 func TestSplit(t *testing.T) {

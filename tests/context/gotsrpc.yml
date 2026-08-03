@@ -1,20 +1,20 @@
 # yaml-language-server: $schema=../../gotsrpc.schema.json
 module:
-  name: github.com/foomo/gotsrpc/v2
+  name: github.com/foomo/gotsrpc/v3
   path: ../../
 
 targets:
   context:
     services:
       /service: Service
-    package: github.com/foomo/gotsrpc/v2/tests/context/server
+    package: github.com/foomo/gotsrpc/v3/tests/context/server
     out: ./client/client.ts
     gorpc: [ Service ]
     tsrpc: [ Service ]
 
 mappings:
-  github.com/foomo/gotsrpc/v2/test/context/server:
+  github.com/foomo/gotsrpc/v3/test/context/server:
     out: ./client/vo.ts
-  github.com/foomo/gotsrpc/v2:
+  github.com/foomo/gotsrpc/v3:
     out: ./client/vo-gotsrpc.ts
-    structs: [ github.com/foomo/gotsrpc/v2.Error ]
+    structs: [ github.com/foomo/gotsrpc/v3.Error ]

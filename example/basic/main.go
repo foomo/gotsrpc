@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/foomo/gotsrpc/v2/example/basic/service"
+	"github.com/foomo/gotsrpc/v3/example/basic/service"
 )
 
 func main() {

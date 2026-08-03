@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/foomo/gotsrpc/v2/tests/generics/server"
+	"github.com/foomo/gotsrpc/v3/tests/generics/server"
 	"github.com/stretchr/testify/require"
 )
 

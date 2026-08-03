@@ -13,9 +13,9 @@ import (
 
 	"golang.org/x/tools/imports"
 
-	"github.com/foomo/gotsrpc/v2/config"
-	"github.com/foomo/gotsrpc/v2/internal/codegen"
-	"github.com/foomo/gotsrpc/v2/internal/parser"
+	"github.com/foomo/gotsrpc/v3/config"
+	"github.com/foomo/gotsrpc/v3/internal/codegen"
+	"github.com/foomo/gotsrpc/v3/internal/parser"
 )
 
 func Build(conf *config.Config, goPath, goRoot string) { //nolint:maintidx

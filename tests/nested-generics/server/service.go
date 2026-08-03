@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 
-	"github.com/foomo/gotsrpc/v2/tests/common"
-	"github.com/foomo/gotsrpc/v2/tests/nested-generics/private"
+	"github.com/foomo/gotsrpc/v3/tests/common"
+	"github.com/foomo/gotsrpc/v3/tests/nested-generics/private"
 )
 
 type Middle[T any] interface {

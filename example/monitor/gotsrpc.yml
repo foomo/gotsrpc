@@ -1,12 +1,12 @@
 module:
-  name: github.com/foomo/gotsrpc/v2
+  name: github.com/foomo/gotsrpc/v3
   path: ../../
 
 targets:
   monitor:
     services:
       /service: Service
-    package: github.com/foomo/gotsrpc/v2/example/monitor/service
+    package: github.com/foomo/gotsrpc/v3/example/monitor/service
     out: ./client/src/service-client.ts
     gorpc:
       - Service

@@ -4,7 +4,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/foomo/gotsrpc/v2/tests/context/server"
+	"github.com/foomo/gotsrpc/v3/tests/context/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

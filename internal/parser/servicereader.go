@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/foomo/gotsrpc/v2/config"
-	"github.com/foomo/gotsrpc/v2/internal/model"
+	"github.com/foomo/gotsrpc/v3/config"
+	"github.com/foomo/gotsrpc/v3/internal/model"
 )
 
 // interfaceInfo holds a parsed interface type and its file imports.
