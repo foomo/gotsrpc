@@ -170,7 +170,7 @@ func valueTSType(v *model.Value, mappings config.TypeScriptMappings, scalars map
 func tsTypeFromScalarType(scalarType model.ScalarType) string {
 	switch scalarType { //nolint:exhaustive
 	case model.ScalarTypeError:
-		return "github_com_foomo_gotsrpc_v2.Error"
+		return "github_com_foomo_gotsrpc_v3.Error"
 	case model.ScalarTypeByte:
 		return "string"
 	case model.ScalarTypeBool:
