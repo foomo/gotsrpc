@@ -210,7 +210,7 @@ func renderTSRPCServiceProxies(services model.ServiceList, fullPackageName strin
 	        return &` + proxyName + `{
 		        EndPoint: endpoint,
 		        service:  service,
-		        instr:    httpconv.NewServer("` + fullPackageName + `", "` + service.Name + `", opts...),
+		        instr:    httpconv.NewServer("` + fullPackageName + `", "` + config.ServiceName(service.Name) + `", opts...),
 	        }
         }
 
@@ -465,7 +465,7 @@ func renderTSRPCServiceClients(services model.ServiceList, fullPackageName strin
 	        return &` + clientName + `{
 		        URL: url,
 		        EndPoint: endpoint,
-		        Client: gotsrpc.NewClientWithHttpClient(client, append([]gotsrpc.Option{gotsrpc.WithClientService("` + fullPackageName + `", "` + service.Name + `")}, opts...)...),
+		        Client: gotsrpc.NewClientWithHttpClient(client, append([]gotsrpc.Option{gotsrpc.WithClientService("` + fullPackageName + `", "` + config.ServiceName(service.Name) + `")}, opts...)...),
 	        }
 		}`)
 		g.NL()
@@ -571,7 +571,7 @@ func renderGoRPCServiceProxies(services model.ServiceList, fullPackageName strin
         func New` + proxyName + `(addr string, service ` + servicePointer + service.Name + `, tlsConfig *tls.Config, opts ...gotsrpc.Option) *` + proxyName + ` {
         	proxy :=  &` + proxyName + `{
 		        service:  service,
-		        instr:    gorpcconv.NewServer("` + fullPackageName + `", "` + service.Name + `", opts...),
+		        instr:    gorpcconv.NewServer("` + fullPackageName + `", "` + config.ServiceName(service.Name) + `", opts...),
 	        }
 
         	if tlsConfig != nil {
@@ -702,7 +702,7 @@ func renderGoRPCServiceClients(services model.ServiceList, fullPackageName strin
 		g.L(`
         func New` + clientName + `(addr string, tlsConfig *tls.Config, opts ...gotsrpc.Option) *` + clientName + ` {
         	client := &` + clientName + `{
-        		instr: gorpcconv.NewClient(append([]gotsrpc.Option{gotsrpc.WithClientService("` + fullPackageName + `", "` + service.Name + `")}, opts...)...),
+        		instr: gorpcconv.NewClient(append([]gotsrpc.Option{gotsrpc.WithClientService("` + fullPackageName + `", "` + config.ServiceName(service.Name) + `")}, opts...)...),
         	}
         	if tlsConfig == nil {
 						client.Client = gorpc.NewTCPClient(addr)

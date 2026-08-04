@@ -15,8 +15,9 @@ type Config struct {
 	MeterProvider  metric.MeterProvider
 	Propagators    propagation.TextMapPropagator
 	Logger         *slog.Logger
-	// Package and Service identify the instrumented service. Servers set them
-	// via NewServer arguments; clients seed them through WithClientService.
+	// Package and Service identify the instrumented service on the client side.
+	// Clients seed them through WithClientService; servers pass their own
+	// pkg/service directly to NewServer and do not use these fields.
 	Package string
 	Service string
 }

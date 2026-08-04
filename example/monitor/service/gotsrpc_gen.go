@@ -28,7 +28,7 @@ func NewServiceGoTSRPCProxy(service Service, endpoint string, opts ...gotsrpc.Op
 	return &ServiceGoTSRPCProxy{
 		EndPoint: endpoint,
 		service:  service,
-		instr:    httpconv.NewServer("github.com/foomo/gotsrpc/v3/example/monitor/service", "Service", opts...),
+		instr:    httpconv.NewServer("github.com/foomo/gotsrpc/v3/example/monitor/service", "Monitor", opts...),
 	}
 }
 

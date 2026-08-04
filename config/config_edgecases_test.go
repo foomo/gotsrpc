@@ -27,6 +27,24 @@ func TestTarget_IsTSRPC(t *testing.T) {
 	assert.False(t, target.IsTSRPC("OtherService"))
 }
 
+func TestTarget_ServiceName(t *testing.T) {
+	t.Parallel()
+
+	target := &Target{ServiceNames: map[string]string{
+		"Service": "Monitor",
+		"Empty":   "",
+	}}
+
+	// override present -> display name
+	assert.Equal(t, "Monitor", target.ServiceName("Service"))
+	// override absent -> falls back to the service name
+	assert.Equal(t, "OtherService", target.ServiceName("OtherService"))
+	// empty override -> falls back to the service name
+	assert.Equal(t, "Empty", target.ServiceName("Empty"))
+	// no map at all -> falls back to the service name
+	assert.Equal(t, "Service", (&Target{}).ServiceName("Service"))
+}
+
 func TestLoadConfig_MalformedYAML(t *testing.T) {
 	t.Parallel()
 

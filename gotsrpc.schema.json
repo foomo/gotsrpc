@@ -91,6 +91,12 @@
         },
         "skipTSRPCClient": {
           "type": "boolean"
+        },
+        "serviceNames": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
         }
       },
       "additionalProperties": false,

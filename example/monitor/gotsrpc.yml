@@ -6,6 +6,8 @@ targets:
   monitor:
     services:
       /service: Service
+    serviceNames:
+      Service: Monitor
     package: github.com/foomo/gotsrpc/v3/example/monitor/service
     out: ./client/src/service-client.ts
     gorpc:

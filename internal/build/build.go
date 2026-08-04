@@ -302,7 +302,7 @@ func commonJSImports(conf *config.Config, c *codegen.Code, tsFilename string, co
 	return nil
 }
 
-func getPathForTarget(gomod config.Namespace, goPath string, target *config.Target) (outputPath string) {
+func getPathForTarget(gomod config.Namespace, goPath string, target *config.Target) string {
 	if gomod.Name != "" && strings.HasPrefix(target.Package, gomod.Name) {
 		relative := strings.TrimPrefix(target.Package, gomod.Name)
 		return path.Join(gomod.Path, relative)
@@ -323,16 +323,19 @@ func updateCode(file string, code string) error {
 		}
 	}
 
-	errMkdirAll := os.MkdirAll(path.Dir(file), 0755) //nolint:gosec
-	if errMkdirAll != nil {
-		return errMkdirAll
+	if err := os.MkdirAll(path.Dir(file), 0700); err != nil {
+		return err
 	}
 
-	oldCode, _ := os.ReadFile(file) //nolint:gosec
+	oldCode, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
 	if string(oldCode) != code {
 		log.Info("writing file", "file", file)
 
-		return os.WriteFile(file, []byte(code), 0600) //nolint:gosec
+		return os.WriteFile(file, []byte(code), 0600)
 	}
 
 	log.Debug("update not necessary - unchanged", "file", file)
