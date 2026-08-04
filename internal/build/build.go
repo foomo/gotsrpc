@@ -323,11 +323,11 @@ func updateCode(file string, code string) error {
 		}
 	}
 
-	if err := os.MkdirAll(path.Dir(file), 0700); err != nil {
+	if err := os.MkdirAll(path.Dir(file), 0700); err != nil { //nolint:gosec //configured path
 		return err
 	}
 
-	oldCode, err := os.ReadFile(file)
+	oldCode, err := os.ReadFile(file) //nolint:gosec //configured path
 	if err != nil {
 		return err
 	}
@@ -335,7 +335,7 @@ func updateCode(file string, code string) error {
 	if string(oldCode) != code {
 		log.Info("writing file", "file", file)
 
-		return os.WriteFile(file, []byte(code), 0600)
+		return os.WriteFile(file, []byte(code), 0600) //nolint:gosec //configured path
 	}
 
 	log.Debug("update not necessary - unchanged", "file", file)
