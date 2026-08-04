@@ -7,6 +7,8 @@ targets:
   basic:
     services:
       /service: Service
+    serviceNames:
+      Service: MyService
     package: github.com/foomo/gotsrpc/v3/example/basic/service
     out: ./client/src/service-client.ts
     gorpc:

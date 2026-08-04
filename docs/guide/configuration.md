@@ -84,6 +84,7 @@ and produces a set of proxies and clients.
 | `gorpc` | list | Services for which to also generate a Go ↔ Go binary RPC proxy/client. |
 | `tsrpc` | list | Services for which to generate a TypeScript client. **Empty means all services.** |
 | `skipTSRPCClient` | bool | Skip generating the TypeScript client. |
+| `serviceNames` | map | Override the service name used in OpenTelemetry telemetry (span name and the `rpc.method` metric/attribute), keyed by Go service name — e.g. `Service: Monitor`. Defaults to the service name. Affects generated proxies **and** clients; does not change generated Go types or routing. See [Telemetry service names](#telemetry-service-names). |
 
 ```yaml
 targets:
@@ -95,6 +96,33 @@ targets:
     gorpc: [Service]
     tsrpc: [Service]
 ```
+
+### Telemetry service names
+
+Generated proxies and clients emit OpenTelemetry `rpc.*` spans and metrics. The span
+name and the `rpc.method` attribute/metric are formed as `<service>/<method>`, where
+`<service>` defaults to the Go service type name.
+
+Services are conventionally named `Service`, so telemetry from different packages all
+collapses into `Service/<Method>` — indistinguishable across services. Use `serviceNames`
+to give a service a distinct telemetry identity **without renaming the Go type**:
+
+```yaml
+targets:
+  monitor:
+    services:
+      /service: Service
+    serviceNames:
+      Service: Monitor   # spans/metrics read "Monitor/Hello" instead of "Service/Hello"
+    package: github.com/foomo/gotsrpc/v3/example/monitor/service
+    gorpc: [Service]
+    tsrpc: [Service]
+```
+
+The map is keyed by the Go service name (the value side of `services:`). Services not
+listed keep their type name. The override is applied consistently to the generated server
+proxy and the generated clients, so their metrics line up under the same name. It only
+affects telemetry — generated Go type names and HTTP routing are unchanged.
 
 ## `mappings`
 
@@ -175,7 +203,8 @@ matches the fields gotsrpc understands.
         "out": { "type": "string" },
         "gorpc": { "items": { "type": "string" }, "type": "array" },
         "tsrpc": { "items": { "type": "string" }, "type": "array" },
-        "skipTSRPCClient": { "type": "boolean" }
+        "skipTSRPCClient": { "type": "boolean" },
+        "serviceNames": { "additionalProperties": { "type": "string" }, "type": "object" }
       },
       "additionalProperties": false,
       "type": "object"
