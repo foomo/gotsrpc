@@ -17,7 +17,7 @@ type ServiceGoRPCClient struct {
 
 func NewServiceGoRPCClient(addr string, tlsConfig *tls.Config, opts ...gotsrpc.Option) *ServiceGoRPCClient {
 	client := &ServiceGoRPCClient{
-		instr: gorpcconv.NewClient(append([]gotsrpc.Option{gotsrpc.WithClientService("github.com/foomo/gotsrpc/v3/example/monitor/service", "Service")}, opts...)...),
+		instr: gorpcconv.NewClient(append([]gotsrpc.Option{gotsrpc.WithClientService("github.com/foomo/gotsrpc/v3/example/monitor/service", "Monitor")}, opts...)...),
 	}
 	if tlsConfig == nil {
 		client.Client = gorpc.NewTCPClient(addr)

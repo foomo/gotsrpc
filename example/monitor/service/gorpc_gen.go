@@ -37,7 +37,7 @@ func init() {
 func NewServiceGoRPCProxy(addr string, service Service, tlsConfig *tls.Config, opts ...gotsrpc.Option) *ServiceGoRPCProxy {
 	proxy := &ServiceGoRPCProxy{
 		service: service,
-		instr:   gorpcconv.NewServer("github.com/foomo/gotsrpc/v3/example/monitor/service", "Service", opts...),
+		instr:   gorpcconv.NewServer("github.com/foomo/gotsrpc/v3/example/monitor/service", "Monitor", opts...),
 	}
 
 	if tlsConfig != nil {

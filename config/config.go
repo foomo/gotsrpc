@@ -26,10 +26,24 @@ type Target struct {
 	TSRPC []string `json:"tsrpc" yaml:"tsrpc"`
 	// Skip generating go rpc client
 	SkipTSRPCClient bool `json:"skipTSRPCClient" yaml:"skipTSRPCClient"`
+	// Optional override of the service name used in metrics/spans (span name and
+	// rpc.method). Keyed by the service name from `services`. Falls back to the
+	// service name when absent. Does NOT affect generated Go type names or routing.
+	ServiceNames map[string]string `json:"serviceNames" yaml:"serviceNames"`
 }
 
 func (t *Target) IsGoRPC(service string) bool {
 	return slices.Contains(t.GoRPC, service)
+}
+
+// ServiceName returns the telemetry display name for a service, falling back to
+// the service name itself when no override is configured.
+func (t *Target) ServiceName(service string) string {
+	if name, ok := t.ServiceNames[service]; ok && name != "" {
+		return name
+	}
+
+	return service
 }
 
 func (t *Target) IsTSRPC(service string) bool {

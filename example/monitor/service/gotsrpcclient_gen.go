@@ -32,7 +32,7 @@ func NewServiceGoTSRPCClientWithClient(url string, endpoint string, client *go_n
 	return &HTTPServiceGoTSRPCClient{
 		URL:      url,
 		EndPoint: endpoint,
-		Client:   gotsrpc.NewClientWithHttpClient(client, append([]gotsrpc.Option{gotsrpc.WithClientService("github.com/foomo/gotsrpc/v3/example/monitor/service", "Service")}, opts...)...),
+		Client:   gotsrpc.NewClientWithHttpClient(client, append([]gotsrpc.Option{gotsrpc.WithClientService("github.com/foomo/gotsrpc/v3/example/monitor/service", "Monitor")}, opts...)...),
 	}
 }
 
