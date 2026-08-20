@@ -1,7 +1,7 @@
 package gotsrpc //nolint:testpackage
 
 import (
-	stderrors "errors"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -16,6 +16,7 @@ func requireTerminates(t *testing.T, name string, fn func()) {
 
 	go func() {
 		defer close(done)
+
 		fn()
 	}()
 
@@ -29,7 +30,7 @@ func requireTerminates(t *testing.T, name string, fn func()) {
 func TestErrorCauseTerminates(t *testing.T) {
 	t.Parallel()
 
-	err := NewError(stderrors.New("boom"))
+	err := NewError(errors.New("boom"))
 	if err.ErrCause != nil {
 		t.Fatalf("precondition failed: expected no wrapped cause, got %v", err.ErrCause)
 	}
@@ -40,9 +41,9 @@ func TestErrorCauseTerminates(t *testing.T) {
 func TestErrorCauseDoesNotReturnReceiver(t *testing.T) {
 	t.Parallel()
 
-	err := NewError(stderrors.New("boom"))
+	err := NewError(errors.New("boom"))
 
-	if got := err.Cause(); got == error(err) {
+	if got := err.Cause(); errors.Is(got, error(err)) {
 		t.Fatal("Cause() returned the receiver; pkg/errors.Cause will never terminate")
 	}
 }
@@ -60,7 +61,7 @@ func TestErrorCauseUntypedNil(t *testing.T) {
 func TestErrorCauseReturnsWrappedCause(t *testing.T) {
 	t.Parallel()
 
-	err := NewError(fmt.Errorf("outer: %w", stderrors.New("inner")))
+	err := NewError(fmt.Errorf("outer: %w", errors.New("inner")))
 
 	got := err.Cause()
 	if got == nil {
