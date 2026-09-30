@@ -1,4 +1,4 @@
-package gotsrpc //nolint:testpackage
+package gotsrpc_test
 
 import (
 	"errors"
@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/foomo/gotsrpc/v2"
 	pkgerrors "github.com/pkg/errors"
 )
 
@@ -30,7 +31,7 @@ func requireTerminates(t *testing.T, name string, fn func()) {
 func TestErrorCauseTerminates(t *testing.T) {
 	t.Parallel()
 
-	err := NewError(errors.New("boom"))
+	err := gotsrpc.NewError(errors.New("boom"))
 	if err.ErrCause != nil {
 		t.Fatalf("precondition failed: expected no wrapped cause, got %v", err.ErrCause)
 	}
@@ -41,7 +42,7 @@ func TestErrorCauseTerminates(t *testing.T) {
 func TestErrorCauseDoesNotReturnReceiver(t *testing.T) {
 	t.Parallel()
 
-	err := NewError(errors.New("boom"))
+	err := gotsrpc.NewError(errors.New("boom"))
 
 	if got := err.Cause(); errors.Is(got, error(err)) {
 		t.Fatal("Cause() returned the receiver; pkg/errors.Cause will never terminate")
@@ -51,7 +52,7 @@ func TestErrorCauseDoesNotReturnReceiver(t *testing.T) {
 func TestErrorCauseUntypedNil(t *testing.T) {
 	t.Parallel()
 
-	err := &Error{Msg: "boom"}
+	err := &gotsrpc.Error{Msg: "boom"}
 
 	if got := err.Cause(); got != nil {
 		t.Fatalf("Cause() = %#v, want untyped nil", got)
@@ -61,7 +62,7 @@ func TestErrorCauseUntypedNil(t *testing.T) {
 func TestErrorCauseReturnsWrappedCause(t *testing.T) {
 	t.Parallel()
 
-	err := NewError(fmt.Errorf("outer: %w", errors.New("inner")))
+	err := gotsrpc.NewError(fmt.Errorf("outer: %w", errors.New("inner")))
 
 	got := err.Cause()
 	if got == nil {
