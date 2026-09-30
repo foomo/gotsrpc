@@ -93,13 +93,13 @@ func (e *Error) As(err any) bool {
 	return false
 }
 
-// Cause interface
+// Cause interface; never returns e, or pkg/errors.Cause loops forever
 func (e *Error) Cause() error {
 	if e.ErrCause != nil {
 		return e.ErrCause
 	}
 
-	return e
+	return nil
 }
 
 // Format interface

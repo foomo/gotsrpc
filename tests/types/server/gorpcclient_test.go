@@ -288,8 +288,8 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.Inlined{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
-			Name:   "parent",
+			Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash",
+			Name: "parent",
 		}
 		ret, clientErr := c.InlinedStruct(v)
 		require.NoError(t, clientErr)
@@ -314,9 +314,9 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.InlinedMultiple{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
-			Other:  common.Other{Label: "other"},
-			Name:   "parent",
+			Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash",
+			Label: "other",
+			Name:  "parent",
 		}
 		ret, clientErr := c.InlinedMultipleStruct(v)
 		require.NoError(t, clientErr)
@@ -327,9 +327,9 @@ func TestNewServiceGoRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.InlinedMixed{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash"},
-			Extra:  &common.Other{Label: "extra"},
-			Name:   "parent",
+			Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child", Alpha: "alpha", Hash: "hash",
+			Extra: &common.Other{Label: "extra"},
+			Name:  "parent",
 		}
 		ret, clientErr := c.InlinedMixedStruct(v)
 		require.NoError(t, clientErr)

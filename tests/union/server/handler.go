@@ -9,7 +9,7 @@ import (
 type Handler struct{}
 
 func (h *Handler) InlineStruct(w http.ResponseWriter, r *http.Request) (e InlineStruct) {
-	return InlineStruct{InlineStructA: InlineStructA{ValueA: "a"}}
+	return InlineStruct{ValueA: "a"}
 }
 
 func (h *Handler) InlineStructPtr(w http.ResponseWriter, r *http.Request) (e InlineStructPtr) {
@@ -25,7 +25,7 @@ func (h *Handler) UnionStruct(w http.ResponseWriter, r *http.Request) (e UnionSt
 }
 
 func (h *Handler) PrivateInlineStruct(w http.ResponseWriter, r *http.Request) (e *private.InlineStruct) {
-	return &private.InlineStruct{InlineStructA: private.InlineStructA{ValueA: "a"}}
+	return &private.InlineStruct{ValueA: "a"}
 }
 
 func (h *Handler) PrivateInlineStructPtr(w http.ResponseWriter, r *http.Request) (e *private.InlineStructPtr) {

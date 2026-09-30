@@ -180,12 +180,13 @@ func TestError_Cause(t *testing.T) {
 		assert.Equal(t, e.ErrCause, e.Cause())
 	})
 
-	t.Run("returns self when no cause", func(t *testing.T) {
+	t.Run("returns nil when no cause", func(t *testing.T) {
 		t.Parallel()
 
 		e := gotsrpc.NewError(errors.New("solo"))
 		require.NotNil(t, e)
-		assert.Equal(t, e, e.Cause())
+		assert.NoError(t, e.Cause())
+		assert.NoError(t, pkgerrors.Cause(e))
 	})
 }
 
