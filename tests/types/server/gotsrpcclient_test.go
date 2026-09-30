@@ -268,8 +268,8 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.Inlined{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
-			Name:   "parent",
+			Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child",
+			Name: "parent",
 		}
 		ret, clientErr := c.InlinedStruct(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -294,9 +294,9 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.InlinedMultiple{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
-			Other:  common.Other{Label: "other"},
-			Name:   "parent",
+			Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child",
+			Label: "other",
+			Name:  "parent",
 		}
 		ret, clientErr := c.InlinedMultipleStruct(t.Context(), v)
 		require.NoError(t, clientErr)
@@ -307,9 +307,9 @@ func TestNewDefaultServiceGoTSRPCClient(t *testing.T) {
 		t.Parallel()
 
 		v := server.InlinedMixed{
-			Simple: common.Simple{Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child"},
-			Extra:  &common.Other{Label: "extra"},
-			Name:   "parent",
+			Bool: true, Int: 1, Int64: 2, Float64: 3.0, String: "child",
+			Extra: &common.Other{Label: "extra"},
+			Name:  "parent",
 		}
 		ret, clientErr := c.InlinedMixedStruct(t.Context(), v)
 		require.NoError(t, clientErr)

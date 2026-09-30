@@ -1,8 +1,17 @@
 .*
-*.zip
-*.tar
-*.out
 *.log
+*.pid
+*.retry
+*.tar
+*.gz
+*.out
+*.tgz
+*.zip
+*.key
+*.pem
+*.prof
+*.pprof
+*.profile
 bin/
 dist/
 tmp/
@@ -21,7 +30,6 @@ tmp/
 !.dockerignore
 
 ### Node
-!.npmrc
 **/node_modules/
 
 ## TypeScript
