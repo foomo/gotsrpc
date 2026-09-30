@@ -93,13 +93,30 @@ func (e *Error) As(err any) bool {
 	return false
 }
 
-// Cause interface
+// Cause implements the causer interface used by github.com/pkg/errors.
+//
+// It returns nil when there is no wrapped cause. It must never return the
+// receiver: github.com/pkg/errors.Cause walks the chain with
+//
+//	for err != nil {
+//		cause, ok := err.(causer)
+//		if !ok { break }
+//		err = cause.Cause()
+//	}
+//
+// which only terminates on an error that does not implement causer. An *Error
+// returning itself therefore pins the calling goroutine in a tight loop at 100%
+// CPU for the lifetime of the process.
+//
+// The explicit nil check is required: ErrCause is a *Error, so returning it
+// directly would yield a non-nil error interface holding a nil pointer, and the
+// next Cause() call would dereference a nil receiver.
 func (e *Error) Cause() error {
 	if e.ErrCause != nil {
 		return e.ErrCause
 	}
 
-	return e
+	return nil
 }
 
 // Format interface
