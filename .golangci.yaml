@@ -3,7 +3,6 @@
 version: "2"
 
 run:
-  go: "1.26"
   build-tags: [ safe ]
   modules-download-mode: readonly
 
@@ -11,7 +10,6 @@ linters:
   default: all
   disable:
     # Project specific linters
-    - forbidigo
     - goconst
     - godoclint
     - nakedret
@@ -64,10 +62,12 @@ linters:
     forbidigo:
       forbid:
         # default
-        - pattern: ^(fmt\.Print(|f|ln)|print|println)$
+        - pkg: ^golang.org/x/crypto/openpgp$
+          msg: "If you are required to interoperate with OpenPGP systems and need a maintained package, consider github.com/ProtonMail/go-crypto/openpgp."
         - pattern: ^errors\.Cause$
           pkg: ^github.com/pkg/errors$
           msg: "Use github.com/foomo/go/errors.Cause() or standard library errors.As() or errors.Unwrap() instead."
+      analyze-types: true
     # https://golangci-lint.run/docs/linters/configuration/#staticcheck
     staticcheck:
       checks: [ all, -ST1003, -SA1019 ]
@@ -97,7 +97,6 @@ linters:
           disabled: true
   exclusions:
     generated: lax
-    warn-unused: true
     presets:
       - comments
       - common-false-positives
@@ -116,9 +115,12 @@ linters:
           - containedctx
           - spancheck
     paths:
-      - node_modules$
-      - bin$
-      - tmp$
+      - (^|/)bin($|/)
+      - (^|/)dist($|/)
+      - (^|/)tmp($|/)
+      - (^|/)docs($|/)
+      - (^|/)vendor($|/)
+      - (^|/)node_modules($|/)
 
 # https://golangci-lint.run/docs/formatters/
 formatters:

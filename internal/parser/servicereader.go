@@ -627,6 +627,10 @@ func collectTypes(goPaths []string, gomod config.Namespace, missingTypes map[str
 						panic("waaaaaaaaa")
 					}
 
+					if err := resolveStructRef(goPaths, gomod, packageStruct); err != nil {
+						return err
+					}
+
 					structs[packageStructName] = packageStruct
 				}
 			}
@@ -769,6 +773,33 @@ func depsSatisfied(s *model.Struct, missingTypes map[string]bool, structs map[st
 	}
 
 	return !needsWork(s.FullName())
+}
+
+// resolveStructRef copies the shape of the referenced type into s,
+// e.g. `type RawMessage = jsontext.Value` becomes `[]byte`.
+func resolveStructRef(goPaths []string, gomod config.Namespace, s *model.Struct) error {
+	for s.Ref != nil {
+		structs, _, err := getTypesInPackage(goPaths, gomod, s.Ref.Package)
+		if err != nil {
+			return err
+		}
+
+		target, ok := structs[s.Ref.FullName()]
+		if !ok {
+			return nil
+		}
+
+		s.Fields = target.Fields
+		s.InlineFields = target.InlineFields
+		s.UnionFields = target.UnionFields
+		s.Map = target.Map
+		s.Array = target.Array
+		s.TypeParams = target.TypeParams
+		s.IsError = target.IsError
+		s.Ref = target.Ref
+	}
+
+	return nil
 }
 
 func getTypesInPackage(goPaths []string, gomod config.Namespace, packageName string) (

@@ -39,7 +39,7 @@ endif
 
 .PHONY: check
 ## Run lint & tests
-check: tidy examples generate lint.fix test.race audit
+check: tidy examples generate actionlint lint.fix test.race audit
 
 .PHONY: lint
 ## Run linter
@@ -151,8 +151,7 @@ examples:
 ## Run security audit
 audit:
 	@echo "〉security audit"
-	@go install golang.org/x/vuln/cmd/govulncheck@latest
-	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && govulncheck ./...) &&) true
+	@osv-scanner --call-analysis=all --config=.osv-scanner.toml $(if $(GITHUB_ACTIONS),--format=gh-annotations) -r .
 
 ### Dependencies
 
@@ -167,13 +166,13 @@ tidy:
 ## Show outdated direct dependencies
 outdated:
 	@echo "〉go mod outdated"
-	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade --list) &&) true
+	@$(foreach mod,$(GOMODS),(cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade --cooldown 7d --ignore '^github\.com/foomo/gotsrpc/v3' --list) &&) true
 
 .PHONY: upgrade
-## Upgrade direct dependencies in all go.mod files
+## Upgrade direct dependencies
 upgrade:
 	@echo "〉go mod upgrade"
-	@$(foreach mod,$(GOMODS), (cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade) &&) true
+	@$(foreach mod,$(GOMODS),(cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade --cooldown 7d --ignore '^github\.com/foomo/gotsrpc/v3' }) &&) true
 	@$(MAKE) tidy
 
 ### Documentation
@@ -203,6 +202,11 @@ godocs:
 	@go doc -http
 
 ### Utils
+
+.PHONY: actionlint
+## Run actionlint
+actionlint:
+	@actionlint
 
 .PHONY: help
 # https://patorjk.com/software/taag/#p=display&f=Future+Smooth&t=gotsrpc&x=none&v=4&h=4&w=80&we=false

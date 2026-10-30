@@ -10,6 +10,8 @@ type Struct struct {
 	Map          *Map
 	Array        *Array
 	TypeParams   []string
+	// Ref points to the type this one is declared as, e.g. `type A = pkg.B`
+	Ref *StructType
 }
 
 func (s *Struct) FullName() string {
