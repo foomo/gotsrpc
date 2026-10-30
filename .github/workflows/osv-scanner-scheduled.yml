@@ -1,0 +1,28 @@
+name: OSV-Scanner Scheduled Scan
+
+on:
+  schedule:
+    - cron: "30 12 * * 1"
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  # Required to upload SARIF file to CodeQL. See: https://github.com/github/codeql-action/issues/2117
+  actions: read
+  # Require writing security events to upload SARIF file to security tab
+  security-events: write
+  # Only need to read contents
+  contents: read
+
+jobs:
+  scan-scheduled:
+    # https://github.com/google/osv-scanner-action/releases
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@b1d267aea5211fa648d9d442fa64b90dbdcbdd36" # v2.7.0
+    with:
+      scan-args: |-
+        --config=.osv-scanner.toml
+        --recursive
+        ./
