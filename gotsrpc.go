@@ -12,26 +12,39 @@ import (
 	"github.com/pkg/errors"
 )
 
+// GetCalledFunc returns the method name from the request path, that is the
+// path with endPoint and the following slash removed.
 func GetCalledFunc(r *http.Request, endPoint string) string {
 	return strings.TrimPrefix(r.URL.Path, endPoint+"/")
 }
 
+// ErrorFuncNotFound replies with 404 Not Found for an unknown method.
 func ErrorFuncNotFound(w http.ResponseWriter) {
 	http.Error(w, "method not found", http.StatusNotFound)
 }
 
+// ErrorCouldNotReply replies with 500 Internal Server Error when the response
+// could not be written.
 func ErrorCouldNotReply(w http.ResponseWriter) {
 	http.Error(w, "could not reply", http.StatusInternalServerError)
 }
 
+// ErrorCouldNotLoadArgs replies with 400 Bad Request when the arguments could
+// not be decoded.
 func ErrorCouldNotLoadArgs(w http.ResponseWriter) {
 	http.Error(w, "could not load args", http.StatusBadRequest)
 }
 
+// ErrorMethodNotAllowed replies with 405 Method Not Allowed for requests that
+// are not POST.
 func ErrorMethodNotAllowed(w http.ResponseWriter) {
 	http.Error(w, "you gotta POST", http.StatusMethodNotAllowed)
 }
 
+// LoadArgs decodes the request body into args, which must be a pointer. The
+// codec is selected by the Content-Type header and falls back to JSON. If
+// call is not nil, the decode time and size are recorded on it. Generated
+// proxies call LoadArgs; application code does not need to.
 func LoadArgs(args any, call *httpconv.ServerCall, r *http.Request) error {
 	start := time.Now()
 
@@ -59,7 +72,12 @@ func loadArgs(args any, jsonBytes []byte) error {
 	return nil
 }
 
-// Reply although this is a public method - do not call it, it will be called by generated code
+// Reply encodes response in the codec selected by the request Content-Type
+// and writes it to w. Elements wrapped with [ErrorReply] are sent as [Error].
+// If call is not nil, the encode time, size and non-nil errors are recorded
+// on it.
+//
+// Reply is exported for generated proxies only. Do not call it directly.
 func Reply(response []any, call *httpconv.ServerCall, r *http.Request, w http.ResponseWriter) error {
 	var errorIndices []int
 

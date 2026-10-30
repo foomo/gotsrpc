@@ -27,6 +27,9 @@ func init() {
 	setDefaultTransportHandle(jsonHandle)
 }
 
+// SetJSONExt registers ext for the type of rt with the JSON codec, using tag
+// as the extension tag. It is not safe for concurrent use with encoding; call
+// it during program initialization.
 func SetJSONExt(rt any, tag uint64, ext codec.InterfaceExt) error {
 	if value, ok := jsonHandle.handle.(*codec.JsonHandle); ok {
 		return value.SetInterfaceExt(reflect.TypeOf(rt), tag, ext)

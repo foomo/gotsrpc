@@ -3,6 +3,7 @@ package gotsrpc_test
 import (
 	"errors"
 	"fmt"
+	"io"
 	"testing"
 
 	"github.com/foomo/gotsrpc/v3"
@@ -260,4 +261,16 @@ func TestError_Format(t *testing.T) {
 	assert.Contains(t, verbose, "gotsrpc_test.customError")
 	assert.Contains(t, verbose, "Data:")
 	assert.Contains(t, verbose, "boom")
+}
+
+func ExampleNewError() {
+	e := gotsrpc.NewError(fmt.Errorf("load user: %w", io.EOF))
+
+	fmt.Println(e.Msg)
+	fmt.Println(e.ErrCause.Type)
+	fmt.Println(errors.Is(e, io.EOF))
+	// Output:
+	// load user
+	// *errors.errorString
+	// true
 }

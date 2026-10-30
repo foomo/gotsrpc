@@ -780,6 +780,10 @@ func renderGoRPCServiceClients(services model.ServiceList, fullPackageName strin
 	return nil
 }
 
+// RenderGoTSRPCProxies returns the gotsrpc HTTP proxy code for services in
+// package packageName (import path longPackageName). unions maps package
+// paths to union struct names that the proxies register with
+// gotsrpc.MustRegisterUnionExt.
 func RenderGoTSRPCProxies(services model.ServiceList, longPackageName, packageName string, config *config.Target, unions map[string][]string) (gocode string, err error) {
 	g := NewCode("	")
 
@@ -793,6 +797,8 @@ func RenderGoTSRPCProxies(services model.ServiceList, longPackageName, packageNa
 	return
 }
 
+// RenderGoTSRPCClients returns the gotsrpc HTTP client code for services in
+// package packageName (import path longPackageName).
 func RenderGoTSRPCClients(services model.ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
 	g := NewCode("	")
 
@@ -806,6 +812,8 @@ func RenderGoTSRPCClients(services model.ServiceList, longPackageName, packageNa
 	return
 }
 
+// RenderGoRPCProxies returns the gorpc proxy code for the services of config
+// that are listed in its GoRPC field.
 func RenderGoRPCProxies(services model.ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
 	g := NewCode("	")
 
@@ -819,6 +827,8 @@ func RenderGoRPCProxies(services model.ServiceList, longPackageName, packageName
 	return
 }
 
+// RenderGoRPCClients returns the gorpc client code for the services of config
+// that are listed in its GoRPC field.
 func RenderGoRPCClients(services model.ServiceList, longPackageName, packageName string, config *config.Target) (gocode string, err error) {
 	g := NewCode("	")
 

@@ -11,6 +11,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Target selects the services of one Go package to generate and the output
+// files to write.
 type Target struct {
 	// Go package name
 	Package string `json:"package" yaml:"package"`
@@ -24,7 +26,7 @@ type Target struct {
 	GoRPC []string `json:"gorpc" yaml:"gorpc"`
 	// List of ts rpc services to generate
 	TSRPC []string `json:"tsrpc" yaml:"tsrpc"`
-	// Skip generating go rpc client
+	// Skip generating the Go client for tsrpc services
 	SkipTSRPCClient bool `json:"skipTSRPCClient" yaml:"skipTSRPCClient"`
 	// Optional override of the service name used in metrics/spans (span name and
 	// rpc.method). Keyed by the service name from `services`. Falls back to the
@@ -32,6 +34,7 @@ type Target struct {
 	ServiceNames map[string]string `json:"serviceNames" yaml:"serviceNames"`
 }
 
+// IsGoRPC reports whether gorpc code is generated for service.
 func (t *Target) IsGoRPC(service string) bool {
 	return slices.Contains(t.GoRPC, service)
 }
@@ -46,6 +49,8 @@ func (t *Target) ServiceName(service string) string {
 	return service
 }
 
+// IsTSRPC reports whether tsrpc code is generated for service. An empty
+// TSRPC list selects all services.
 func (t *Target) IsTSRPC(service string) bool {
 	if len(t.TSRPC) == 0 {
 		return true
@@ -54,6 +59,7 @@ func (t *Target) IsTSRPC(service string) bool {
 	return slices.Contains(t.TSRPC, service)
 }
 
+// Mapping maps one Go package to a TypeScript output file.
 type Mapping struct {
 	// Internal go package name
 	GoPackage string `json:"-" yaml:"-"`
@@ -67,8 +73,10 @@ type Mapping struct {
 	TypeScriptModule string `json:"module" yaml:"module"`
 }
 
+// TypeScriptMappings maps Go package paths to their TypeScript [Mapping].
 type TypeScriptMappings map[string]*Mapping
 
+// Namespace describes the Go module that contains the target packages.
 type Namespace struct {
 	// Go module name
 	Name string `json:"name" yaml:"name"`
@@ -78,6 +86,7 @@ type Namespace struct {
 	ModFile *modfile.File `json:"-" yaml:"-"`
 }
 
+// Config is the parsed content of a gotsrpc.yml file.
 type Config struct {
 	// Go module settings
 	Module Namespace `json:"module" yaml:"module"`
@@ -90,6 +99,9 @@ type Config struct {
 	TSImportJsExtension bool `json:"tsImportJsExtension" yaml:"tsImportJsExtension"`
 }
 
+// LoadConfigFile reads and parses the YAML config at file. A relative
+// module path is resolved against the directory of file, and the module's
+// go.mod is loaded into Module.ModFile if it exists.
 func LoadConfigFile(file string) (conf *Config, err error) {
 	yamlBytes, readErr := os.ReadFile(file)
 	if readErr != nil {

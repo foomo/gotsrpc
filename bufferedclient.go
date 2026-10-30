@@ -10,6 +10,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// bufferedClient is the default [Client]. It buffers the encoded request and
+// the full response body in pooled buffers.
 type bufferedClient struct {
 	client  *http.Client
 	handle  *transportHandle
@@ -17,19 +19,22 @@ type bufferedClient struct {
 	instr   *httpconv.Client
 }
 
+// SetDefaultHeaders implements [Client].
 func (c *bufferedClient) SetDefaultHeaders(headers http.Header) {
 	c.headers = headers
 }
 
+// SetClientEncoding implements [Client].
 func (c *bufferedClient) SetClientEncoding(encoding ClientEncoding) {
 	c.handle = getHandleForEncoding(encoding)
 }
 
+// SetTransportHttpClient implements [Client].
 func (c *bufferedClient) SetTransportHttpClient(client *http.Client) {
 	c.client = client
 }
 
-// Call calls a method on the remote service
+// Call implements [Client].
 func (c *bufferedClient) Call(ctx context.Context, url string, endpoint string, method string, args []any, reply []any) (err error) {
 	ctx, call := c.instr.Start(ctx, method)
 
