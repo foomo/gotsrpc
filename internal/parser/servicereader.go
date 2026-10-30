@@ -89,6 +89,11 @@ type resolvedMethod struct {
 	substImports fileImportSpecMap // imports for resolving typeSubst expressions
 }
 
+// Read parses packageName and returns its Go package name, the services
+// named in serviceMap (keyed by endpoint), and the structs, scalars and
+// constant types they reference. goPaths and gomod are used to locate
+// packages. missingTypes and missingConstants name additional types to
+// include and are updated as types are resolved.
 func Read(
 	goPaths []string,
 	gomod config.Namespace,

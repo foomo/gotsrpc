@@ -19,6 +19,10 @@ import (
 	"github.com/foomo/gotsrpc/v3/internal/parser"
 )
 
+// Build generates the code for every target in conf, in alphabetical order
+// of the target names. It removes previously generated Go files of a target
+// before writing new ones. goPath and goRoot are used to locate Go packages
+// outside the configured module.
 func Build(conf *config.Config, goPath, goRoot string) error { //nolint:maintidx
 	deriveCommonJSMapping(conf)
 

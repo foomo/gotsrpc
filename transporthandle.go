@@ -9,6 +9,8 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
+// transportHandle bundles a codec, its content type, pooled encoders and
+// decoders, and hooks that convert error values to and from [Error].
 type transportHandle struct {
 	handle            codec.Handle
 	contentType       string

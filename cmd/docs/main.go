@@ -1,9 +1,3 @@
-// Command docs generates the gotsrpc CLI reference as VitePress-friendly
-// markdown from the cobra command tree.
-//
-// Usage:
-//
-//	go run ./cmd/docs --dir docs/reference/cli
 package main
 
 import (

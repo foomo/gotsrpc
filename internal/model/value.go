@@ -1,5 +1,6 @@
 package model
 
+// Value describes the Go type of a field, argument or return value.
 type Value struct {
 	JSONInfo     *JSONInfo   `json:",omitempty"`
 	IsError      bool        `json:",omitempty"`

@@ -10,6 +10,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Error is the wire representation of an error returned by a service method.
+// It keeps the message, the Go type and package of the original error, the
+// error value as Data, and the cause chain, so that [errors.Is] and
+// [errors.As] keep working on the client side.
 type Error struct {
 	Msg       string   `json:"m"`
 	Pkg       string   `json:"p"`
@@ -19,7 +23,9 @@ type Error struct {
 	ErrCauses []*Error `json:"cs,omitempty"`
 }
 
-// NewError returns a new instance
+// NewError converts err into an [Error]. It returns nil for a nil or typed nil
+// err and returns err unchanged if it already is an *Error. Wrapped causes
+// become ErrCause, and errors joined with [errors.Join] become ErrCauses.
 func NewError(err error) *Error {
 	// guard against typed nil (e.g. (*MyError)(nil) assigned to error interface)
 	if reflect.ValueOf(err).IsZero() {
@@ -75,7 +81,9 @@ func NewError(err error) *Error {
 	return inst
 }
 
-// As interface
+// As decodes Data into err if the type of *err matches the original error
+// type. It reports whether the decode succeeded. err must be a non-nil
+// pointer.
 func (e *Error) As(err any) bool {
 	if e == nil || err == nil {
 		return false
@@ -93,7 +101,8 @@ func (e *Error) As(err any) bool {
 	return false
 }
 
-// Cause interface; never returns e, or pkg/errors.Cause loops forever
+// Cause returns the direct cause, or nil if there is none. It never returns e,
+// because pkg/errors.Cause would then loop forever.
 func (e *Error) Cause() error {
 	if e.ErrCause != nil {
 		return e.ErrCause
@@ -102,7 +111,8 @@ func (e *Error) Cause() error {
 	return nil
 }
 
-// Format interface
+// Format implements [fmt.Formatter]. The %+v verb prints the package, type
+// and data before the message.
 func (e *Error) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
@@ -119,7 +129,8 @@ func (e *Error) Format(s fmt.State, verb rune) {
 	}
 }
 
-// Unwrap interface
+// Unwrap returns the single cause and all joined causes, or nil if there are
+// none.
 func (e *Error) Unwrap() []error {
 	if e == nil {
 		return nil
@@ -143,7 +154,8 @@ func (e *Error) Unwrap() []error {
 	return errs
 }
 
-// Is interface
+// Is reports whether err has the same message, type and package as the
+// original error.
 func (e *Error) Is(err error) bool {
 	if e == nil || err == nil {
 		return false
@@ -165,7 +177,7 @@ func (e *Error) Is(err error) bool {
 	return false
 }
 
-// Error interface
+// Error returns the message followed by the messages of the cause chain.
 func (e *Error) Error() string {
 	msg := e.Msg
 	if e.ErrCause != nil {
