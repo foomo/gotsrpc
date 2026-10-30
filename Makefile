@@ -166,13 +166,13 @@ tidy:
 ## Show outdated direct dependencies
 outdated:
 	@echo "〉go mod outdated"
-	@$(foreach mod,$(GOMODS),(cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade --cooldown 7d --list) &&) true
+	@$(foreach mod,$(GOMODS),(cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade --cooldown 7d --ignore '^github\.com/foomo/gotsrpc/v3' --list) &&) true
 
 .PHONY: upgrade
 ## Upgrade direct dependencies
 upgrade:
 	@echo "〉go mod upgrade"
-	@$(foreach mod,$(GOMODS),(cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade --cooldown 7d  }) &&) true
+	@$(foreach mod,$(GOMODS),(cd $(dir $(mod)) && echo "📂 $(dir $(mod))" && GOWORK=off go-mod-upgrade --cooldown 7d --ignore '^github\.com/foomo/gotsrpc/v3' }) &&) true
 	@$(MAKE) tidy
 
 ### Documentation
