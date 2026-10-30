@@ -42,6 +42,7 @@ post-checkout:
     mise:
       run: mise -q install
       skip: [ { run: 'test "$3" -ne 1' } ]
+
 tags:
   commands:
     semver:

@@ -2,13 +2,21 @@
   "name": "gotsrpc",
   "private": true,
   "type": "module",
-  "devDependencies": {
-		"@catppuccin/vitepress": "0.1.2",
-    "vitepress": "1.6.3"
-  },
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview"
-  }
+  },
+  "devDependencies": {
+		"@catppuccin/vitepress": "0.1.4",
+    "vitepress": "1.6.4"
+  },
+	"overrides": {
+		"vite": "6.4.5",
+		"postcss": "8.5.23",
+		"nanoid": "3.3.18",
+		"esbuild": "0.25.0",
+		"source-map-js": "1.2.2",
+		"@vue/server-renderer": "3.5.42"
+	}
 }
