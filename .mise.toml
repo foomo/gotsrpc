@@ -1,7 +1,7 @@
 #:schema https://mise.jdx.dev/schema/mise.json
 
 [settings]
-minimum_release_age = "3d"
+minimum_release_age = "7d"
 
 [tools]
 # https://mise-tools.jdx.dev/tools/actionlint

@@ -4,46 +4,88 @@ version: 2
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 updates:
   - package-ecosystem: github-actions
-    commit-message: { prefix: sec(gha) }
-    open-pull-requests-limit: 0
+    commit-message: { prefix: chore(gha) }
     directory: '/'
     schedule:
-      interval: daily
+      day: sunday
+      interval: weekly
       timezone: Europe/Berlin
     groups:
+      deps:
+        applies-to: version-updates
+        patterns: [ "*" ]
       security:
         applies-to: security-updates
-        group-by: dependency-name
         patterns: ['*']
     cooldown:
-      default-days: 3
-
-  - package-ecosystem: gomod
-    commit-message: { prefix: sec(gomod) }
-    open-pull-requests-limit: 0
-    directories: [ '**/*' ]
-    schedule:
-      interval: daily
-      timezone: Europe/Berlin
-    groups:
-      security:
-        applies-to: security-updates
-        group-by: dependency-name
-        patterns: ['*']
-    cooldown:
-      default-days: 3
+      default-days: 7
 
   - package-ecosystem: docker
-    commit-message: { prefix: sec(docker) }
-    open-pull-requests-limit: 0
-    directory: '/'
+    commit-message: { prefix: chore(docker) }
+    directories: [ "**/*" ]
     schedule:
-      interval: daily
+      day: sunday
+      interval: weekly
       timezone: Europe/Berlin
     groups:
+      deps:
+        applies-to: version-updates
+        patterns: [ "*" ]
       security:
         applies-to: security-updates
-        group-by: dependency-name
-        patterns: ['*']
+        patterns: [ "*" ]
+    ignore:
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-major" ]
     cooldown:
-      default-days: 3
+      default-days: 7
+
+  - package-ecosystem: bun
+    commit-message: { prefix: chore(bun) }
+    directories: [ "**/*" ]
+    schedule:
+      day: sunday
+      interval: weekly
+      timezone: Europe/Berlin
+    groups:
+      deps:
+        applies-to: version-updates
+        patterns: [ "*" ]
+      # NOTE: security updates are currently not supported
+      security:
+        applies-to: security-updates
+        patterns: [ "*" ]
+    ignore:
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-major" ]
+    cooldown:
+      default-days: 7
+      semver-minor-days: 7
+      semver-patch-days: 3
+
+  - package-ecosystem: gomod
+    commit-message: { prefix: chore(gomod) }
+    directories: [ "**/*" ]
+    schedule:
+      day: sunday
+      interval: weekly
+      timezone: Europe/Berlin
+    groups:
+      deps:
+        applies-to: version-updates
+        patterns: [ "*" ]
+        exclude-patterns: [ "github.com/foomo/*" ]
+      foomo:
+        applies-to: version-updates
+        patterns: [ "github.com/foomo/*" ]
+      security:
+        applies-to: security-updates
+        patterns: [ "*" ]
+    ignore:
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-major" ]
+    cooldown:
+      default-days: 7
+      semver-minor-days: 7
+      semver-patch-days: 3
+      exclude: [ "github.com/foomo/*" ]
