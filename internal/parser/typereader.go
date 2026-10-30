@@ -474,9 +474,16 @@ func extractTypes(file *ast.File, packageName string, structs map[string]*model.
 					}
 				case *ast.SelectorExpr:
 					log.Debug("SelectorExpr", obj.Name)
+
 					structs[structName] = &model.Struct{
 						Name:    name,
 						Package: packageName,
+					}
+					if x, ok := typeSpecType.X.(*ast.Ident); ok {
+						structs[structName].Ref = &model.StructType{
+							Name:    typeSpecType.Sel.Name,
+							Package: fileImports.getPackagePath(x.Name),
+						}
 					}
 				case *ast.ArrayType:
 					arrayValue := &model.Value{}
