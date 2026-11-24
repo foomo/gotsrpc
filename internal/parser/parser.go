@@ -113,7 +113,30 @@ func loadPackage(gomod config.Namespace, packageName string) (*parsedPackage, er
 // unchanged. The goPaths argument is no longer used — package resolution
 // is fully delegated to go/packages via the module config in gomod.
 func parsePackage(_ []string, gomod config.Namespace, packageName string) (*parsedPackage, error) {
-	return loadPackage(gomod, packageName)
+	key := gomod.Path + "\x00" + packageName
+	if pkg, ok := loadedPackages[key]; ok {
+		return pkg, nil
+	}
+
+	pkg, err := loadPackage(gomod, packageName)
+	if err != nil {
+		return nil, err
+	}
+
+	loadedPackages[key] = pkg
+
+	return pkg, nil
+}
+
+// loadedPackages memoizes loadPackage for the lifetime of one generator run:
+// every load is a `go list` process, and the same package is asked for once
+// per target, struct and scalar that references it.
+var loadedPackages = map[string]*parsedPackage{}
+
+// Forget drops a package from the memo. The build calls it for a target's own
+// package after deleting its generated files, so the next load sees them gone.
+func Forget(gomod config.Namespace, packageName string) {
+	delete(loadedPackages, gomod.Path+"\x00"+packageName)
 }
 
 // resolvePackageScope re-creates the cross-file identifier linking that the
