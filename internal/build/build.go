@@ -74,6 +74,7 @@ func Build(conf *config.Config, goPath, goRoot string) error { //nolint:maintidx
 		remove(goRPCClientsFilename)
 		remove(goTSRPCProxiesFilename)
 		remove(goTSRPCClientsFilename)
+		parser.Forget(conf.Module, packageName)
 
 		workDirectory, err := os.Getwd()
 		if err != nil {
